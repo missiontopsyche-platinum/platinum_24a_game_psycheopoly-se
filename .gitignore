@@ -6,6 +6,7 @@
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
+/[Bb]in/
 /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
@@ -34,6 +35,10 @@
 # Visual Studio cache directory
 .vs/
 
+# IDE stuff
+.idea/
+.vscode/
+
 # Gradle cache directory
 .gradle/
 
@@ -54,6 +59,9 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
+# Code Coverage report (Does not need to be tracked)
+CodeCoverage/
 
 # Unity3D generated meta files
 *.pidb.meta
