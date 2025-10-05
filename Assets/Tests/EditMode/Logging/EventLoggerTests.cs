@@ -11,15 +11,15 @@ namespace Tests.Logging
     {
 
         private EventLogger _logger;
+        private LogSettings _settings;
 
         [SetUp]
         public void SetUp()
         {
-            _logger = new EventLogger();
+            _settings = new LogSettings();
+            _logger = new EventLogger(_settings, "Tests");
 
             _logger.Enabled = true;
-            _logger.Level = LogLevel.Info;
-            _logger.EnabledCategories = LogCategory.All;
         }
 
         [TearDown]
@@ -39,7 +39,7 @@ namespace Tests.Logging
         [Test]
         public void LevelFiltering_InfoLevel_AllowsInfoWarnError_BlocksDebugTrace()
         {
-            _logger.Level = LogLevel.Info;
+            _settings.MinLogLevel = LogLevel.Info;
 
             ExpectInfo("info visible");
             SafeLog(LogLevel.Info, "info visible", LogCategory.Core);
@@ -62,7 +62,7 @@ namespace Tests.Logging
         [Test]
         public void LevelFiltering_WarnLevel_AllowsWarnError_BlocksInfoAndBelow()
         {
-            _logger.Level = LogLevel.Warn;
+            _settings.MinLogLevel = LogLevel.Warn;
 
             ExpectWarning("warn visible");
             SafeLog(LogLevel.Warn, "warn visible", LogCategory.Gameplay);
@@ -83,7 +83,7 @@ namespace Tests.Logging
         [Test]
         public void CategoryFiltering_AllowOnlyWhitelistedFlags()
         {
-            _logger.EnabledCategories = LogCategory.Core | LogCategory.UI;
+            _settings.EnabledCategories = LogCategory.Core | LogCategory.UI;
             
             ExpectInfo("core allowed");
             SafeLog(LogLevel.Info, "core allowed", LogCategory.Core);
@@ -100,7 +100,7 @@ namespace Tests.Logging
         [Test]
         public void CategoryFiltering_AllowEverything()
         {
-            _logger.EnabledCategories = LogCategory.All;
+            _settings.EnabledCategories = LogCategory.All;
 
             ExpectInfo("core allowed");
             SafeLog(LogLevel.Info, "core allowed", LogCategory.Core);
@@ -120,7 +120,7 @@ namespace Tests.Logging
         [Test]
         public void CategoryFiltering_AllowNone()
         {
-            _logger.EnabledCategories = LogCategory.None;
+            _settings.EnabledCategories = LogCategory.None;
 
             SafeLog(LogLevel.Info, "core allowed", LogCategory.Core);
             SafeLog(LogLevel.Info, "ui allowed", LogCategory.UI);
@@ -132,23 +132,25 @@ namespace Tests.Logging
         }
 
         [Test]
-        public void NullOrEmptyMessage_DoesNotThrow()
+        public void NullOrEmptyMessage_NoneOutput()
         {
-            Assert.DoesNotThrow(() => SafeLog(LogLevel.Info, null, LogCategory.Core));
-            Assert.DoesNotThrow(() => SafeLog(LogLevel.Info, string.Empty, LogCategory.Core));
+            ExpectInfo("None");
+            SafeLog(LogLevel.Info, null, LogCategory.Core);
+            ExpectInfo("None");
+            SafeLog(LogLevel.Info, null, LogCategory.Core);
             LogAssert.NoUnexpectedReceived();
         }
 
         [Test]
         public void ChangingLevelAtRuntime_TakesEffectImmediately()
         {
-            _logger.Level = LogLevel.Error;
+            _settings.MinLogLevel = LogLevel.Error;
 
-            ExpectInfo("error visible");
+            ExpectError("error visible");
             SafeLog(LogLevel.Error, "error visible", LogCategory.Core);
             SafeLog(LogLevel.Warn, "warn hidden", LogCategory.Core);
 
-            _logger.Level = LogLevel.Warn;
+            _settings.MinLogLevel = LogLevel.Warn;
 
             ExpectWarning("warn now visible");
             SafeLog(LogLevel.Warn, "warn now visible", LogCategory.Core);
@@ -179,11 +181,6 @@ namespace Tests.Logging
                     _logger.Exception(ex, cat, msg, this);
                     break;
             }
-        }
-        private void SafeLogFormat(LogLevel level, string fmt, LogCategory cat, params object[] args)
-        {
-            var msg = string.Format(fmt ?? string.Empty, args);
-            SafeLog(level, msg, cat);
         }
 
         private static void ExpectInfo(string contains)

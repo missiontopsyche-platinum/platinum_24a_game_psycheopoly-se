@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Logging
@@ -6,60 +7,105 @@ namespace Logging
     public class EventLogger : IEventLogger
     {
         public bool Enabled { get; set; } = true;
-        public LogLevel Level { get; set; } = LogLevel.Trace;
-        public LogCategory EnabledCategories { get; set; } = LogCategory.All;
+        private LogSettings _settings;
         private readonly string _prefix;
-        public EventLogger(string prefix = "PsycheOpoly")
+        public EventLogger(LogSettings settings, string prefix = "PsycheOpoly")
         {
+            _settings = settings;
             _prefix = prefix;
         }
-        public void Trace(string message, LogCategory category = LogCategory.None, object context = null)
+
+        public void Trace(string message = null, LogCategory category = LogCategory.None, object context = null)
         {
-            if (IsWithinLevelAndEnabled(LogLevel.Trace, category))
+            Log(message, LogLevel.Trace, category, context);
+        }
+        public void Debug(string message = null, LogCategory category = LogCategory.None, object context = null)
+        {
+            Log(message, LogLevel.Debug, category, context);
+        }
+        public void Info(string message = null, LogCategory category = LogCategory.None, object context = null)
+        {
+            Log(message, LogLevel.Info, category, context);
+        }
+        public void Warn(string message = null, LogCategory category = LogCategory.None, object context = null)
+        {
+            Log(message, LogLevel.Warn, category, context);
+        }
+        public void Error(string message = null, LogCategory category = LogCategory.None, object context = null)
+        {
+            Error(message, category, context, null);
+        }
+        public void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null)
+        {
+            Error(message ?? "Exception occurred", category, context, exception);
+        }
+
+        public void Log(string message = null, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null)
+        {
+
+            if (!isLoggable(level, category)) return;
+
+            if (string.IsNullOrEmpty(message))
+                message = "None";
+
+            switch (level)
             {
-                UnityEngine.Debug.Log($"{_prefix} [TRACE] [{category}]{message}", context as UnityEngine.Object);
+                case LogLevel.Trace:
+                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    break;
+                case LogLevel.Debug:
+                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    break;
+                case LogLevel.Info:
+                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    break;
+                case LogLevel.Warn:
+                    UnityEngine.Debug.LogWarning(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    break;
+                default:
+                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    break;
             }
         }
-        public void Debug(string message, LogCategory category = LogCategory.None, object context = null)
+
+        public void Error(string message = null, LogCategory category = LogCategory.None, object context = null, System.Exception exception = null)
         {
-            if (IsWithinLevelAndEnabled(LogLevel.Debug, category))
+            var level = LogLevel.Error;
+
+            if (!isLoggable(level, category)) return;
+
+            if (string.IsNullOrEmpty(message))
+                message = "None";
+
+            if (exception != null)
             {
-                UnityEngine.Debug.Log($"{_prefix} [DEBUG] {message}", context as UnityEngine.Object);
+                UnityEngine.Debug.LogException(new System.Exception(FormatMessage(message, level, category) + $": { exception.Message}", exception), context as UnityEngine.Object);
+                return;
             }
+            UnityEngine.Debug.LogError($"{_prefix} [ERROR] [{category}]{message}", context as UnityEngine.Object);
         }
-        public void Info(string message, LogCategory category = LogCategory.None, object context = null)
-        {
-            if (IsWithinLevelAndEnabled(LogLevel.Info, category))
-            {
-                UnityEngine.Debug.Log($"{_prefix} [INFO] {message}", context as UnityEngine.Object);
-            }
-        }
-        public void Warn(string message, LogCategory category = LogCategory.None, object context = null)
-        {
-            if (IsWithinLevelAndEnabled(LogLevel.Warn, category))
-            {
-                UnityEngine.Debug.LogWarning($"{_prefix} [WARN] {message}", context as UnityEngine.Object);
-            }
-        }
-        public void Error(string message, LogCategory category = LogCategory.None, object context = null)
-        {
-            if (IsWithinLevelAndEnabled(LogLevel.Error, category))
-            {
-                UnityEngine.Debug.LogError($"{_prefix} [ERROR] {message}", context as UnityEngine.Object);
-            }
-        }
-        public void Exception(System.Exception exception, LogCategory category = LogCategory.None, string hint = null, object context = null)
-        {
-            if (!IsWithinLevelAndEnabled(LogLevel.Error, category)) return;
-            if (string.IsNullOrEmpty(hint)) hint = "Exception";
-            UnityEngine.Debug.LogException(new System.Exception($"{_prefix} [{category}] {hint}: {exception.Message}", exception), context as UnityEngine.Object);
-        }
-        private bool IsWithinLevelAndEnabled(LogLevel level, LogCategory category)
+
+        private bool isLoggable(LogLevel level, LogCategory category)
         {
             if (!Enabled) return false;
-            if (Level > level) return false;
-            if ((EnabledCategories & category) == 0) return false;
-            return true;
+
+            if (!_settings.isRunTimeLoggingEnabled())
+            {
+                if (!(_settings.ErrorsAlwaysEnabled && level == LogLevel.Error))
+                    return false;
+            }
+
+            if (level < _settings.MinLogLevel) return false;
+
+            if (category == LogCategory.None)
+                return _settings.EnabledCategories != LogCategory.None;
+
+            return (_settings.EnabledCategories & category) != 0;
+        }
+
+        private string FormatMessage(string message, LogLevel level, LogCategory category)
+        {
+            return $"{_prefix} [Level: {level}] [Category: {category}] [Message: {message}]";
         }
     }
 }
