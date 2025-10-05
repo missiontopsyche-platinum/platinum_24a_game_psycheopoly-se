@@ -80,6 +80,82 @@ namespace Tests.Logging
             LogAssert.NoUnexpectedReceived();
         }
 
+        [Test]
+        public void CategoryFiltering_AllowOnlyWhitelistedFlags()
+        {
+            _logger.EnabledCategories = LogCategory.Core | LogCategory.UI;
+            
+            ExpectInfo("core allowed");
+            SafeLog(LogLevel.Info, "core allowed", LogCategory.Core);
+
+            ExpectInfo("ui allowed");
+            SafeLog(LogLevel.Info, "ui allowed", LogCategory.UI);
+
+            SafeLog(LogLevel.Info, "gameplay blocked", LogCategory.Gameplay);
+            SafeLog(LogLevel.Info, "ai blocked", LogCategory.Gameplay);
+
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void CategoryFiltering_AllowEverything()
+        {
+            _logger.EnabledCategories = LogCategory.All;
+
+            ExpectInfo("core allowed");
+            SafeLog(LogLevel.Info, "core allowed", LogCategory.Core);
+            ExpectInfo("ui allowed");
+            SafeLog(LogLevel.Info, "ui allowed", LogCategory.UI);
+            ExpectInfo("gameplay allowed");
+            SafeLog(LogLevel.Info, "gameplay allowed", LogCategory.Gameplay);
+            ExpectInfo("ai allowed");
+            SafeLog(LogLevel.Info, "ai allowed", LogCategory.AI);
+            ExpectInfo("economy allowed");
+            SafeLog(LogLevel.Info, "economy allowed", LogCategory.Economy);
+            ExpectInfo("network allowed");
+            SafeLog(LogLevel.Info, "network allowed", LogCategory.Network);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void CategoryFiltering_AllowNone()
+        {
+            _logger.EnabledCategories = LogCategory.None;
+
+            SafeLog(LogLevel.Info, "core allowed", LogCategory.Core);
+            SafeLog(LogLevel.Info, "ui allowed", LogCategory.UI);
+            SafeLog(LogLevel.Info, "gameplay allowed", LogCategory.Gameplay);
+            SafeLog(LogLevel.Info, "ai allowed", LogCategory.AI);
+            SafeLog(LogLevel.Info, "economy allowed", LogCategory.Economy);
+            SafeLog(LogLevel.Info, "network allowed", LogCategory.Network);
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void NullOrEmptyMessage_DoesNotThrow()
+        {
+            Assert.DoesNotThrow(() => SafeLog(LogLevel.Info, null, LogCategory.Core));
+            Assert.DoesNotThrow(() => SafeLog(LogLevel.Info, string.Empty, LogCategory.Core));
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        public void ChangingLevelAtRuntime_TakesEffectImmediately()
+        {
+            _logger.Level = LogLevel.Error;
+
+            ExpectInfo("error visible");
+            SafeLog(LogLevel.Error, "error visible", LogCategory.Core);
+            SafeLog(LogLevel.Warn, "warn hidden", LogCategory.Core);
+
+            _logger.Level = LogLevel.Warn;
+
+            ExpectWarning("warn now visible");
+            SafeLog(LogLevel.Warn, "warn now visible", LogCategory.Core);
+
+            LogAssert.NoUnexpectedReceived();
+        }
+
         private void SafeLog(LogLevel? level, string msg, LogCategory cat, Exception ex = null)
         {
             switch (level)
