@@ -43,9 +43,6 @@ namespace Logging
         void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null);
 
         public void Log(string message, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null);
-
-        public void Error(string message, LogCategory category = LogCategory.None, object context = null, System.Exception exception = null);
-
     }
     // Defines the severity levels for logging output.
     // Used to filter log messages so that only messages

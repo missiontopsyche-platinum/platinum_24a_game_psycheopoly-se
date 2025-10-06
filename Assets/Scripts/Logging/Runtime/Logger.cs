@@ -22,15 +22,59 @@ namespace Logging
             }
             EventLogger.Log(message, level, category, context);
         }
-
-        public static void Error(string message, LogCategory category = LogCategory.None, object context = null, System.Exception exception = null)
+        public static void Trace(string message, LogCategory category = LogCategory.None, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Error(message, category, context, exception);
+            EventLogger.Trace(message, category, context);
+        }
+        public static void Debug(string message, LogCategory category = LogCategory.None, object context = null)
+        {
+            if (EventLogger == null)
+            {
+                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                return;
+            }
+            EventLogger.Debug(message, category, context);
+        }
+        public static void Info(string message, LogCategory category = LogCategory.None, object context = null)
+        {
+            if (EventLogger == null)
+            {
+                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                return;
+            }
+            EventLogger.Info(message, category, context);
+        }
+        public static void Warn(string message, LogCategory category = LogCategory.None, object context = null)
+        {
+            if (EventLogger == null)
+            {
+                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                return;
+            }
+            EventLogger.Warn(message, category, context);
+        }
+        public static void Error(string message, LogCategory category = LogCategory.None, object context = null)
+        {
+            if (EventLogger == null)
+            {
+                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                return;
+            }
+            EventLogger.Error(message, category, context);
+        }
+        public static void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null)
+        {
+            if (EventLogger == null)
+            {
+                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                return;
+            }
+            EventLogger.Exception(exception, category, message, context);
         }
     }
 }
