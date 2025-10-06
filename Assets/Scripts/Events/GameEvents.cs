@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace PsycheOpoly.GameEvents
+namespace PsycheOpoly.Events
 {
     //Completes task 88(subscribe), 89(unsubscribe), 90 (event to handle)
     public class GameEvents
