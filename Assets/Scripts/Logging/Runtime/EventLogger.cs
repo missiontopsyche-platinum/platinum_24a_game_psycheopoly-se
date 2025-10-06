@@ -33,20 +33,19 @@ namespace Logging
         }
         public void Error(string message = null, LogCategory category = LogCategory.None, object context = null)
         {
-            Error(message, category, context, null);
+            Log(message, LogLevel.Error, category, context);
         }
         public void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null)
         {
-            Error(message ?? "Exception occurred", category, context, exception);
+            if (!isLoggable(LogLevel.Error, category)) return;
+
+            UnityEngine.Debug.LogException(new System.Exception(FormatMessage(message, LogLevel.Error, category) + $"Exception: \n{exception.Message}", exception), context as UnityEngine.Object);
         }
 
         public void Log(string message = null, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null)
         {
 
             if (!isLoggable(level, category)) return;
-
-            if (string.IsNullOrEmpty(message))
-                message = "None";
 
             switch (level)
             {
@@ -62,32 +61,20 @@ namespace Logging
                 case LogLevel.Warn:
                     UnityEngine.Debug.LogWarning(FormatMessage(message, level, category), context as UnityEngine.Object);
                     break;
+                case LogLevel.Error:
+                    UnityEngine.Debug.LogError(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    break;
                 default:
                     UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
                     break;
             }
         }
 
-        public void Error(string message = null, LogCategory category = LogCategory.None, object context = null, System.Exception exception = null)
-        {
-            var level = LogLevel.Error;
-
-            if (!isLoggable(level, category)) return;
-
-            if (string.IsNullOrEmpty(message))
-                message = "None";
-
-            if (exception != null)
-            {
-                UnityEngine.Debug.LogException(new System.Exception(FormatMessage(message, level, category) + $": { exception.Message}", exception), context as UnityEngine.Object);
-                return;
-            }
-            UnityEngine.Debug.LogError($"{_prefix} [ERROR] [{category}]{message}", context as UnityEngine.Object);
-        }
-
         private bool isLoggable(LogLevel level, LogCategory category)
         {
             if (!Enabled) return false;
+
+            if (!_settings.LoggingEnabled) return false;
 
             if (!_settings.isRunTimeLoggingEnabled())
             {
@@ -105,6 +92,8 @@ namespace Logging
 
         private string FormatMessage(string message, LogLevel level, LogCategory category)
         {
+            if (string.IsNullOrEmpty(message))
+                message = "None";
             return $"{_prefix} [Level: {level}] [Category: {category}] [Message: {message}]";
         }
     }

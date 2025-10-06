@@ -5,6 +5,10 @@ namespace Logging
     [CreateAssetMenu(fileName = "LogSettings", menuName = "Logging/Log Settings")]
     public class LogSettings : ScriptableObject
     {
+        [Header("Master Switch")]
+        [Tooltip("Completely disable all runtime logging when unchecked.")]
+        public bool LoggingEnabled = true;
+
         [Header("Enable by context")]
         public bool EnableInEditorPlaymode = true;
         public bool EnableInDevelopmentBuild = true;
