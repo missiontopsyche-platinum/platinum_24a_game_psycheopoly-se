@@ -19,6 +19,13 @@ namespace PsycheOpoly.Board{
         //Task 89 unsubscribe 
         private void OneDisable()  => GameEvents.PlayerMoved -= OnPlayerMoved;
 
+        //Task 82 create InitializeBoard method 
+        public void InitializeBoard(int size = -1)
+        {
+            if (size <= 0) size = Mathf.Max(3, defaultBoardSize);
+            spaces = new Space[size];
+        }
+
         //Task 90 event handler
         private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
     }
