@@ -61,4 +61,18 @@ public class PlayerManager : MonoBehaviour
             return null;
         }
     }
+
+    /// <summary>
+    /// Returns a List of all Player ScriptableObjects.
+    /// </summary>
+    /// <returns>List of all Player ScriptableObjects</returns>
+    public List<Player> GetAllPlayers()
+    {
+        var playersCopy = new List<Player>();
+        
+        foreach (var player in players)
+            playersCopy.Add(player);
+        
+        return playersCopy;
+    }
 }
