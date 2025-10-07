@@ -5,6 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "GameScripts"
+        "PsycheOpoly.Runtime"
     ],
     "includePlatforms": [
         "Editor"
