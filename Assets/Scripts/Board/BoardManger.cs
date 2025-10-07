@@ -9,6 +9,9 @@ namespace PsycheOpoly.Board{
     {
         [Header("Board Settings")]
         [SerializeField] private int defaultBoardSize = 10; 
+
+        //Task 81 create Space[] array
+        private Space[] spaces;
         
         //Task 88 subscribe 
         private void OnEnable()  => GameEvents.PlayerMoved += OnPlayerMoved; 
