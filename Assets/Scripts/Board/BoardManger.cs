@@ -24,6 +24,13 @@ namespace PsycheOpoly.Board{
         {
             if (size <= 0) size = Mathf.Max(3, defaultBoardSize);
             spaces = new Space[size];
+            
+            //Task 83 which will fill the board with mix of placeholder spaces
+            //This will be changed after final rule confirmation from stakeholder
+            spaces[0] = new GoSpace("Go");
+            for (int i = 1; i < size; i++)
+                spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
+                                         : new PropertySpace($"Property {i}");
         }
 
         //Task 90 event handler
