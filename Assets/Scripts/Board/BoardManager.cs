@@ -5,7 +5,7 @@ using PsycheOpoly.Events;
 
 namespace PsycheOpoly.Board{
 
-    public class BoardManger : MonoBehaviour
+    public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
         [SerializeField] private int defaultBoardSize = 10; 
@@ -20,7 +20,7 @@ namespace PsycheOpoly.Board{
         private void OnEnable()  => GameEvents.PlayerMoved += OnPlayerMoved; 
 
         //Task 89 unsubscribe 
-        private void OneDisable()  => GameEvents.PlayerMoved -= OnPlayerMoved;
+        private void OnDisable()  => GameEvents.PlayerMoved -= OnPlayerMoved;
 
         //Task 82 create InitializeBoard method 
         public void InitializeBoard(int size = -1)
@@ -37,7 +37,7 @@ namespace PsycheOpoly.Board{
         }
 
         //Task 84 which is GetSpace(int) with a wrap around
-        public space GetSpace(int index)
+        public Space GetSpace(int index)
         {
             if (spaces == null || spaces.Length == 0)
                 throw new InvalidOperationException("Board not initialized, call InitializeBoard()");
@@ -82,7 +82,7 @@ namespace PsycheOpoly.Board{
         //Normalizes Index for board spaces
         private int NormalizeIndex(int raw)
         {
-            int n = sapces?.Length ?? 0;
+            int n = spaces?.Length ?? 0;
             if (n == 0) return 0;
             int m = raw % n;
             return (m < 0) ? m + n : m;
