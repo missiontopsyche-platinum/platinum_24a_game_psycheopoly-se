@@ -51,6 +51,15 @@ namespace PsycheOpoly.Board{
             return playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
         }
 
+        //Task 87 MovePlayer and Module wrap
+        public int MovePlayer(int playerID, int spacesToMove)
+        {
+            EnsureBoard();
+            int next = NormalizeIndex(GetPlayerPosition(playerID) + spacesToMove);
+            playerPositions[playerID] = next;
+            return next;
+        }
+
         //Task 90 event handler
         private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
 
