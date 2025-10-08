@@ -13,6 +13,9 @@ namespace PsycheOpoly.Board{
         //Task 81 create Space[] array
         private Space[] spaces;
         
+        //For Testing purposes
+        public int BoardSize => spaces?.Length ?? 0;
+
         //Task 85 player position dictionary
         private readonly Dictionary<int, int> playerPositions = new Dictionary<int, int>();
 
