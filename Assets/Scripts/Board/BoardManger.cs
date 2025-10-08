@@ -33,6 +33,14 @@ namespace PsycheOpoly.Board{
                                          : new PropertySpace($"Property {i}");
         }
 
+        //Task 84 which is GetSpace(int) with a wrap around
+        public space GetSpace(int index)
+        {
+            if (spaces == null || spaces.Length == 0)
+                throw new InvalidOperationException("Board not initialized, call InitializeBoard()");
+            return spaces[NormalizeIndex(index)];
+        }
+
         //Task 90 event handler
         private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
     }
