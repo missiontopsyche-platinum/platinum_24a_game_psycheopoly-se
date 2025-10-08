@@ -44,8 +44,33 @@ namespace PsycheOpoly.Board{
             return spaces[NormalizeIndex(index)];
         }
 
+        //Task 86 GetPlayerPosition(int) method
+        public int GetPlayerPosition(int playerID)
+        {
+            EnsureBoard();
+            return playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
+        }
+
         //Task 90 event handler
         private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
+
+
+        //Helper methods
+        //confirms board is set to default size
+        private void EnsureBoard()
+        {
+            if(spaces == null || spaces.Length == 0)
+                InitializeBoard(defaultBoardSize);
+        }
+
+        //Normalizes Index for board spaces
+        private int NormalizeIndex(int raw)
+        {
+            int n = sapces?.Length ?? 0;
+            if (n == 0) return 0;
+            int m = raw % n;
+            return (m < 0) ? m + n : m;
+        }
     }
 
 }
