@@ -14,6 +14,7 @@ namespace PsycheOpoly.Tests.EditMode
             return go.AddComponent<BoardManager>();
         } 
 
+        //Tests that board is setup properly and has mix of spaces
         [Test]
         public void InitializeBoard_BuildsArray_GoAtZero_HasMix()
         {
