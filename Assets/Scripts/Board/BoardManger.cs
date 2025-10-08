@@ -44,6 +44,13 @@ namespace PsycheOpoly.Board{
             return spaces[NormalizeIndex(index)];
         }
 
+        //Task 96 SetPlayerPosition(int, int) method
+        public void SetPlayerPosition(int playerID, int spaceIndex)
+        {
+            EnsureBoard();
+            playerPositions[playerID] = NormalizeIndex(spaceIndex);
+        }
+
         //Task 86 GetPlayerPosition(int) method
         public int GetPlayerPosition(int playerID)
         {
