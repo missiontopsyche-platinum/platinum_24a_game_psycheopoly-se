@@ -10,6 +10,7 @@ public class Player : ScriptableObject
     //  This is using color32 struct. R/G/B/A setup. This can be adjusted later.
     private Color32 color;
 
+    private int position;
 
     public void SetId(int id)
     {
@@ -49,5 +50,10 @@ public class Player : ScriptableObject
     public Color32 GetColor()
     {
         return this.color;
+    }
+
+    public void SetPosition(int position)
+    {
+        this.position = position;
     }
 }
