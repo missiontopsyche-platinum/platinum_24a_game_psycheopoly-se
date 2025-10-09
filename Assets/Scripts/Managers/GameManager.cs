@@ -1,7 +1,15 @@
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
+    //adding in reference to Enum created in the Data folder - nnastase us11-t33
+    //default setter
+    public GameState State { get; set; } = GameState.None;
+
+    //us11-t36 allows for gamestate change action
+    public event Action<GameState, GameState> GameStateChanged;
+
     // This class is the MonoBehavior for the game manager. This is a place holder until more details are implented later.
 
     // In future, we might want to decouple this reference...
@@ -16,9 +24,10 @@ public class GameManager : MonoBehaviour
     private int currentPlayer = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    //added Initialize by nnastase for us11-t34
     void Start()
     {
-        
+        Initialize();
     }
 
     // Update is called once per frame
@@ -26,6 +35,7 @@ public class GameManager : MonoBehaviour
     {
         
     }
+
 
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
@@ -41,6 +51,10 @@ public class GameManager : MonoBehaviour
         this.playerCount = playerCount;
         currentPlayer = 0;
         playerManager.InitializePlayers(this.playerCount);
+
+        //edited in for us11
+        SetState(GameState.WaitingForTurn);
+
         turnStartedChannel.RaiseEvent(playerManager.GetPlayer(currentPlayer));
     }
 
@@ -48,7 +62,45 @@ public class GameManager : MonoBehaviour
     {
         currentPlayer = (currentPlayer + 1) % playerCount;
         Player current = playerManager.GetPlayer(currentPlayer);
-        
+
         turnStartedChannel.RaiseEvent(current);
+
+    }
+
+    //us11-t34 very basic initializer, just initializing GameState...
+    public void Initialize()
+    {
+        SetState(GameState.Initializing);
+
+        //this is where we should load / create board/players/etc
+
+        //this can be deleted, just displaying options for flow.
+        SetState(GameState.WaitingForTurn);
+        //mini tester
+        Debug.Log("Initialize() successfully called — test passed!");
+
+    }
+
+    //transaction stubs for furutre us11 tskss - nnastase
+    public void StartGame() => SetState(GameState.WaitingForTurn);
+    public void EndGame() => SetState(GameState.GameOver);
+
+
+    //change state event helper us11-t36
+    private void SetState(GameState newState)
+    {
+        //state change checker
+        if (newState == State)
+        {
+            return;
+        }
+
+        //placeholder
+        var old = State;
+        State = newState;
+
+        GameStateChanged?.Invoke(old, newState);
+        //just for testing
+        Debug.Log($"[GameManager] State: {old} > {newState}");
     }
 }
