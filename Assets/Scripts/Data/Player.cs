@@ -35,6 +35,10 @@ public class Player : ScriptableObject
     public void SetMoney(int money)
     {
         this.money = money;
+        if (this.money < 0)
+        {
+            throw new ArgumentException("Money values must always be positive.");
+        }
     }
 
     public int GetMoney()
