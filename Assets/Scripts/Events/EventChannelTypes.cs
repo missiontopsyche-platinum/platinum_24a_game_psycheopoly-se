@@ -12,3 +12,8 @@ public class StringEventChannel : EventChannel<String> {}
 /// </summary>
 [CreateAssetMenu(menuName = "Events/Int Event Channel")]
 public class IntEventChannel : EventChannel<int> {}
+
+/// <summary>
+/// Event channel that passes Player data objects.
+/// </summary>
+public class PlayerEventChannel : EventChannel<Player> { }
