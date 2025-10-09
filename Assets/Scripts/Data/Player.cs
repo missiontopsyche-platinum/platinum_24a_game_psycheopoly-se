@@ -7,6 +7,9 @@ public class Player : ScriptableObject
     private int id;
     private string p_Name;
     private int money;
+    //  This is using color32 struct. R/G/B/A setup. This can be adjusted later.
+    private Color32 color;
+
 
     public void SetId(int id)
     {
@@ -36,5 +39,15 @@ public class Player : ScriptableObject
     public int GetMoney()
     {
         return this.money;
+    }
+
+    pulic void SetColor(Color32 color)
+    {
+        this.color = color;
+    }
+
+    public Color32 GetColor()
+    {
+        return this.color;
     }
 }
