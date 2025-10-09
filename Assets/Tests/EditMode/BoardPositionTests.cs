@@ -33,6 +33,7 @@ namespace PsycheOpoly.Tests.EditMode
         }
 
         //Tests that player is in correct location after a move
+        [Test]
         public void MovePlayer_WrapsMod_PositiveAndNegative()
         {
             var bm = MakeManager(6);

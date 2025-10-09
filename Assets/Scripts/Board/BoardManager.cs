@@ -5,6 +5,7 @@ using PsycheOpoly.Events;
 
 namespace PsycheOpoly.Board{
 
+    [ExecuteAlways]
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
@@ -19,11 +20,28 @@ namespace PsycheOpoly.Board{
         //Task 85 player position dictionary
         private readonly Dictionary<int, int> playerPositions = new Dictionary<int, int>();
 
-        //Task 88 subscribe 
-        private void OnEnable()  => GameEvents.PlayerMoved += OnPlayerMoved; 
+        //Task 88 subscribe and Task 89 unsubscribe 
+        private bool _subscribed;
 
-        //Task 89 unsubscribe 
-        private void OnDisable()  => GameEvents.PlayerMoved -= OnPlayerMoved;
+        private void Awake()     => EnsureSubscribed();
+        private void OnEnable()  => EnsureSubscribed();
+        private void OnDisable() => EnsureUnsubscribed();
+        private void OnDestroy() => EnsureUnsubscribed();
+
+        private void EnsureSubscribed()
+        {
+            if (_subscribed) return;
+            if (!this) return;
+            GameEvents.PlayerMoved += OnPlayerMoved;
+            _subscribed = true;
+        }
+
+        private void EnsureUnsubscribed()
+        {
+            if (!_subscribed) return;
+            GameEvents.PlayerMoved -= OnPlayerMoved;
+            _subscribed = false;
+        }
 
         //Task 82 create InitializeBoard method 
         public void InitializeBoard(int size = -1)
@@ -37,6 +55,8 @@ namespace PsycheOpoly.Board{
             for (int i = 1; i < size; i++)
                 spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
                                          : new PropertySpace($"Property {i}");
+
+            EnsureSubscribed();
         }
 
         //Task 84 which is GetSpace(int) with a wrap around
