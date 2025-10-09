@@ -59,5 +59,14 @@ public class Player : ScriptableObject
     public void SetPosition(int position)
     {
         this.position = position;
+        if (this.position < 0)
+        {
+            throw new ArgumentException("Position values must always be positive.");
+        }
+    }
+
+    public int GetPosition()
+    {
+        return this.position;
     }
 }
