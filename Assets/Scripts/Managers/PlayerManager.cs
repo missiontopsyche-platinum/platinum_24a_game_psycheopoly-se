@@ -25,6 +25,10 @@ public class PlayerManager : MonoBehaviour
     /// <param name="numPlayers">Number of players to initialize</param>
     public void InitializePlayers(int numPlayers)
     {
+        players.Clear();  //prevent duplicates when starting new game
+        int startingMoney = 1500; //Amount based on normal Monopoly game
+        int startingPosition = 0; //GO
+
         for (int i = 0; i < numPlayers; i++)
         {
             // I think making the Player a scriptable object is the wrong move,
@@ -39,8 +43,30 @@ public class PlayerManager : MonoBehaviour
             // doing i+1 so that the name is Player 1, 2, 3, etc.
             newPlayer.SetPName($"Player {i+1}");
             // setting money should be done somewhere else, I think...
+            //dzadroga - added basic setting money here, can change after we set up 
+            //System to track money, but might be easiest to set cash here to make
+            //sure it happens each time, we can definitely move it as we get futher along
+            newPlayer.SetMoney(startingMoney);
+            newPlayer.SetPosition(startingPosition);
+
+            //Defaults added for monoploy
+            newPlayer.SetInJail(false);
+            newPlayer.SetJailTurns(0);
+            newPlayer.SetDoublesInRow(0);
+
+            //The other basic card initialization as well as basic property tracking 
+            //could be set up here as we continue to develop game.
+            //Just adding these as a placeholder for the starting points the system can 
+            //build on as we develop.  
+            //examples
+            // newPlayer.SetGetOutOfJailFree_Chance(0);
+            // newPlayer.SetGetOutOfJailFree_Community(0);
+            // newPlayer.ClearOwnedProperties();
             
             players.Add(newPlayer);
+
+            //Log confirmation
+            Debug.Log($"Initialized {newPlayer.GetPName()} with ${newPlayer.GetMoney()}.");
         }
     }
 
