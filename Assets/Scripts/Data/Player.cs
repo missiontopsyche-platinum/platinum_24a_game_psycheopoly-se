@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
@@ -46,7 +47,7 @@ public class Player : ScriptableObject
         return this.money;
     }
 
-    pulic void SetColor(Color32 color)
+    public void SetColor(Color32 color)
     {
         this.color = color;
     }
