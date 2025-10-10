@@ -1,7 +1,18 @@
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
+    //adding in reference to Enum created in the Data folder - nnastase us11-t33
+    //default setter
+    public GameState State { get; set; } = GameState.None;
+
+    //us11-t41 keep one instance of a gamemanager at a time for security
+    public static GameManager Instance { get; private set; }
+
+    //us11-t36 allows for gamestate change action
+    public event Action<GameState, GameState> GameStateChanged;
+
     // This class is the MonoBehavior for the game manager. This is a place holder until more details are implented later.
 
     // In future, we might want to decouple this reference...
@@ -15,17 +26,53 @@ public class GameManager : MonoBehaviour
     private int playerCount = 0;
     private int currentPlayer = 0;
 
+    //us11t41 duplicate prevention with Awake() method
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            //basically if we recognize an instance of a game that isn't the one in use, end it
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        //keeps game object
+        DontDestroyOnLoad(gameObject);
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    //added Initialize by nnastase for us11-t34
     void Start()
     {
-        
     }
+
+    //start & end game to satisfy us11-35
+    //pasing player count for now.
+    public void StartGame(int playerCount)
+    {
+        if (State != GameState.None && State != GameState.GameOver)
+        {
+            Debug.LogWarning($"[GameManager] is unable to start game from state: {State}");
+            return;
+        }
+
+        Initialize();
+        SetUpGame(playerCount);
+    }
+
+    public void EndGame()
+    {
+        SetState(GameState.GameOver);
+    }
+
 
     // Update is called once per frame
     void Update()
     {
         
     }
+
 
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
@@ -41,6 +88,10 @@ public class GameManager : MonoBehaviour
         this.playerCount = playerCount;
         currentPlayer = 0;
         playerManager.InitializePlayers(this.playerCount);
+
+        //edited in for us11
+        SetState(GameState.WaitingForTurn);
+
         turnStartedChannel.RaiseEvent(playerManager.GetPlayer(currentPlayer));
     }
 
@@ -48,7 +99,77 @@ public class GameManager : MonoBehaviour
     {
         currentPlayer = (currentPlayer + 1) % playerCount;
         Player current = playerManager.GetPlayer(currentPlayer);
-        
+
         turnStartedChannel.RaiseEvent(current);
+
     }
+
+    //us11-t34 very basic initializer, just initializing GameState...
+    public void Initialize()
+    {
+        SetState(GameState.Initializing);
+
+        //this is where we should load / create board/players/etc
+        //mini tester
+        Debug.Log("Initialize() successfully called — test passed!");
+
+    }
+
+    //transaction stubs for furutre us11 tskss - nnastase
+    //public void StartGame() => SetState(GameState.WaitingForTurn);
+    //public void EndGame() => SetState(GameState.GameOver);
+
+    //us11t35
+    //here we are looking to have a method that allows for valid state transitions for enums
+    private bool CanTransition(GameState from, GameState to)
+    {
+        //our game start transition options
+        if (from == GameState.None && to == GameState.Initializing) return true;
+
+        if (from == GameState.Initializing && to == GameState.WaitingForTurn) return true;
+
+        //turn cycling transitin options
+        if (from == GameState.WaitingForTurn && to == GameState.PlayerTurn) return true;
+        if (from == GameState.PlayerTurn && to == GameState.BotTurn) return true;
+        if (from == GameState.BotTurn && to == GameState.WaitingForTurn) return true;
+
+        //end of game and restart transitions options
+        //further code will dictate if these transitions are met (for game oveer)
+        if (from == GameState.PlayerTurn && to == GameState.GameOver) return true;
+        if (from == GameState.BotTurn && to == GameState.GameOver) return true;
+        if (from == GameState.WaitingForTurn && to == GameState.GameOver) return true;
+
+        if (from == GameState.GameOver && to == GameState.Initializing) return true;
+
+        return false;
+    }
+
+
+    //change state event helper us11-t36
+    private void SetState(GameState newState)
+    {
+        //state change checker
+        if (newState == State)
+        {
+            return;
+        }
+
+        //us11-t35 introduce state transition options
+        if (!CanTransition(State, newState))
+        {
+            Debug.LogWarning($"[Game Manager] transition not allowed from : {State} to {newState}");
+
+            return;
+        }
+
+        //placeholder
+        var old = State;
+        State = newState;
+
+        GameStateChanged?.Invoke(old, newState);
+        //just for testing
+        Debug.Log($"[GameManager] State: {old} > {newState}");
+    }
+
+    
 }
