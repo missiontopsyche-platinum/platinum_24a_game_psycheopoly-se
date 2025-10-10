@@ -7,6 +7,9 @@ public class GameManager : MonoBehaviour
     //default setter
     public GameState State { get; set; } = GameState.None;
 
+    //us11-t41 keep one instance of a gamemanager at a time for security
+    public static GameManager Instance { get; private set; }
+
     //us11-t36 allows for gamestate change action
     public event Action<GameState, GameState> GameStateChanged;
 
@@ -22,6 +25,21 @@ public class GameManager : MonoBehaviour
 
     private int playerCount = 0;
     private int currentPlayer = 0;
+
+    //us11t41 duplicate prevention with Awake() method
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            //basically if we recognize an instance of a game that isn't the one in use, end it
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        //keeps game object
+        DontDestroyOnLoad(gameObject);
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     //added Initialize by nnastase for us11-t34
@@ -103,4 +121,6 @@ public class GameManager : MonoBehaviour
         //just for testing
         Debug.Log($"[GameManager] State: {old} > {newState}");
     }
+
+    
 }
