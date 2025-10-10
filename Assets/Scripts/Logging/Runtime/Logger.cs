@@ -27,83 +27,83 @@ namespace Logging
         // param level - The severity level of the log message. Defaults to LogLevel.Info.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Log(string message, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null)
+        public static void Log(LogEvent logEvent)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Log(message, level, category, context);
+            EventLogger.Log(logEvent.EventName, logEvent.Message, logEvent.Level, logEvent.Category, logEvent.Context);
         }
         // Logs a diagnostic message at the Trace level.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Trace(string message, LogCategory category = LogCategory.None, object context = null)
+        public static void Trace(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Trace(message, category, context);
+            EventLogger.Trace(eventName, message, category, context);
         }
         // Logs a debug message at the Debug level.
         // Used for development time debugging and tracing execution flow.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Debug(string message, LogCategory category = LogCategory.None, object context = null)
+        public static void Debug(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Debug(message, category, context);
+            EventLogger.Debug(eventName, message, category, context);
         }
         // Logs an informational message at the Info level.
         // Used for general state changes, events, and progress updates.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Info(string message, LogCategory category = LogCategory.None, object context = null)
+        public static void Info(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Info(message, category, context);
+            EventLogger.Info(eventName, message, category, context);
         }
         // Logs a warning message at the Warn level.
         // Used for recoverable issues and potential problems.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Warn(string message, LogCategory category = LogCategory.None, object context = null)
+        public static void Warn(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Warn(message, category, context);
+            EventLogger.Warn(eventName, message, category, context);
         }
         // Logs an error using Unity's Debug.LogError.
         // Used for serious issues that require attention.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Error(string message, LogCategory category = LogCategory.None, object context = null)
+        public static void Error(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Error(message, category, context);
+            EventLogger.Error(eventName, message, category, context);
         }
         // Logs an exception using Unity's Debug.LogException.
         // A message can be provided for additional context.
@@ -111,14 +111,14 @@ namespace Logging
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param message - The message to log. Defaults to null.
         // param context - Optional context object for the log. Defaults to null.
-        public static void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null)
+        public static void Exception(string eventName, System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null)
         {
             if (EventLogger == null)
             {
                 UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
                 return;
             }
-            EventLogger.Exception(exception, category, message, context);
+            EventLogger.Exception(exception, eventName, category, message, context);
         }
     }
 }

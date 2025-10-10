@@ -25,6 +25,6 @@ public class LogHook : MonoBehaviour
             (logEvent.Category == LogCategory.None || (logCategory & logEvent.Category) == 0))
             return;
 
-        Logging.Logger.Log(logEvent.Message, logEvent.Level, logEvent.Category, logEvent.Context);
+        Logging.Logger.Log(logEvent);
     }
 }

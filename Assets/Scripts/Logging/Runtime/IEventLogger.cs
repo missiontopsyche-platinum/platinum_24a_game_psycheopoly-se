@@ -54,12 +54,14 @@ namespace Logging
     {
         public LogLevel Level { get; }
         public LogCategory Category { get; }
+        public string EventName { get; }
         public string Message { get; }
         public Object Context { get; }
-        public LogEvent(LogLevel level, LogCategory category, string message, Object context = null)
+        public LogEvent(string eventName, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, string message = null, Object context = null)
         {
             Level = level;
             Category = category;
+            EventName = eventName;
             Message = message;
             Context = context;
         }
@@ -80,42 +82,42 @@ namespace Logging
         // param level - The severity level of the log message. Defaults to LogLevel.Info.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        public void Log(string message, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null);
+        public void Log(string eventName, string message, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null);
         // Logs a diagnostic message at the Trace level.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        void Trace(string message, LogCategory category = LogCategory.None, object context = null);
+        void Trace(string eventName, string message, LogCategory category = LogCategory.None, object context = null);
         // Logs a debug message at the Debug level.
         // Used for development time debugging and tracing execution flow.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        void Debug(string message, LogCategory category = LogCategory.None, object context = null);
+        void Debug(string eventName, string message, LogCategory category = LogCategory.None, object context = null);
         // Logs an informational message at the Info level.
         // Used for general state changes, events, and progress updates.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        void Info(string message, LogCategory category = LogCategory.None, object context = null);
+        void Info(string eventName, string message, LogCategory category = LogCategory.None, object context = null);
         // Logs a warning message at the Warn level.
         // Used for recoverable issues and potential problems.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        void Warn(string message, LogCategory category = LogCategory.None, object context = null);
+        void Warn(string eventName, string message, LogCategory category = LogCategory.None, object context = null);
         // Logs an error using Unity's Debug.LogError.
         // Used for serious issues that require attention.
         // param message - The message to log. Defaults to null.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param context - Optional context object for the log. Defaults to null.
-        void Error(string message, LogCategory category = LogCategory.None, object context = null);
+        void Error(string eventName, string message, LogCategory category = LogCategory.None, object context = null);
         // Logs an exception using Unity's Debug.LogException.
         // A message can be provided for additional context.
         // param exception - The exception object to be logged.
         // param category - The category of the log message. Defaults to LogCategory.None.
         // param message - The message to log. Defaults to null.
         // param context - Optional context object for the log. Defaults to null.
-        void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null);
+        void Exception(System.Exception exception, string eventName, LogCategory category = LogCategory.None, string message = null, object context = null);
     }
 }

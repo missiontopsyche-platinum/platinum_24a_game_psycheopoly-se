@@ -15,34 +15,34 @@ namespace Logging
             _prefix = prefix;
         }
 
-        public void Trace(string message = null, LogCategory category = LogCategory.None, object context = null)
+        public void Trace(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
-            Log(message, LogLevel.Trace, category, context);
+            Log(eventName, message, LogLevel.Trace, category, context);
         }
-        public void Debug(string message = null, LogCategory category = LogCategory.None, object context = null)
+        public void Debug(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
-            Log(message, LogLevel.Debug, category, context);
+            Log(eventName, message, LogLevel.Debug, category, context);
         }
-        public void Info(string message = null, LogCategory category = LogCategory.None, object context = null)
+        public void Info(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
-            Log(message, LogLevel.Info, category, context);
+            Log(eventName, message, LogLevel.Info, category, context);
         }
-        public void Warn(string message = null, LogCategory category = LogCategory.None, object context = null)
+        public void Warn(string eventName, string message, LogCategory category = LogCategory.None, object context = null)
         {
-            Log(message, LogLevel.Warn, category, context);
+            Log(eventName, message, LogLevel.Warn, category, context);
         }
-        public void Error(string message = null, LogCategory category = LogCategory.None, object context = null)
+        public void Error(string eventName, string message = null, LogCategory category = LogCategory.None, object context = null)
         {
-            Log(message, LogLevel.Error, category, context);
+            Log(eventName, message, LogLevel.Error, category, context);
         }
-        public void Exception(System.Exception exception, LogCategory category = LogCategory.None, string message = null, object context = null)
+        public void Exception(System.Exception exception, string eventName, LogCategory category = LogCategory.None, string message = null, object context = null)
         {
             if (!isLoggable(LogLevel.Error, category)) return;
 
-            UnityEngine.Debug.LogException(new System.Exception(FormatMessage(message, LogLevel.Error, category) + $"Exception: \n{exception.Message}", exception), context as UnityEngine.Object);
+            UnityEngine.Debug.LogException(new System.Exception(FormatMessage(eventName, LogLevel.Error, category, message) + $"Exception: \n{exception.Message}", exception), context as UnityEngine.Object);
         }
 
-        public void Log(string message = null, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null)
+        public void Log(string eventName, string message, LogLevel level = LogLevel.Info, LogCategory category = LogCategory.None, object context = null)
         {
 
             if (!isLoggable(level, category)) return;
@@ -50,22 +50,22 @@ namespace Logging
             switch (level)
             {
                 case LogLevel.Trace:
-                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    UnityEngine.Debug.Log(FormatMessage(eventName, level, category, message), context as UnityEngine.Object);
                     break;
                 case LogLevel.Debug:
-                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    UnityEngine.Debug.Log(FormatMessage(eventName, level, category, message), context as UnityEngine.Object);
                     break;
                 case LogLevel.Info:
-                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    UnityEngine.Debug.Log(FormatMessage(eventName, level, category, message), context as UnityEngine.Object);
                     break;
                 case LogLevel.Warn:
-                    UnityEngine.Debug.LogWarning(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    UnityEngine.Debug.LogWarning(FormatMessage(eventName, level, category, message), context as UnityEngine.Object);
                     break;
                 case LogLevel.Error:
-                    UnityEngine.Debug.LogError(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    UnityEngine.Debug.LogError(FormatMessage(eventName, level, category, message), context as UnityEngine.Object);
                     break;
                 default:
-                    UnityEngine.Debug.Log(FormatMessage(message, level, category), context as UnityEngine.Object);
+                    UnityEngine.Debug.Log(FormatMessage(eventName, level, category, message), context as UnityEngine.Object);
                     break;
             }
         }
@@ -90,11 +90,11 @@ namespace Logging
             return (_settings.EnabledCategories & category) != 0;
         }
 
-        private string FormatMessage(string message, LogLevel level, LogCategory category)
+        private string FormatMessage(string eventName, LogLevel level, LogCategory category, string message = null)
         {
             if (string.IsNullOrEmpty(message))
                 message = "None";
-            return $"{_prefix} [Level: {level}] [Category: {category}] [Message: {message}]";
+            return $"{_prefix} [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
         }
     }
 }

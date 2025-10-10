@@ -162,22 +162,22 @@ namespace Tests.Logging
             switch (level)
             {
                 case LogLevel.Trace:
-                    _logger.Trace(msg, cat, this);
+                    _logger.Trace("Test Event", msg, cat, this);
                     break;
                 case LogLevel.Debug:
-                    _logger.Debug(msg, cat, this);
+                    _logger.Debug("Test Event", msg, cat, this);
                     break;
                 case LogLevel.Info:
-                    _logger.Info(msg, cat, this);
+                    _logger.Info("Test Event", msg, cat, this);
                     break;
                 case LogLevel.Warn:
-                    _logger.Warn(msg, cat, this);
+                    _logger.Warn("Test Event", msg, cat, this);
                     break;
                 case LogLevel.Error:
-                    _logger.Error(msg, cat, this);
+                    _logger.Error("Test Event", msg, cat, this);
                     break;
                 default:
-                    _logger.Exception(ex, cat, msg, this);
+                    _logger.Exception(ex, "Test Event", cat, msg, this);
                     break;
             }
         }
