@@ -89,22 +89,28 @@ What it actually does:
 #### Emitting log events
 
 - From gameplay scripts that have a reference to the channel:
+  ```
+  using UnityEngine;
+  using Logging;
 
-```
-public LogEventChannel Channel; // assign in inspector
+  public class LoggerBootstrap : MonoBehaviour
+  {
+      [SerializeField] private LogSettings logSettings;
+      [SerializeField] private string prefix = "PsycheOpoly";
 
-    void OnPurchase()
-    {
-        Channel.RaiseEvent(new LogEvent(
-            eventName: "purchase",
-            level: LogLevel.Info,
-            category: LogCategory.Economy,
-            message: "Sword x1",
-            context: this
-        ));
-        // More Logic...
-    }
-```
+      private void Awake()
+      {
+          if (logSettings == null)
+          {
+              Debug.LogWarning("Assign a LogSettings asset.");
+              return;
+          }
+          Logger.Initialize(logSettings, prefix); // required before Logger.Log(...)
+      }
+  }
+  ```
+- Logger.Initialize wires the LogSettings into the logger facade.
+    - LogSettings is a ScriptableObject asset you can tweak from the Inspector LogSettings.
 
 ## Filtering
 
