@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-//us103-task121 interface building to define methods with subscription listeners
+//us103-task121 interface building to define methods with subscription listeners 
 public interface IPlayerLifecycleListener
 {
 
@@ -87,5 +87,20 @@ public class PlayerManager : MonoBehaviour
             playersCopy.Add(player);
         
         return playersCopy;
+    }
+
+    //subscribe for us103-task121
+    public void Subscribe(IPlayerLifecycleListener listener)
+    {
+        //reference to this class, and interface from above
+        OnPlayerAdded += listener.HandlePlayerAdded;
+
+        OnPlayerRemoved += listener.HandlePlayerRemoved;
+    }
+
+    public void Unsubscribe(IPlayerLifecycleListener listener)
+    {
+        OnPlayerAdded -= listener.HandlePlayerAdded;
+        OnPlayerRemoved -= listener.HandlePlayerRemoved;
     }
 }
