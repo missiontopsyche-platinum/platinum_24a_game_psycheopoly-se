@@ -1,9 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class PlayerManager : MonoBehaviour
 {
     private List<Player> players = new List<Player>();
+    //adding for US-103t119, just adding the event fields now, will do the actual make
+    // them functional later on in the us
+    public event Action<int, string> OnPlayerAdded;
+    public event Action<int> OnPlayerRemoved;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
