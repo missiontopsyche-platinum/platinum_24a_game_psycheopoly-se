@@ -54,6 +54,10 @@ public class PlayerManager : MonoBehaviour
             // setting money should be done somewhere else, I think...
             
             players.Add(newPlayer);
+
+            //testing used for us103-t123
+            Debug.Log($"[PlayerManager] has added '{newPlayer.GetPName()}' (id={i}) during initialization.");
+            OnPlayerAdded?.Invoke(i, newPlayer.GetPName());
         }
     }
 
