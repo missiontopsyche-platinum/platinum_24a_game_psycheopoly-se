@@ -2,6 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+//us103-task121 interface building to define methods with subscription listeners
+public interface IPlayerLifecycleListener
+{
+
+    void HandlePlayerAdded(int playerId, string name);
+    void HandlePlayerRemoved(int playerId);
+}
+
 public class PlayerManager : MonoBehaviour
 {
     private List<Player> players = new List<Player>();
