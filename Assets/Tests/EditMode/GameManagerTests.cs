@@ -6,7 +6,7 @@ namespace Tests.EditMode
 {
     public class GameManagerTests
     {
-        private EventChannel<Player> turnStartedChannel;
+        private PlayerEventChannel turnStartedChannel;
         private int callbackCount;
         private Player lastReceivedPlayer;
 
