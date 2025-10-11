@@ -18,7 +18,7 @@ namespace Tests.EditMode
             gameObject = new GameObject("PM_TestHost");
             playerManager = gameObject.AddComponent<PlayerManager>();
             playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerRemovedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             playerManager.playerAddedEventChannel = playerAddedChannel;
             playerManager.playerRemovedEventChannel = playerRemovedChannel;
         }
