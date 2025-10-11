@@ -103,4 +103,35 @@ public class PlayerManager : MonoBehaviour
         OnPlayerAdded -= listener.HandlePlayerAdded;
         OnPlayerRemoved -= listener.HandlePlayerRemoved;
     }
+
+
+    //us103task122: create removal behavior to allow players to be removed from game start
+    public bool RemovePlayer(int playerId)
+    {
+        //player checker first
+        if (playerId < 0 || playerId >= players.Count)
+        {
+            Debug.LogWarning($"[PlayerManager] RemovePlayer functionality invalid id={playerId}. No action.");
+
+            return false;
+        }
+
+
+
+        players.RemoveAt(playerId);
+
+        //id == list index from GetPlayer functionality
+        for (int i = playerId; i < players.Count; i++)
+        {
+            players[i].SetId(i);
+        }
+
+        Debug.Log($"[PlayerManager] removed player with id={playerId}.");
+
+        OnPlayerRemoved?.Invoke(playerId);
+        return true;
+    }
+
+
+
 }
