@@ -1,22 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-
-//us103-task121 interface building to define methods with subscription listeners 
-public interface IPlayerLifecycleListener
-{
-
-    void HandlePlayerAdded(int playerId, string name);
-    void HandlePlayerRemoved(int playerId);
-}
 
 public class PlayerManager : MonoBehaviour
 {
+    [Header("Event Channels")]
+    [SerializeField]
+    public PlayerEventChannel playerAddedEventChannel;
+    [SerializeField]
+    public PlayerEventChannel playerRemovedEventChannel;
+    
     private List<Player> players = new List<Player>();
-    //adding for US-103t119, just adding the event fields now, will do the actual make
-    // them functional later on in the us
-    public event Action<int, string> OnPlayerAdded;
-    public event Action<int> OnPlayerRemoved;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -57,7 +50,7 @@ public class PlayerManager : MonoBehaviour
 
             //testing used for us103-t123
             Debug.Log($"[PlayerManager] has added '{newPlayer.GetPName()}' (id={i}) during initialization.");
-            OnPlayerAdded?.Invoke(i, newPlayer.GetPName());
+            playerAddedEventChannel.RaiseEvent(newPlayer);
         }
     }
 
@@ -93,22 +86,6 @@ public class PlayerManager : MonoBehaviour
         return playersCopy;
     }
 
-    //subscribe for us103-task121
-    public void Subscribe(IPlayerLifecycleListener listener)
-    {
-        //reference to this class, and interface from above
-        OnPlayerAdded += listener.HandlePlayerAdded;
-
-        OnPlayerRemoved += listener.HandlePlayerRemoved;
-    }
-
-    public void Unsubscribe(IPlayerLifecycleListener listener)
-    {
-        OnPlayerAdded -= listener.HandlePlayerAdded;
-        OnPlayerRemoved -= listener.HandlePlayerRemoved;
-    }
-
-
     //us103task122: create removal behavior to allow players to be removed from game start
     public bool RemovePlayer(int playerId)
     {
@@ -120,8 +97,7 @@ public class PlayerManager : MonoBehaviour
             return false;
         }
 
-
-
+        Player removedPlayer = players[playerId];
         players.RemoveAt(playerId);
 
         //id == list index from GetPlayer functionality
@@ -132,7 +108,7 @@ public class PlayerManager : MonoBehaviour
 
         Debug.Log($"[PlayerManager] removed player with id={playerId}.");
 
-        OnPlayerRemoved?.Invoke(playerId);
+        playerRemovedEventChannel.RaiseEvent(removedPlayer);
         return true;
     }
 

@@ -8,15 +8,18 @@ namespace Tests.EditMode
 
         private GameObject gameObject;
         private PlayerManager playerManager;
+        private PlayerEventChannel playerAddedChannel;
+        private PlayerEventChannel playerRemovedChannel;
 
         [SetUp]
         public void Setup()
         {
             gameObject = new GameObject("PM_TestHost");
-
             playerManager = gameObject.AddComponent<PlayerManager>();
-
-
+            playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerRemovedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerManager.playerAddedEventChannel = playerAddedChannel;
+            playerManager.playerRemovedEventChannel = playerRemovedChannel;
         }
 
         [TearDown]
@@ -24,20 +27,22 @@ namespace Tests.EditMode
         {
             Object.DestroyImmediate(gameObject);
         }
-
-
-
-
+        
         //verify each new player is recognized
         [Test]
         public void InitializePlayers_Raises_OnPlayerAdded_ForEach_NewPlayer()
         {
-            int calls = 0;
-            playerManager.OnPlayerAdded += (_, __) => calls++;
+            int callbackCount = 0;
 
+            void Listener(Player player)
+            {
+                callbackCount++;
+            }
+
+            playerAddedChannel.Subscribe(Listener);
             playerManager.InitializePlayers(3);
 
-            Assert.AreEqual(3, calls);
+            Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(3, playerManager.GetAllPlayers().Count);
             Assert.AreEqual("Player 1", playerManager.GetPlayer(0).GetPName());
 
@@ -50,12 +55,15 @@ namespace Tests.EditMode
         [Test]
         public void RemovePlayer_Raises_OnPlayerRemoved_And_Reindexes()
         {
-            playerManager.InitializePlayers(3);
-
-
             int removedId = -1;
-            playerManager.OnPlayerRemoved += id => removedId = id;
-
+            void Listener(Player player)
+            {
+                removedId = player.GetId();
+            }
+            
+            playerRemovedChannel.Subscribe(Listener);
+            
+            playerManager.InitializePlayers(3);
             bool ok = playerManager.RemovePlayer(1);
 
             Assert.IsTrue(ok);
@@ -70,17 +78,20 @@ namespace Tests.EditMode
         [Test]
         public void Remove_InvalidId_DoesNotRaiseEvent()
         {
+            int callbackCount = 0;
 
+            void Listener(Player player)
+            {
+                callbackCount++;
+            }
+            
+            playerRemovedChannel.Subscribe(Listener);
+            
             playerManager.InitializePlayers(1);
-            int calls = 0;
-
-
-            playerManager.OnPlayerRemoved += _ => calls++;
-
             bool ok = playerManager.RemovePlayer(99);
 
             Assert.IsFalse(ok);
-            Assert.AreEqual(0, calls);
+            Assert.AreEqual(0, callbackCount);
             Assert.AreEqual(1, playerManager.GetAllPlayers().Count);
 
         }

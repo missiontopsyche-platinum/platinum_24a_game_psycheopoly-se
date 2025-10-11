@@ -16,6 +16,7 @@ namespace Tests.EditMode
         {
             gameObject = new GameObject("GM_Transition_Test");
             gameManager = gameObject.AddComponent<GameManager>();
+            gameManager.gameStateChangeChannel = ScriptableObject.CreateInstance<GameStateEventChannel>();
         }
 
         [TearDown]
