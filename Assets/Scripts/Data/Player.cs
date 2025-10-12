@@ -34,11 +34,12 @@ public class Player : ScriptableObject
 
     public void SetMoney(int money)
     {
-        this.money = money;
         if (this.money < 0)
         {
             throw new System.ArgumentException("Money values must always be positive.");
         }
+        this.money = money;
+        
     }
 
     public int GetMoney()
@@ -58,11 +59,12 @@ public class Player : ScriptableObject
 
     public void SetPosition(int position)
     {
-        this.position = position;
         if (this.position < 0)
         {
             throw new System.ArgumentException("Position values must always be positive.");
         }
+        this.position = position;
+        
     }
 
     public int GetPosition()
