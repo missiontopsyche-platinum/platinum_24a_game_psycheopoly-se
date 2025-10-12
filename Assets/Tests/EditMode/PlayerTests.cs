@@ -45,5 +45,12 @@ namespace Tests.EditMode
             Assert.Throws<System.ArgumentException>(() => 
                 player.SetMoney(-100));
         }
+
+        [Test]
+        public void Player_ThrowsPositionError()
+        {
+            Assert.Throws<System.ArgumentException>(() =>
+                player.SetPosition(-100));
+        }
     }
 }
