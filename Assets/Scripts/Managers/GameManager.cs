@@ -55,6 +55,27 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+
+    //Task 112 which is a guarded transition API
+    public bool TryChangeState(GameState newState)
+    {
+        if (newState == State) return false;
+        if (!Allowed.TryGetValue(State, out var nexts) || !nexts.Contains(newState))
+        {
+            Debug.LogWarning($"[GameManager] Illegal transition: {State} -> {newState}");
+            return false;
+        }
+
+        var old = State;
+        State = newState;
+
+        //C# event
+        GameStateChanged?.Invoke(old, newState);
+  
+        Debug.Log($"[GameManager] State: {old} -> {newState}");
+        return true;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     //added Initialize by nnastase for us11-t34
     void Start()
