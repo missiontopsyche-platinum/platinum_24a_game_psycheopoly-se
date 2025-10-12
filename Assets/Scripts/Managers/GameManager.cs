@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -25,6 +27,18 @@ public class GameManager : MonoBehaviour
 
     private int playerCount = 0;
     private int currentPlayer = 0;
+
+
+    // Task 111 legal state transition map
+    private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
+    {
+        { GameState.None,            new HashSet<GameState>{ GameState.Initializing } },
+        { GameState.Initializing,    new HashSet<GameState>{ GameState.WaitingForTurn } },
+        { GameState.WaitingForTurn,  new HashSet<GameState>{ GameState.PlayerTurn, GameState.GameOver } },
+        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.BotTurn, GameState.GameOver } },
+        { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
+        { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
+    };
 
     //us11t41 duplicate prevention with Awake() method
     private void Awake()
@@ -111,7 +125,7 @@ public class GameManager : MonoBehaviour
 
         //this is where we should load / create board/players/etc
         //mini tester
-        Debug.Log("Initialize() successfully called — test passed!");
+        Debug.Log("Initialize() successfully called ï¿½ test passed!");
 
     }
 
