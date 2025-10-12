@@ -11,7 +11,8 @@ public class Player : ScriptableObject
     [SerializeField]  private Color32 color;
 
     [SerializeField] private int position;
-
+    
+    // Getter and Setter methods
     public void SetId(int id)
     {
         this.id = id;
