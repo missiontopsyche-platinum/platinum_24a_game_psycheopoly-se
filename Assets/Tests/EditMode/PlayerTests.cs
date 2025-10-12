@@ -13,7 +13,7 @@ namespace Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            player = new Player();
+            player = ScriptableObject.CreateInstance<Player>();
         }
 
         [TearDown]
@@ -37,6 +37,13 @@ namespace Tests.EditMode
             Assert.AreEqual(100, player.GetMoney());
             Assert.AreEqual(testColor, player.GetColor());
             Assert.AreEqual(1, player.GetPosition());
+        }
+
+        [Test]
+        public void Player_ThrowsMoneyError()
+        {
+            Assert.Throws<System.ArgumentException>(() => 
+                player.SetMoney(-100));
         }
     }
 }
