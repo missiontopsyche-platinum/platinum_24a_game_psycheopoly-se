@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     //default setter
     public GameState State { get; set; } = GameState.None;
 
+    //Added for task 113 to trach game state chance event channels
+    [SerializeField] public GameStateChangeEventChannel gameStateChangedChannel;
+
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager Instance { get; private set; }
 
@@ -71,7 +74,14 @@ public class GameManager : MonoBehaviour
 
         //C# event
         GameStateChanged?.Invoke(old, newState);
-  
+
+        //Completes task 113, this can be changed as we get futher along in development
+        //An asset can be added and connected here, right now nothying is publishing to a channel
+        //I added what could be included in this statement as a comment. 
+        if (gameStateChangedChannel != null)
+            //gameStateChangedChannel.RaiseEvent(new GameStateChange(old, newState));
+            GameManager.Instance.GameStateChanged += (oldS, newS) => Debug.Log($"{oldS} -> {newS}");
+
         Debug.Log($"[GameManager] State: {old} -> {newState}");
         return true;
     }
