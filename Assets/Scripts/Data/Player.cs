@@ -5,14 +5,15 @@ using UnityEngine;
 public class Player : ScriptableObject
 {
     //Private variables
-    private int id;
-    private string p_Name;
-    private int money;
+    [SerializeField] private int id;
+    [SerializeField] private string p_Name;
+    [SerializeField] private int money;
     //  This is using color32 struct. R/G/B/A setup. This can be adjusted later.
-    private Color32 color;
+    [SerializeField]  private Color32 color;
 
-    private int position;
-
+    [SerializeField] private int position;
+    
+    // Getter and Setter methods
     public void SetId(int id)
     {
         this.id = id;
@@ -35,11 +36,12 @@ public class Player : ScriptableObject
 
     public void SetMoney(int money)
     {
-        this.money = money;
-        if (this.money < 0)
+        if (money < 0)
         {
-            throw new ArgumentException("Money values must always be positive.");
+            throw new System.ArgumentException("Money values must always be positive.");
         }
+        this.money = money;
+        
     }
 
     public int GetMoney()
@@ -59,11 +61,12 @@ public class Player : ScriptableObject
 
     public void SetPosition(int position)
     {
-        this.position = position;
-        if (this.position < 0)
+        if (position < 0)
         {
-            throw new ArgumentException("Position values must always be positive.");
+            throw new System.ArgumentException("Position values must always be positive.");
         }
+        this.position = position;
+        
     }
 
     public int GetPosition()
