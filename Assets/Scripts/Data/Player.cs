@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System;  
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ public class Player : ScriptableObject
     private int money;
     private int position = 0;
 
-
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
     private bool inJail;
@@ -22,6 +22,8 @@ public class Player : ScriptableObject
     private int getOutOfJailFree_Community;
     private List<int> ownedProperties = new();
 
+    //  This is using color32 struct. R/G/B/A setup. This can be adjusted later.
+    private Color32 color;
 
     public void SetId(int id)
     {
@@ -50,6 +52,10 @@ public class Player : ScriptableObject
             throw new ArgumentException("Money cannot be negative yet...");
         }
         this.money = money;
+        if (this.money < 0)
+        {
+            throw new ArgumentException("Money values must always be positive.");
+        }
     }
 
     public int GetMoney()
@@ -60,12 +66,6 @@ public class Player : ScriptableObject
     //Task 120 Initializing player
     //Basic getters and setters, more logic will have to be added as game
     //continues to be developed and once final confirmation on ruleset
-    public void SetPosition(int pos) { }
-    public int GetPosition() 
-    { 
-        return position; 
-    }
-
     public void SetInJail(bool jail) { }
     public bool GetInJail() 
     { 
@@ -107,4 +107,27 @@ public class Player : ScriptableObject
     public void UnmortgageProperty(int propertyIndex) { }
 
 
+    public void SetColor(Color32 color)
+    {
+        this.color = color;
+    }
+
+    public Color32 GetColor()
+    {
+        return this.color;
+    }
+
+    public void SetPosition(int position)
+    {
+        this.position = position;
+        if (this.position < 0)
+        {
+            throw new ArgumentException("Position values must always be positive.");
+        }
+    }
+
+    public int GetPosition()
+    {
+        return this.position;
+    }
 }
