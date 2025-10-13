@@ -1,31 +1,29 @@
 using UnityEngine;
 
+/// <summary>
+/// The <c>TurnStartedEvent</c> contains a <b>READ-ONLY</b> payload of information on
+/// new turn information, including turn number and Player ID whose turn it is.
+/// </summary>
 public class TurnStartedEvent
 {
-    /*
-     * Turn started class. Used as a data structure to pass data for the event system.
-     * Currently, there are no setter methods, as all data 
-     *  should be entered at runtime, and then return on the listening class
-     * This can change in a future revision if necessary.
-     */
+    /// <summary>
+    /// The ID of the Player whose turn it currently is.
+    /// </summary>
+    private int playerId { get; }
+    /// <summary>
+    /// The current turn number.
+    /// </summary>
+    private int turnNum { get; }
 
-    //members
-    private int id; // Tracks player by id.
-    private int turnNum; // Tracks turn number. May or may not be useful later on.
-
-    public TurnStartedEvent(int id, int turnNum)
+    /// <summary>
+    /// /// Creates a <b>READ-ONLY</b> payload of data regarding a turn starting to be used
+    /// in the <c>TurnStartedEventChannel</c>.
+    /// </summary>
+    /// <param name="playerId"><b>READ-ONLY:</b> ID of the current turns player</param>
+    /// <param name="turnNum"><b>READ-ONLY:</b> The current turn number</param>
+    public TurnStartedEvent(int playerId, int turnNum)
     {
-        this.id = id;
+        this.playerId = playerId;
         this.turnNum = turnNum;
-    }
-
-    public int GetId()
-    {
-        return this.id;
-    }
-
-    public int GetTurnNum()
-    {
-        return turnNum;
     }
 }

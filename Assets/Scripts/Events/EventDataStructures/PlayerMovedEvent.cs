@@ -1,39 +1,34 @@
 using UnityEngine;
 
+/// <summary>
+/// The <c>PlayerMovedEvent</c> contains a <b>READ-ONLY</b> payload of information on player movements used for Event Channels.
+/// </summary>
 public class PlayerMovedEvent
 {
-    /*
-     * Player moved event class. Used as a data structure to pass data for the event system.
-     * Currently, there are no setter methods, as all data 
-     *  should be entered at runtime, and then return on the listening class
-     * This can change in a future revision if necessary.
-     */
+    /// <summary>
+    /// The ID of the Player that was moved.
+    /// </summary>
+    private int id { get; }
+    /// <summary>
+    /// The previous position of the Player that was moved.
+    /// </summary>
+    private int previousPosition { get; }
+    /// <summary>
+    /// The current position of the Player that was moved.
+    /// </summary>
+    private int newPosition { get; }
 
-    private int id;                 //Tracks player by id.
-    private int currentPosition;    // Tracks current position. May be useful later.
-    private int newPosition;        // Tracks new position.
-
-    public PlayerMovedEvent(int id, int currentPosition, int newPosition)
+    /// <summary>
+    /// Creates a <b>READ-ONLY</b> payload of data regarding a Player moving to be used
+    /// in the <c>PlayerMovedEventChannel</c>.
+    /// </summary>
+    /// <param name="id"><b>READ-ONLY:</b> ID of the <c>Player</c></param>
+    /// <param name="previousPosition"><b>READ-ONLY:</b> previous <c>Player</c> position</param>
+    /// <param name="newPosition"><b>READ-ONLY:</b> new/current <c>Player</c> position</param>
+    public PlayerMovedEvent(int id, int previousPosition, int newPosition)
     {
         this.id = id;
-        this.currentPosition = currentPosition;
+        this.previousPosition = previousPosition;
         this.newPosition = newPosition;
-    }
-
-
-    public int GetId()
-    {
-        return id;
-    }
-
-    public int GetCurrentPosition()
-    {
-        return this.currentPosition;
-    }
-
-
-    public int GetNewPosition()
-    {
-        return this.newPosition;
     }
 }
