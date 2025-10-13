@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    [Header("Event Channels")]
+    [SerializeField]
+    public PlayerEventChannel playerAddedEventChannel;
+    [SerializeField]
+    public PlayerEventChannel playerRemovedEventChannel;
+    
     private List<Player> players = new List<Player>();
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -41,6 +47,10 @@ public class PlayerManager : MonoBehaviour
             // setting money should be done somewhere else, I think...
             
             players.Add(newPlayer);
+
+            //testing used for us103-t123
+            Debug.Log($"[PlayerManager] has added '{newPlayer.GetPName()}' (id={i}) during initialization.");
+            playerAddedEventChannel.RaiseEvent(newPlayer);
         }
     }
 
@@ -75,4 +85,33 @@ public class PlayerManager : MonoBehaviour
         
         return playersCopy;
     }
+
+    //us103task122: create removal behavior to allow players to be removed from game start
+    public bool RemovePlayer(int playerId)
+    {
+        //player checker first
+        if (playerId < 0 || playerId >= players.Count)
+        {
+            Debug.LogWarning($"[PlayerManager] RemovePlayer functionality invalid id={playerId}. No action.");
+
+            return false;
+        }
+
+        Player removedPlayer = players[playerId];
+        players.RemoveAt(playerId);
+
+        //id == list index from GetPlayer functionality
+        for (int i = playerId; i < players.Count; i++)
+        {
+            players[i].SetId(i);
+        }
+
+        Debug.Log($"[PlayerManager] removed player with id={playerId}.");
+
+        playerRemovedEventChannel.RaiseEvent(removedPlayer);
+        return true;
+    }
+
+
+
 }

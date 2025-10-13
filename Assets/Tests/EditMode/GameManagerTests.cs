@@ -6,23 +6,29 @@ namespace Tests.EditMode
 {
     public class GameManagerTests
     {
-        private EventChannel<Player> turnStartedChannel;
+        private PlayerEventChannel turnStartedChannel;
         private int callbackCount;
         private Player lastReceivedPlayer;
 
         private GameObject parentObject;
         private GameManager gameManager;
+        private GameStateEventChannel gameStateEventChannel;
         private PlayerManager playerManager;
+        private PlayerEventChannel playerEventChannel;
 
         [SetUp]
         public void SetUp()
         {
             parentObject = new GameObject();
             gameManager = parentObject.AddComponent<GameManager>();
-            playerManager = parentObject.AddComponent<PlayerManager>();
             turnStartedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            gameManager.playerManager = playerManager;
             gameManager.turnStartedChannel = turnStartedChannel;
+            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateEventChannel>();
+            gameManager.gameStateChangeChannel = gameStateEventChannel;
+            playerManager = parentObject.AddComponent<PlayerManager>();
+            gameManager.playerManager = playerManager;
+            playerEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerManager.playerAddedEventChannel = playerEventChannel;
 
             callbackCount = 0;
             lastReceivedPlayer = null;
