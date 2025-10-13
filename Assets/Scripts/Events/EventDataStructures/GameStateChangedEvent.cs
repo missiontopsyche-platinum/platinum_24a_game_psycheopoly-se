@@ -9,12 +9,12 @@ public class GameStateChangedEvent
      * This can change in a future revision if necessary.
      */
 
-    private GameState currentGameState; //Tracks current gamestate. May be useful later.
-    private GameState newGameState;     //Tracks new gamestate.
+    public GameState previousGameState { get; private set; } //Tracks current gamestate. May be useful later.
+    public GameState newGameState { get; private set; }     //Tracks new gamestate.
 
-    public GameStateChangedEvent(GameState currentGameState, GameState newGameState)
+    public GameStateChangedEvent(GameState previousGameState, GameState newGameState)
     {
-        this.currentGameState = currentGameState;
+        this.previousGameState = previousGameState;
         this.newGameState = newGameState;
     }
 }

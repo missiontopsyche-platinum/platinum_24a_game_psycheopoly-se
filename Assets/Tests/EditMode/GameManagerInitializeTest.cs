@@ -7,15 +7,15 @@ namespace Tests.EditMode
     {
         private GameObject gameObject;
         private GameManager gameManager;
-        private GameStateEventChannel gameStateEventChannel;
+        private GameStateChangedEventChannel gameStateEventChannel;
         
         [SetUp]
         public void SetUp()
         {
             gameObject = new GameObject("GM_Events_Tests");
             gameManager = gameObject.AddComponent<GameManager>();
-            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateEventChannel>();
-            gameManager.gameStateChangeChannel = gameStateEventChannel;
+            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
+            gameManager.gameStateChangedChannel = gameStateEventChannel;
         }
 
         [TearDown]

@@ -7,15 +7,15 @@ namespace Tests.EditMode
     {
         private GameObject gameObject;
         private GameManager gameManager;
-        private GameStateEventChannel gameStateEventChannel;
+        private GameStateChangedEventChannel gameStateEventChannel;
         
         [SetUp]
         public void SetUp()
         {
             gameObject = new GameObject("GM_Events_Tests");
             gameManager = gameObject.AddComponent<GameManager>();
-            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateEventChannel>();
-            gameManager.gameStateChangeChannel = gameStateEventChannel;
+            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
+            gameManager.gameStateChangedChannel = gameStateEventChannel;
         }
 
         [TearDown]
@@ -31,9 +31,9 @@ namespace Tests.EditMode
         public void GameStateChanged_Fires_On_Initialize()
         {
             int callbackCount = 0;
-            GameStateChange gameStateChange = new GameStateChange();
+            GameStateChangedEvent gameStateChange = new GameStateChangedEvent(GameState.None, GameState.None);
 
-            void Listener(GameStateChange stateChange)
+            void Listener(GameStateChangedEvent stateChange)
             {
                 callbackCount++;
                 gameStateChange = stateChange;
@@ -45,8 +45,8 @@ namespace Tests.EditMode
 
             //this is none > initialzing
             Assert.AreEqual(1, callbackCount); 
-            Assert.AreEqual(GameState.None, gameStateChange.previous);
-            Assert.AreEqual(GameState.Initializing, gameStateChange.current);
+            Assert.AreEqual(GameState.None, gameStateChange.previousGameState);
+            Assert.AreEqual(GameState.Initializing, gameStateChange.newGameState);
         }
     }
 }

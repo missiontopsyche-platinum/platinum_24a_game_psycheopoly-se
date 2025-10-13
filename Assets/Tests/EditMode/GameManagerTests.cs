@@ -12,7 +12,7 @@ namespace Tests.EditMode
 
         private GameObject parentObject;
         private GameManager gameManager;
-        private GameStateEventChannel gameStateEventChannel;
+        private GameStateChangedEventChannel gameStateEventChannel;
         private PlayerManager playerManager;
         private PlayerEventChannel playerEventChannel;
 
@@ -23,8 +23,8 @@ namespace Tests.EditMode
             gameManager = parentObject.AddComponent<GameManager>();
             turnStartedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             gameManager.turnStartedChannel = turnStartedChannel;
-            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateEventChannel>();
-            gameManager.gameStateChangeChannel = gameStateEventChannel;
+            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
+            gameManager.gameStateChangedChannel = gameStateEventChannel;
             playerManager = parentObject.AddComponent<PlayerManager>();
             gameManager.playerManager = playerManager;
             playerEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();

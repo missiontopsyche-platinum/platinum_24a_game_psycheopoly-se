@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,9 +16,10 @@ public class GameManager : MonoBehaviour
     [Header("Component References")]
     [SerializeField] public PlayerManager playerManager;
     
+    [FormerlySerializedAs("gameStateChangeChannel")]
     [Header("Event Channels")]
     //us11-t36 allows for gamestate change action
-    [SerializeField] public EventChannel<GameStateChange> gameStateChangeChannel;
+    [SerializeField] public EventChannel<GameStateChangedEvent> gameStateChangedChannel;
     [SerializeField] public EventChannel<Player> turnStartedChannel;
 
     private int playerCount = 0;
@@ -160,12 +162,12 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        GameStateChange gameStateChange = new GameStateChange(gameState, newState);
+        GameStateChangedEvent gameStateChange = new GameStateChangedEvent(gameState, newState);
         gameState = newState;
 
-        gameStateChangeChannel.RaiseEvent(gameStateChange);
+        gameStateChangedChannel.RaiseEvent(gameStateChange);
         //just for testing
-        Debug.Log($"[GameManager] State: {gameStateChange.previous} > {gameStateChange.current}");
+        Debug.Log($"[GameManager] State: {gameStateChange.newGameState} > {gameStateChange.previousGameState}");
     }
 
     
