@@ -17,3 +17,8 @@ public class IntEventChannel : EventChannel<int> {}
 /// Event channel that passes Player data objects.
 /// </summary>
 public class PlayerEventChannel : EventChannel<Player> { }
+
+/// <summary>
+/// Event channel that passes a GameStateChange struct, with the previous and current Game State.
+/// </summary>
+public class GameStateEventChannel : EventChannel<GameStateChange> { }

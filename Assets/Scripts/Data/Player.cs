@@ -52,10 +52,6 @@ public class Player : ScriptableObject
             throw new ArgumentException("Money cannot be negative yet...");
         }
         this.money = money;
-        if (this.money < 0)
-        {
-            throw new ArgumentException("Money values must always be positive.");
-        }
     }
 
     public int GetMoney()
@@ -119,11 +115,12 @@ public class Player : ScriptableObject
 
     public void SetPosition(int position)
     {
-        this.position = position;
-        if (this.position < 0)
+        if (position < 0)
         {
-            throw new ArgumentException("Position values must always be positive.");
+            throw new System.ArgumentException("Position values must always be positive.");
         }
+        this.position = position;
+        
     }
 
     public int GetPosition()

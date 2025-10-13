@@ -9,12 +9,18 @@ namespace Tests.EditMode
     {
         private GameObject gameObject;
         private PlayerManager playerManager;
-        
+        private PlayerEventChannel playerAddedChannel;
+        private PlayerEventChannel playerRemovedChannel;
+
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
-            gameObject = new GameObject();
+            gameObject = new GameObject("PM_TestHost");
             playerManager = gameObject.AddComponent<PlayerManager>();
+            playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerRemovedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerManager.playerAddedEventChannel = playerAddedChannel;
+            playerManager.playerRemovedEventChannel = playerRemovedChannel;
         }
 
         [TearDown]
