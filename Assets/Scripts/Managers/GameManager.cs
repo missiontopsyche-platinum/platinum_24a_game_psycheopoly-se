@@ -75,16 +75,15 @@ public class GameManager : MonoBehaviour
         //C# event
         GameStateChanged?.Invoke(old, newState);
 
-        //Completes task 113, this can be changed as we get futher along in development
-        //An asset can be added and connected here, right now nothying is publishing to a channel
-        //I added what could be included in this statement as a comment. 
+        //Publish once but not adding new handler each time
         if (gameStateChangedChannel != null)
-            //gameStateChangedChannel.RaiseEvent(new GameStateChange(old, newState));
-            GameManager.Instance.GameStateChanged += (oldS, newS) => Debug.Log($"{oldS} -> {newS}");
+            gameStateChangedChannel.RaiseEvent(new GameStateChange(old, newState));
+
 
         Debug.Log($"[GameManager] State: {old} -> {newState}");
         return true;
     }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     //added Initialize by nnastase for us11-t34
@@ -156,7 +155,7 @@ public class GameManager : MonoBehaviour
 
         //this is where we should load / create board/players/etc
         //mini tester
-        Debug.Log("Initialize() successfully called � test passed!");
+        Debug.Log("Initialize() successfully called - test passed!");
 
     }
 

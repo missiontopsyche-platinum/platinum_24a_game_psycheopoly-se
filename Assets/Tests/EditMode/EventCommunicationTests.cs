@@ -54,7 +54,7 @@ namespace PsycheOpoly.Tests
             // 1) State should go from None to Initializing
             LogAssert.Expect(LogType.Log, "[GameManager] State: None > Initializing");
             // 2) Intialize() should be called successfully
-            LogAssert.Expect(LogType.Log, "Initialize() successfully called — test passed!");
+            LogAssert.Expect(LogType.Log, "Initialize() successfully called - test passed!");
             // 3) State should go from Initializing to WaitingForTurn
             LogAssert.Expect(LogType.Log, "[GameManager] State: Initializing > WaitingForTurn");
             // 4) Just to confirm that the turn started with Player 0
