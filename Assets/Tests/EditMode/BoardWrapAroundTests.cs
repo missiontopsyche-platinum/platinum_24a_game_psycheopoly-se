@@ -15,6 +15,7 @@ namespace PsycheOpoly.Tests.EditMode
             return bm;
         }
 
+        //Checks if move wraps position correctly
         [Test]
         public void Move_wraps_forward_past_end()
         {
@@ -26,6 +27,7 @@ namespace PsycheOpoly.Tests.EditMode
             Assert.AreEqual(1, bm.GetPlayerPosition(pid));
         }
 
+        //Check if move wraps correctly with mutliple player loops
         [Test]
         public void Move_wraps_multiple_loops()
         {
@@ -36,6 +38,7 @@ namespace PsycheOpoly.Tests.EditMode
             Assert.AreEqual(2, idx);
         }
 
+        //Checks if logic can handle negative move
         [Test]
         public void Move_handles_negative_steps()
         {
@@ -46,6 +49,7 @@ namespace PsycheOpoly.Tests.EditMode
             Assert.AreEqual(4, idx);
         }
 
+        //Tests if GetSpace properly wraps code
         [Test]
         public void GetSpace_wraps_index()
         {
