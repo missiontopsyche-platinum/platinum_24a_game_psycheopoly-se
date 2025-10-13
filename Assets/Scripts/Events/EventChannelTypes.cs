@@ -19,6 +19,16 @@ public class IntEventChannel : EventChannel<int> {}
 public class PlayerEventChannel : EventChannel<Player> { }
 
 /// <summary>
-/// Event channel that passes a GameStateChange struct, with the previous and current Game State.
+/// Event channel that passes Game State Change information.
 /// </summary>
-public class GameStateEventChannel : EventChannel<GameStateChange> { }
+public class GameStateChangedEventChannel : EventChannel<GameStateChangedEvent> { }
+
+/// <summary>
+/// Event channel that sends information about Player movement
+/// </summary>
+public class PlayerMovedEventChannel : EventChannel<PlayerMovedEvent> { }
+
+/// <summary>
+/// Event channel that sends information about a turn starting.
+/// </summary>
+public class TurnStartedEventChannel : EventChannel<TurnStartedEvent> { }
