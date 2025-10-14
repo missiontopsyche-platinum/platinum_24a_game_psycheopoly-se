@@ -35,6 +35,13 @@ namespace PsycheOpoly.Tests
             gameManager.turnStartedChannel = turnStartedChannel;
 
 
+            //null ref exceptions were caused originally in this test because the test envrment 
+            //wasn't recognizing these objects so i just created mocks essentially for objects where
+            //null ref exceptions were occurring -- US-103-hotfix
+            gameManager.gameStateChangeChannel = ScriptableObject.CreateInstance<GameStateEventChannel>();
+            playerManager.playerAddedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerManager.playerRemovedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+
             boardManager.InitializeBoard(10);
         }
 
