@@ -1,5 +1,8 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic; 
+using PsycheOpoly.Events;
+
 using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
@@ -26,6 +29,18 @@ public class GameManager : MonoBehaviour
     private int playerCount = 0;
     private int currentPlayer = 0;
 
+
+    // Task 111 legal state transition map
+    private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
+    {
+        { GameState.None,            new HashSet<GameState>{ GameState.Initializing } },
+        { GameState.Initializing,    new HashSet<GameState>{ GameState.WaitingForTurn } },
+        { GameState.WaitingForTurn,  new HashSet<GameState>{ GameState.PlayerTurn, GameState.GameOver } },
+        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.BotTurn, GameState.GameOver } },
+        { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
+        { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
+    };
+
     //us11t41 duplicate prevention with Awake() method
     private void Awake()
     {
@@ -45,6 +60,27 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
+    }
+
+    //Task 112 which is a guarded transition API
+    public bool TryChangeState(GameState newState)
+    {
+        if (newState == gameState) return false;
+
+        if (!Allowed.TryGetValue(gameState, out var nexts) || !nexts.Contains(newState))
+        {
+            Debug.LogWarning($"[GameManager] Illegal transition: {gameState} -> {newState}");
+            return false;
+        }
+
+        var old = gameState;
+        gameState = newState;
+
+        if (gameStateChangeChannel != null)
+            gameStateChangeChannel.RaiseEvent(new GameStateChange(old, newState));
+
+        Debug.Log($"[GameManager] State: {old} -> {newState}");
+        return true;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
