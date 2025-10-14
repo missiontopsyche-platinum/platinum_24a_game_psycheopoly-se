@@ -71,6 +71,12 @@ public class PlayerManager : MonoBehaviour
             
             players.Add(newPlayer);
 
+            //notify event channel listeners of added player 
+            if (playerAddedEventChannel != null)
+            {
+                playerAddedEventChannel.RaiseEvent(newPlayer);
+            }
+
             //Log confirmation
             Debug.Log($"Initialized {newPlayer.GetPName()} with ${newPlayer.GetMoney()}.");
         }
@@ -130,7 +136,7 @@ public class PlayerManager : MonoBehaviour
 
         Debug.Log($"[PlayerManager] removed player with id={playerId}.");
 
-        playerRemovedEventChannel.RaiseEvent(removedPlayer);
+        playerRemovedEventChannel?.RaiseEvent(removedPlayer);
         return true;
     }
 

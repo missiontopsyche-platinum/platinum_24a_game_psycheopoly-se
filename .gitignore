@@ -39,6 +39,7 @@
 # IDE stuff
 .idea/
 .vscode/
+.github/
 
 # Gradle cache directory
 .gradle/

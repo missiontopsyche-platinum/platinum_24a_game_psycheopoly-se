@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic; 
 using PsycheOpoly.Events;
 
+using UnityEngine.Serialization;
+
 public class GameManager : MonoBehaviour
 {
     //adding in reference to Enum created in the Data folder - nnastase us11-t33
@@ -11,16 +13,18 @@ public class GameManager : MonoBehaviour
 
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
-
+    
     // In future, we might want to decouple this reference...
     // Also, made these public so I can inject the fields with what I need for testing purposes.
     [Header("Component References")]
     [SerializeField] public PlayerManager playerManager;
     
+    [FormerlySerializedAs("gameStateChangeChannel")]
     [Header("Event Channels")]
     //us11-t36 allows for gamestate change action
-    [SerializeField] public EventChannel<GameStateChange> gameStateChangeChannel;
+    [SerializeField] public EventChannel<GameStateChangedEvent> gameStateChangedChannel;
     [SerializeField] public EventChannel<Player> turnStartedChannel;
+    [SerializeField] public PlayerMovedEventChannel      playerMovedChannel;
 
     private int playerCount = 0;
     private int currentPlayer = 0;
@@ -40,6 +44,12 @@ public class GameManager : MonoBehaviour
     //us11t41 duplicate prevention with Awake() method
     private void Awake()
     {
+        //Added to fix failing test
+        if (!gameStateChangedChannel) gameStateChangedChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
+        if (!turnStartedChannel)      turnStartedChannel      = ScriptableObject.CreateInstance<PlayerEventChannel>(); 
+        if (!playerMovedChannel)      playerMovedChannel      = ScriptableObject.CreateInstance<PlayerMovedEventChannel>();
+        if (!playerManager)           playerManager           = GetComponent<PlayerManager>();
+
         if (instance != null && instance != this)
         {
             //basically if we recognize an instance of a game that isn't the one in use, end it
@@ -181,26 +191,21 @@ public class GameManager : MonoBehaviour
     //change state event helper us11-t36
     private void SetState(GameState newState)
     {
-        //state change checker
-        if (newState == gameState)
-        {
-            return;
-        }
-
-        //us11-t35 introduce state transition options
+        if (newState == gameState) return;
         if (!CanTransition(gameState, newState))
         {
             Debug.LogWarning($"[Game Manager] transition not allowed from : {gameState} to {newState}");
-
             return;
         }
 
-        GameStateChange gameStateChange = new GameStateChange(gameState, newState);
+        var prev = gameState;
         gameState = newState;
 
-        gameStateChangeChannel.RaiseEvent(gameStateChange);
-        //just for testing
-        Debug.Log($"[GameManager] State: {gameStateChange.previous} > {gameStateChange.current}");
+        //null safe raise so tests for testing
+        gameStateChangedChannel?.RaiseEvent(new GameStateChangedEvent(prev, newState));
+
+        //Corrected Order
+        Debug.Log($"[GameManager] State: {prev} > {newState}");
     }
 
     
