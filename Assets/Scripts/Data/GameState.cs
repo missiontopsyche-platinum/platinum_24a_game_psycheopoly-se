@@ -13,15 +13,3 @@ public enum GameState
     BotTurn = 4,
     GameOver = 5
 }
-
-public struct GameStateChange
-{
-    public GameState previous { get; private set; }
-    public GameState current { get; private set; }
-
-    public GameStateChange(GameState previous, GameState current)
-    {
-        this.previous = previous;
-        this.current = current;
-    }
-}

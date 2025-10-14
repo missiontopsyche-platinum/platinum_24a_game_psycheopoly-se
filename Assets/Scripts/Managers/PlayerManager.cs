@@ -136,7 +136,7 @@ public class PlayerManager : MonoBehaviour
 
         Debug.Log($"[PlayerManager] removed player with id={playerId}.");
 
-        playerRemovedEventChannel.RaiseEvent(removedPlayer);
+        playerRemovedEventChannel?.RaiseEvent(removedPlayer);
         return true;
     }
 
