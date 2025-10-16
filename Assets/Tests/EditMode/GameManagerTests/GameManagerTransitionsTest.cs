@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.GameManagerTests
 {
     public class GameManagerTransitionsTest : GameManagerTestBase
     {

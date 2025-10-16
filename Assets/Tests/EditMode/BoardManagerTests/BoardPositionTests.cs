@@ -1,8 +1,7 @@
 using NUnit.Framework;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.BoardManagerTests
 {
-
     public class BoardPositionTests : BoardManagerTestBase
     {
         //Tests that player is in correct position
@@ -34,5 +33,4 @@ namespace PsycheOpoly.Tests.EditMode
             Assert.AreEqual(5, boardManager.MovePlayer(pid, -3));
         }
     }
-
 }

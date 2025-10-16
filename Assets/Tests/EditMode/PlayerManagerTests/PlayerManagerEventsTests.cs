@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.PlayerManagerTests
 {
     public class PlayerManagerEventsTests : PlayerManagerTestBase
     {
@@ -36,9 +36,9 @@ namespace Tests.EditMode
             {
                 removedId = player.GetId();
             }
-            
+        
             playerManager.playerRemovedEventChannel.Subscribe(Listener);
-            
+        
             playerManager.InitializePlayers(3);
             bool ok = playerManager.RemovePlayer(1);
 
@@ -60,9 +60,9 @@ namespace Tests.EditMode
             {
                 callbackCount++;
             }
-            
+        
             playerManager.playerRemovedEventChannel.Subscribe(Listener);
-            
+        
             playerManager.InitializePlayers(1);
             bool ok = playerManager.RemovePlayer(99);
 

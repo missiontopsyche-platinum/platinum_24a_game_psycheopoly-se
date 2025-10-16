@@ -1,8 +1,7 @@
 using NUnit.Framework;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.BoardManagerTests
 {
-
     public class BoardGetSpaceTests : BoardManagerTestBase
     {
         //Tests That board spaces are numbered and generated correctly
@@ -18,5 +17,4 @@ namespace PsycheOpoly.Tests.EditMode
             Assert.AreSame(space0, spaceNegative);
         }
     }
-
 }

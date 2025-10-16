@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.GameManagerTests
 {
     public class GameManagerInitializeTest : GameManagerTestBase
     {

@@ -2,9 +2,8 @@ using NUnit.Framework;
 using PsycheOpoly.Events;
 using UnityEngine;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.BoardManagerTests
 {
-
     public class BoardEventHandlingTests : BoardManagerTestBase
     {
         //Tests that Manager responds to player moves
@@ -14,11 +13,11 @@ namespace PsycheOpoly.Tests.EditMode
             boardManager.InitializeBoard(6);
             const int pid = 7;
 
-            
+        
             Debug.Log($"Before Set Player, GameObject = {gameObject}");
             boardManager.SetPlayerPosition(pid, 0);
             Debug.Log($"Before Event, enabled={boardManager.enabled}");
-            
+        
             // TODO refactor to use EventChannel instead of C# events
             GameEvents.RaisePlayerMoved(pid, 3);
             Debug.Log($"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
@@ -43,5 +42,4 @@ namespace PsycheOpoly.Tests.EditMode
             Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
         }
     }
-
 }

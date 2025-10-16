@@ -1,18 +1,17 @@
 using NUnit.Framework;
-using PsycheOpoly.Board;
 using PsycheOpoly.Events;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace PsycheOpoly.Tests
+// TODO: Check if this is needed, it seems monolithic and impossible to actually maintain
+namespace Tests.EditMode.EventsTests
 {
-    // TODO: Check if this is needed, it seems monolithic and impossible to actually maintain
     public class EventCommunicationTests
     {
         private GameObject root;
         private GameManager gameManager;
         private PlayerManager playerManager;
-        private BoardManager boardManager;
+        private PsycheOpoly.Board.BoardManager boardManager;
 
         private TurnStartedEventChannel turnStartedChannel;
 
@@ -20,10 +19,10 @@ namespace PsycheOpoly.Tests
         public void SetUp()
         {
             root = new GameObject("TestRoot");
-            
+        
             gameManager = root.AddComponent<GameManager>();
             playerManager = root.AddComponent<PlayerManager>();
-            boardManager = root.AddComponent<BoardManager>();
+            boardManager = root.AddComponent<PsycheOpoly.Board.BoardManager>();
 
             //Added to help with testing setup to prevent null objects 
             var stateCh = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
@@ -43,7 +42,7 @@ namespace PsycheOpoly.Tests
             playerManager.playerAddedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             playerManager.playerRemovedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             playerManager.initializePlayerCountChannel = gameManager.initializePlayerCountChannel;
-            
+        
             // manual event subscription because Awake, Start, OnEnable, etc don't fire in EditMode tests.
             playerManager.initializePlayerCountChannel.Subscribe(playerManager.InitializePlayers);
 
@@ -64,7 +63,7 @@ namespace PsycheOpoly.Tests
         {
             turnStartedChannel.Subscribe(tse =>
             {
-               Debug.Log($"[Test] TurnStarted: Player ID {tse.playerId}");
+                Debug.Log($"[Test] TurnStarted: Player ID {tse.playerId}");
             });
 
             // Task 118: Add assertions or logging that confirms all interfile communication happens in the correct order during the game cycle

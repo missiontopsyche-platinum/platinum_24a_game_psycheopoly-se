@@ -1,9 +1,8 @@
 using NUnit.Framework;
 using PsycheOpoly.Board;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.BoardManagerTests
 {
-
     public class BoardInitializationTests : BoardManagerTestBase
     {
         //Tests that board is setup properly and has mix of spaces
@@ -28,5 +27,4 @@ namespace PsycheOpoly.Tests.EditMode
         }
 
     }
-
 }

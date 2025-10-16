@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.GameManagerTests
 {
     public class GameManagerEventsTest : GameManagerTestBase
     {
@@ -15,7 +15,7 @@ namespace Tests.EditMode
                 callbackCount++;
                 gameStateChange = stateChange;
             }
-            
+        
             gameManager.gameStateChangedChannel.Subscribe(Listener);
 
             gameManager.Initialize();

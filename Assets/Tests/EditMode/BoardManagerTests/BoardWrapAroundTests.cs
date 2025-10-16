@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.BoardManagerTests
 {
     public class BoardWrapAroundTests : BoardManagerTestBase
     {

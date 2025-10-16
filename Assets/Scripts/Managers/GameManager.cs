@@ -1,9 +1,5 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic; 
-using PsycheOpoly.Events;
-
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
