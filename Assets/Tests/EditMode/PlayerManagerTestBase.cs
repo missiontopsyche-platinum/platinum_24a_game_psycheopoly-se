@@ -1,24 +1,25 @@
-using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-public class PlayerManagerTestBase
+public class PlayerManagerTestBase : ManagerTestBase
 {
-    // A Test behaves as an ordinary method
-    [Test]
-    public void PlayerManagerTestBaseSimplePasses()
+    protected GameObject gameObject;
+    protected PlayerManager playerManager;
+    
+    [SetUp]
+    public virtual void SetUp()
     {
-        // Use the Assert class to test conditions
+        gameObject = new GameObject("PlayerManagerTests");
+        playerManager = gameObject.AddComponent<PlayerManager>();
+
+        playerManager.playerAddedEventChannel = CreateChannel<PlayerEventChannel>();
+        playerManager.playerRemovedEventChannel = CreateChannel<PlayerEventChannel>();
+        playerManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
     }
 
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
-    [UnityTest]
-    public IEnumerator PlayerManagerTestBaseWithEnumeratorPasses()
+    [TearDown]
+    public virtual void TearDown()
     {
-        // Use the Assert class to test conditions.
-        // Use yield to skip a frame.
-        yield return null;
+        DestroyTestObjects(gameObject);
     }
 }
