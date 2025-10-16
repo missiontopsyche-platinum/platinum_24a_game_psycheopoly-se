@@ -19,12 +19,11 @@ public class GameManager : MonoBehaviour
     [Header("Component References")]
     [SerializeField] public PlayerManager playerManager;
     
-    [FormerlySerializedAs("gameStateChangeChannel")]
     [Header("Event Channels")]
     //us11-t36 allows for gamestate change action
     [SerializeField] public EventChannel<GameStateChangedEvent> gameStateChangedChannel;
     [SerializeField] public EventChannel<Player> turnStartedChannel;
-    [SerializeField] public PlayerMovedEventChannel      playerMovedChannel;
+    [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
 
     private int playerCount = 0;
     private int currentPlayer = 0;
@@ -44,7 +43,7 @@ public class GameManager : MonoBehaviour
     //us11t41 duplicate prevention with Awake() method
     private void Awake()
     {
-        //Added to fix failing test
+        // TODO remove this
         if (!gameStateChangedChannel) gameStateChangedChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
         if (!turnStartedChannel)      turnStartedChannel      = ScriptableObject.CreateInstance<PlayerEventChannel>(); 
         if (!playerMovedChannel)      playerMovedChannel      = ScriptableObject.CreateInstance<PlayerMovedEventChannel>();
@@ -76,8 +75,8 @@ public class GameManager : MonoBehaviour
         var old = gameState;
         gameState = newState;
 
-        if (gameStateChangeChannel != null)
-            gameStateChangeChannel.RaiseEvent(new GameStateChange(old, newState));
+        if (gameStateChangedChannel != null)
+            gameStateChangedChannel.RaiseEvent(new GameStateChangedEvent(old, newState));
 
         Debug.Log($"[GameManager] State: {old} -> {newState}");
         return true;

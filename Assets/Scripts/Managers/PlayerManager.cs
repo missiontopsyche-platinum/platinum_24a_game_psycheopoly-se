@@ -70,6 +70,7 @@ public class PlayerManager : MonoBehaviour
             // newPlayer.ClearOwnedProperties();
             
             players.Add(newPlayer);
+            playerAddedEventChannel.RaiseEvent(newPlayer);
 
             //notify event channel listeners of added player 
             if (playerAddedEventChannel != null)
