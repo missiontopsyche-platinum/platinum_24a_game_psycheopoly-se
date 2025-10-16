@@ -115,6 +115,7 @@ public class GameManager : MonoBehaviour
         if (playerCount < 2 || playerCount > 4)
         {
             Debug.LogError("Invalid player count, must be between 2 and 4.");
+            gameState = GameState.None;
             return;
         }
         this.playerCount = playerCount;
@@ -140,6 +141,7 @@ public class GameManager : MonoBehaviour
     {
         SetState(GameState.Initializing);
 
+        // TODO Why is this even here? hdathert
         //this is where we should load / create board/players/etc
         //mini tester
         Debug.Log("Initialize() successfully called - test passed!");
@@ -150,6 +152,10 @@ public class GameManager : MonoBehaviour
     //public void StartGame() => SetState(GameState.WaitingForTurn);
     //public void EndGame() => SetState(GameState.GameOver);
 
+    
+    // TODO this seems like it might be redundant with the HashMap implementaion at the top of this file.
+    // We might want to refactor this to use that, as it seems like it would be a much more maintainable
+    // solution long-term.
     //us11t35
     //here we are looking to have a method that allows for valid state transitions for enums
     private bool CanTransition(GameState from, GameState to)

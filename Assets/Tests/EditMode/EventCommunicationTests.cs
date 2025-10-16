@@ -43,6 +43,9 @@ namespace PsycheOpoly.Tests
             playerManager.playerAddedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             playerManager.playerRemovedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             playerManager.initializePlayerCountChannel = gameManager.initializePlayerCountChannel;
+            
+            // manual event subscription because Awake, Start, OnEnable, etc don't fire in EditMode tests.
+            playerManager.initializePlayerCountChannel.Subscribe(playerManager.InitializePlayers);
 
             boardManager.InitializeBoard(10);
         }

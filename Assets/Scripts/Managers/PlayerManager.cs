@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
     
     private List<Player> players = new List<Player>();
-    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,6 +32,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="numPlayers">Number of players to initialize</param>
     public void InitializePlayers(int numPlayers)
     {
+        Debug.Log($"Creating players: {numPlayers}");
         players.Clear();  //prevent duplicates when starting new game
         int startingMoney = 1500; //Amount based on normal Monopoly game
         int startingPosition = 0; //GO
@@ -70,8 +72,7 @@ public class PlayerManager : MonoBehaviour
             // newPlayer.ClearOwnedProperties();
             
             players.Add(newPlayer);
-            playerAddedEventChannel.RaiseEvent(newPlayer);
-
+            
             //notify event channel listeners of added player 
             if (playerAddedEventChannel != null)
             {

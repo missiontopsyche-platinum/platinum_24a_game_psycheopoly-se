@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEngine.TestTools;
 
 public class GameManagerStateTests : GameManagerTestBase
 {
@@ -18,8 +19,8 @@ public class GameManagerStateTests : GameManagerTestBase
         // Event sequence
         Assert.GreaterOrEqual(seen.Count, 2, "Expected at least two state-change events.");
         // TODO verify this works for GameStateChangedEvent
-        Assert.AreEqual((GameState.None,         GameState.Initializing),   seen[0]);
-        Assert.AreEqual((GameState.Initializing, GameState.WaitingForTurn), seen[1]);
+        Assert.AreEqual((GameState.None, GameState.Initializing), (seen[0].previousGameState, seen[0].newGameState));
+        Assert.AreEqual((GameState.Initializing, GameState.WaitingForTurn), (seen[1].previousGameState, seen[1].newGameState));
     }
 
     // 2) EndGame is legal from WaitingForTurn, and Initialize restarts properly
@@ -53,6 +54,9 @@ public class GameManagerStateTests : GameManagerTestBase
     [Test]
     public void StartGame_with_invalid_player_count_does_not_change_state()
     { 
+        // ignore the Error Logs for this test, they are meant to happen.
+        LogAssert.ignoreFailingMessages = true;
+        
         // start in None; invalid counts (e.g., 1 or 5) should not transition
         gameManager.StartGame(1);
         Assert.AreEqual(GameState.None, gameManager.gameState);

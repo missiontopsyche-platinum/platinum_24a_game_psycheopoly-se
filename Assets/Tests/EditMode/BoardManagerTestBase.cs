@@ -14,7 +14,7 @@ public class BoardManagerTestBase : ManagerTestBase
         boardManager = gameObject.AddComponent<BoardManager>();
     }
 
-    [SetUp]
+    [TearDown]
     public virtual void TearDown()
     {
         DestroyTestObjects(gameObject);

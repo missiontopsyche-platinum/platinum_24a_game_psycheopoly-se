@@ -5,12 +5,14 @@ namespace Tests.EditMode
 {
     public class GameManagerTurnRotationTests : GameManagerTestBase
     {
-        private int callbackCount = 0;
+        
         private int lastReceivedPlayer = -1;
         
         [Test]
         public void NextTurn_LoopBackWithTwoPlayers()
         {
+            int callbackCount = 0;
+            
             void Listener(TurnStartedEvent tse)
             {
                 callbackCount++;
@@ -34,6 +36,8 @@ namespace Tests.EditMode
         [Test]
         public void NextTurn_LoopBackWithThreePlayers()
         {
+            int callbackCount = 0;
+            
             void Listener(TurnStartedEvent tse)
             {
                 callbackCount++;
@@ -61,6 +65,8 @@ namespace Tests.EditMode
         [Test]
         public void NextTurn_LoopBackWithFourPlayers()
         {
+            int callbackCount = 0;
+            
             void Listener(TurnStartedEvent tse)
             {
                 callbackCount++;

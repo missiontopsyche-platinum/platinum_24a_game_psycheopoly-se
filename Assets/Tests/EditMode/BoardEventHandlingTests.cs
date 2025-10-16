@@ -1,7 +1,6 @@
 using NUnit.Framework;
-using UnityEngine;
-using PsycheOpoly.Board;
 using PsycheOpoly.Events;
+using UnityEngine;
 
 namespace PsycheOpoly.Tests.EditMode
 {
@@ -15,9 +14,14 @@ namespace PsycheOpoly.Tests.EditMode
             boardManager.InitializeBoard(6);
             const int pid = 7;
 
+            
+            Debug.Log($"Before Set Player, GameObject = {gameObject}");
             boardManager.SetPlayerPosition(pid, 0);
+            Debug.Log($"Before Event, enabled={boardManager.enabled}");
+            
             // TODO refactor to use EventChannel instead of C# events
             GameEvents.RaisePlayerMoved(pid, 3);
+            Debug.Log($"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
             Assert.AreEqual(3, boardManager.GetPlayerPosition(pid));
         }
 
