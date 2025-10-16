@@ -4,17 +4,17 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     [Header("Event Channels")]
-    [SerializeField]
-    public PlayerEventChannel playerAddedEventChannel;
-    [SerializeField]
-    public PlayerEventChannel playerRemovedEventChannel;
+    [SerializeField] public PlayerEventChannel playerAddedEventChannel;
+    [SerializeField] public PlayerEventChannel playerRemovedEventChannel;
+    [SerializeField] public IntEventChannel initializePlayerCountChannel;
     
     private List<Player> players = new List<Player>();
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        // added this to decouple GameManager from PlayerManager to use events instead - hdathert
+        initializePlayerCountChannel.Subscribe(InitializePlayers);
     }
 
     // Update is called once per frame
