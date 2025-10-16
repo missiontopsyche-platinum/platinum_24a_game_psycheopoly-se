@@ -1,35 +1,26 @@
 using NUnit.Framework;
-using UnityEngine;
 using PsycheOpoly.Board;
-using BoardSpace = PsycheOpoly.Board.Space;
 
 namespace PsycheOpoly.Tests.EditMode
 {
 
-    public class BoardInitializationTests
+    public class BoardInitializationTests : BoardManagerTestBase
     {
-        private BoardManager MakeManager()
-        {
-            var go = new GameObject("BoardManagerTests");
-            return go.AddComponent<BoardManager>();
-        } 
-
         //Tests that board is setup properly and has mix of spaces
         [Test]
         public void InitializeBoard_BuildsArray_GoAtZero_HasMix()
         {
-            var bm = MakeManager();
-            bm.InitializeBoard(8);
+            boardManager.InitializeBoard(8);
 
-            Assert.AreEqual(8, bm.BoardSize);
-            Assert.IsInstanceOf<GoSpace>(bm.GetSpace(0));
+            Assert.AreEqual(8, boardManager.BoardSize);
+            Assert.IsInstanceOf<GoSpace>(boardManager.GetSpace(0));
 
             bool hasProp = false, hasChance = false;
-            for(int i = 1; i < bm.BoardSize; i++)
+            for(int i = 1; i < boardManager.BoardSize; i++)
             {
-                var s = bm.GetSpace(i);
-                if(s is PropertySpace) hasProp = true;
-                if(s is ChanceSpace) hasChance = true;
+                var space = boardManager.GetSpace(i);
+                if(space is PropertySpace) hasProp = true;
+                if(space is ChanceSpace) hasChance = true;
             }
 
             Assert.IsTrue(hasProp, "Expected at least one Property Space");

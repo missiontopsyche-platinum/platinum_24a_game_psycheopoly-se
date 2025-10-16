@@ -1,32 +1,9 @@
 ﻿using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests.EditMode
 {
-    public class GameManagerEventsTest
+    public class GameManagerEventsTest : GameManagerTestBase
     {
-        private GameObject gameObject;
-        private GameManager gameManager;
-        private GameStateChangedEventChannel gameStateEventChannel;
-        
-        [SetUp]
-        public void SetUp()
-        {
-            gameObject = new GameObject("GM_Events_Tests");
-            gameManager = gameObject.AddComponent<GameManager>();
-            gameStateEventChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
-            gameManager.gameStateChangedChannel = gameStateEventChannel;
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            if (gameObject != null)
-            {
-                Object.DestroyImmediate(gameObject);
-            }
-        }
-
         [Test]
         public void GameStateChanged_Fires_On_Initialize()
         {
@@ -39,7 +16,7 @@ namespace Tests.EditMode
                 gameStateChange = stateChange;
             }
             
-            gameStateEventChannel.Subscribe(Listener);
+            gameManager.gameStateChangedChannel.Subscribe(Listener);
 
             gameManager.Initialize();
 

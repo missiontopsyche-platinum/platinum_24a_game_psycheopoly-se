@@ -1,33 +1,9 @@
 ﻿using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests.EditMode
 {
-    public class PlayerManagerEventsTests
+    public class PlayerManagerEventsTests : PlayerManagerTestBase
     {
-
-        private GameObject gameObject;
-        private PlayerManager playerManager;
-        private PlayerEventChannel playerAddedChannel;
-        private PlayerEventChannel playerRemovedChannel;
-
-        [SetUp]
-        public void Setup()
-        {
-            gameObject = new GameObject("PM_TestHost");
-            playerManager = gameObject.AddComponent<PlayerManager>();
-            playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerRemovedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerManager.playerAddedEventChannel = playerAddedChannel;
-            playerManager.playerRemovedEventChannel = playerRemovedChannel;
-        }
-
-        [TearDown]
-        public void Teardown()
-        {
-            Object.DestroyImmediate(gameObject);
-        }
-        
         //verify each new player is recognized
         [Test]
         public void InitializePlayers_Raises_OnPlayerAdded_ForEach_NewPlayer()
@@ -39,7 +15,7 @@ namespace Tests.EditMode
                 callbackCount++;
             }
 
-            playerAddedChannel.Subscribe(Listener);
+            playerManager.playerAddedEventChannel.Subscribe(Listener);
             playerManager.InitializePlayers(3);
 
             Assert.AreEqual(3, callbackCount);
@@ -61,7 +37,7 @@ namespace Tests.EditMode
                 removedId = player.GetId();
             }
             
-            playerRemovedChannel.Subscribe(Listener);
+            playerManager.playerRemovedEventChannel.Subscribe(Listener);
             
             playerManager.InitializePlayers(3);
             bool ok = playerManager.RemovePlayer(1);
@@ -85,7 +61,7 @@ namespace Tests.EditMode
                 callbackCount++;
             }
             
-            playerRemovedChannel.Subscribe(Listener);
+            playerManager.playerRemovedEventChannel.Subscribe(Listener);
             
             playerManager.InitializePlayers(1);
             bool ok = playerManager.RemovePlayer(99);
@@ -97,7 +73,4 @@ namespace Tests.EditMode
         }
 
     }
-
-
-
 }

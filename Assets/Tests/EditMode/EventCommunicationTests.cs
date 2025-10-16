@@ -1,13 +1,12 @@
 using NUnit.Framework;
 using PsycheOpoly.Board;
 using PsycheOpoly.Events;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
-using static UnityEditor.PlayerSettings;
 
 namespace PsycheOpoly.Tests
 {
+    // TODO: Check if this is needed, it seems monolithic and impossible to actually maintain
     public class EventCommunicationTests
     {
         private GameObject root;
@@ -15,7 +14,7 @@ namespace PsycheOpoly.Tests
         private PlayerManager playerManager;
         private BoardManager boardManager;
 
-        private PlayerEventChannel turnStartedChannel;
+        private TurnStartedEventChannel turnStartedChannel;
 
         [SetUp]
         public void SetUp()
@@ -30,8 +29,7 @@ namespace PsycheOpoly.Tests
             var stateCh = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
             gameManager.gameStateChangedChannel = stateCh;
 
-            turnStartedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            gameManager.playerManager = playerManager;
+            turnStartedChannel = ScriptableObject.CreateInstance<TurnStartedEventChannel>();
             gameManager.turnStartedChannel = turnStartedChannel;
 
 
@@ -39,8 +37,12 @@ namespace PsycheOpoly.Tests
             //wasn't recognizing these objects so i just created mocks essentially for objects where
             //null ref exceptions were occurring -- US-103-hotfix
             gameManager.gameStateChangedChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
+            gameManager.turnStartedChannel = ScriptableObject.CreateInstance<TurnStartedEventChannel>();
+            gameManager.playerMovedChannel = ScriptableObject.CreateInstance<PlayerMovedEventChannel>();
+            gameManager.initializePlayerCountChannel = ScriptableObject.CreateInstance<IntEventChannel>();
             playerManager.playerAddedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
             playerManager.playerRemovedEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
+            playerManager.initializePlayerCountChannel = gameManager.initializePlayerCountChannel;
 
             boardManager.InitializeBoard(10);
         }
@@ -57,9 +59,9 @@ namespace PsycheOpoly.Tests
         [Test]
         public void FullGameCommunicationCycle_Passes()
         {
-            turnStartedChannel.Subscribe(player =>
+            turnStartedChannel.Subscribe(tse =>
             {
-               Debug.Log($"[Test] TurnStarted: Player {player.GetId()}");
+               Debug.Log($"[Test] TurnStarted: Player ID {tse.playerId}");
             });
 
             // Task 118: Add assertions or logging that confirms all interfile communication happens in the correct order during the game cycle

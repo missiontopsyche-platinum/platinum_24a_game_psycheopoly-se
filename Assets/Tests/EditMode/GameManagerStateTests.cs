@@ -8,7 +8,7 @@ public class GameManagerStateTests : GameManagerTestBase
     public void StartGame_initializes_then_enters_WaitingForTurn_and_raises_events()
     {
         var seen = new List<GameStateChangedEvent>();
-        gameStateEventChannel.Subscribe(gsc => seen.Add(gsc));
+        gameManager.gameStateChangedChannel.Subscribe(gsc => seen.Add(gsc));
 
         gameManager.StartGame(2);
 
@@ -41,7 +41,7 @@ public class GameManagerStateTests : GameManagerTestBase
     public void StartGame_raises_turnStarted_for_first_player()
     {
         TurnStartedEvent receivedTse = null;
-        turnStartedChannel.Subscribe(p => receivedTse = p);
+        gameManager.turnStartedChannel.Subscribe(p => receivedTse = p);
 
         gameManager.StartGame(2);
 

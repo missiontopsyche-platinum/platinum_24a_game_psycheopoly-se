@@ -1,34 +1,11 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests.EditMode
 {
-    public class PlayerManagerTests
+    public class PlayerManagerInitializeAndGetTests : PlayerManagerTestBase
     {
-        private GameObject gameObject;
-        private PlayerManager playerManager;
-        private PlayerEventChannel playerAddedChannel;
-        private PlayerEventChannel playerRemovedChannel;
-
-        [SetUp]
-        public void Setup()
-        {
-            gameObject = new GameObject("PM_TestHost");
-            playerManager = gameObject.AddComponent<PlayerManager>();
-            playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerRemovedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerManager.playerAddedEventChannel = playerAddedChannel;
-            playerManager.playerRemovedEventChannel = playerRemovedChannel;
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Object.DestroyImmediate(gameObject);
-        }
-
         [Test]
         public void PlayerManager_CanInitialize2Players()
         {
