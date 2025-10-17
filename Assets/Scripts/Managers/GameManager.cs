@@ -76,8 +76,8 @@ public class GameManager : MonoBehaviour
         var old = gameState;
         gameState = newState;
 
-        if (gameStateChangeChannel != null)
-            gameStateChangeChannel.RaiseEvent(new GameStateChange(old, newState));
+        if (gameStateChangedChannel != null)
+            gameStateChangedChannel.RaiseEvent(new GameStateChangedEvent(old, newState));
 
         Debug.Log($"[GameManager] State: {old} -> {newState}");
         return true;
