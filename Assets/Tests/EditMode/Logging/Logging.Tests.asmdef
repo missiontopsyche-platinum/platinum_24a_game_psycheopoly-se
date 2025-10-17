@@ -1,8 +1,0 @@
-{
-  "name": "Logging.Tests.EditMode",
-  "rootNamespace": "Tests.Logging",
-  "references": [ "Logging.Runtime" ],
-  "optionalUnityReferences": [ "TestAssemblies" ],
-  "includePlatforms": [ "Editor" ],
-  "overrideReferences": false
-}
