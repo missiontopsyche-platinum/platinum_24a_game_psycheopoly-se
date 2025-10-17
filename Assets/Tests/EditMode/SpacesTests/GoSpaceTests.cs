@@ -1,10 +1,10 @@
 using NUnit.Framework;
-using UnityEngine;
 using PsycheOpoly.Board;
+using UnityEngine;
 //Alias so program does not collide with UnityEngine.Space
 using BoardSpace = PsycheOpoly.Board.Space;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.SpacesTests
 {
     public class GoSpaceTests
     {

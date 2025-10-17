@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.EventsTests
 {
     public class EventChannelTests
     {
@@ -31,7 +31,7 @@ namespace Tests.EditMode
             channel.Subscribe(Listener);
             channel.Subscribe(Listener);
             channel.RaiseEvent(5);
-            
+        
             Assert.AreEqual(1, callbackCount, "Listener should only be called once.");
         }
 
@@ -43,7 +43,7 @@ namespace Tests.EditMode
 
             channel.Unsubscribe(Listener);
             channel.RaiseEvent(5);
-            
+        
             Assert.AreEqual(0, callbackCount);
         }
 
@@ -52,9 +52,9 @@ namespace Tests.EditMode
         {
             void Listener(int value) => lastReceivedValue = value;
             channel.Subscribe(Listener);
-            
+        
             channel.RaiseEvent(42);
-            
+        
             Assert.AreEqual(42, lastReceivedValue);
         }
 
@@ -74,7 +74,7 @@ namespace Tests.EditMode
 
             channel.ClearAllListeners();
             channel.RaiseEvent(5);
-            
+        
             Assert.AreEqual(0, callbackCount);
         }
     }

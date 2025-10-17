@@ -3,7 +3,7 @@ using PsycheOpoly.Board;
 //Alias so there is no collisions with UnityEngine.Space
 using BoardSpace = PsycheOpoly.Board.Space;
 
-namespace PsycheOpoly.Tests.EditMode
+namespace Tests.EditMode.SpacesTests
 {
     public class SpaceInstantiationTests
     {

@@ -1,66 +1,43 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.PlayerManagerTests
 {
-    public class PlayerManagerTests
+    public class PlayerManagerInitializeAndGetTests : PlayerManagerTestBase
     {
-        private GameObject gameObject;
-        private PlayerManager playerManager;
-        private PlayerEventChannel playerAddedChannel;
-        private PlayerEventChannel playerRemovedChannel;
-
-        [SetUp]
-        public void Setup()
-        {
-            gameObject = new GameObject("PM_TestHost");
-            playerManager = gameObject.AddComponent<PlayerManager>();
-            playerAddedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerRemovedChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            playerManager.playerAddedEventChannel = playerAddedChannel;
-            playerManager.playerRemovedEventChannel = playerRemovedChannel;
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Object.DestroyImmediate(gameObject);
-        }
-
         [Test]
         public void PlayerManager_CanInitialize2Players()
         {
             playerManager.InitializePlayers(2);
 
             List<Player> players = playerManager.GetAllPlayers();
-            
+        
             Assert.AreEqual(2, players.Count);
             Assert.AreEqual("Player 1", players[0].GetPName());
             Assert.AreEqual("Player 2", players[1].GetPName());
         }
-        
+    
         [Test]
         public void PlayerManager_CanInitialize3Players()
         {
             playerManager.InitializePlayers(3);
 
             List<Player> players = playerManager.GetAllPlayers();
-            
+        
             Assert.AreEqual(3, players.Count);
             Assert.AreEqual("Player 1", players[0].GetPName());
             Assert.AreEqual("Player 2", players[1].GetPName());
             Assert.AreEqual("Player 3", players[2].GetPName());
         }
-        
+    
         [Test]
         public void PlayerManager_CanInitialize4Players()
         {
             playerManager.InitializePlayers(4);
 
             List<Player> players = playerManager.GetAllPlayers();
-            
+        
             Assert.AreEqual(4, players.Count);
             Assert.AreEqual("Player 1", players[0].GetPName());
             Assert.AreEqual("Player 2", players[1].GetPName());
@@ -74,7 +51,7 @@ namespace Tests.EditMode
             playerManager.InitializePlayers(4);
 
             Player player = playerManager.GetPlayer(2);
-            
+        
             Assert.AreEqual(2, player.GetId());
             Assert.AreEqual("Player 3", player.GetPName());
         }
@@ -83,7 +60,7 @@ namespace Tests.EditMode
         public void PlayerManager_GetByInvalidIdReturnsNull()
         {
             playerManager.InitializePlayers(2);
-            
+        
             LogAssert.Expect("PlayerManager: GetPlayer " +
                              "attempted access of playerID out" +
                              "of bounds: 3");

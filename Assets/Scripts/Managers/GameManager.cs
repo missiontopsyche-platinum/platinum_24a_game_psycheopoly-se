@@ -1,9 +1,5 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic; 
-using PsycheOpoly.Events;
-
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,21 +10,16 @@ public class GameManager : MonoBehaviour
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
     
-    // In future, we might want to decouple this reference...
-    // Also, made these public so I can inject the fields with what I need for testing purposes.
-    [Header("Component References")]
-    [SerializeField] public PlayerManager playerManager;
-    
-    [FormerlySerializedAs("gameStateChangeChannel")]
     [Header("Event Channels")]
     //us11-t36 allows for gamestate change action
-    [SerializeField] public EventChannel<GameStateChangedEvent> gameStateChangedChannel;
-    [SerializeField] public EventChannel<Player> turnStartedChannel;
-    [SerializeField] public PlayerMovedEventChannel      playerMovedChannel;
+    [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
+    [SerializeField] public TurnStartedEventChannel turnStartedChannel;
+    [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
+    [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
 
     private int playerCount = 0;
     private int currentPlayer = 0;
-
+    private int currentTurn = 0;
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
@@ -44,12 +35,6 @@ public class GameManager : MonoBehaviour
     //us11t41 duplicate prevention with Awake() method
     private void Awake()
     {
-        //Added to fix failing test
-        if (!gameStateChangedChannel) gameStateChangedChannel = ScriptableObject.CreateInstance<GameStateChangedEventChannel>();
-        if (!turnStartedChannel)      turnStartedChannel      = ScriptableObject.CreateInstance<PlayerEventChannel>(); 
-        if (!playerMovedChannel)      playerMovedChannel      = ScriptableObject.CreateInstance<PlayerMovedEventChannel>();
-        if (!playerManager)           playerManager           = GetComponent<PlayerManager>();
-
         if (instance != null && instance != this)
         {
             //basically if we recognize an instance of a game that isn't the one in use, end it
@@ -76,8 +61,8 @@ public class GameManager : MonoBehaviour
         var old = gameState;
         gameState = newState;
 
-        if (gameStateChangeChannel != null)
-            gameStateChangeChannel.RaiseEvent(new GameStateChange(old, newState));
+        if (gameStateChangedChannel != null)
+            gameStateChangedChannel.RaiseEvent(new GameStateChangedEvent(old, newState));
 
         Debug.Log($"[GameManager] State: {old} -> {newState}");
         return true;
@@ -126,24 +111,24 @@ public class GameManager : MonoBehaviour
         if (playerCount < 2 || playerCount > 4)
         {
             Debug.LogError("Invalid player count, must be between 2 and 4.");
+            gameState = GameState.None;
             return;
         }
         this.playerCount = playerCount;
         currentPlayer = 0;
-        playerManager.InitializePlayers(this.playerCount);
+        initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
 
-        turnStartedChannel.RaiseEvent(playerManager.GetPlayer(currentPlayer));
+        turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
     }
 
     public void NextTurn()
     {
         currentPlayer = (currentPlayer + 1) % playerCount;
-        Player current = playerManager.GetPlayer(currentPlayer);
-
-        turnStartedChannel.RaiseEvent(current);
+        currentTurn++;
+        turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
 
     }
 
@@ -152,6 +137,7 @@ public class GameManager : MonoBehaviour
     {
         SetState(GameState.Initializing);
 
+        // TODO Why is this even here? hdathert
         //this is where we should load / create board/players/etc
         //mini tester
         Debug.Log("Initialize() successfully called - test passed!");
@@ -162,6 +148,10 @@ public class GameManager : MonoBehaviour
     //public void StartGame() => SetState(GameState.WaitingForTurn);
     //public void EndGame() => SetState(GameState.GameOver);
 
+    
+    // TODO this seems like it might be redundant with the HashMap implementaion at the top of this file.
+    // We might want to refactor this to use that, as it seems like it would be a much more maintainable
+    // solution long-term.
     //us11t35
     //here we are looking to have a method that allows for valid state transitions for enums
     private bool CanTransition(GameState from, GameState to)

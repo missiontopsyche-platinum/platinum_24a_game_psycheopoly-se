@@ -4,17 +4,17 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     [Header("Event Channels")]
-    [SerializeField]
-    public PlayerEventChannel playerAddedEventChannel;
-    [SerializeField]
-    public PlayerEventChannel playerRemovedEventChannel;
+    [SerializeField] public PlayerEventChannel playerAddedEventChannel;
+    [SerializeField] public PlayerEventChannel playerRemovedEventChannel;
+    [SerializeField] public IntEventChannel initializePlayerCountChannel;
     
     private List<Player> players = new List<Player>();
-    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        // added this to decouple GameManager from PlayerManager to use events instead - hdathert
+        initializePlayerCountChannel.Subscribe(InitializePlayers);
     }
 
     // Update is called once per frame
@@ -31,6 +31,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="numPlayers">Number of players to initialize</param>
     public void InitializePlayers(int numPlayers)
     {
+        Debug.Log($"Creating players: {numPlayers}");
         players.Clear();  //prevent duplicates when starting new game
         int startingMoney = 1500; //Amount based on normal Monopoly game
         int startingPosition = 0; //GO
@@ -70,7 +71,7 @@ public class PlayerManager : MonoBehaviour
             // newPlayer.ClearOwnedProperties();
             
             players.Add(newPlayer);
-
+            
             //notify event channel listeners of added player 
             if (playerAddedEventChannel != null)
             {

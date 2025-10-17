@@ -1,0 +1,23 @@
+﻿using NUnit.Framework;
+using UnityEngine.TestTools;
+
+namespace Tests.EditMode.GameManagerTests
+{
+    public class GameManagerTransitionsTest : GameManagerTestBase
+    {
+        [Test]
+        public void EndGame_FromNone_IsBlocked()
+        {
+            gameManager.EndGame();
+            LogAssert.Expect("[Game Manager] transition not allowed from : None to GameOver");
+            Assert.AreEqual(GameState.None, gameManager.gameState);
+        }
+
+        [Test]
+        public void Initialize_AllowsTransition_FromNone()
+        {
+            gameManager.Initialize();
+            Assert.AreEqual(GameState.Initializing, gameManager.gameState);
+        }
+    }
+}

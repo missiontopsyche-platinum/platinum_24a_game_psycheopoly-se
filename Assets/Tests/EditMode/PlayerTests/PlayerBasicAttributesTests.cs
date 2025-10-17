@@ -1,12 +1,9 @@
-using System.Collections.Generic;
 using NUnit.Framework;
-using UnityEditor.VersionControl;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-namespace Tests.EditMode
-{   
-    public class PlayerTests
+namespace Tests.EditMode.PlayerTests
+{
+    public class PlayerBasicAttributesTests
     {
         private Player player;
 
