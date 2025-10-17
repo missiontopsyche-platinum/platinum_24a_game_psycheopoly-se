@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Logging
 {
-    public class Logger
+    public static class Logger
     {
         public static IEventLogger EventLogger { get; private set; }
 
@@ -18,7 +18,15 @@ namespace Logging
         // Use cases can include game module, testing, etc.
         public static void Initialize(LogSettings settings, string prefix = "PsycheOpoly")
         {
+            if (EventLogger != null)
+            {
+                return;
+            }
+
             EventLogger = new EventLogger(settings, prefix);
+            EventLogger.Info("Logger.Initialize",
+                    "Logger is now initialized.",
+                    LogCategory.Core);
         }
         // Logs a message with a specific log level. This is the core logging method 
         // invoked by higher-level helpers (Warn, Error, etc.). It applies filtering
@@ -31,7 +39,7 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Log(logEvent.EventName, logEvent.Message, logEvent.Level, logEvent.Category, logEvent.Context);
@@ -44,7 +52,7 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Trace(eventName, message, category, context);
@@ -58,7 +66,7 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Debug(eventName, message, category, context);
@@ -72,7 +80,7 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Info(eventName, message, category, context);
@@ -86,7 +94,7 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Warn(eventName, message, category, context);
@@ -100,7 +108,7 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Error(eventName, message, category, context);
@@ -115,10 +123,14 @@ namespace Logging
         {
             if (EventLogger == null)
             {
-                UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
+                logIsNullMessage();
                 return;
             }
             EventLogger.Exception(exception, eventName, category, message, context);
+        }
+        private static void logIsNullMessage()
+        {
+            UnityEngine.Debug.LogWarning("Logger not initialized. Call Logger.Initialize(LogSetting setting, string prefix) first.");
         }
     }
 }
