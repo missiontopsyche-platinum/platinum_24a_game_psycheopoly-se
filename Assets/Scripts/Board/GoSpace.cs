@@ -15,14 +15,20 @@ namespace PsycheOpoly.Board
             if (player == null)
             {
                 //Catches any null player's 
-                Debug.LogWarning("GoSpace.OnLanded called with a null player");
+                Logging.Logger.Warn("GoSpace.OnLanded", 
+                    "Attempted to process a null player landing on Go space.", 
+                    Logging.LogCategory.Gameplay,
+                    this);
                 return;
             }
 
             //Adding reward to player's money
             int newMoney = player.GetMoney() + Award;
             player.SetMoney(newMoney); //updated player status
-            Debug.Log($"{player.GetPName()} landed on {Name} and received {Award}. Total: {newMoney}");
+            Logging.Logger.Info("GoSpace.OnLanded", 
+                $"{player.GetPName()} landed on {Name} and received {Award}. Total: {newMoney}", 
+                Logging.LogCategory.Gameplay,
+                this);
         }
     }
 }

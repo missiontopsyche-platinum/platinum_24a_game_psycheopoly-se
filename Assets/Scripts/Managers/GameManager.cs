@@ -1,5 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using Logging;
 
 public class GameManager : MonoBehaviour
 {
@@ -54,7 +55,10 @@ public class GameManager : MonoBehaviour
 
         if (!Allowed.TryGetValue(gameState, out var nexts) || !nexts.Contains(newState))
         {
-            Debug.LogWarning($"[GameManager] Illegal transition: {gameState} -> {newState}");
+            Logging.Logger.Warn("GameManager.TryChangeState",
+                $"[GameManager] Illegal transition: {gameState} -> {newState}",
+                LogCategory.Gameplay,
+                this);
             return false;
         }
 
@@ -64,7 +68,10 @@ public class GameManager : MonoBehaviour
         if (gameStateChangedChannel != null)
             gameStateChangedChannel.RaiseEvent(new GameStateChangedEvent(old, newState));
 
-        Debug.Log($"[GameManager] State: {old} -> {newState}");
+        Logging.Logger.Info("GameManager.TryChangeState",
+            $"[GameManager] State changed: {old} -> {newState}",
+            LogCategory.Gameplay,
+            this);
         return true;
     }
 
@@ -80,7 +87,10 @@ public class GameManager : MonoBehaviour
     {
         if (gameState != GameState.None && gameState != GameState.GameOver)
         {
-            Debug.LogWarning($"[GameManager] is unable to start game from state: {gameState}");
+            Logging.Logger.Warn("GameManager.StartGame",
+                $"[GameManager] is unable to start game from state: {gameState}",
+                LogCategory.Gameplay,
+                this);
             return;
         }
 
@@ -110,7 +120,10 @@ public class GameManager : MonoBehaviour
     {
         if (playerCount < 2 || playerCount > 4)
         {
-            Debug.LogError("Invalid player count, must be between 2 and 4.");
+            Logging.Logger.Error("GameManager.SetUpGame",
+                "Invalid player count, must be between 2 and 4.",
+                LogCategory.Gameplay,
+                this);
             gameState = GameState.None;
             return;
         }
@@ -140,7 +153,10 @@ public class GameManager : MonoBehaviour
         // TODO Why is this even here? hdathert
         //this is where we should load / create board/players/etc
         //mini tester
-        Debug.Log("Initialize() successfully called - test passed!");
+        Logging.Logger.Debug("GameManager.Initialize",
+            "Initialize() successfully called - test passed!",
+            LogCategory.Core,
+            this);
 
     }
 
@@ -184,7 +200,10 @@ public class GameManager : MonoBehaviour
         if (newState == gameState) return;
         if (!CanTransition(gameState, newState))
         {
-            Debug.LogWarning($"[Game Manager] transition not allowed from : {gameState} to {newState}");
+            Logging.Logger.Warn("GameManager.SetState",
+                $"Illegal transition: {gameState} -> {newState}",
+                LogCategory.Gameplay,
+                this);
             return;
         }
 
@@ -195,7 +214,10 @@ public class GameManager : MonoBehaviour
         gameStateChangedChannel?.RaiseEvent(new GameStateChangedEvent(prev, newState));
 
         //Corrected Order
-        Debug.Log($"[GameManager] State: {prev} > {newState}");
+        Logging.Logger.Debug("GameManager.SetState",
+            $"State: {prev} > {newState}",
+            LogCategory.Gameplay,
+            this);
     }
 
     

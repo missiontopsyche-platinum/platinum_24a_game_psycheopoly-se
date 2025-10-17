@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PsycheOpoly.Events;
+using Logging;
 
 namespace PsycheOpoly.Board{
 
@@ -63,7 +64,13 @@ namespace PsycheOpoly.Board{
         public Space GetSpace(int index)
         {
             if (spaces == null || spaces.Length == 0)
+            {
+                Logging.Logger.Error("BoardManager.GetSpace",
+                    "Board not initialized, call InitializeBoard()",
+                    LogCategory.Gameplay,
+                    this);
                 throw new InvalidOperationException("Board not initialized, call InitializeBoard()");
+            }
             return spaces[NormalizeIndex(index)];
         }
 
