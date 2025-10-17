@@ -7,7 +7,7 @@ public class GameManagerStateTests
 {
     // Helper: make a fresh GameManager with dependencies & injectable channels
     private GameManager MakeGM(
-        out EventChannel<GameStateChange> stateChan,
+        out EventChannel<GameStateChangedEvent> stateChan,
         out PlayerEventChannel turnChan)
     {
         var go = new GameObject("GM");
@@ -17,7 +17,7 @@ public class GameManagerStateTests
         gm.playerManager = new GameObject("PM").AddComponent<PlayerManager>();
 
         // Create channels and inject them via reflection (they're [SerializeField])
-        stateChan = ScriptableObject.CreateInstance<EventChannel<GameStateChange>>();
+        stateChan = ScriptableObject.CreateInstance<EventChannel<GameStateChangedEvent>>();
         turnChan  = ScriptableObject.CreateInstance<PlayerEventChannel>();
 
         var flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
@@ -38,7 +38,7 @@ public class GameManagerStateTests
         var gm = MakeGM(out var stateChan, out _);
 
         var seen = new List<(GameState fromS, GameState toS)>();
-        stateChan.Subscribe(gsc => seen.Add((gsc.previous, gsc.current)));
+        stateChan.Subscribe(gsc => seen.Add((gsc.previousGameState, gsc.newGameState)));
 
         gm.StartGame(2);
 
