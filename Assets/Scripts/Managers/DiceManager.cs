@@ -8,11 +8,15 @@ public class DiceManager : MonoBehaviour
     private int dieTwo;
 
 
-    //Constant Variables
+    //"Constant" Variables
+    // These should technically be flagged as constant, however I feel having them serialized and
+    // available in the editor is a good idea until rules are 
+    // fully set. These do not have getters/setters so they should never be touched in code, however if necessary I will make them const down the 
+    // line.
     [Header("Range")]
-    [SerializeField] private const int MIN = 2;
+    [SerializeField] private int MIN = 2;
     // MAX is 1 higher than the actual maximum roll due to the higher number being exclusive in the random funciton
-    [SerializeField] private const int MAX = 13;
+    [SerializeField] private int MAX = 13;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
