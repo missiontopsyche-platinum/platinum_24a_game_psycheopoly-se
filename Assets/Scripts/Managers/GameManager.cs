@@ -22,6 +22,11 @@ public class GameManager : MonoBehaviour
     private int currentPlayer = 0;
     private int currentTurn = 0;
 
+    //The below are for testing that the event is properly registering in the class
+    private int dieOne = 0;
+    private int dieTwo = 0;
+    private int totalRolled = 0;
+
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
     {
@@ -205,14 +210,19 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Dice Rolled event listener. Takes the DiceRolledEvent pushed by the event channel and
     /// then will utilize the contents as necessary. 
-    /// For now, it just logs the details.
+    /// For now, it just logs the details, and returns the event object for testing purposes.   
     /// </summary>
     /// <param name="diceRolledEvent"></param>
+    /// <returns>DiceRolledEvent object</returns>
     public void DiceRolled(DiceRolledEvent diceRolledEvent)
     {
         // Currently just logging the die. Will update to new logger once it is in use.
         Debug.Log("Die One: " + diceRolledEvent.dieOne);
         Debug.Log("Die Two: " + diceRolledEvent.dieTwo);
         Debug.Log("Total Roll: " + diceRolledEvent.totalRoll);
+
+        this.dieOne = diceRolledEvent.dieOne;
+        this.dieTwo = diceRolledEvent.dieTwo;
+        this.totalRolled = diceRolledEvent.totalRoll;
     }
 }

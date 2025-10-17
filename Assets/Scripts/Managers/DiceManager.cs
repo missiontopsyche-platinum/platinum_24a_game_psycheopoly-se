@@ -14,9 +14,9 @@ public class DiceManager : MonoBehaviour
     // fully set. These do not have getters/setters so they should never be touched in code, however if necessary I will make them const down the 
     // line.
     [Header("Range")]
-    [SerializeField] private int MIN = 2;
+    [SerializeField] private int MIN = 1;
     // MAX is 1 higher than the actual maximum roll due to the higher number being exclusive in the random funciton
-    [SerializeField] private int MAX = 13;
+    [SerializeField] private int MAX = 7;
 
     [Header("Event Channels")]
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
@@ -38,17 +38,21 @@ public class DiceManager : MonoBehaviour
 
     ///<summary>
     ///Rolls 2 Dice, and returns the sum of the rolls. Uses Unity's built in Random number generator.
+    ///Returns a DiceRolledEvent object for testing purposes.
     /// </summary>
-    public int RollDice()
+    public DiceRolledEvent RollDice()
     {
+        
         dieOne = Random.Range(MIN, MAX);
         dieTwo = Random.Range(MIN, MAX);
         totalRoll = dieOne + dieTwo;
 
+        DiceRolledEvent diceRolledEvent = new DiceRolledEvent(dieOne, dieTwo, totalRoll);
+
         //Tests that the diceRolledChannel isn't null, and raises an event
         if (diceRolledChannel != null)
         {
-            diceRolledChannel?.RaiseEvent(new DiceRolledEvent(dieOne, dieTwo, totalRoll));
+            diceRolledChannel?.RaiseEvent(diceRolledEvent);
         } else
         {
             throw new MissingComponentException("DiceRolledEventChannel is null");
@@ -56,7 +60,7 @@ public class DiceManager : MonoBehaviour
         // Currently logging to the debugger as the logging system is not initalized yet. 
         Debug.Log("Die One: " + dieOne);
         Debug.Log("Die Two: " + dieTwo);
-
-        return dieOne + dieTwo;
+        Debug.Log("Total Roll: " + totalRoll);
+        return diceRolledEvent;
     }
 }
