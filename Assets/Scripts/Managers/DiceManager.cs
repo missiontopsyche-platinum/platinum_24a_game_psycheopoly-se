@@ -48,7 +48,7 @@ public class DiceManager : MonoBehaviour
         //Tests that the diceRolledChannel isn't null, and raises an event
         if (diceRolledChannel != null)
         {
-            diceRolledChannel.RaiseEvent(new DiceRolledEvent(dieOne, dieTwo, totalRoll));
+            diceRolledChannel?.RaiseEvent(new DiceRolledEvent(dieOne, dieTwo, totalRoll));
         } else
         {
             throw new MissingComponentException("DiceRolledEventChannel is null");

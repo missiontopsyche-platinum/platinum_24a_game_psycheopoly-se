@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
     [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
+    [SerializeField] public DiceRolledEventChannel diceRolledChannel;
 
     private int playerCount = 0;
     private int currentPlayer = 0;
@@ -45,6 +46,9 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
+
+        //US156T157 subscribe to DiceRolled Listener
+        diceRolledChannel.Subscribe(DiceRolled);
     }
 
     //Task 112 which is a guarded transition API
@@ -198,5 +202,17 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[GameManager] State: {prev} > {newState}");
     }
 
-    
+    /// <summary>
+    /// Dice Rolled event listener. Takes the DiceRolledEvent pushed by the event channel and
+    /// then will utilize the contents as necessary. 
+    /// For now, it just logs the details.
+    /// </summary>
+    /// <param name="diceRolledEvent"></param>
+    public void DiceRolled(DiceRolledEvent diceRolledEvent)
+    {
+        // Currently just logging the die. Will update to new logger once it is in use.
+        Debug.Log("Die One: " + diceRolledEvent.dieOne);
+        Debug.Log("Die Two: " + diceRolledEvent.dieTwo);
+        Debug.Log("Total Roll: " + diceRolledEvent.totalRoll);
+    }
 }
