@@ -6,7 +6,7 @@ public class DiceManager : MonoBehaviour
     //Note: These should not need to be serializable, as they should not ever need to be touched inside of the editor.
     private int dieOne;
     private int dieTwo;
-
+    private int totalRoll;
 
     //"Constant" Variables
     // These should technically be flagged as constant, however I feel having them serialized and
@@ -18,11 +18,16 @@ public class DiceManager : MonoBehaviour
     // MAX is 1 higher than the actual maximum roll due to the higher number being exclusive in the random funciton
     [SerializeField] private int MAX = 13;
 
+    [Header("Event Channels")]
+    [SerializeField] public DiceRolledEventChannel diceRolledChannel;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        //This is probably unneccessary, but done to be safe
         dieOne = 0;
         dieTwo = 0;
+        totalRoll = 0;
     }
 
     // Update is called once per frame
@@ -38,7 +43,16 @@ public class DiceManager : MonoBehaviour
     {
         dieOne = Random.Range(MIN, MAX);
         dieTwo = Random.Range(MIN, MAX);
+        totalRoll = dieOne + dieTwo;
 
+        //Tests that the diceRolledChannel isn't null, and raises an event
+        if (diceRolledChannel != null)
+        {
+            diceRolledChannel.RaiseEvent(new DiceRolledEvent(dieOne, dieTwo, totalRoll));
+        } else
+        {
+            throw new MissingComponentException("DiceRolledEventChannel is null");
+        }
         // Currently logging to the debugger as the logging system is not initalized yet. 
         Debug.Log("Die One: " + dieOne);
         Debug.Log("Die Two: " + dieTwo);
