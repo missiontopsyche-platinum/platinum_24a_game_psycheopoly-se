@@ -21,6 +21,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
             gameManager.playerMovedChannel = CreateChannel<PlayerMovedEventChannel>();
             gameManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
+            gameManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
         }
 
         [TearDown]
