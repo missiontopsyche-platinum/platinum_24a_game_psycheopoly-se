@@ -30,6 +30,9 @@ namespace Tests.EditMode.GameManagerTests
         [TearDown]
         public virtual void TearDown()
         {
+            //unsubscribe to event channel.
+            gameManager.diceRolledChannel.Unsubscribe(gameManager.DiceRolled);
+
             DestroyTestObjects(gameObject);
         }
     }

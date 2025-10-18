@@ -111,6 +111,15 @@ public class GameManager : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Called when the object is destroyed. 
+    /// </summary>
+    public void OnDestroy()
+    {
+       //Unsubscribe from event channels
+       diceRolledChannel.Unsubscribe(DiceRolled);
+    }
+
 
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
