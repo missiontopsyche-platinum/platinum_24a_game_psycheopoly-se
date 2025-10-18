@@ -17,10 +17,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
     [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
+    [SerializeField] public DiceRolledEventChannel diceRolledChannel;
 
     private int playerCount = 0;
     private int currentPlayer = 0;
     private int currentTurn = 0;
+
+    //The below are for testing that the event is properly registering in the class
+    public int dieOne = 0;
+    public int dieTwo = 0;
+    public int totalRolled = 0;
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
@@ -46,6 +52,8 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
+
+        
     }
 
     //Task 112 which is a guarded transition API
@@ -79,6 +87,8 @@ public class GameManager : MonoBehaviour
     //added Initialize by nnastase for us11-t34
     void Start()
     {
+        //US156T157 subscribe to DiceRolled Listener
+        diceRolledChannel.Subscribe(DiceRolled);
     }
 
     //start & end game to satisfy us11-35
@@ -109,6 +119,15 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    /// <summary>
+    /// Called when the object is destroyed. 
+    /// </summary>
+    public void OnDestroy()
+    {
+       //Unsubscribe from event channels
+       diceRolledChannel.Unsubscribe(DiceRolled);
     }
 
 
@@ -220,5 +239,28 @@ public class GameManager : MonoBehaviour
             this);
     }
 
-    
+    /// <summary>
+    /// Dice Rolled event listener. Takes the DiceRolledEvent pushed by the event channel and
+    /// then will utilize the contents as necessary. 
+    /// For now, it just logs the details and saves the amounts to a class variable 
+    /// </summary>
+    /// <param name="diceRolledEvent"></param>
+    /// <returns>DiceRolledEvent object</returns>
+    public void DiceRolled(DiceRolledEvent diceRolledEvent)
+    {
+        // Refactor to use US145 Logger
+        Logging.Logger.Info("gameManager.DiceRolled",
+            "Die One: " + diceRolledEvent.dieOne,
+            Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled", 
+            "Die Two: " + diceRolledEvent.dieTwo,
+            Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled",
+            "Total: " + diceRolledEvent.totalRoll,
+            Logging.LogCategory.Gameplay);
+
+        this.dieOne = diceRolledEvent.dieOne;
+        this.dieTwo = diceRolledEvent.dieTwo;
+        this.totalRolled = diceRolledEvent.totalRoll;
+    }
 }
