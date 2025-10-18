@@ -242,16 +242,16 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Dice Rolled event listener. Takes the DiceRolledEvent pushed by the event channel and
     /// then will utilize the contents as necessary. 
-    /// For now, it just logs the details, and returns the event object for testing purposes.   
+    /// For now, it just logs the details and saves the amounts to a class variable 
     /// </summary>
     /// <param name="diceRolledEvent"></param>
     /// <returns>DiceRolledEvent object</returns>
     public void DiceRolled(DiceRolledEvent diceRolledEvent)
     {
-        // Currently just logging the die. Will update to new logger once it is in use.
-        Debug.Log("Die One: " + diceRolledEvent.dieOne);
-        Debug.Log("Die Two: " + diceRolledEvent.dieTwo);
-        Debug.Log("Total Roll: " + diceRolledEvent.totalRoll);
+        // Refactor to use US145 Logger
+        Logging.Logger.Info("gameManager.DiceRolled", "Die One: " + diceRolledEvent.dieOne, Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled", "Die Two: " + diceRolledEvent.dieTwo, Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled", "Total: "   + diceRolledEvent.totalRoll, Logging.LogCategory.Gameplay);
 
         this.dieOne = diceRolledEvent.dieOne;
         this.dieTwo = diceRolledEvent.dieTwo;

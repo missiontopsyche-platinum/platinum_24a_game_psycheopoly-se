@@ -19,6 +19,8 @@ namespace Tests.EditMode.DiceManagerTests
 
             // create and add event channels
             diceManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
+
+            InitializeTestLogger();
         }
 
         [TearDown]
