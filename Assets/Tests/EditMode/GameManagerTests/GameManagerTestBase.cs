@@ -1,3 +1,4 @@
+using Logging;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Tests.EditMode.GameManagerTests
         // Base test object
         protected GameObject gameObject;
         protected global::GameManager gameManager;
-    
+
         [SetUp]
         public virtual void SetUp()
         {
@@ -21,10 +22,15 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
             gameManager.playerMovedChannel = CreateChannel<PlayerMovedEventChannel>();
             gameManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
+
             gameManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
 
             // subscribe to event channels
             gameManager.diceRolledChannel.Subscribe(gameManager.DiceRolled);
+
+
+            InitializeTestLogger();
+
         }
 
         [TearDown]
