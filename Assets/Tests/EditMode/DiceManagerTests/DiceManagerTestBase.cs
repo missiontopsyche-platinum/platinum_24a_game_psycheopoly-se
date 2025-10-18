@@ -8,12 +8,16 @@ namespace Tests.EditMode.DiceManagerTests
         // Base Test Object
         protected GameObject gameObject;
         protected global::DiceManager diceManager;
+
+
         [SetUp]
         public virtual void SetUp()
         {
+            // create and poopulate test object
             gameObject = new GameObject("DiceManagerTests");
             diceManager = gameObject.AddComponent<global::DiceManager>();
 
+            // create and add event channels
             diceManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
         }
 

@@ -8,6 +8,7 @@ namespace Tests.EditMode.DiceManagerTests
         /// Tests that dice rolls are within range.
         /// Single dice values are between 1 and 6
         /// Total roll value between 2 and 12
+        /// Currently tests 10 total calls. Can adjust as necessary
         /// </summary>
         [Test]
         public void DiceRollIsInValidRange()
