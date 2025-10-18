@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Logging;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -31,7 +32,11 @@ public class PlayerManager : MonoBehaviour
     /// <param name="numPlayers">Number of players to initialize</param>
     public void InitializePlayers(int numPlayers)
     {
-        Debug.Log($"Creating players: {numPlayers}");
+        Logging.Logger.Info("PlayerManager.InitializePlayers",
+            $"Creating players: {numPlayers}",
+            LogCategory.Gameplay, 
+            this);
+
         players.Clear();  //prevent duplicates when starting new game
         int startingMoney = 1500; //Amount based on normal Monopoly game
         int startingPosition = 0; //GO
@@ -79,7 +84,10 @@ public class PlayerManager : MonoBehaviour
             }
 
             //Log confirmation
-            Debug.Log($"Initialized {newPlayer.GetPName()} with ${newPlayer.GetMoney()}.");
+            Logging.Logger.Info("PlayerManager.InitializePlayers",
+                $"Initialized {newPlayer.GetPName()} with ${newPlayer.GetMoney()}.",
+                LogCategory.Gameplay,
+                this);
         }
     }
 
@@ -94,9 +102,10 @@ public class PlayerManager : MonoBehaviour
             return players[playerId];
         else
         {
-            Debug.LogError("PlayerManager: GetPlayer " +
-                           "attempted access of playerID out" +
-                           $"of bounds: {playerId}");
+            Logging.Logger.Error("PlayerManager.GetPlayer",
+                $"Attempted access of playerID out of bounds: {playerId}",
+                LogCategory.Gameplay,
+                this);
             return null;
         }
     }
@@ -121,8 +130,10 @@ public class PlayerManager : MonoBehaviour
         //player checker first
         if (playerId < 0 || playerId >= players.Count)
         {
-            Debug.LogWarning($"[PlayerManager] RemovePlayer functionality invalid id={playerId}. No action.");
-
+            Logging.Logger.Warn("PlayerManager.RemovePlayer",
+                $"RemovePlayer functionality invalid id={playerId}. No action.",
+                LogCategory.Gameplay,
+                this);
             return false;
         }
 
@@ -135,7 +146,10 @@ public class PlayerManager : MonoBehaviour
             players[i].SetId(i);
         }
 
-        Debug.Log($"[PlayerManager] removed player with id={playerId}.");
+        Logging.Logger.Info("PlayerManager.RemovePlayer",
+            $"Removed player with id={playerId}.",
+            LogCategory.Gameplay,
+            this);
 
         playerRemovedEventChannel?.RaiseEvent(removedPlayer);
         return true;

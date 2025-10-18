@@ -13,14 +13,16 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.InitializeBoard(6);
             const int pid = 7;
 
-        
-            Debug.Log($"Before Set Player, GameObject = {gameObject}");
+            logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent", 
+                $"Before Set Player, GameObject = {gameObject}");
             boardManager.SetPlayerPosition(pid, 0);
-            Debug.Log($"Before Event, enabled={boardManager.enabled}");
+            logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent", 
+                $"Before Event, enabled={boardManager.enabled}");
         
             // TODO refactor to use EventChannel instead of C# events
             GameEvents.RaisePlayerMoved(pid, 3);
-            Debug.Log($"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
+            logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent",
+                $"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
             Assert.AreEqual(3, boardManager.GetPlayerPosition(pid));
         }
 

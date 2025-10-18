@@ -1,3 +1,4 @@
+using Logging;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace Tests.EditMode.BoardManagerTests
         {
             gameObject = new GameObject("BoardManagerTests");
             boardManager = gameObject.AddComponent<PsycheOpoly.Board.BoardManager>();
+            InitializeTestLogger();
         }
 
         [TearDown]

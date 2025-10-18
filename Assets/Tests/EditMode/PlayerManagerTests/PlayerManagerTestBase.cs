@@ -17,6 +17,8 @@ namespace Tests.EditMode.PlayerManagerTests
             playerManager.playerAddedEventChannel = CreateChannel<PlayerEventChannel>();
             playerManager.playerRemovedEventChannel = CreateChannel<PlayerEventChannel>();
             playerManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
+
+            InitializeTestLogger();
         }
 
         [TearDown]

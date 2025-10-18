@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Logging;
 
 
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
@@ -48,6 +49,10 @@ public class Player : ScriptableObject
     {
         if (money < 0)
         {
+            Logging.Logger.Error("Player.SetMoney", 
+                "Money cannot be negative yet...", 
+                LogCategory.Economy,
+                this);
             throw new ArgumentException("Money cannot be negative yet...");
         }
         this.money = money;
@@ -116,6 +121,10 @@ public class Player : ScriptableObject
     {
         if (position < 0)
         {
+            Logging.Logger.Error("Player.SetPosition",
+                "Position values must always be positive.", 
+                LogCategory.Gameplay,
+                this);
             throw new System.ArgumentException("Position values must always be positive.");
         }
         this.position = position;

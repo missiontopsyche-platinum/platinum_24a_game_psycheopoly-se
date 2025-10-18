@@ -61,9 +61,10 @@ namespace Tests.EditMode.PlayerManagerTests
         {
             playerManager.InitializePlayers(2);
         
-            LogAssert.Expect("PlayerManager: GetPlayer " +
-                             "attempted access of playerID out" +
-                             "of bounds: 3");
+            LogAssert.Expect("Test [Level: Error] " +
+                "[Category: Gameplay] " +
+                "[Event Name: PlayerManager.GetPlayer] " +
+                "[Message: Attempted access of playerID out of bounds: 3]");
             Assert.IsNull(playerManager.GetPlayer(3));
         }
     }

@@ -8,8 +8,11 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void EndGame_FromNone_IsBlocked()
         {
+            LogAssert.Expect("Test [Level: Warn] " +
+                "[Category: Gameplay] " +
+                "[Event Name: GameManager.SetState] " +
+                "[Message: Illegal transition: None -> GameOver]");
             gameManager.EndGame();
-            LogAssert.Expect("[Game Manager] transition not allowed from : None to GameOver");
             Assert.AreEqual(GameState.None, gameManager.gameState);
         }
 
