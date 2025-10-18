@@ -1,11 +1,14 @@
+using Logging;
 using System.Collections.Generic;
 using UnityEngine;
+using TestLogger = Logging.Logger; // Alias to avoid namespace clash. Not sure how to resolve without an asmdef file.
 
 namespace Tests.EditMode
 {
     public class ManagerTestBase
     {
         protected List<ScriptableObject> eventChannels = new();
+        protected IEventLogger logger;
 
         protected T CreateChannel<T>() where T : ScriptableObject
         {
@@ -27,6 +30,19 @@ namespace Tests.EditMode
                     Object.DestroyImmediate(channel);
         
             eventChannels.Clear();
+
+            // Destroy test logger
+            TestLogger.Reset();
+        }
+        // These are to make sure that each test has a fresh logger with known settings
+        protected void InitializeTestLogger()
+        {
+            LogSettings settings = ScriptableObject.CreateInstance<LogSettings>();
+            settings.LoggingEnabled = true;
+            settings.MinLogLevel = LogLevel.Trace;
+            settings.EnabledCategories = LogCategory.All;
+            TestLogger.Initialize(settings, "Test", true);
+            logger = TestLogger.EventLogger;
         }
     }
 }
