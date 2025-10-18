@@ -26,5 +26,35 @@ namespace Tests.EditMode.DiceManagerTests
             }
             
         }
+
+        /// <summary>
+        /// Tests that the dice do not return the exact same results 3 times in a row
+        /// </summary>
+        [Test]
+        public void DiceRollIsRandom()
+        {
+            int counter = 0;
+            int total = 0;
+
+            DiceRolledEvent dre = diceManager.RollDice();
+
+            total = dre.totalRoll;
+            counter = 1;
+
+            for (int i = 0; i < 5; i++)
+            {
+                dre = diceManager.RollDice();
+                if (dre.totalRoll == total)
+                {
+                    counter++;
+                } else
+                {
+                    total = dre.totalRoll;
+                    counter = 1;
+                }
+            }
+            Assert.Less(counter, 3);
+
+        }
     }
 }
