@@ -52,8 +52,7 @@ public class GameManager : MonoBehaviour
         //keeps game object
         DontDestroyOnLoad(gameObject);
 
-        //US156T157 subscribe to DiceRolled Listener
-        diceRolledChannel.Subscribe(DiceRolled);
+        
     }
 
     //Task 112 which is a guarded transition API
@@ -81,6 +80,8 @@ public class GameManager : MonoBehaviour
     //added Initialize by nnastase for us11-t34
     void Start()
     {
+        //US156T157 subscribe to DiceRolled Listener
+        diceRolledChannel.Subscribe(DiceRolled);
     }
 
     //start & end game to satisfy us11-35
