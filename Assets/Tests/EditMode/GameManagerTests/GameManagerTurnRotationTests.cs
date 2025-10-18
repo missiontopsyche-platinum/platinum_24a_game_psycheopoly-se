@@ -99,10 +99,16 @@ namespace Tests.EditMode.GameManagerTests
         public void SetUpGame_LogsErrorWhenInvalidPlayerCount()
         {
             gameManager.SetUpGame(1);
-            LogAssert.Expect("Invalid player count, must be between 2 and 4.");
+            LogAssert.Expect("Test [Level: Error] " +
+                "[Category: Gameplay] " +
+                "[Event Name: GameManager.SetUpGame] " +
+                "[Message: Invalid player count, must be between 2 and 4.]");
         
             gameManager.SetUpGame(5);
-            LogAssert.Expect("Invalid player count, must be between 2 and 4.");
+            LogAssert.Expect("Test [Level: Error] " +
+                "[Category: Gameplay] " +
+                "[Event Name: GameManager.SetUpGame] " +
+                "[Message: Invalid player count, must be between 2 and 4.]");
         }
     }
 }
