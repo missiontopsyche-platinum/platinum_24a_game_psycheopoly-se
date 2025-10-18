@@ -22,6 +22,9 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.playerMovedChannel = CreateChannel<PlayerMovedEventChannel>();
             gameManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
             gameManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
+
+            // subscribe to event channels
+            gameManager.diceRolledChannel.Subscribe(gameManager.DiceRolled);
         }
 
         [TearDown]

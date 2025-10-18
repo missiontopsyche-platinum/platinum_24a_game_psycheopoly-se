@@ -23,9 +23,9 @@ public class GameManager : MonoBehaviour
     private int currentTurn = 0;
 
     //The below are for testing that the event is properly registering in the class
-    private int dieOne = 0;
-    private int dieTwo = 0;
-    private int totalRolled = 0;
+    public int dieOne = 0;
+    public int dieTwo = 0;
+    public int totalRolled = 0;
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
