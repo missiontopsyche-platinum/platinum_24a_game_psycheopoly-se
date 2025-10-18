@@ -249,9 +249,15 @@ public class GameManager : MonoBehaviour
     public void DiceRolled(DiceRolledEvent diceRolledEvent)
     {
         // Refactor to use US145 Logger
-        Logging.Logger.Info("gameManager.DiceRolled", "Die One: " + diceRolledEvent.dieOne, Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("gameManager.DiceRolled", "Die Two: " + diceRolledEvent.dieTwo, Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("gameManager.DiceRolled", "Total: "   + diceRolledEvent.totalRoll, Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled",
+            "Die One: " + diceRolledEvent.dieOne,
+            Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled", 
+            "Die Two: " + diceRolledEvent.dieTwo,
+            Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("gameManager.DiceRolled",
+            "Total: " + diceRolledEvent.totalRoll,
+            Logging.LogCategory.Gameplay);
 
         this.dieOne = diceRolledEvent.dieOne;
         this.dieTwo = diceRolledEvent.dieTwo;

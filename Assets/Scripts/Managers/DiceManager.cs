@@ -58,9 +58,15 @@ public class DiceManager : MonoBehaviour
             throw new MissingComponentException("DiceRolledEventChannel is null");
         }
         // Recator to use Logger
-        Logging.Logger.Info("diceManager.RollDice", "Die One: " + dieOne, Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("diceManager.RollDice", "Die Two: " + dieTwo, Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("diceManager.RollDice", "Total: " + totalRoll, Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("diceManager.RollDice",
+            "Die One: " + dieOne,
+            Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("diceManager.RollDice",
+            "Die Two: " + dieTwo,
+            Logging.LogCategory.Gameplay);
+        Logging.Logger.Info("diceManager.RollDice",
+            "Total: " + totalRoll,
+            Logging.LogCategory.Gameplay);
 
         return diceRolledEvent;
     }
