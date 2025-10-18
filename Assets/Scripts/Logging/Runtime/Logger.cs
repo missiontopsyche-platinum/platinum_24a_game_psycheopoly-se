@@ -1,6 +1,3 @@
-using JetBrains.Annotations;
-using Logging;
-using UnityEngine;
 
 namespace Logging
 {
@@ -16,17 +13,15 @@ namespace Logging
         // minimum log level, and category filters.
         // param prefix - An optional prefix string to prepend to all log messages. Defaults to "PsycheOpoly".
         // Use cases can include game module, testing, etc.
-        public static void Initialize(LogSettings settings, string prefix = "PsycheOpoly")
+        public static void Initialize(LogSettings settings, string prefix = "PsycheOpoly", bool overwrite = false)
         {
-            if (EventLogger != null)
+            if (EventLogger == null || overwrite)
             {
-                return;
+                EventLogger = new EventLogger(settings, prefix);
+                EventLogger.Info("Logger.Initialize",
+                        "Logger is now initialized.",
+                        LogCategory.Core);
             }
-
-            EventLogger = new EventLogger(settings, prefix);
-            EventLogger.Info("Logger.Initialize",
-                    "Logger is now initialized.",
-                    LogCategory.Core);
         }
         // Logs a message with a specific log level. This is the core logging method 
         // invoked by higher-level helpers (Warn, Error, etc.). It applies filtering
@@ -127,6 +122,10 @@ namespace Logging
                 return;
             }
             EventLogger.Exception(exception, eventName, category, message, context);
+        }
+        public static void Reset()
+        {
+            EventLogger = null;
         }
         private static void logIsNullMessage()
         {
