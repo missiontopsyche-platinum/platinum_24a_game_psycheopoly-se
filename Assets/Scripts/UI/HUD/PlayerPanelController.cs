@@ -11,7 +11,6 @@ public class PlayerPanelController : UIPanelBase
     [SerializeField] private PlayerManager playerManager;
 
     [Header("UI Elements")]
-    [SerializeField] private Text playerIdText;
     [SerializeField] private Text playerNameText;
     [SerializeField] private Text playerMoneyText;
 
@@ -35,6 +34,15 @@ public class PlayerPanelController : UIPanelBase
 
     public void DisplayCurrentPlayer(TurnStartedEvent turnStartedEvent)
     {
+        if (turnStartedEvent == null)
+        {
+            Logging.Logger.Warn("PlayerPanelController.DisplayCurrentPlayer",
+                $"Event: {nameof(turnStartedEvent)} is null",
+                LogCategory.UI,
+                this);
+            return;
+        }
+
         int currentPlayerId = turnStartedEvent.playerId;
         var player = playerManager?.GetPlayer(currentPlayerId);
 
@@ -48,6 +56,7 @@ public class PlayerPanelController : UIPanelBase
                 this);
             return;
         }
+
         var name = player.GetPName();
         var money = player.GetMoney();
 

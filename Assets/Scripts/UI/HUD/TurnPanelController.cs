@@ -30,6 +30,15 @@ public class TurnPanelController : UIPanelBase
 
     public void DisplayCurrentTurn(TurnStartedEvent turnStartedEvent)
     {
-        SetTextSafe(turnNumberText, $"Turn: {turnStartedEvent?.turnNum}");
+        if (turnStartedEvent == null)
+        {
+            Logging.Logger.Warn("PlayerPanelController.DisplayCurrentPlayer",
+                $"Event: {nameof(turnStartedEvent)} is null",
+                LogCategory.UI,
+                this);
+            return;
+        }
+
+        SetTextSafe(turnNumberText, $"Turn: {turnStartedEvent.turnNum}");
     }
 }

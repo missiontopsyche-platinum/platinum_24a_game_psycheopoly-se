@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 // The base class for the HUD elements. Might be important for later
 // if we want to add shared traits like font style, size, color, etc.
+// US167-T169
 public class UIPanelBase : MonoBehaviour
 {
     // This is just to make sure components are unsubscribed
