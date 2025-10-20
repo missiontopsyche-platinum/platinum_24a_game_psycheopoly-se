@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Logging;
 
-public class EventChannel<T> : ScriptableObject
+public abstract class EventChannel<T> : ScriptableObject
 {
     private readonly List<Action<T>> listeners = new List<Action<T>>();
 
