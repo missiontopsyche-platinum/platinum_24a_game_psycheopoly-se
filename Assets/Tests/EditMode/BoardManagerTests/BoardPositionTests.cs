@@ -28,9 +28,10 @@ namespace Tests.EditMode.BoardManagerTests
             const int pid = 1;
 
             boardManager.SetPlayerPosition(pid, 5);
-            Assert.AreEqual(2, boardManager.MovePlayer(pid, 3));
-
-            Assert.AreEqual(5, boardManager.MovePlayer(pid, -3));
+            boardManager.MovePlayer(new MovePlayerEvent(pid, 3));
+            Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
+            boardManager.MovePlayer(new MovePlayerEvent(pid, -3));
+            Assert.AreEqual(5, boardManager.GetPlayerPosition(pid));
         }
     }
 }

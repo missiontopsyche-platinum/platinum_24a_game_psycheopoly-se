@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using PsycheOpoly.Events;
 using Logging;
 
 namespace PsycheOpoly.Board{
@@ -10,7 +9,12 @@ namespace PsycheOpoly.Board{
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
-        [SerializeField] private int defaultBoardSize = 10; 
+        [SerializeField] private int defaultBoardSize = 10;
+
+        [Header("Event Channels")]
+        [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
+        [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
+        [SerializeField] public IntEventChannel         passedGoChannel;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -29,18 +33,23 @@ namespace PsycheOpoly.Board{
         private void OnDisable() => EnsureUnsubscribed();
         private void OnDestroy() => EnsureUnsubscribed();
 
+        private void Start()
+        {
+            movePlayerChannel.Subscribe(MovePlayer);
+        }
+
         private void EnsureSubscribed()
         {
             if (_subscribed) return;
             if (!this) return;
-            GameEvents.PlayerMoved += OnPlayerMoved;
+            movePlayerChannel?.Subscribe(MovePlayer);
             _subscribed = true;
         }
 
         private void EnsureUnsubscribed()
         {
             if (!_subscribed) return;
-            GameEvents.PlayerMoved -= OnPlayerMoved;
+            movePlayerChannel.Unsubscribe(MovePlayer);
             _subscribed = false;
         }
 
@@ -74,32 +83,61 @@ namespace PsycheOpoly.Board{
             return spaces[NormalizeIndex(index)];
         }
 
-        //Task 96 SetPlayerPosition(int, int) method
+        /// <summary>
+        /// Used to teleport a player to a new space
+        /// This does not use dice rolls. 
+        /// Should be used for events like "Go To Jail" 
+        /// that require a player to not move across other spaces
+        /// Does not check for backwards movement
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="spaceIndex"></param>
         public void SetPlayerPosition(int playerID, int spaceIndex)
         {
             EnsureBoard();
-            playerPositions[playerID] = NormalizeIndex(spaceIndex);
+            if (spaceIndex < 0 || spaceIndex >= spaces.Length)
+            {
+                throw new ArgumentOutOfRangeException("Space Index not in valid range");
+            }
+            else
+            {
+                playerPositions[playerID] = NormalizeIndex(spaceIndex);
+            }
         }
 
-        //Task 86 GetPlayerPosition(int) method
+        /// <summary>
+        /// Returns the position of the specified player
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <returns></returns>
         public int GetPlayerPosition(int playerID)
         {
             EnsureBoard();
             return playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
         }
 
-        //Task 87 MovePlayer and Module wrap
-        public int MovePlayer(int playerID, int spacesToMove)
+        /// <summary>
+        /// Moves the player based on the movePlayerEvent being called
+        /// Takes in a MovePlayerEvent object
+        /// Then moves the specified player by the amount specified.
+        /// Verifies if the user passes go.
+        /// </summary>
+        /// <param name="mpe"></param>
+        public void MovePlayer(MovePlayerEvent mpe)
         {
             EnsureBoard();
-            int next = NormalizeIndex(GetPlayerPosition(playerID) + spacesToMove);
-            playerPositions[playerID] = next;
-            return next;
+            int previous = GetPlayerPosition(mpe.id);
+            int next = NormalizeIndex(previous + mpe.spacesToMove);
+            playerPositions[mpe.id] = next;
+            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
+            
+            // Throws an event if the player has a negative move.
+            // This may need a refactor if anything causes the player to move backwards normally.
+            if (next < previous)
+            {
+                passedGoChannel?.RaiseEvent(mpe.id);
+            }
         }
-
-        //Task 90 event handler
-        private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
-
 
         //Helper methods
         //confirms board is set to default size
