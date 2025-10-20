@@ -1,7 +1,7 @@
 ---
 config:
   layout: dagre
-title: Psyche-Opoly — Activity Diagram (User vs System)
+title: Psyche-Opoly — Activity Diagram
 ---
 flowchart TD
  subgraph L1["User"]
@@ -15,22 +15,30 @@ flowchart TD
   end
  subgraph L2["System"]
         S_Connect["Connect to Psyche Home Page"]
+        S_DisplayRoll["Display Roll"]
         S_Move["Move Piece (sum of dice)"]
         S_DisplayTile["Display Landing Tile"]
-        S_DisplayRoll["Display Roll"]
         G_Property{"property_tile?"}
         G_Action{"action_tile?"}
         G_Jail{"jail?"}
         S_Event["Display Drawn Event Card"]
-        G_GoTo{"go_to_tile?"}
-        G_Collect{"collect_fee?"}
+        G_EventOption{"Event Card Outcome?"}
+        G_Collect{"collect_cash?"}
         G_Pay{"pay_fee?"}
         S_Jail["Display Jail Tile (skip turn)"]
         S_Collect["Collect Cash"]
-        S_Deduct["Deduct Total Cash"]
+        S_Pay["Pay Fee"]
+        S_Cash["Display Updated Cash Value"]
+        S_WinCheck{"Cash ≥ $10,000?"}
+        S_LoseCheck{"Cash ≤ $0?"}
+        S_Win["Display Win Screen"]
+        S_Lose["Display Game Over (Bankrupt)"]
         S_SimOpp["Simulate Opponent Turn"]
         S_ShowOpp@{ label: "Display Opponent's Turn" }
   end
+
+    %% divided everything into sub-groups for logic
+    %%this is the initial start flow
     START[["Start"]] --> U_Choose
     U_Choose --> U_Start & U_Learn
     U_Learn --> S_Connect
@@ -39,22 +47,52 @@ flowchart TD
     S_DisplayRoll --> S_Move
     S_Move --> S_DisplayTile
     S_DisplayTile --> G_Property & G_Action & G_Jail
+
+    %%property tile logic
     G_Property -- owned_by_other --> U_PayRent
-    G_Property -- not_owned_by_other --> U_Purchase
     G_Property -- owned_by_user --> U_NoAction
-    U_PayRent --> S_Deduct
-    U_Purchase --> S_Deduct
-    U_NoAction --> S_Deduct
+    G_Property -- not_owned_by_other --> F1["‖"]
+    F1 --> U_Purchase & U_NoAction
+    U_Purchase --> J1["‖"]
+    U_NoAction --> J1
+    U_PayRent --> S_Cash
+    J1 --> S_Cash
+
+    %%action tiles
     G_Action --> S_Event
-    S_Event --> G_GoTo & G_Collect & G_Pay
-    G_Collect --> S_Collect
-    S_Collect --> S_Deduct
-    G_Pay --> S_Deduct
-    G_GoTo --> S_Move
+    S_Event --> G_EventOption
+
+    %%event card options
+    G_EventOption -- go_to_tile --> S_DisplayTile
+    G_EventOption -- collect_cash --> G_Collect
+    G_EventOption -- pay_fee --> G_Pay
+
+    %%follow up flow to event cards
+    G_Collect --> S_Collect --> S_Cash
+    G_Pay -->  S_Pay --> S_Cash
+
+    %% jail
     G_Jail --> S_Jail
-    S_Jail --> S_Deduct
-    S_Deduct --> S_SimOpp
+    S_Jail --> S_Cash
+
+    %%win/loss logic; this is just a placeholder at the moment
+    S_Cash --> S_WinCheck
+    S_WinCheck -- yes --> S_Win
+    S_WinCheck -- no --> S_LoseCheck
+    S_LoseCheck -- yes --> S_Lose
+    S_LoseCheck -- no --> S_SimOpp
+
+    %% opponent logic; this will loop for however many actual players there are
     S_SimOpp --> S_ShowOpp
     S_ShowOpp --> U_Roll
-    S_End[["End"]]
+
+    %%win/loss STATES
+    S_Win --> END[["End (Game Over)"]]
+    S_Lose --> END
     S_ShowOpp@{ shape: rect}
+
+    %%stle edits
+    F1:::fork
+    J1:::join
+    classDef fork fill:#222,stroke:#222,stroke-width:3px
+    classDef join fill:#222,stroke:#222,stroke-width:3px
