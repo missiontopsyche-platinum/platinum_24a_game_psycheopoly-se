@@ -1,0 +1,60 @@
+---
+config:
+  layout: dagre
+title: Psyche-Opoly — Activity Diagram (User vs System)
+---
+flowchart TD
+ subgraph L1["User"]
+        U_Choose["Choose Name & Piece"]
+        U_Start["Start Game"]
+        U_Learn["Learn More"]
+        U_Roll["Roll Dice"]
+        U_PayRent["Pay Rent"]
+        U_Purchase["Purchase Property"]
+        U_NoAction["No Action"]
+  end
+ subgraph L2["System"]
+        S_Connect["Connect to Psyche Home Page"]
+        S_Move["Move Piece (sum of dice)"]
+        S_DisplayTile["Display Landing Tile"]
+        S_DisplayRoll["Display Roll"]
+        G_Property{"property_tile?"}
+        G_Action{"action_tile?"}
+        G_Jail{"jail?"}
+        S_Event["Display Drawn Event Card"]
+        G_GoTo{"go_to_tile?"}
+        G_Collect{"collect_fee?"}
+        G_Pay{"pay_fee?"}
+        S_Jail["Display Jail Tile (skip turn)"]
+        S_Collect["Collect Cash"]
+        S_Deduct["Deduct Total Cash"]
+        S_SimOpp["Simulate Opponent Turn"]
+        S_ShowOpp@{ label: "Display Opponent's Turn" }
+  end
+    START[["Start"]] --> U_Choose
+    U_Choose --> U_Start & U_Learn
+    U_Learn --> S_Connect
+    U_Start --> U_Roll
+    U_Roll --> S_DisplayRoll
+    S_DisplayRoll --> S_Move
+    S_Move --> S_DisplayTile
+    S_DisplayTile --> G_Property & G_Action & G_Jail
+    G_Property -- owned_by_other --> U_PayRent
+    G_Property -- not_owned_by_other --> U_Purchase
+    G_Property -- owned_by_user --> U_NoAction
+    U_PayRent --> S_Deduct
+    U_Purchase --> S_Deduct
+    U_NoAction --> S_Deduct
+    G_Action --> S_Event
+    S_Event --> G_GoTo & G_Collect & G_Pay
+    G_Collect --> S_Collect
+    S_Collect --> S_Deduct
+    G_Pay --> S_Deduct
+    G_GoTo --> S_Move
+    G_Jail --> S_Jail
+    S_Jail --> S_Deduct
+    S_Deduct --> S_SimOpp
+    S_SimOpp --> S_ShowOpp
+    S_ShowOpp --> U_Roll
+    S_End[["End"]]
+    S_ShowOpp@{ shape: rect}
