@@ -13,8 +13,7 @@ namespace PsycheOpoly.Board{
         [SerializeField] private int defaultBoardSize = 10;
 
         [Header("Event Channels")]
-        [SerializeField] private EventChannel<DiceRolledEvent> diceRolledEvent;
-        [SerializeField] private EventChannel<MovePlayerEvent> movePlayerChannel;
+        [SerializeField] public EventChannel<MovePlayerEvent> movePlayerChannel;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -33,12 +32,17 @@ namespace PsycheOpoly.Board{
         private void OnDisable() => EnsureUnsubscribed();
         private void OnDestroy() => EnsureUnsubscribed();
 
+        private void Start()
+        {
+            movePlayerChannel.Subscribe(MovePlayer);
+        }
+
         private void EnsureSubscribed()
         {
             if (_subscribed) return;
             if (!this) return;
             //GameEvents.PlayerMoved += OnPlayerMoved;
-            movePlayerChannel.Subscribe(MovePlayer);
+            //movePlayerChannel.Subscribe(MovePlayer);
             _subscribed = true;
         }
 

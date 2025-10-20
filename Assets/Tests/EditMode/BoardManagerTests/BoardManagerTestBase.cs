@@ -14,6 +14,7 @@ namespace Tests.EditMode.BoardManagerTests
         {
             gameObject = new GameObject("BoardManagerTests");
             boardManager = gameObject.AddComponent<PsycheOpoly.Board.BoardManager>();
+            boardManager.movePlayerChannel = CreateChannel<MovePlayerEventChannel>();
             InitializeTestLogger();
         }
 
