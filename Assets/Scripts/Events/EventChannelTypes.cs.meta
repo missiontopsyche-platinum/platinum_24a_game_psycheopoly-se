@@ -1,2 +1,6 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 1cea688c010dc614eb51c14c65232934
+=======
+guid: 00799906bba50f843b345373b613348b
+>>>>>>> 778cbcd (Task 218 - Create new event channel used to notify BoardManager to move player. This might be scrapped later)

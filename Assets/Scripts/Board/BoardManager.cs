@@ -63,11 +63,7 @@ namespace PsycheOpoly.Board{
         {
             if (_subscribed) return;
             if (!this) return;
-            if (this.movePlayerChannel != null)
-            {
-                this.movePlayerChannel.Subscribe(MovePlayer);
-            } 
-           
+            GameEvents.PlayerMoved += OnPlayerMoved;
             _subscribed = true;
         }
 
