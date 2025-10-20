@@ -126,4 +126,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   color: {r: 0, g: 0, b: 0, a: 0}
-  renderer: {fileID: 5179765076115702518}
+  meshRenderer: {fileID: 5179765076115702518}

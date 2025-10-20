@@ -10,7 +10,10 @@ namespace PsycheOpoly.Board{
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
-        [SerializeField] private int defaultBoardSize = 10; 
+        [SerializeField] private int defaultBoardSize = 40;
+
+        [Header("Render Components")] 
+        [SerializeField] private BoardRenderer boardRenderer;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -26,7 +29,14 @@ namespace PsycheOpoly.Board{
 
         private void Awake()     => EnsureSubscribed();
         private void OnEnable()  => EnsureSubscribed();
+
+        private void Start()
+        {
+            InitializeBoard();
+        }
+
         private void OnDisable() => EnsureUnsubscribed();
+
         private void OnDestroy() => EnsureUnsubscribed();
 
         private void EnsureSubscribed()
@@ -56,7 +66,9 @@ namespace PsycheOpoly.Board{
             for (int i = 1; i < size; i++)
                 spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
                                          : new PropertySpace($"Property {i}");
-
+            
+            boardRenderer.GenerateBoard(spaces);
+            
             EnsureSubscribed();
         }
 

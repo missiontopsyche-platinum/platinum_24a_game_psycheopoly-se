@@ -3,27 +3,22 @@ using Logging;
 using PsycheOpoly.Board;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Space = PsycheOpoly.Board.Space;
 
 public class BoardRenderer : MonoBehaviour
 {
-    [SerializeField] private BoardManager boardManager;
     // camera is used to dynamically create the board in 3d space regardless of the size
-    [SerializeField] private Camera camera = new();
-    [FormerlySerializedAs("spaceRenderer")] [SerializeField] private GameObject spaceRendererPrefab;
+    [SerializeField] private Camera mainCamera = new();
+    [SerializeField] private GameObject spaceRendererPrefab;
 
-    private List<SpaceRenderer> spaceRenderers = new();
+    private SpaceRenderer[] spaceRenderers;
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // THIS IS TEMPORARY UNTIL WE PASS IN REAL DATA
-        List<PsycheOpoly.Board.Space> tempSpaces = new();
-        for (int i = 0; i < 40; i++)
-            tempSpaces.Add(new PropertySpace($"Test_{i}"));
-        
-        GenerateBoard(tempSpaces);
+
     }
 
     // Update is called once per frame
@@ -32,16 +27,23 @@ public class BoardRenderer : MonoBehaviour
         
     }
 
-    private void OnDestroy()
-    {
-        ClearBoard();
-    }
+    private void OnDestroy() => ClearBoard();
 
-    private void GenerateBoard(List<PsycheOpoly.Board.Space> spaces)
+    public void GenerateBoard(Space[] spaces)
     {
+        // only allow board generation in play mode
+        if (!Application.isPlaying)
+        {
+            Logging.Logger.Warn("GenerateBoard",
+                "Board generation attemped in EditMode - skipping.",
+                LogCategory.UI,
+                this);
+            return;
+        }
+        
         ClearBoard();
 
-        if (spaces == null || spaces.Count == 0)
+        if (spaces == null || spaces.Length == 0)
         {
             Logging.Logger.Warn("GenerateBoard", 
                 "No spaces provided to BoardRenderer", 
@@ -52,32 +54,33 @@ public class BoardRenderer : MonoBehaviour
         
         // set side spaces count based on incoming data
         // Remove the corners (-4), divide by 4 to get side length without corners. +2 to re-add adjoining corners.
-        sideSpacesCount = ((spaces.Count - 4) / 4) + 2;
+        sideSpacesCount = ((spaces.Length - 4) / 4) + 2;
         edgeBranch = (sideSpacesCount - 1) / 2; // this assumes the side spaces are odd... we basically know they are already.
         
         // verify that the board has enough spaces
         int expectedSpaces = 4 * (sideSpacesCount - 1);
-        if (spaces.Count != expectedSpaces)
+        if (spaces.Length != expectedSpaces)
         {
             Logging.Logger.Warn("GenerateBoard", 
-                $"Space count {spaces.Count} doesn't form a perfect square board. Expected {expectedSpaces}.", 
+                $"Space count {spaces.Length} doesn't form a perfect square board. Expected {expectedSpaces}.", 
                 LogCategory.UI, 
                 this);
             return;
         }
+
+        spaceRenderers = new SpaceRenderer[spaces.Length];
         
         // vertical units of space in ortho-camera view from origin
-        float size = camera.orthographicSize; 
+        float size = mainCamera.orthographicSize; 
         // distance in units between spaces, also space scale value.
         float increment = (size * 2) / sideSpacesCount;
 
-        for (int i = 0; i < spaces.Count; i++)
+        for (int i = 0; i < spaces.Length; i++)
         {
             Vector2 position = GetSpacePosition(i, increment);
-            SpaceRenderer newRenderer = InstantiateSpace(position.x, position.y, increment);
-            // TODO pass in scriptable object information to render space properly
-            // renderer.Initialize(spaces[i]);
-            spaceRenderers.Add(newRenderer);
+            SpaceRenderer newRenderer = InstantiateSpace(
+                position.x, position.y, spaces[i], increment);
+            spaceRenderers[i] = newRenderer;
         }
         
         OnBoardReady();
@@ -102,12 +105,12 @@ public class BoardRenderer : MonoBehaviour
         };
     }
 
-    private SpaceRenderer InstantiateSpace(float x, float y, float scale)
+    private SpaceRenderer InstantiateSpace(float x, float y, Space spaceData, float scale)
     {
         GameObject newSpace = Instantiate(spaceRendererPrefab, transform);
         SpaceRenderer newRenderer = newSpace.GetComponent<SpaceRenderer>();
         newSpace.transform.position = new Vector3(x, y, 0);
-        newRenderer.SetUpSpace(scale);
+        newRenderer.SetUpSpace(spaceData, scale);
         return newRenderer;
     }
 
@@ -125,9 +128,15 @@ public class BoardRenderer : MonoBehaviour
         if (spaceRenderers != null)
         {
             foreach (var spaceRenderer in spaceRenderers)
-                if(spaceRenderer != null)
-                    Destroy(spaceRenderer.gameObject);
-            spaceRenderers.Clear();
+                if (spaceRenderer != null)
+                {
+                    if (Application.isPlaying)   
+                        Destroy(spaceRenderer.gameObject);
+                    else
+                        DestroyImmediate(spaceRenderer.gameObject);
+                }
         }
+
+        spaceRenderers = null;
     }
 }
