@@ -19,7 +19,7 @@ namespace Tests.EditMode.BoardManagerTests
             logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent", 
                 $"Before Event, enabled={boardManager.enabled}");
 
-            // TODO refactor to use EventChannel instead of C# events
+            
             boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 3));
             logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent",
                 $"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
