@@ -9,12 +9,12 @@ public class MovePlayerEvent
     /// <summary>
     /// The id of the Player to move
     /// </summary>
-    private int id{ get; }
+    public int id{ get; private set; }
 
     /// <summary>
     /// The amount of spaces to move the player
     /// </summary>
-    private int spacesToMove { get; }
+    public int spacesToMove { get; private set; }
 
     /// <summary>
     /// Creates a <b>READ-ONLY</b> payload of data regarding how to move a player around the board
