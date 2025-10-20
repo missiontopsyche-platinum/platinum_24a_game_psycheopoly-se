@@ -19,6 +19,7 @@ namespace PsycheOpoly.Board{
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
         [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
         [SerializeField] public IntEventChannel         passedGoChannel;
+        [SerializeField] private EventChannel<DiceRolledEvent> diceRolledEvent;
 
         [Header("Render Components")]
         [SerializeField] private BoardRenderer boardRenderer;
@@ -62,7 +63,7 @@ namespace PsycheOpoly.Board{
         {
             if (_subscribed) return;
             if (!this) return;
-            movePlayerChannel?.Subscribe(MovePlayer);
+            GameEvents.PlayerMoved += OnPlayerMoved;
             _subscribed = true;
         }
 

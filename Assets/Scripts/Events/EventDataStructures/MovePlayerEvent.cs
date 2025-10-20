@@ -9,6 +9,7 @@ public class MovePlayerEvent
     /// <summary>
     /// The id of the Player to move
     /// </summary>
+    private int id{ get; }
 
     public int id{ get; private set; }
 
