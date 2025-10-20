@@ -9,12 +9,20 @@ public class MovePlayerEvent
     /// <summary>
     /// The id of the Player to move
     /// </summary>
+<<<<<<< HEAD
     public int id{ get; private set; }
+=======
+    private int id{ get; }
+>>>>>>> 6a5dbbc (Task 218 - Create new event channel used to notify BoardManager to move player. This might be scrapped later)
 
     /// <summary>
     /// The amount of spaces to move the player
     /// </summary>
+<<<<<<< HEAD
     public int spacesToMove { get; private set; }
+=======
+    private int spacesToMove { get; }
+>>>>>>> 6a5dbbc (Task 218 - Create new event channel used to notify BoardManager to move player. This might be scrapped later)
 
     /// <summary>
     /// Creates a <b>READ-ONLY</b> payload of data regarding how to move a player around the board
