@@ -477,7 +477,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c91c7211389a5409198ea73cc2b804, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PsycheOpoly.Board.BoardManager
-  defaultBoardSize: 10
+  defaultBoardSize: 40
+  boardRenderer: {fileID: 1217087639}
 --- !u!114 &1217087639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,8 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37662fd3c7e062f42af4adc886c03626, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::BoardRenderer
-  boardManager: {fileID: 1217087638}
-  camera: {fileID: 330585545}
+  mainCamera: {fileID: 330585545}
   spaceRendererPrefab: {fileID: 7095298248733592577, guid: 3275f65fddc4e5d4194385c6207010fa, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
