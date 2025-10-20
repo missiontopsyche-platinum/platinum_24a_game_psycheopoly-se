@@ -10,7 +10,10 @@ namespace PsycheOpoly.Board{
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
-        [SerializeField] private int defaultBoardSize = 10; 
+        [SerializeField] private int defaultBoardSize = 10;
+
+        [Header("Event Channels")]
+        [SerializeField] private EventChannel<DiceRolledEvent> diceRolledEvent;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -34,6 +37,7 @@ namespace PsycheOpoly.Board{
             if (_subscribed) return;
             if (!this) return;
             GameEvents.PlayerMoved += OnPlayerMoved;
+            //diceRolledEvent.Subscribe(MovePlayer);
             _subscribed = true;
         }
 

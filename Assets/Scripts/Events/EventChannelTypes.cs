@@ -72,3 +72,15 @@ public class TurnStartedEventChannel : EventChannel<TurnStartedEvent> { }
 /// </para>
 /// </summary>
 public class DiceRolledEventChannel : EventChannel<DiceRolledEvent> { }
+
+/// <summary>
+/// Event channel that sends information on how to move a player
+/// <para>
+/// To be owned by <c>GameManager</c> and subscribed to by any GameObjects that depend on
+/// a notification of how a player needs to move
+/// </para>
+/// <para>
+/// Payload: <c>MovePlayerEventEvent</c>
+/// </para>
+/// </summary>
+public class MovePlayerEventChannel : EventChannel<MovePlayerEvent> { }
