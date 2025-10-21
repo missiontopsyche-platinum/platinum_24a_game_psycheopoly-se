@@ -1,24 +1,25 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 
 public class TurnBannerController : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private TMP_Text turnLabel;
+    [SerializeField] private Text turnLabel;
     [SerializeField] private Button continueButton;
 
     private void Awake()
     {
         //makes sure the banner is hidden when game starts
         gameObject.SetActive(false);
-        continueButton.onClick.AddListener(OnContinueClicked);
+        if (continueButton != null)
+            continueButton.onClick.AddListener(OnContinueClicked);
     }
 
     //Called by GameManager or PlayerManager
     public void ShowBanner(int playerId)
     {
-        turnLabel.text = $"Player {playerId}'s Turn";
+        if (turnLabel != null)
+            turnLabel.text = $"Player {playerId}'s Turn";
         gameObject.SetActive(true);
     }
 
