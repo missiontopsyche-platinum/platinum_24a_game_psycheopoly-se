@@ -15,9 +15,14 @@ public class DicePanelController : UIPanelBase
     [SerializeField] private Text dice2RolledText;
     [SerializeField] private Text diceTotalText;// Probably don't need this
 
+    [Header("UI Controls")]
+    [SerializeField] private Button rollDiceButton;
     private void OnEnable()
     {
         Subscribe(diceRolledChannel, DisplayDiceRoll);
+
+        if (rollDiceButton != null) rollDiceButton.onClick.AddListener(RollDiceClick);
+
         Logging.Logger.Trace("DicePanelController.OnEnable",
             "Dice panel is now enabled.",
             LogCategory.UI,
@@ -27,6 +32,9 @@ public class DicePanelController : UIPanelBase
     private void OnDisable()
     {
         ClearSubscriptions();
+
+        if (rollDiceButton != null) rollDiceButton.onClick.RemoveListener(RollDiceClick);
+
         Logging.Logger.Trace("DicePanelController.OnDisable",
             "Dice panel is now disabled.",
             LogCategory.UI,
