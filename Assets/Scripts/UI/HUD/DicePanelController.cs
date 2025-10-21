@@ -7,6 +7,9 @@ public class DicePanelController : UIPanelBase
     [Header("Event Channels")]
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
 
+    [Header("Data Source")]
+    [SerializeField] private DiceManager diceManager;
+
     [Header("UI Elements")]
     [SerializeField] private Text dice1RolledText;
     [SerializeField] private Text dice2RolledText;
@@ -44,5 +47,23 @@ public class DicePanelController : UIPanelBase
         SetTextSafe(dice1RolledText, $"Die One: {diceRolledEvent.dieOne}");
         SetTextSafe(dice2RolledText, $"Die Two: {diceRolledEvent.dieTwo}");
         SetTextSafe(diceTotalText, $"Total: {diceRolledEvent.totalRoll}");
+    }
+
+    public void RollDiceClick()
+    {
+        if (diceManager == null)
+        {
+            Logging.Logger.Error("DicePanelController.OnRollDiceClicked",
+                "DiceManager is null",
+                LogCategory.UI,
+                this);
+            return;
+        }
+
+        diceManager.RollDice();
+        Logging.Logger.Trace("DicePanelController.OnRollDiceClicked",
+            "Roll Dice button clicked.",
+            LogCategory.UI,
+            this);
     }
 }
