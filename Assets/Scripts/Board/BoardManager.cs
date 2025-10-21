@@ -10,7 +10,10 @@ namespace PsycheOpoly.Board{
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
-        [SerializeField] private int defaultBoardSize = 10; 
+        [SerializeField] private int defaultBoardSize = 10;
+
+        [Header("Event Channels")]
+        [SerializeField] public MovePlayerEventChannel movePlayerChannel;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -29,18 +32,27 @@ namespace PsycheOpoly.Board{
         private void OnDisable() => EnsureUnsubscribed();
         private void OnDestroy() => EnsureUnsubscribed();
 
+        private void Start()
+        {
+            movePlayerChannel.Subscribe(MovePlayer);
+        }
+
         private void EnsureSubscribed()
         {
             if (_subscribed) return;
             if (!this) return;
-            GameEvents.PlayerMoved += OnPlayerMoved;
+            if (this.movePlayerChannel != null)
+            {
+                this.movePlayerChannel.Subscribe(MovePlayer);
+            } 
+           
             _subscribed = true;
         }
 
         private void EnsureUnsubscribed()
         {
             if (!_subscribed) return;
-            GameEvents.PlayerMoved -= OnPlayerMoved;
+            movePlayerChannel.Unsubscribe(MovePlayer);
             _subscribed = false;
         }
 
@@ -89,17 +101,16 @@ namespace PsycheOpoly.Board{
         }
 
         //Task 87 MovePlayer and Module wrap
-        public int MovePlayer(int playerID, int spacesToMove)
+        public void MovePlayer(MovePlayerEvent mpe)
         {
             EnsureBoard();
-            int next = NormalizeIndex(GetPlayerPosition(playerID) + spacesToMove);
-            playerPositions[playerID] = next;
-            return next;
+            int next = NormalizeIndex(GetPlayerPosition(mpe.id) + mpe.spacesToMove);
+            playerPositions[mpe.id] = next;
         }
 
         //Task 90 event handler
-        private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
-
+        //private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
+         
 
         //Helper methods
         //confirms board is set to default size
