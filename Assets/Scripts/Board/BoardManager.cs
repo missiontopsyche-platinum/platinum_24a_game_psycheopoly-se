@@ -12,6 +12,7 @@ namespace PsycheOpoly.Board{
         [SerializeField] private int defaultBoardSize = 10;
 
         [Header("Event Channels")]
+        [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
         [SerializeField] public MovePlayerEventChannel movePlayerChannel;
 
         //Task 81 create Space[] array
@@ -40,7 +41,7 @@ namespace PsycheOpoly.Board{
         {
             if (_subscribed) return;
             if (!this) return;
-            GameEvents.PlayerMoved += OnPlayerMoved;
+            movePlayerChannel?.Subscribe(MovePlayer);
             _subscribed = true;
         }
 
@@ -99,13 +100,11 @@ namespace PsycheOpoly.Board{
         public void MovePlayer(MovePlayerEvent mpe)
         {
             EnsureBoard();
-            int next = NormalizeIndex(GetPlayerPosition(mpe.id) + mpe.spacesToMove);
+            int previous = GetPlayerPosition(mpe.id);
+            int next = NormalizeIndex(previous + mpe.spacesToMove);
             playerPositions[mpe.id] = next;
+            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
         }
-
-        //Task 90 event handler
-        //private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
-         
 
         //Helper methods
         //confirms board is set to default size
