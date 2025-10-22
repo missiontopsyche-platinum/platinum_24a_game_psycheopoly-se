@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Logging;
+using Logger = Logging.Logger;
 
 namespace PsycheOpoly.Board{
 
@@ -31,7 +32,13 @@ namespace PsycheOpoly.Board{
         //Task 88 subscribe and Task 89 unsubscribe 
         private bool _subscribed;
 
-        private void Awake()     => EnsureSubscribed();
+        private void Awake()
+        {
+            EnsureSubscribed();
+            
+            Logger.Initialize(LogSettings.Current());
+        }
+
         private void OnEnable()  => EnsureSubscribed();
 
         private void Start()
