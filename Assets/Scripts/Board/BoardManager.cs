@@ -12,6 +12,9 @@ namespace PsycheOpoly.Board{
         [Header("Board Settings")]
         [SerializeField] private int defaultBoardSize = 40;
 
+        [Header("Render Components")] 
+        [SerializeField] private BoardRenderer boardRenderer;
+
         [Header("Event Channels")]
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
         [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
