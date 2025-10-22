@@ -83,21 +83,46 @@ namespace PsycheOpoly.Board{
             return spaces[NormalizeIndex(index)];
         }
 
-        //Task 96 SetPlayerPosition(int, int) method
+        /// <summary>
+        /// Used to teleport a player to a new space
+        /// This does not use dice rolls. 
+        /// Should be used for events like "Go To Jail" 
+        /// that require a player to not move across other spaces
+        /// Does not check for backwards movement
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="spaceIndex"></param>
         public void SetPlayerPosition(int playerID, int spaceIndex)
         {
             EnsureBoard();
-            playerPositions[playerID] = NormalizeIndex(spaceIndex);
+            if (spaceIndex < 0 || spaceIndex >= spaces.Length)
+            {
+                throw new ArgumentOutOfRangeException("Space Index not in valid range");
+            }
+            else
+            {
+                playerPositions[playerID] = NormalizeIndex(spaceIndex);
+            }
         }
 
-        //Task 86 GetPlayerPosition(int) method
+        /// <summary>
+        /// Returns the position of the specified player
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <returns></returns>
         public int GetPlayerPosition(int playerID)
         {
             EnsureBoard();
             return playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
         }
 
-        //Task 87 MovePlayer and Module wrap
+        /// <summary>
+        /// Moves the player based on the movePlayerEvent being called
+        /// Takes in a MovePlayerEvent object
+        /// Then moves the specified player by the amount specified.
+        /// Verifies if the user passes go.
+        /// </summary>
+        /// <param name="mpe"></param>
         public void MovePlayer(MovePlayerEvent mpe)
         {
             EnsureBoard();
@@ -106,6 +131,8 @@ namespace PsycheOpoly.Board{
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
             
+            // Throws an event if the player has a negative move.
+            // This may need a refactor if anything causes the player to move backwards normally.
             if (next < previous)
             {
                 passedGoChannel?.RaiseEvent(mpe.id);
