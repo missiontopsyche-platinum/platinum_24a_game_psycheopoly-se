@@ -13,7 +13,8 @@ namespace PsycheOpoly.Board{
 
         [Header("Event Channels")]
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
-        [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+        [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
+        [SerializeField] public IntEventChannel         passedGoChannel;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -104,6 +105,11 @@ namespace PsycheOpoly.Board{
             int next = NormalizeIndex(previous + mpe.spacesToMove);
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
+            
+            if (next < previous)
+            {
+                passedGoChannel?.RaiseEvent(mpe.id);
+            }
         }
 
         //Helper methods

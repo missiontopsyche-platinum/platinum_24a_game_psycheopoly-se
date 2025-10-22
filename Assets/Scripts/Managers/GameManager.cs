@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+    
 
     private int playerCount = 0;
     private int currentPlayer = 0;
