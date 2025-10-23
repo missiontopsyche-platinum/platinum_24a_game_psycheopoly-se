@@ -7,15 +7,55 @@ public class TurnBannerController : MonoBehaviour
     [SerializeField] private Text turnLabel;
     [SerializeField] private Button continueButton;
 
+    [Header("Events")]
+    [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+
+    private bool _hooked;
+
+    //Exposed for testing purposes
+    public bool IsSubscribed { get; private set; }
+
     private void Awake()
     {
-        //makes sure the banner is hidden when game starts
+        //Make sure hidden at startup 
         gameObject.SetActive(false);
-        if (continueButton != null)
-            continueButton.onClick.AddListener(OnContinueClicked);
     }
 
-    //Called by GameManager or PlayerManager
+    private void OnEnable()
+    {
+        HookButton();
+
+        if (turnStartedChannel != null)
+        {
+            turnStartedChannel.Subscribe(OnTurnStarted);
+            IsSubscribed = true;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (continueButton != null)
+            continueButton.onClick.RemoveListener(OnContinueClicked);
+        _hooked = false;
+
+        if (turnStartedChannel != null)
+            turnStartedChannel.Unsubscribe(OnTurnStarted);
+
+        IsSubscribed = false;
+    }
+
+    private void HookButton()
+    {
+        if (_hooked || continueButton == null) return;
+        continueButton.onClick.AddListener(OnContinueClicked);
+        _hooked = true;
+    }
+
+    private void OnTurnStarted(TurnStartedEvent payload)
+    {
+        ShowBanner(payload.playerId);
+    }
+
     public void ShowBanner(int playerId)
     {
         if (turnLabel != null)
@@ -23,15 +63,33 @@ public class TurnBannerController : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    private void OnContinueClicked()
+    public void Hide() => gameObject.SetActive(false);
+
+    private void OnContinueClicked() => Hide();
+
+#if UNITY_EDITOR
+    /// <summary>
+    /// Helper for tests
+    /// Keeps subscription state the same
+    /// </summary>
+    public void __InjectChannelForTests(TurnStartedEventChannel ch)
     {
-        //Hide the banner and tell game to continue
-        gameObject.SetActive(false);
+        //If already enabled unhook it
+        if (isActiveAndEnabled && turnStartedChannel != null)
+            turnStartedChannel.Unsubscribe(OnTurnStarted);
 
-        //Example would be to notifiy GameManager that the player
-        //Has started their turn, this is currently a placeholder for 
-        //logic once more of the game is complete, but could look like
-        //GameManager.Instance.StartTurn();
+        turnStartedChannel = ch;
+
+        //If enabled when injecting then bind right away
+        if (isActiveAndEnabled && turnStartedChannel != null)
+        {
+            turnStartedChannel.Subscribe(OnTurnStarted);
+            IsSubscribed = true;
+        }
+        else
+        {
+            IsSubscribed = false;
+        }
     }
-
+#endif
 }
