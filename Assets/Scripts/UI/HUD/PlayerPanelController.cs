@@ -7,7 +7,7 @@ public class PlayerPanelController : UIPanelBase
     [Header("Event Channels")]
     [SerializeField] private TurnStartedEventChannel turnStartedChannel;
 
-    [Header("Data Source")]
+    [Header("Data Source")] // TODO: needs to be decoupled, currently looking for a solution
     [SerializeField] private PlayerManager playerManager;
 
     [Header("UI Elements")]
