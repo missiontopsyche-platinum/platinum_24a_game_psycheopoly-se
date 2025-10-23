@@ -6,9 +6,7 @@ public class DicePanelController : UIPanelBase
 {
     [Header("Event Channels")]
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
-
-    [Header("Data Source")]
-    [SerializeField] private DiceManager diceManager;
+    [SerializeField] private RollDiceRequestedEventChannel diceRolledRequestedChannel;
 
     [Header("UI Elements")]
     [SerializeField] private Text dice1RolledText;
@@ -19,21 +17,27 @@ public class DicePanelController : UIPanelBase
     [SerializeField] private Button rollDiceButton;
     private void OnEnable()
     {
+        if (rollDiceButton == null)
+        {
+            Logging.Logger.Warn("DicePanelController.OnEnable",
+                "rollDiceButton is null",
+                LogCategory.UI,
+                this);
+            return;
+        }
         Subscribe(diceRolledChannel, DisplayDiceRoll);
-
-        if (rollDiceButton != null) rollDiceButton.onClick.AddListener(RollDiceClick);
-
+        rollDiceButton.onClick.AddListener(RollDiceClicked);
         Logging.Logger.Trace("DicePanelController.OnEnable",
-            "Dice panel is now enabled.",
-            LogCategory.UI,
-            this);
+                "Dice panel is now enabled.",
+                LogCategory.UI,
+                this);
     }
 
     private void OnDisable()
     {
         ClearSubscriptions();
 
-        if (rollDiceButton != null) rollDiceButton.onClick.RemoveListener(RollDiceClick);
+        if (rollDiceButton != null) rollDiceButton.onClick.RemoveListener(RollDiceClicked);
 
         Logging.Logger.Trace("DicePanelController.OnDisable",
             "Dice panel is now disabled.",
@@ -46,7 +50,7 @@ public class DicePanelController : UIPanelBase
         if (diceRolledEvent == null)
         {
             Logging.Logger.Warn("DicePanelController.DisplayDiceRoll",
-                $"Event: {nameof(diceRolledEvent)} is null",
+                $"DiceRolledEvent is null",
                 LogCategory.UI,
                 this);
             return;
@@ -57,21 +61,16 @@ public class DicePanelController : UIPanelBase
         SetTextSafe(diceTotalText, $"Total: {diceRolledEvent.totalRoll}");
     }
 
-    public void RollDiceClick()
+    public void RollDiceClicked()
     {
-        if (diceManager == null)
+        if (diceRolledRequestedChannel == null)
         {
-            Logging.Logger.Error("DicePanelController.OnRollDiceClicked",
-                "DiceManager is null",
+            Logging.Logger.Error("DicePanelController.RollDiceClicked",
+                $"DiceRolledRequestedChannel is null",
                 LogCategory.UI,
                 this);
             return;
         }
-
-        diceManager.RollDice();
-        Logging.Logger.Trace("DicePanelController.OnRollDiceClicked",
-            "Roll Dice button clicked.",
-            LogCategory.UI,
-            this);
+        diceRolledRequestedChannel.RaiseEvent(true);
     }
 }
