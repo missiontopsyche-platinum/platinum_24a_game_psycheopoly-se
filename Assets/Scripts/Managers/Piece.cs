@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Piece : MonoBehaviour
 {
-    private float moveSpeed = 3f;
+    [SerializeField] private float moveSpeed = 3f;
 
     public void MoveTo(Vector3 targetPosition)
     {
