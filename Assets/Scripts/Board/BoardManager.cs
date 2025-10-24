@@ -74,7 +74,7 @@ namespace PsycheOpoly.Board{
                 spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
                                          : new PropertySpace($"Property {i}");
             
-            boardRenderer.GenerateBoard(spaces);
+            boardRenderer?.GenerateBoard(spaces);
             
             EnsureSubscribed();
         }
