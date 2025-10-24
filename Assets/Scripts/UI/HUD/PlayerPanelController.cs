@@ -1,14 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Logging;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 public class PlayerPanelController : UIPanelBase
 {
     [Header("Event Channels")]
     [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+    // TODO: Refactor if new PlayerEventChannel gets added
+    [SerializeField] private PlayerEventChannel playerEventChannel;
 
-    [Header("Data Source")] // TODO: needs to be decoupled, currently looking for a solution
-    [SerializeField] private PlayerManager playerManager;
+    private List<Player> playersList;
 
     [Header("UI Elements")]
     [SerializeField] private Text playerNameText;
@@ -17,6 +20,7 @@ public class PlayerPanelController : UIPanelBase
     private void OnEnable()
     {
         Subscribe(turnStartedChannel, DisplayCurrentPlayer);
+        Subscribe(playerEventChannel, AddPlayer);
         Logging.Logger.Trace("PlayerPanelController.OnEnable",
             "Player panel is now enabled.",
             LogCategory.UI,
@@ -44,7 +48,7 @@ public class PlayerPanelController : UIPanelBase
         }
 
         int currentPlayerId = turnStartedEvent.playerId;
-        var player = playerManager?.GetPlayer(currentPlayerId);
+        var player = playersList?.Find(player => player.GetId() == currentPlayerId);
 
         if (player == null)
         {
@@ -66,5 +70,18 @@ public class PlayerPanelController : UIPanelBase
             $"Current Player: {name} with ${money}",
             LogCategory.UI,
             this);
+    }
+
+    public void AddPlayer(Player player)
+    {
+        if (playersList == null) playersList = new List<Player>();
+        // TODO: This operates on the logic that the same channel gets called to add/remove
+        // Must refactor when we have a dedicated remove player event channel
+        if (playersList.Contains(player))
+        {
+            playersList.Remove(player);
+            return;
+        }
+        playersList.Add(player);
     }
 }
