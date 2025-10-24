@@ -46,4 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerManager
   playerAddedEventChannel: {fileID: 11400000, guid: 9480f55f1a6baeb4b8967270bdc8b800, type: 2}
   playerRemovedEventChannel: {fileID: 11400000, guid: 9480f55f1a6baeb4b8967270bdc8b800, type: 2}
-  initializePlayerCountChannel: {fileID: 0}
+  initializePlayerCountChannel: {fileID: 11400000, guid: 1ffd839d51a8772428ccd8ac76dfcb46, type: 2}
