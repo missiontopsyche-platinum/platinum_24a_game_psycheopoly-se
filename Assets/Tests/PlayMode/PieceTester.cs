@@ -13,11 +13,11 @@ public class PieceTester
     {
 #if UNITY_EDITOR
         var playerPiecePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/PlayerPiece.prefab");
-        Assert.IsNotNull(playerPiecePrefab, "Failed to load prefab at Assets/Prefabs/PlayerPiece.prefab");
+        Assert.IsNotNull(playerPiecePrefab, "Failed loading prefab at path: Assets/Prefabs/PlayerPiece.prefab");
 
         var pieceObj = Object.Instantiate(playerPiecePrefab);
         var piece = pieceObj.GetComponent<Piece>();
-        Assert.IsNotNull(piece, "Piece component not found on prefab!");
+        Assert.IsNotNull(piece, "Piece component not on prefab");
 
         Vector3 startPos = piece.transform.position;
         Vector3 target = startPos + new Vector3(3f, 0f, 0f);
