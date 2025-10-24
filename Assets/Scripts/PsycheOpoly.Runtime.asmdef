@@ -1,3 +1,6 @@
 {
-	"name": "PsycheOpoly.Runtime"
+	"name": "PsycheOpoly.Runtime",
+	"references": [
+		"Unity.InputSystem"
+	]
 }
