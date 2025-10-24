@@ -22,7 +22,7 @@ namespace Logging
         private static LogSettings _instance;
         public static LogSettings Current()
         {
-            return _instance??= Resources.Load<LogSettings>("LogSettings");
+            return _instance??= Resources.Load<LogSettings>("Logging/LogSettings");
         }
 
         public bool isRunTimeLoggingEnabled()
