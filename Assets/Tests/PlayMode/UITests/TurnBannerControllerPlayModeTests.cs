@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
+
+//the tests need to be reconfirgured to work with the changes in the UI panel
 public class TurnBannerControllerPlayModeTests
 {
     private static bool TryPublish(object channel, object payload)
