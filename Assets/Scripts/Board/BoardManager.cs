@@ -48,17 +48,14 @@ namespace PsycheOpoly.Board{
         private void Start()
         {
             InitializeBoard();
+            movePlayerChannel?.Subscribe(MovePlayer);
         }
 
         private void OnDisable() => EnsureUnsubscribed();
 
         private void OnDestroy() => EnsureUnsubscribed();
 
-        private void Start()
-        {
-            movePlayerChannel.Subscribe(MovePlayer);
-        }
-
+      
         private void EnsureSubscribed()
         {
             if (_subscribed) return;
@@ -70,7 +67,7 @@ namespace PsycheOpoly.Board{
         private void EnsureUnsubscribed()
         {
             if (!_subscribed) return;
-            movePlayerChannel.Unsubscribe(MovePlayer);
+            movePlayerChannel?.Unsubscribe(MovePlayer);
             _subscribed = false;
         }
 

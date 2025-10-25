@@ -6,7 +6,7 @@ namespace Tests.EditMode.BoardManagerTests
     {
         //Tests that player is in correct position
         [Test]
-        public void GetSetPosition_DefaultsZero_ThenWraps()
+        public void GetSetPosition_DefaultsZero()
         {
             boardManager.InitializeBoard(6);
             const int pid = 42;
@@ -16,8 +16,17 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.SetPlayerPosition(pid, 4);
             Assert.AreEqual(4, boardManager.GetPlayerPosition(pid));
 
-            boardManager.SetPlayerPosition(pid, 999);
-            Assert.AreEqual(999 % boardManager.BoardSize, boardManager.GetPlayerPosition(pid));
+        }
+
+        [Test]
+        public void SetPositionOutOfBoundsThrowsError()
+        {
+            boardManager.InitializeBoard(6);
+            const int pid = 1;
+
+
+            // Changing to test that this instead throws the appropriate error if setting out of range
+            Assert.Throws<System.ArgumentOutOfRangeException>(() => boardManager.SetPlayerPosition(pid, 999));
         }
 
         //Tests that player is in correct location after a move
