@@ -16,9 +16,8 @@ public class MovePlayerEvent
     /// </summary>
 
     public int spacesToMove { get; private set; }
-=======
-    private int spacesToMove { get; }
->>>>>>> 6a5dbbc (Task 218 - Create new event channel used to notify BoardManager to move player. This might be scrapped later)
+
+
 
 
     /// <summary>

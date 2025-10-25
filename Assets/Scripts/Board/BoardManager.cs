@@ -21,9 +21,6 @@ namespace PsycheOpoly.Board{
         [SerializeField] public IntEventChannel         passedGoChannel;
         [SerializeField] private EventChannel<DiceRolledEvent> diceRolledEvent;
 
-        [Header("Render Components")]
-        [SerializeField] private BoardRenderer boardRenderer;
-
         //Task 81 create Space[] array
         private Space[] spaces;
         

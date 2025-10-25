@@ -44,5 +44,23 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 2));
             Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
         }
+
+        /// <summary>
+        /// Test's that the board manager properly sends passed go signal
+        /// </summary>
+        [Test]
+        public void BoardManager_PassedGo()
+        {
+            boardManager.InitializeBoard(6);
+            const int pid = 1;
+            boardManager.SetPlayerPosition(pid, 5);
+            boardManager.passedGoChannel.Subscribe((int player) =>
+            {
+            logger.Info("PassedGo", "PID : " + player);
+                Assert.AreEqual(pid, player);
+            });
+
+            boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 3));
+        }
     }
 }
