@@ -16,7 +16,12 @@ namespace Tests.EditMode
             eventChannels.Add(channel);
             return channel;
         }
-    
+        protected T CreateComponent<T>(string componentName, GameObject root) where T : Component
+        {
+            var component = new GameObject(componentName);
+            component.transform.SetParent(root.transform);
+            return component.AddComponent<T>();
+        }
         protected void DestroyTestObjects(params UnityEngine.Object[] objects)
         {
             // destroy all passed objects

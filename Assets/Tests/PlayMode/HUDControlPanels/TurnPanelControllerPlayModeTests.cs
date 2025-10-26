@@ -23,9 +23,7 @@ public class TurnPanelControllerPlayModeTests : ManagerTestBase
         root.SetActive(false);
         controller = root.AddComponent<TurnPanelController>();
 
-        var turnNumberTextGO = new GameObject("TurnNumberText");
-        turnNumberTextGO.transform.SetParent(root.transform);
-        controller.turnNumberText = turnNumberTextGO.AddComponent<Text>();
+        controller.turnNumberText = CreateComponent<Text>("TurnNumberText", root);
 
         controller.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
     }

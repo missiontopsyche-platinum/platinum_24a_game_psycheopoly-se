@@ -22,13 +22,8 @@ public class PlayerPanelControllerPlayModeTests : ManagerTestBase
         root.SetActive(false);
         controller = root.AddComponent<PlayerPanelController>();
 
-        var playerNameGO = new GameObject("PlayerNameText");
-        playerNameGO.transform.SetParent(root.transform);
-        controller.playerNameText = playerNameGO.AddComponent<Text>();
-
-        var playerMoneyGO = new GameObject("PlayerMoneyText");
-        playerMoneyGO.transform.SetParent(root.transform);
-        controller.playerMoneyText = playerMoneyGO.AddComponent<Text>();
+        controller.playerNameText = CreateComponent<Text>("PlayerNameText", root);
+        controller.playerMoneyText = CreateComponent<Text>("PlayerMoneyText", root);
 
         controller.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
         controller.playerEventChannel = CreateChannel<PlayerEventChannel>();
