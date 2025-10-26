@@ -5,23 +5,26 @@ using Logging;
 public class DicePanelController : UIPanelBase
 {
     [Header("Event Channels")]
-    [SerializeField] private DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] private RollDiceRequestedEventChannel diceRolledRequestedChannel;
+    [SerializeField] public DiceRolledEventChannel diceRolledChannel;
+    [SerializeField] public RollDiceRequestedEventChannel diceRolledRequestedChannel;
 
     [Header("UI Elements")]
-    [SerializeField] private Text dice1RolledText;
-    [SerializeField] private Text dice2RolledText;
-    [SerializeField] private Text diceTotalText;// Probably don't need this
+    [SerializeField] public Text dice1RolledText;
+    [SerializeField] public Text dice2RolledText;
+    [SerializeField] public Text diceTotalText;// Probably don't need this
 
     [Header("UI Controls")]
-    [SerializeField] private Button rollDiceButton;
+    [SerializeField] public Button rollDiceButton;
     private void OnEnable()
     {
-        if (rollDiceButton == null)
+        if (!rollDiceButton)
+            rollDiceButton = GetComponentInChildren<Button>(true);
+
+        if (!rollDiceButton)
         {
             Logging.Logger.Warn("DicePanelController.OnEnable",
                 "rollDiceButton is null",
-                LogCategory.UI,
+                LogCategory.UI, 
                 this);
             return;
         }

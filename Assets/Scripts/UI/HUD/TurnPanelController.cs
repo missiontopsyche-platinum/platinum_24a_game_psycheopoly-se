@@ -5,10 +5,10 @@ using Logging;
 public class TurnPanelController : UIPanelBase
 {
     [Header("Event Channels")]
-    [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+    [SerializeField] public TurnStartedEventChannel turnStartedChannel;
 
     [Header("UI Elements")]
-    [SerializeField] private Text turnNumberText;
+    [SerializeField] public Text turnNumberText;
 
     private void OnEnable()
     {

@@ -7,15 +7,15 @@ using System.Collections.Generic;
 public class PlayerPanelController : UIPanelBase
 {
     [Header("Event Channels")]
-    [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+    [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     // TODO: Refactor if new PlayerEventChannel gets added
-    [SerializeField] private PlayerEventChannel playerEventChannel;
+    [SerializeField] public PlayerEventChannel playerEventChannel;
 
     private List<Player> playersList;
 
     [Header("UI Elements")]
-    [SerializeField] private Text playerNameText;
-    [SerializeField] private Text playerMoneyText;
+    [SerializeField] public Text playerNameText;
+    [SerializeField] public Text playerMoneyText;
 
     private void OnEnable()
     {
