@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
@@ -7,7 +8,25 @@ using System.Collections;
 /// </summary>
 public class Piece : MonoBehaviour
 {
+    [SerializeField] private Color pieceColor = Color.white;
     [SerializeField] private float moveSpeed = 3f;
+
+    private MeshRenderer meshRenderer;
+    public int spaceIndex { get; set; } 
+    
+    private void Start()
+    {
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer.material.color = pieceColor;
+        spaceIndex = 0;
+    }
+
+    public void InitializePiece(String name, Color color)
+    {
+        this.name = name;
+        pieceColor = color;
+        meshRenderer.material.color = pieceColor;
+    }
 
     public void MoveTo(Vector3 targetPosition)
     {

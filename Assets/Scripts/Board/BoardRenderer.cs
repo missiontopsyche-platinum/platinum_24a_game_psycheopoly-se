@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Logging;
+using NUnit.Framework;
 using PsycheOpoly.Board;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -10,10 +11,24 @@ public class BoardRenderer : MonoBehaviour
     // camera is used to dynamically create the board in 3d space regardless of the size
     [SerializeField] private Camera mainCamera = new();
     [SerializeField] private GameObject spaceRendererPrefab;
+    [SerializeField] private GameObject playerPiecePrefab;
 
     private SpaceRenderer[] spaceRenderers;
+    private Piece[] playerPieces;
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
+    private float increment = 0f;
+    
+    /// <summary>
+    /// Corner targets for piece bumping on shared spaces, normalized
+    /// </summary>
+    private Vector3[] cornerTargets =
+    {
+        new(-1, 1, 0),
+        new(1, 1, 0),
+        new(-1, -1, 0),
+        new(1, -1, 0)
+    };
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -73,7 +88,7 @@ public class BoardRenderer : MonoBehaviour
         // vertical units of space in ortho-camera view from origin
         float size = mainCamera.orthographicSize; 
         // distance in units between spaces, also space scale value.
-        float increment = (size * 2) / sideSpacesCount;
+        increment = (size * 2) / sideSpacesCount;
 
         for (int i = 0; i < spaces.Length; i++)
         {
@@ -138,5 +153,56 @@ public class BoardRenderer : MonoBehaviour
         }
 
         spaceRenderers = null;
+    }
+
+    /// <summary>
+    /// Called on game start to add player pieces to the board and initialize them.
+    /// </summary>
+    /// <param name="players"></param>
+    public void AddPlayerPieces(Player[] players)
+    {
+        foreach (Player player in players)
+        {
+            GameObject newPlayer = new GameObject();
+            Piece piece = newPlayer.AddComponent<Piece>();
+            piece.InitializePiece(player.GetPName(), player.GetColor());
+            MovePiece(player.GetId(), 0);
+        }
+    }
+
+    // this is extremely simple for now, we can expand this to be board-aware and stick to the edges of the
+    // screen, but for now this is good enough for a demo.
+    private void MovePiece(int playerId, int targetSpaceIndex)
+    {
+        Piece movingPiece = playerPieces[playerId];
+        // start move coroutine
+        movingPiece.MoveTo(spaceRenderers[targetSpaceIndex].transform.position);
+        // set internal index state
+        movingPiece.spaceIndex = targetSpaceIndex;
+        // move pieces if space is 'crowded' (2+ pieces on a space
+        BumpCrowdedSpacePieces(targetSpaceIndex);
+    }
+
+    private void BumpCrowdedSpacePieces(int targetSpaceIndex)
+    {
+        Vector3 rawSpacePosition = spaceRenderers[targetSpaceIndex].transform.position;
+        List<Piece> piecesOnTarget = new List<Piece>();
+
+        foreach (Piece piece in playerPieces)
+        {
+            if (piece.spaceIndex == targetSpaceIndex)
+                piecesOnTarget.Add(piece);
+        }
+
+        if (piecesOnTarget.Count < 2) // no bump
+            return;
+        
+        // bump pieces
+        for (int i = 0; i < piecesOnTarget.Count; i++)
+        {
+            // offset position by corner normal * 1/2 increment amount (slightly to the corner)
+            Vector3 targetPostion = rawSpacePosition + (cornerTargets[i] * (increment / 2));
+            piecesOnTarget[i].MoveTo(targetPostion);
+        }
     }
 }

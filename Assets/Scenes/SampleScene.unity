@@ -542,6 +542,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::BoardRenderer
   mainCamera: {fileID: 330585545}
   spaceRendererPrefab: {fileID: 7095298248733592577, guid: 3275f65fddc4e5d4194385c6207010fa, type: 3}
+  playerPiecePrefab: {fileID: 8622359238066017498, guid: 691ac768d46d63c48b8b2d5d1cd312f5, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
