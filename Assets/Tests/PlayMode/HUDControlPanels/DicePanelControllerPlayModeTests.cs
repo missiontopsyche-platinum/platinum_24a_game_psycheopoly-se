@@ -23,10 +23,10 @@ public class DicePanelControllerPlayModeTests : ManagerTestBase
         root.SetActive(false);
         controller = root.AddComponent<DicePanelController>();
 
-        controller.rollDiceButton = CreateComponent<Button>("RollDiceButton", root);
-        controller.dice1RolledText = CreateComponent<Text>("Dice1RolledText", root);
-        controller.dice2RolledText = CreateComponent<Text>("Dice2RolledText", root);
-        controller.diceTotalText = CreateComponent<Text>("DiceTotalText", root);
+        controller.rollDiceButton = CreateAndAttachComponent<Button>("RollDiceButton", root);
+        controller.dice1RolledText = CreateAndAttachComponent<Text>("Dice1RolledText", root);
+        controller.dice2RolledText = CreateAndAttachComponent<Text>("Dice2RolledText", root);
+        controller.diceTotalText = CreateAndAttachComponent<Text>("DiceTotalText", root);
 
         controller.diceRolledRequestedChannel = CreateChannel<RollDiceRequestedEventChannel>();
         controller.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();

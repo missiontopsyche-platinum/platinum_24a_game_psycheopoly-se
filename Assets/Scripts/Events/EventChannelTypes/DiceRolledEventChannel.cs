@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 /// <summary>
 /// Event channel that sends information about a dice roll.

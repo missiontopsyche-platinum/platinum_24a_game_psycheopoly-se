@@ -22,8 +22,8 @@ public class PlayerPanelControllerPlayModeTests : ManagerTestBase
         root.SetActive(false);
         controller = root.AddComponent<PlayerPanelController>();
 
-        controller.playerNameText = CreateComponent<Text>("PlayerNameText", root);
-        controller.playerMoneyText = CreateComponent<Text>("PlayerMoneyText", root);
+        controller.playerNameText = CreateAndAttachComponent<Text>("PlayerNameText", root);
+        controller.playerMoneyText = CreateAndAttachComponent<Text>("PlayerMoneyText", root);
 
         controller.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
         controller.playerEventChannel = CreateChannel<PlayerEventChannel>();

@@ -38,8 +38,7 @@ public class DiceManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        if (rollDiceRequestedChannel != null)
-            rollDiceRequestedChannel.Unsubscribe(RollDiceRequest);
+        rollDiceRequestedChannel?.Unsubscribe(RollDiceRequest);
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
