@@ -147,7 +147,7 @@ namespace PsycheOpoly.Board{
             int next = NormalizeIndex(previous + mpe.spacesToMove);
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
-            
+            boardRenderer.MovePiece(mpe.id, next);
             // Throws an event if the player has a negative move.
             // This may need a refactor if anything causes the player to move backwards normally.
             if (next < previous)

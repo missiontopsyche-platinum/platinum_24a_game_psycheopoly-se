@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Logging;
 using NUnit.Framework;
 using PsycheOpoly.Board;
@@ -8,13 +9,18 @@ using Space = PsycheOpoly.Board.Space;
 
 public class BoardRenderer : MonoBehaviour
 {
+    [Header("GameObject References")]
     // camera is used to dynamically create the board in 3d space regardless of the size
     [SerializeField] private Camera mainCamera = new();
+    [Header("Prefab Instance References")]
     [SerializeField] private GameObject spaceRendererPrefab;
     [SerializeField] private GameObject playerPiecePrefab;
 
+    [Header("Event Channels")] 
+    [SerializeField] private PlayerEventChannel playerAddedChannel;
+
     private SpaceRenderer[] spaceRenderers;
-    private Piece[] playerPieces;
+    private List<Piece> playerPieces = new();
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
     private float increment = 0f;
@@ -33,7 +39,7 @@ public class BoardRenderer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        playerAddedChannel.Subscribe(AddPlayerPiece);
     }
 
     // Update is called once per frame
@@ -42,7 +48,11 @@ public class BoardRenderer : MonoBehaviour
         
     }
 
-    private void OnDestroy() => ClearBoard();
+    private void OnDestroy()
+    {
+        ClearBoard();
+        playerAddedChannel.Unsubscribe(AddPlayerPiece);
+    } 
 
     public void GenerateBoard(Space[] spaces)
     {
@@ -156,24 +166,34 @@ public class BoardRenderer : MonoBehaviour
     }
 
     /// <summary>
-    /// Called on game start to add player pieces to the board and initialize them.
+    /// Called when Player is added to initialize a piece for them with their color, name, and id.
     /// </summary>
-    /// <param name="players"></param>
-    public void AddPlayerPieces(Player[] players)
+    /// <param name="player">Player information to add to piece</param>
+    public void AddPlayerPiece(Player player)
     {
-        foreach (Player player in players)
-        {
-            GameObject newPlayer = new GameObject();
-            Piece piece = newPlayer.AddComponent<Piece>();
-            piece.InitializePiece(player.GetPName(), player.GetColor());
-            MovePiece(player.GetId(), 0);
-        }
+        // create and initialize new piece object
+        GameObject newPlayer = new GameObject();
+        Piece piece = newPlayer.AddComponent<Piece>();
+        piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor());
+        
+        // add to pieces list and sort by ID (just in case they're "added" in the wrong order
+        playerPieces.Add(piece);
+        playerPieces = playerPieces.OrderBy(playerPiece => playerPiece.playerId).ToList();
+        
+        // move the piece to the starting location (GO)
+        MovePiece(piece.playerId, 0);
     }
 
-    // this is extremely simple for now, we can expand this to be board-aware and stick to the edges of the
-    // screen, but for now this is good enough for a demo.
-    private void MovePiece(int playerId, int targetSpaceIndex)
+    /// <summary>
+    /// Move piece on the board in world space. Takes in playerID and the target space index. Bumps pieces if
+    /// the space is crowded with more than 1 piece.
+    /// </summary>
+    /// <param name="playerId">id of the moving player</param>
+    /// <param name="targetSpaceIndex">space index to move to</param>
+    public void MovePiece(int playerId, int targetSpaceIndex)
     {
+        // this is extremely simple for now, we can expand this to be board-aware and stick to the edges of the
+        // screen, but for now this is good enough for a demo.
         Piece movingPiece = playerPieces[playerId];
         // start move coroutine
         movingPiece.MoveTo(spaceRenderers[targetSpaceIndex].transform.position);
@@ -183,6 +203,11 @@ public class BoardRenderer : MonoBehaviour
         BumpCrowdedSpacePieces(targetSpaceIndex);
     }
 
+    /// <summary>
+    /// Checks the space for multiple pieces. If there is more than 1 piece on a space, it will bump those
+    /// pieces to the edges to make room for each one.
+    /// </summary>
+    /// <param name="targetSpaceIndex">space index we're checking for bump</param>
     private void BumpCrowdedSpacePieces(int targetSpaceIndex)
     {
         Vector3 rawSpacePosition = spaceRenderers[targetSpaceIndex].transform.position;

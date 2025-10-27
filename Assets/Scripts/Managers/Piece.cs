@@ -12,6 +12,7 @@ public class Piece : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;
 
     private MeshRenderer meshRenderer;
+    public int playerId { get; private set; }
     public int spaceIndex { get; set; } 
     
     private void Start()
@@ -21,8 +22,9 @@ public class Piece : MonoBehaviour
         spaceIndex = 0;
     }
 
-    public void InitializePiece(String name, Color color)
+    public void InitializePiece(int id, String name, Color color)
     {
+        playerId = id;
         this.name = name;
         pieceColor = color;
         meshRenderer.material.color = pieceColor;
