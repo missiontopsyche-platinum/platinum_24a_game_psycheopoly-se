@@ -10,8 +10,7 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.InitializeBoard(6);
             int pid = 1;
             boardManager.SetPlayerPosition(pid, 5);      
-            var idx = boardManager.MovePlayer(pid, 2);   
-            Assert.AreEqual(1, idx);
+            boardManager.MovePlayer(new MovePlayerEvent(pid, 2));   
             Assert.AreEqual(1, boardManager.GetPlayerPosition(pid));
         }
 
@@ -21,8 +20,8 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.InitializeBoard(6);
             int pid = 2;
             boardManager.SetPlayerPosition(pid, 0);
-            var idx = boardManager.MovePlayer(pid, 14);  
-            Assert.AreEqual(2, idx);
+            boardManager.MovePlayer(new MovePlayerEvent(pid, 14));  
+            Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
         }
 
         [Test]
@@ -31,8 +30,8 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.InitializeBoard(6);
             int pid = 3;
             boardManager.SetPlayerPosition(pid, 1);
-            var idx = boardManager.MovePlayer(pid, -3); 
-            Assert.AreEqual(4, idx);
+            boardManager.MovePlayer(new MovePlayerEvent(pid, -3)); 
+            Assert.AreEqual(4, boardManager.GetPlayerPosition(pid));
         }
 
         [Test]

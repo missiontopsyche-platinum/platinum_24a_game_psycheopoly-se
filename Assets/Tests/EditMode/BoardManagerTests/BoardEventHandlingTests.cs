@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using PsycheOpoly.Events;
 using UnityEngine;
 
 namespace Tests.EditMode.BoardManagerTests
@@ -18,9 +17,9 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.SetPlayerPosition(pid, 0);
             logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent", 
                 $"Before Event, enabled={boardManager.enabled}");
-        
-            // TODO refactor to use EventChannel instead of C# events
-            GameEvents.RaisePlayerMoved(pid, 3);
+
+            
+            boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 3));
             logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent",
                 $"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
             Assert.AreEqual(3, boardManager.GetPlayerPosition(pid));
@@ -36,12 +35,32 @@ namespace Tests.EditMode.BoardManagerTests
 
             boardManager.SetPlayerPosition(pid, 0);
             boardManager.enabled = false;  //Triggers OnDisable() to unsubscribe
-            GameEvents.RaisePlayerMoved(pid, 4);
+            boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 4));
+            logger.Trace("BoardEventHandlingTests.Disabled",
+                $"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
             Assert.AreEqual(0, boardManager.GetPlayerPosition(pid));
 
             boardManager.enabled = true; //Triggers OnEnable() to resubscribe
-            GameEvents.RaisePlayerMoved(pid, 2);
+            boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 2));
             Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
+        }
+
+        /// <summary>
+        /// Test's that the board manager properly sends passed go signal
+        /// </summary>
+        [Test]
+        public void BoardManager_PassedGo()
+        {
+            boardManager.InitializeBoard(6);
+            const int pid = 1;
+            boardManager.SetPlayerPosition(pid, 5);
+            boardManager.passedGoChannel.Subscribe((int player) =>
+            {
+            logger.Info("PassedGo", "PID : " + player);
+                Assert.AreEqual(pid, player);
+            });
+
+            boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 3));
         }
     }
 }
