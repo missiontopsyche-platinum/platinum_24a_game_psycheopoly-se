@@ -8,7 +8,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public PlayerEventChannel playerAddedEventChannel;
     [SerializeField] public PlayerEventChannel playerRemovedEventChannel;
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
-    
+    [SerializeField] public IntEventChannel passedGoChannel;
+
     private List<Player> players = new List<Player>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -16,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     {
         // added this to decouple GameManager from PlayerManager to use events instead - hdathert
         initializePlayerCountChannel.Subscribe(InitializePlayers);
+        passedGoChannel.Subscribe(PassedGo);
     }
 
     // Update is called once per frame
@@ -155,6 +157,25 @@ public class PlayerManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Event listener for the passed go channel. Kept seperate from add money
+    /// TODO: Refactor so magic number is stored elsewhere
+    /// </summary>
+    /// <param name="id"></param>
+    public void PassedGo(int id)
+    {
+        AddMoney(id, 200); 
+    }
 
+    /// <summary>
+    /// Adds money to player object
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="money"></param>
+    public void AddMoney(int id, int money)
+    {
+        int pMoney = GetPlayer(id).GetMoney();
+        GetPlayer(id).SetMoney(pMoney + money);
+    }
 
 }

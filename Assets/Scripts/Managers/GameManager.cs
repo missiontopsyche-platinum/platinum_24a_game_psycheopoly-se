@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
     [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
+    [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+    
 
     private int playerCount = 0;
     private int currentPlayer = 0;
@@ -262,5 +264,10 @@ public class GameManager : MonoBehaviour
         this.dieOne = diceRolledEvent.dieOne;
         this.dieTwo = diceRolledEvent.dieTwo;
         this.totalRolled = diceRolledEvent.totalRoll;
+
+        if (this.gameState == GameState.PlayerTurn)
+        {
+            movePlayerChannel?.RaiseEvent(new MovePlayerEvent(this.currentPlayer, this.totalRolled));
+        }
     }
 }
