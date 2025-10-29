@@ -11,7 +11,7 @@ public class Piece : MonoBehaviour
     [SerializeField] private Color pieceColor = Color.white;
     [SerializeField] private float moveSpeed = 3f;
 
-    private MeshRenderer meshRenderer;
+    public MeshRenderer meshRenderer;
     public int playerId { get; private set; }
     public int spaceIndex { get; set; } 
     
@@ -27,6 +27,8 @@ public class Piece : MonoBehaviour
         playerId = id;
         this.name = name;
         pieceColor = color;
+        if (!meshRenderer)
+            meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material.color = pieceColor;
     }
 

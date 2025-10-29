@@ -1,26 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using Logging;
-using NUnit.Framework;
-using PsycheOpoly.Board;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Space = PsycheOpoly.Board.Space;
 
 public class BoardRenderer : MonoBehaviour
 {
     [Header("GameObject References")]
     // camera is used to dynamically create the board in 3d space regardless of the size
-    [SerializeField] private Camera mainCamera = new();
+    [SerializeField] public Camera mainCamera = new();
     [Header("Prefab Instance References")]
-    [SerializeField] private GameObject spaceRendererPrefab;
-    [SerializeField] private GameObject playerPiecePrefab;
+    [SerializeField] public GameObject spaceRendererPrefab;
+    [SerializeField] public GameObject playerPiecePrefab;
 
     [Header("Event Channels")] 
-    [SerializeField] private PlayerEventChannel playerAddedChannel;
+    [SerializeField] public PlayerEventChannel playerAddedChannel;
 
-    private SpaceRenderer[] spaceRenderers;
-    private List<Piece> playerPieces = new();
+    [SerializeField] public PlayerMovedEventChannel playerMovedEventChannel;
+
+    public SpaceRenderer[] spaceRenderers;
+    public List<Piece> playerPieces = new();
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
     private float increment = 0f;
@@ -28,8 +27,7 @@ public class BoardRenderer : MonoBehaviour
     /// <summary>
     /// Corner targets for piece bumping on shared spaces, normalized
     /// </summary>
-    private Vector3[] cornerTargets =
-    {
+    private readonly Vector3[] cornerTargets = {
         new(-1, 1, 0),
         new(1, 1, 0),
         new(-1, -1, 0),
@@ -39,7 +37,8 @@ public class BoardRenderer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        playerAddedChannel.Subscribe(AddPlayerPiece);
+        playerAddedChannel?.Subscribe(AddPlayerPiece);
+        playerMovedEventChannel?.Subscribe(MovePiece);
     }
 
     // Update is called once per frame
@@ -172,7 +171,7 @@ public class BoardRenderer : MonoBehaviour
     public void AddPlayerPiece(Player player)
     {
         // create and initialize new piece object
-        GameObject newPlayer = new GameObject();
+        GameObject newPlayer = Instantiate(playerPiecePrefab);
         Piece piece = newPlayer.AddComponent<Piece>();
         piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor());
         
@@ -181,7 +180,7 @@ public class BoardRenderer : MonoBehaviour
         playerPieces = playerPieces.OrderBy(playerPiece => playerPiece.playerId).ToList();
         
         // move the piece to the starting location (GO)
-        MovePiece(piece.playerId, 0);
+        MovePiece(new PlayerMovedEvent(piece.playerId, 0,0));
     }
 
     /// <summary>
@@ -190,17 +189,26 @@ public class BoardRenderer : MonoBehaviour
     /// </summary>
     /// <param name="playerId">id of the moving player</param>
     /// <param name="targetSpaceIndex">space index to move to</param>
-    public void MovePiece(int playerId, int targetSpaceIndex)
+    public void MovePiece(PlayerMovedEvent mpe)
     {
         // this is extremely simple for now, we can expand this to be board-aware and stick to the edges of the
         // screen, but for now this is good enough for a demo.
-        Piece movingPiece = playerPieces[playerId];
+        
+        // find piece by id
+        Piece movingPiece = playerPieces.Find(piece => piece.playerId == mpe.id);
+        // null check
+        if (movingPiece == null)
+        {
+            Debug.LogWarning($"No piece found with playerId {mpe.id}");
+            return;
+        }
+        
         // start move coroutine
-        movingPiece.MoveTo(spaceRenderers[targetSpaceIndex].transform.position);
+        movingPiece.MoveTo(spaceRenderers[mpe.newPosition].transform.position);
         // set internal index state
-        movingPiece.spaceIndex = targetSpaceIndex;
+        movingPiece.spaceIndex = mpe.newPosition;
         // move pieces if space is 'crowded' (2+ pieces on a space
-        BumpCrowdedSpacePieces(targetSpaceIndex);
+        BumpCrowdedSpacePieces(mpe.newPosition);
     }
 
     /// <summary>
@@ -226,8 +234,8 @@ public class BoardRenderer : MonoBehaviour
         for (int i = 0; i < piecesOnTarget.Count; i++)
         {
             // offset position by corner normal * 1/2 increment amount (slightly to the corner)
-            Vector3 targetPostion = rawSpacePosition + (cornerTargets[i] * (increment / 2));
-            piecesOnTarget[i].MoveTo(targetPostion);
+            Vector3 targetPosition = rawSpacePosition + (cornerTargets[i] * (increment / 2));
+            piecesOnTarget[i].MoveTo(targetPosition);
         }
     }
 }
