@@ -20,7 +20,26 @@ public class DiceManager : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
+    [SerializeField] public RollDiceRequestedEventChannel rollDiceRequestedChannel;
 
+    private void OnEnable()
+    {
+        // Subscribe early so we catch clicks immediately on Play
+        if (rollDiceRequestedChannel == null)
+        {
+            Logging.Logger.Error("DiceManager.OnEnable",
+                "RollDiceRequestedChannel is null",
+                Logging.LogCategory.Core,
+                this);
+            return;
+        }
+
+        rollDiceRequestedChannel.Subscribe(RollDiceRequest);
+    }
+    private void OnDisable()
+    {
+        rollDiceRequestedChannel?.Unsubscribe(RollDiceRequest);
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -69,5 +88,10 @@ public class DiceManager : MonoBehaviour
             Logging.LogCategory.Gameplay);
 
         return diceRolledEvent;
+    }
+
+    public void RollDiceRequest(bool input)
+    {
+        RollDice();
     }
 }
