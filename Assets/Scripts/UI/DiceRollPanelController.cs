@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;  
 
@@ -46,6 +47,17 @@ public class DiceRollPanelController : MonoBehaviour
 
         if (dieOneView != null) dieOneView.SetValue(e.dieOne);
         if (dieTwoView != null) dieTwoView.SetValue(e.dieTwo);
-        if (totalText != null) totalText.text = $"Total: {e.totalRoll}";
+        if (totalText != null)
+        {
+            StartCoroutine(AnimateTotalText(e.totalRoll));
+        }
+    }
+
+    private IEnumerator AnimateTotalText(int total)
+    {
+        string baseText = "Total: ";
+        totalText.text = baseText;
+        yield return new WaitForSeconds(0.2f);
+        totalText.text = baseText + total;
     }
 }
