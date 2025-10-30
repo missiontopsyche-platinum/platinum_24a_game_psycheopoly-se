@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-public class DiceFaceViewPlayModeTest
+public class DiceFaceViewTest
 {
     private GameObject diceGO;
     private DiceFaceView diceFaceView;

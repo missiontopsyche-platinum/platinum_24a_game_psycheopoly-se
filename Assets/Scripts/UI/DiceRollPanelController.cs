@@ -57,7 +57,8 @@ public class DiceRollPanelController : MonoBehaviour
     {
         string baseText = "Total: ";
         totalText.text = baseText;
-        yield return new WaitForSeconds(0.2f);
+        for (int i = 0; i < 20; i++)
+            yield return null;
         totalText.text = baseText + total;
     }
 }
