@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class TurnBannerController : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Text turnLabel;
-    [SerializeField] private Button continueButton;
-    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private Text turnLabel;         
+    [SerializeField] private Button continueButton;   //Start turn button
+    [SerializeField] private CanvasGroup canvasGroup; //Controls fade
 
     [Header("Events")]
     [SerializeField] private TurnStartedEventChannel turnStartedChannel;
@@ -15,36 +15,44 @@ public class TurnBannerController : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float fadeDuration = 0.25f;
     [SerializeField] private float slideOffset = 60f;
-    [SerializeField] private AnimationCurve ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private AnimationCurve ease = null;
 
-    private bool _hooked;
+    private RectTransform _rect;
     private Vector2 _shownPos;
     private Vector2 _hiddenPos;
-    private RectTransform _rect;
     private Coroutine _anim;
-
-    //Exposed for testing purposes
+    private bool _buttonHooked;
     public bool IsSubscribed { get; private set; }
 
     private void Awake()
     {
         _rect = GetComponent<RectTransform>();
-        if (canvasGroup == null)
-            canvasGroup = GetComponent<CanvasGroup>();
 
-        //Cache slide positions
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
+
+        if (ease == null || ease.length == 0)
+            ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
         _shownPos = _rect.anchoredPosition;
         _hiddenPos = _shownPos + new Vector2(0, -slideOffset);
 
-        //Make sure initial hidden hidden
-        canvasGroup.alpha = 0f;
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
         _rect.anchoredPosition = _hiddenPos;
+
         gameObject.SetActive(false);
     }
 
     private void OnEnable()
     {
-        HookButton();
+        //hook button
+        if (!_buttonHooked && continueButton != null)
+        {
+            continueButton.onClick.AddListener(OnContinueClicked);
+            _buttonHooked = true;
+        }
 
         if (turnStartedChannel != null)
         {
@@ -57,7 +65,6 @@ public class TurnBannerController : MonoBehaviour
     {
         if (continueButton != null)
             continueButton.onClick.RemoveListener(OnContinueClicked);
-        _hooked = false;
 
         if (turnStartedChannel != null)
             turnStartedChannel.Unsubscribe(OnTurnStarted);
@@ -65,29 +72,10 @@ public class TurnBannerController : MonoBehaviour
         IsSubscribed = false;
     }
 
-    private void HookButton()
-    {
-        if (_hooked || continueButton == null) return;
-        continueButton.onClick.AddListener(OnContinueClicked);
-        _hooked = true;
-    }
-
     private void OnTurnStarted(TurnStartedEvent payload)
     {
-        ShowBanner(payload.playerId);
-    }
-
-    public void ShowBanner(int playerId)
-    {
-        if (turnLabel != null)
-            turnLabel.text = $"Player {playerId}'s Turn";
-        gameObject.SetActive(true);
-        PlayAnim(show: true);
-    }
-
-      public void Hide()
-    {
-        PlayAnim(show: false);
+        turnLabel.text = $"Player {payload.playerId}'s Turn";
+        Show();
     }
 
     private void OnContinueClicked()
@@ -95,72 +83,93 @@ public class TurnBannerController : MonoBehaviour
         Hide();
     }
 
+    public void Show() => PlayAnim(true);
+    public void Hide() => PlayAnim(false);
+
     private void PlayAnim(bool show)
     {
-        if (_anim != null)
-            StopCoroutine(_anim);
+        if (_anim != null) StopCoroutine(_anim);
         _anim = StartCoroutine(FadeSlide(show));
     }
 
     private IEnumerator FadeSlide(bool show)
     {
-        float duration = Mathf.Max(0.01f, fadeDuration);
-        float time = 0f;
+        if (!Application.isPlaying)
+        {
+            float targetAlpha = show ? 1f : 0f;
+            Vector2 targetPos = show ? _shownPos : _hiddenPos;
 
-        //target values
-        float startAlpha = canvasGroup.alpha;
-        float endAlpha = show ? 1f : 0f;
+            canvasGroup.alpha = targetAlpha;
+            _rect.anchoredPosition = targetPos;
+
+            canvasGroup.interactable = show;
+            canvasGroup.blocksRaycasts = show;
+
+            if (!show)
+                gameObject.SetActive(false);
+
+            yield break;
+        }
+                
+        float time = 0;
+        float duration = Mathf.Max(0.01f, fadeDuration);
+
+        float startA = canvasGroup.alpha;
+        float endA = show ? 1 : 0;
 
         Vector2 startPos = _rect.anchoredPosition;
         Vector2 endPos = show ? _shownPos : _hiddenPos;
 
-        //if showing, make sure object is active and starts hidden
         if (show && !gameObject.activeSelf)
         {
             gameObject.SetActive(true);
-            canvasGroup.alpha = 0f;
+            canvasGroup.alpha = 0;
             _rect.anchoredPosition = _hiddenPos;
-            startAlpha = 0f;
+            startA = 0;
             startPos = _hiddenPos;
         }
+
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = false;
 
         while (time < duration)
         {
             time += Time.unscaledDeltaTime;
             float t = ease.Evaluate(time / duration);
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+            canvasGroup.alpha = Mathf.Lerp(startA, endA, t);
             _rect.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
             yield return null;
         }
 
-        canvasGroup.alpha = endAlpha;
+        canvasGroup.alpha = endA;
         _rect.anchoredPosition = endPos;
+
+        canvasGroup.interactable = show;
+        canvasGroup.blocksRaycasts = show;
 
         if (!show)
             gameObject.SetActive(false);
     }
 
-#if UNITY_EDITOR
-    /// <summary>
-    /// Helper for tests
-    /// Keeps subscription state the same
-    /// </summary>
-    public void __InjectChannelForTests(TurnStartedEventChannel ch)
+    //shows Player X's Turn
+    public void ShowBanner(int playerId)
     {
-        if (isActiveAndEnabled && turnStartedChannel != null)
-            turnStartedChannel.Unsubscribe(OnTurnStarted);
+        if (turnLabel != null)
+            turnLabel.text = $"Player {playerId}'s Turn";
 
-        turnStartedChannel = ch;
-
-        if (isActiveAndEnabled && turnStartedChannel != null)
-        {
-            turnStartedChannel.Subscribe(OnTurnStarted);
-            IsSubscribed = true;
-        }
-        else
-        {
-            IsSubscribed = false;
-        }
+        gameObject.SetActive(true);
+        PlayAnim(true);
     }
-#endif
+
+    //Could be used to show turn number
+    public void ShowTurn(int playerId, int turnNum)
+    {
+        if (turnLabel != null)
+            turnLabel.text = $"Turn {turnNum} — Player {playerId}";
+
+        gameObject.SetActive(true);
+        PlayAnim(true);
+    }
+
+
 }
