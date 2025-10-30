@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;  
 
-public class DicePanelController : MonoBehaviour
+public class DiceRollPanelController : MonoBehaviour
 {
     [Header("Dependencies")]
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
