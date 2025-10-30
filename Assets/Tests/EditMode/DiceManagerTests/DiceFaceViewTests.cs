@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Reflection;
 
-namespace Tests.EditMode.UITests
+namespace Tests.EditMode.DiceManagerTests
 {
     public class DiceFaceViewTests
     {
