@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "Tests.PlayMode",
   "references": [ "PsycheOpoly.Runtime", "Tests.Shared" ],
   "optionalUnityReferences": [ "TestAssemblies" ],
