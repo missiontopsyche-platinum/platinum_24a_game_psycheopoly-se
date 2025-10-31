@@ -456,6 +456,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1ac3375c2b6944545b8ac98a839ed322, type: 3}
   - {fileID: 21300000, guid: 160c65b48b09cd549880300f2caf1078, type: 3}
   - {fileID: 21300000, guid: a443a38843177dc4e83b5b9629900332, type: 3}
+  spinDuration: 0.5
+  spinSpeed: 720
+  randomDirection: 1
 --- !u!114 &568413598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,6 +802,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 1ac3375c2b6944545b8ac98a839ed322, type: 3}
   - {fileID: 21300000, guid: 160c65b48b09cd549880300f2caf1078, type: 3}
   - {fileID: 21300000, guid: a443a38843177dc4e83b5b9629900332, type: 3}
+  spinDuration: 0.5
+  spinSpeed: 720
+  randomDirection: 1
 --- !u!114 &1034956839
 MonoBehaviour:
   m_ObjectHideFlags: 0
