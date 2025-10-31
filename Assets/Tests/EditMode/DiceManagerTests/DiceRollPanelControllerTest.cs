@@ -6,10 +6,10 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-public class DicePanelControllerTest
+public class DiceRollPanelControllerTest
 {
     private GameObject panelGO;
-    private DicePanelController panelController;
+    private DiceRollPanelController panelController;
     private Text totalText;
 
     private FieldInfo totalTextField;
@@ -24,7 +24,7 @@ public class DicePanelControllerTest
         canvasGO.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
 
         panelGO = new GameObject("DicePanelController");
-        panelController = panelGO.AddComponent<DicePanelController>();
+        panelController = panelGO.AddComponent<DiceRollPanelController>();
 
         var textGO = new GameObject("TotalText", typeof(Text));
         textGO.transform.SetParent(panelGO.transform, false);
@@ -34,15 +34,15 @@ public class DicePanelControllerTest
         totalText.text = "Total: -";
 
         //checker
-        totalTextField = typeof(DicePanelController)
+        totalTextField = typeof(DiceRollPanelController)
             .GetField("totalText", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(totalTextField, "Could not find private field 'totalText' on DicePanelController.");
 
-        onDiceRolledMI = typeof(DicePanelController)
+        onDiceRolledMI = typeof(DiceRollPanelController)
             .GetMethod("OnDiceRolled", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(onDiceRolledMI, "Could not find private method 'OnDiceRolled'.");
 
-        animateTotalTextMI = typeof(DicePanelController)
+        animateTotalTextMI = typeof(DiceRollPanelController)
             .GetMethod("AnimateTotalText", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(animateTotalTextMI, "Could not find private method 'AnimateTotalText'.");
 
@@ -72,7 +72,7 @@ public class DicePanelControllerTest
         totalText.text = baseText;
 
         //mannually run the coroutine
-        var animateMI = typeof(DicePanelController)
+        var animateMI = typeof(DiceRollPanelController)
             .GetMethod("AnimateTotalText", BindingFlags.NonPublic | BindingFlags.Instance);
         var enumerator = (IEnumerator)animateMI.Invoke(panelController, new object[] { fakeRoll.totalRoll });
 
