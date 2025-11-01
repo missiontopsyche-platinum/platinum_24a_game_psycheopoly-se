@@ -845,6 +845,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
+      propertyPath: passedGoChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1006,6 +1010,18 @@ MonoBehaviour:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 3715776258908307495, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: playerPiecePrefab
+      value: 
+      objectReference: {fileID: 8622359238066017498, guid: 691ac768d46d63c48b8b2d5d1cd312f5, type: 3}
+    - target: {fileID: 3715776258908307495, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: playerAddedChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
+    - target: {fileID: 3715776258908307495, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: playerMovedEventChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
     - target: {fileID: 5505372165806031557, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1050,6 +1066,22 @@ MonoBehaviour:
       propertyPath: m_Name
       value: Board
       objectReference: {fileID: 0}
+    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: diceRolledEvent
+      value: 
+      objectReference: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
+    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: passedGoChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
+    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: movePlayerChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
+    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: playerMovedChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
