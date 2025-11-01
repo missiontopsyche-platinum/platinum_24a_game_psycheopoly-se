@@ -17,16 +17,16 @@ public class TurnBannerController : MonoBehaviour
     [SerializeField] private float slideOffset = 60f;
     [SerializeField] private AnimationCurve ease = null;
 
-    private RectTransform _rect;
-    private Vector2 _shownPos;
-    private Vector2 _hiddenPos;
-    private Coroutine _anim;
+    private RectTransform rect;
+    private Vector2 shownPos;
+    private Vector2 hiddenPos;
+    private Coroutine anim;
     private bool _buttonHooked;
     public bool IsSubscribed { get; private set; }
 
     private void Awake()
     {
-        _rect = GetComponent<RectTransform>();
+        rect = GetComponent<RectTransform>();
 
         if (canvasGroup == null)
             canvasGroup = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
@@ -34,15 +34,15 @@ public class TurnBannerController : MonoBehaviour
         if (ease == null || ease.length == 0)
             ease = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-        _shownPos = _rect.anchoredPosition;
-        _hiddenPos = _shownPos + new Vector2(0, -slideOffset);
+        shownPos = rect.anchoredPosition;
+        hiddenPos = shownPos + new Vector2(0, -slideOffset);
 
-        canvasGroup.alpha = 0;
+        canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        _rect.anchoredPosition = _hiddenPos;
+        rect.anchoredPosition = hiddenPos;
 
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -88,8 +88,8 @@ public class TurnBannerController : MonoBehaviour
 
     private void PlayAnim(bool show)
     {
-        if (_anim != null) StopCoroutine(_anim);
-        _anim = StartCoroutine(FadeSlide(show));
+        if (anim != null) StopCoroutine(anim);
+        anim = StartCoroutine(FadeSlide(show));
     }
 
     private IEnumerator FadeSlide(bool show)
@@ -97,16 +97,13 @@ public class TurnBannerController : MonoBehaviour
         if (!Application.isPlaying)
         {
             float targetAlpha = show ? 1f : 0f;
-            Vector2 targetPos = show ? _shownPos : _hiddenPos;
+            Vector2 targetPos = show ? shownPos : hiddenPos;
 
             canvasGroup.alpha = targetAlpha;
-            _rect.anchoredPosition = targetPos;
+            rect.anchoredPosition = targetPos;
 
             canvasGroup.interactable = show;
             canvasGroup.blocksRaycasts = show;
-
-            if (!show)
-                gameObject.SetActive(false);
 
             yield break;
         }
@@ -117,16 +114,16 @@ public class TurnBannerController : MonoBehaviour
         float startA = canvasGroup.alpha;
         float endA = show ? 1 : 0;
 
-        Vector2 startPos = _rect.anchoredPosition;
-        Vector2 endPos = show ? _shownPos : _hiddenPos;
+        Vector2 startPos = rect.anchoredPosition;
+        Vector2 endPos = show ? shownPos : hiddenPos;
 
         if (show && !gameObject.activeSelf)
         {
             gameObject.SetActive(true);
             canvasGroup.alpha = 0;
-            _rect.anchoredPosition = _hiddenPos;
+            rect.anchoredPosition = hiddenPos;
             startA = 0;
-            startPos = _hiddenPos;
+            startPos = hiddenPos;
         }
 
         canvasGroup.blocksRaycasts = true;
@@ -137,18 +134,15 @@ public class TurnBannerController : MonoBehaviour
             time += Time.unscaledDeltaTime;
             float t = ease.Evaluate(time / duration);
             canvasGroup.alpha = Mathf.Lerp(startA, endA, t);
-            _rect.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+            rect.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
             yield return null;
         }
 
         canvasGroup.alpha = endA;
-        _rect.anchoredPosition = endPos;
+        rect.anchoredPosition = endPos;
 
         canvasGroup.interactable = show;
         canvasGroup.blocksRaycasts = show;
-
-        if (!show)
-            gameObject.SetActive(false);
     }
 
     //shows Player X's Turn

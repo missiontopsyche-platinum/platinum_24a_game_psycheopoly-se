@@ -30,7 +30,9 @@ namespace Tests.EditMode.EventsTests
             controller.Hide();
             //let fade out complete
             for (int i = 0; i < 10; i++) yield return null;
-            Assert.IsFalse(controller.gameObject.activeSelf, "Banner should be inactive after Hide().");
+            Assert.LessOrEqual(cg.alpha, 0.01f);
+            Assert.IsFalse(cg.blocksRaycasts);
+            Assert.IsFalse(cg.interactable);
 
             //Show next player 
             controller.ShowBanner(2);
