@@ -21,9 +21,8 @@ public class Player : ScriptableObject
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
     private List<int> ownedProperties = new();
-
-    //  This is using color32 struct. R/G/B/A setup. This can be adjusted later.
-    private Color32 color;
+    
+    private Color color;
 
     public void SetId(int id)
     {
@@ -107,12 +106,12 @@ public class Player : ScriptableObject
     public void UnmortgageProperty(int propertyIndex) { }
 
 
-    public void SetColor(Color32 color)
+    public void SetColor(Color color)
     {
         this.color = color;
     }
 
-    public Color32 GetColor()
+    public Color GetColor()
     {
         return this.color;
     }

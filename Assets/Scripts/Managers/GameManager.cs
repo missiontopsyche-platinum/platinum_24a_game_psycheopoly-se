@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
-    [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
+    [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public MovePlayerEventChannel movePlayerChannel;
     
@@ -120,7 +120,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // us232 t238 start the game once everything is loaded in- happens once.
+        // this is *not* a good solution long term and is simply to demonstrate
+        // current prototype progress.
+        if (gameState == GameState.None)
+            StartGame(4);
     }
 
     /// <summary>

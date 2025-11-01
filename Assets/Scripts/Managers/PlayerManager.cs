@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public IntEventChannel passedGoChannel;
 
-    private List<Player> players = new List<Player>();
+    public List<Player> players = new List<Player>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -62,6 +62,7 @@ public class PlayerManager : MonoBehaviour
             //sure it happens each time, we can definitely move it as we get futher along
             newPlayer.SetMoney(startingMoney);
             newPlayer.SetPosition(startingPosition);
+            newPlayer.SetColor(Random.ColorHSV());
 
             //Defaults added for monoploy
             newPlayer.SetInJail(false);

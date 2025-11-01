@@ -175,6 +175,9 @@ public class BoardRenderer : MonoBehaviour
         Piece piece = newPlayer.AddComponent<Piece>();
         piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor());
         
+        // scale new player game object to board scale
+        newPlayer.transform.localScale *= increment;
+        
         // add to pieces list and sort by ID (just in case they're "added" in the wrong order
         playerPieces.Add(piece);
         playerPieces = playerPieces.OrderBy(playerPiece => playerPiece.playerId).ToList();
@@ -233,8 +236,8 @@ public class BoardRenderer : MonoBehaviour
         // bump pieces
         for (int i = 0; i < piecesOnTarget.Count; i++)
         {
-            // offset position by corner normal * 1/2 increment amount (slightly to the corner)
-            Vector3 targetPosition = rawSpacePosition + (cornerTargets[i] * (increment / 2));
+            // offset position by corner normal * 1/4 increment amount (slightly to the corner)
+            Vector3 targetPosition = rawSpacePosition + (cornerTargets[i] * (increment / 4f));
             piecesOnTarget[i].MoveTo(targetPosition);
         }
     }
