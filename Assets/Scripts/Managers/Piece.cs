@@ -12,8 +12,8 @@ public class Piece : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;
 
     public MeshRenderer meshRenderer;
-    public int playerId { get; private set; }
-    public int spaceIndex { get; set; } 
+    [SerializeField] public int playerId;
+    [SerializeField] public int spaceIndex;
     
     private void Start()
     {

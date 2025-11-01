@@ -16,10 +16,10 @@ namespace PsycheOpoly.Board{
         [SerializeField] public BoardRenderer boardRenderer;
 
         [Header("Event Channels")]
+        [SerializeField] public PlayerEventChannel      playerAddedChannel;
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
         [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
         [SerializeField] public IntEventChannel         passedGoChannel;
-        [SerializeField] public DiceRolledEventChannel diceRolledEvent;
 
         //Task 81 create Space[] array
         private Space[] spaces;
@@ -57,6 +57,7 @@ namespace PsycheOpoly.Board{
         {
             if (subscribed) return;
             if (!this) return;
+            playerAddedChannel?.Subscribe(AddPlayer);
             movePlayerChannel?.Subscribe(MovePlayer);
             subscribed = true;
         }
@@ -64,8 +65,19 @@ namespace PsycheOpoly.Board{
         private void EnsureUnsubscribed()
         {
             if (!subscribed) return;
+            playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
             subscribed = false;
+        }
+
+        // adds a new player. Something weird was happening with the dict and was causing players
+        // to "start" at arbitrary indices rippling down to incorrect positioning for the renderer.
+        private void AddPlayer(Player player)
+        {
+            playerPositions.Add(player.GetId(), 0);
+            Logger.Debug("AddPlayer", 
+                $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}", 
+                LogCategory.Gameplay, this);
         }
 
         //Task 82 create InitializeBoard method 
@@ -130,7 +142,8 @@ namespace PsycheOpoly.Board{
         public int GetPlayerPosition(int playerID)
         {
             EnsureBoard();
-            return playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
+            int currentPos = playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
+            return currentPos;
         }
 
         /// <summary>
@@ -145,6 +158,9 @@ namespace PsycheOpoly.Board{
             EnsureBoard();
             int previous = GetPlayerPosition(mpe.id);
             int next = NormalizeIndex(previous + mpe.spacesToMove);
+            Logger.Debug("Move Player", 
+                $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
+                LogCategory.Gameplay, this);
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
             // Throws an event if the player has a negative move.

@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
 
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
+
+    [Header("UI Elements")] [SerializeField]
+    public DiceRollPanelController diceRollPanel;
     
     [Header("Event Channels")]
     //us11-t36 allows for gamestate change action
@@ -36,7 +39,7 @@ public class GameManager : MonoBehaviour
         { GameState.None,            new HashSet<GameState>{ GameState.Initializing } },
         { GameState.Initializing,    new HashSet<GameState>{ GameState.WaitingForTurn } },
         { GameState.WaitingForTurn,  new HashSet<GameState>{ GameState.PlayerTurn, GameState.GameOver } },
-        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.BotTurn, GameState.GameOver } },
+        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.PlayerTurn, GameState.BotTurn, GameState.GameOver } },
         { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
         { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
     };
@@ -159,6 +162,8 @@ public class GameManager : MonoBehaviour
         //edited in for us11
         SetState(GameState.WaitingForTurn);
 
+        // start first players turn
+        SetState(GameState.PlayerTurn);
         turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
     }
 
@@ -166,8 +171,14 @@ public class GameManager : MonoBehaviour
     {
         currentPlayer = (currentPlayer + 1) % playerCount;
         currentTurn++;
+        // temporary, assume every player is a 'human' player
+        SetState(GameState.PlayerTurn);
         turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
+    }
 
+    public void ExecuteTurn()
+    {
+        diceRollPanel.enabled = true;
     }
 
     //us11-t34 very basic initializer, just initializing GameState...
@@ -205,6 +216,7 @@ public class GameManager : MonoBehaviour
         //turn cycling transitin options
         if (from == GameState.WaitingForTurn && to == GameState.PlayerTurn) return true;
         if (from == GameState.PlayerTurn && to == GameState.BotTurn) return true;
+        if (from == GameState.PlayerTurn && to == GameState.PlayerTurn) return true;
         if (from == GameState.BotTurn && to == GameState.WaitingForTurn) return true;
 
         //end of game and restart transitions options
