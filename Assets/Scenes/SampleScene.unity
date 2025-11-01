@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &84377729 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 434027407871146052, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+  m_PrefabInstance: {fileID: 503588676}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
 --- !u!1001 &294795782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -130,6 +141,46 @@ PrefabInstance:
     - target: {fileID: 1033140090043267765, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_Name
       value: DicePanelCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 1467013439411617971, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 1467013439411617971, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 1711192130412388403, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 1711192130412388403, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 1711192130412388403, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -97
+      objectReference: {fileID: 0}
+    - target: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: diceManager
+      value: 
+      objectReference: {fileID: 1655155235}
+    - target: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: diceRolledChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
+    - target: {fileID: 6165721797124852322, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 6165721797124852322, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 6165721797124852322, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -475
       objectReference: {fileID: 0}
     - target: {fileID: 8159967160589745388, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_Pivot.x
@@ -210,6 +261,14 @@ PrefabInstance:
     - target: {fileID: 8159967160589745388, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9205444440538346599, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 9205444440538346599, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 70
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -768,6 +827,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: diceTotalText
+      value: 
+      objectReference: {fileID: 1170598748}
+    - target: {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: rollDiceButton
+      value: 
+      objectReference: {fileID: 2125198628}
+    - target: {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: dice1RolledText
+      value: 
+      objectReference: {fileID: 84377729}
+    - target: {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: dice2RolledText
+      value: 
+      objectReference: {fileID: 1343303340}
+    - target: {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: diceRolledChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
+    - target: {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: diceRolledRequestedChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
     - target: {fileID: 8859153510413946970, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: rollDiceButton
       value: 
@@ -851,11 +934,6 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1217087637}
-  - component: {fileID: 1217087639}
-  - component: {fileID: 1217087638}
-  m_Layer: 0
-  m_Name: Board
   - component: {fileID: 832575519}
   - component: {fileID: 832575518}
   m_Layer: 0
@@ -888,7 +966,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217087636}
   m_GameObject: {fileID: 832575517}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -898,6 +975,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1170598748 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7954374623035833413, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+  m_PrefabInstance: {fileID: 503588676}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!114 &1343303340 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4303413024077046694, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+  m_PrefabInstance: {fileID: 503588676}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
 --- !u!1001 &1520450728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -954,14 +1053,6 @@ PrefabInstance:
       propertyPath: passedGoChannel
       value: 
       objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: playerAddedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: playerRemovedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: a2eeb94d4d11ebb4397f738c4b414089, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1024,6 +1115,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15df42c078009e042b2bb63b9ed0a125, type: 3}
+--- !u!114 &1655155235 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4731011133718650417, guid: 8ce0f3ad00c5365498925f5fd2378034, type: 3}
+  m_PrefabInstance: {fileID: 581153968}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c197bdd2a2688499aa7077a417b359, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::DiceManager
+--- !u!114 &2125198628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5282078030251501895, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+  m_PrefabInstance: {fileID: 294795782}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1001 &4739859537058119910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1084,36 +1197,6 @@ PrefabInstance:
 --- !u!1001 &4859880532935631089
 PrefabInstance:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217087636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75c91c7211389a5409198ea73cc2b804, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::PsycheOpoly.Board.BoardManager
-  defaultBoardSize: 40
-  boardRenderer: {fileID: 1217087639}
-  playerMovedChannel: {fileID: 0}
-  movePlayerChannel: {fileID: 0}
-  passedGoChannel: {fileID: 0}
-  diceRolledEvent: {fileID: 0}
---- !u!114 &1217087639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1217087636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37662fd3c7e062f42af4adc886c03626, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::BoardRenderer
-  mainCamera: {fileID: 330585545}
-  spaceRendererPrefab: {fileID: 7095298248733592577, guid: 3275f65fddc4e5d4194385c6207010fa, type: 3}
-  playerPiecePrefab: {fileID: 8622359238066017498, guid: 691ac768d46d63c48b8b2d5d1cd312f5, type: 3}
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
