@@ -11,11 +11,11 @@ namespace Tests.EditMode.BoardManagerTests
         {
             boardManager.InitializeBoard(8);
 
-            Assert.AreEqual(8, boardManager.BoardSize);
+            Assert.AreEqual(8, boardManager.boardSize);
             Assert.IsInstanceOf<GoSpace>(boardManager.GetSpace(0));
 
             bool hasProp = false, hasChance = false;
-            for(int i = 1; i < boardManager.BoardSize; i++)
+            for(int i = 1; i < boardManager.boardSize; i++)
             {
                 var space = boardManager.GetSpace(i);
                 if(space is PropertySpace) hasProp = true;

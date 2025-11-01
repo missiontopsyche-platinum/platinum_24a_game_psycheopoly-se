@@ -19,19 +19,19 @@ namespace PsycheOpoly.Board{
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
         [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
         [SerializeField] public IntEventChannel         passedGoChannel;
-        [SerializeField] public EventChannel<DiceRolledEvent> diceRolledEvent;
+        [SerializeField] public DiceRolledEventChannel diceRolledEvent;
 
         //Task 81 create Space[] array
         private Space[] spaces;
         
         //For Testing purposes
-        public int BoardSize => spaces?.Length ?? 0;
+        public int boardSize => spaces?.Length ?? 0;
 
         //Task 85 player position dictionary
         private readonly Dictionary<int, int> playerPositions = new Dictionary<int, int>();
 
         //Task 88 subscribe and Task 89 unsubscribe 
-        private bool _subscribed;
+        private bool subscribed;
 
         private void Awake()
         {
@@ -55,17 +55,17 @@ namespace PsycheOpoly.Board{
       
         private void EnsureSubscribed()
         {
-            if (_subscribed) return;
+            if (subscribed) return;
             if (!this) return;
             movePlayerChannel?.Subscribe(MovePlayer);
-            _subscribed = true;
+            subscribed = true;
         }
 
         private void EnsureUnsubscribed()
         {
-            if (!_subscribed) return;
+            if (!subscribed) return;
             movePlayerChannel?.Unsubscribe(MovePlayer);
-            _subscribed = false;
+            subscribed = false;
         }
 
         //Task 82 create InitializeBoard method 
