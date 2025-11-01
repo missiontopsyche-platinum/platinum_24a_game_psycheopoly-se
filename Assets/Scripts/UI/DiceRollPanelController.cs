@@ -1,6 +1,8 @@
 using System.Collections;
+using Logging;
 using UnityEngine;
-using UnityEngine.UI;  
+using UnityEngine.UI;
+using Logger = Logging.Logger;
 
 public class DiceRollPanelController : MonoBehaviour
 {
@@ -16,6 +18,7 @@ public class DiceRollPanelController : MonoBehaviour
     [Header("Optional")]
     [SerializeField] private Button rollButton;      
     [SerializeField] private bool hideUntilFirstRoll = false;
+    [SerializeField] private float timeUntilDisableAfterRoll = 2f;
 
     private void Awake()
     {
@@ -37,6 +40,7 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void OnRollClicked()
     {
+        Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);
         try { diceManager?.RollDice(); }
         catch (MissingComponentException ex) { Debug.LogWarning(ex.Message, this); }
     }
@@ -51,6 +55,8 @@ public class DiceRollPanelController : MonoBehaviour
         {
             StartCoroutine(AnimateTotalText(e.totalRoll));
         }
+
+        StartCoroutine(DisablePanel());
     }
 
     private IEnumerator AnimateTotalText(int total)
@@ -60,5 +66,11 @@ public class DiceRollPanelController : MonoBehaviour
         for (int i = 0; i < 20; i++)
             yield return null;
         totalText.text = baseText + total;
+    }
+
+    private IEnumerator DisablePanel()
+    {
+        yield return new WaitForSecondsRealtime(timeUntilDisableAfterRoll);
+        gameObject.SetActive(false);
     }
 }

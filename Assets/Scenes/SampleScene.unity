@@ -180,7 +180,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6165721797124852322, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -475
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380431092377150759, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380431092377150759, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380431092377150759, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 6380431092377150759, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 8159967160589745388, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_Pivot.x
@@ -699,6 +715,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3447199021704222975, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: addPlayerEventChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
     - target: {fileID: 4396380014418271881, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -859,7 +879,8 @@ PrefabInstance:
       propertyPath: rollDiceButton
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1275,10 +1296,6 @@ PrefabInstance:
       value: Board
       objectReference: {fileID: 0}
     - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: diceRolledEvent
-      value: 
-      objectReference: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
       propertyPath: passedGoChannel
       value: 
       objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
@@ -1286,6 +1303,10 @@ PrefabInstance:
       propertyPath: movePlayerChannel
       value: 
       objectReference: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
+    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: playerAddedChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
     - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
       propertyPath: playerMovedChannel
       value: 
