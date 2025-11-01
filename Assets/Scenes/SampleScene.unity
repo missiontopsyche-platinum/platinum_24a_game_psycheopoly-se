@@ -640,6 +640,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3447199021704222975, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: playerEventChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
     - target: {fileID: 4396380014418271881, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -950,6 +954,14 @@ PrefabInstance:
       propertyPath: passedGoChannel
       value: 
       objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
+    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
+      propertyPath: playerAddedEventChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
+    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
+      propertyPath: playerRemovedEventChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: a2eeb94d4d11ebb4397f738c4b414089, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
