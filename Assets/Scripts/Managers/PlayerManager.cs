@@ -16,8 +16,8 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         // added this to decouple GameManager from PlayerManager to use events instead - hdathert
-        initializePlayerCountChannel.Subscribe(InitializePlayers);
-        passedGoChannel.Subscribe(PassedGo);
+        initializePlayerCountChannel?.Subscribe(InitializePlayers);
+        passedGoChannel?.Subscribe(PassedGo);
     }
 
     // Update is called once per frame

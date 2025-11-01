@@ -1,6 +1,8 @@
 using UnityEngine;
 using NUnit.Framework;
-namespace Tests.EditMode.DiceManagerTests 
+
+
+namespace Tests.EditMode.DiceManagerTests
 {
     public class DiceManagerRollTests : DiceManagerTestBase
     {

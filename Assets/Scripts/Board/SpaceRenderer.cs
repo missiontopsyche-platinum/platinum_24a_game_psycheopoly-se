@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class SpaceRenderer : InteractableGameObject
 {
     [SerializeField] public Color color;
-    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] public MeshRenderer meshRenderer;
 
     private Space space;
     
