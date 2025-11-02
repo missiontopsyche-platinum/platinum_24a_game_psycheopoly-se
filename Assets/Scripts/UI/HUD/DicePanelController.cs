@@ -26,10 +26,11 @@ public class DicePanelController : UIPanelBase
                 "rollDiceButton is null",
                 LogCategory.UI, 
                 this);
-            return;
-        }
+        } else 
+            rollDiceButton.onClick.AddListener(RollDiceClicked);
+        
         Subscribe(diceRolledChannel, DisplayDiceRoll);
-        rollDiceButton.onClick.AddListener(RollDiceClicked);
+        
         Logging.Logger.Trace("DicePanelController.OnEnable",
                 "Dice panel is now enabled.",
                 LogCategory.UI,
@@ -58,6 +59,10 @@ public class DicePanelController : UIPanelBase
                 this);
             return;
         }
+        
+        Logging.Logger.Debug("DicePanelController.DisplayDiceRoll",
+            $"Die 1: {diceRolledEvent.dieOne}, Die 2: {diceRolledEvent.dieTwo}, Total: {diceRolledEvent.totalRoll}",
+            LogCategory.Gameplay, this);
 
         SetTextSafe(dice1RolledText, $"Die One: {diceRolledEvent.dieOne}");
         SetTextSafe(dice2RolledText, $"Die Two: {diceRolledEvent.dieTwo}");

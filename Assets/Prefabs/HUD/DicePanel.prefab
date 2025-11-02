@@ -269,13 +269,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f0bbac2e74d66d418d595efa78d0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
-  diceRolledChannel: {fileID: 11400000, guid: 8bff291cfa8328045b301dc997509f8b, type: 2}
+  diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
   diceManager: {fileID: 0}
   dieOneView: {fileID: 1939517040586240033}
   dieTwoView: {fileID: 2704001889494415945}
   totalText: {fileID: 0}
   rollButton: {fileID: 4253784929494234719}
   hideUntilFirstRoll: 0
+  timeUntilDisableAfterRoll: 2
 --- !u!1 &3699817812424752990
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,6 +19,7 @@ public class UIPanelBase : MonoBehaviour
         // Adding the unsubscriber to the list
         unsubscribers.Add(() => channel.Unsubscribe(listener));
     }
+    
     // Unsubscribers are cleared out when the component is disabled.
     protected void ClearSubscriptions()
     {

@@ -12,7 +12,7 @@ public class PlayerPanelController : UIPanelBase
     // TODO: Refactor if new PlayerEventChannel gets added
     [SerializeField] public PlayerEventChannel addPlayerEventChannel;
 
-    private List<Player> playersList;
+    public List<Player> playersList;
 
     [Header("UI Elements")]
     [SerializeField] public Text playerNameText;
