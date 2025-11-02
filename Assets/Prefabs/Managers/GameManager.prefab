@@ -44,12 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f2227d971b6ec4692b378f2e2e4fe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GameManager
+  diceRollPanel: {fileID: 0}
   gameStateChangedChannel: {fileID: 11400000, guid: 86fd75f120dbc2341b1ea7b4db08811f, type: 2}
   turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
   playerMovedChannel: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
   initializePlayerCountChannel: {fileID: 11400000, guid: 1ffd839d51a8772428ccd8ac76dfcb46, type: 2}
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
   movePlayerChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
+  pieceMoveCompletedChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
   dieOne: 0
   dieTwo: 0
   totalRolled: 0

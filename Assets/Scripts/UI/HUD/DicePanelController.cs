@@ -6,7 +6,7 @@ public class DicePanelController : UIPanelBase
 {
     [Header("Event Channels")]
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] public RollDiceRequestedEventChannel diceRolledRequestedChannel;
+    [SerializeField] public BooleanEventChannel diceRolledRequestedChannel;
 
     [Header("UI Elements")]
     [SerializeField] public Text dice1RolledText;

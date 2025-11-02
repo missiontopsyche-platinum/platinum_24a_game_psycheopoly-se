@@ -28,7 +28,7 @@ public class DicePanelControllerPlayModeTests : ManagerTestBase
         controller.dice2RolledText = CreateAndAttachComponent<Text>("Dice2RolledText", root);
         controller.diceTotalText = CreateAndAttachComponent<Text>("DiceTotalText", root);
 
-        controller.diceRolledRequestedChannel = CreateChannel<RollDiceRequestedEventChannel>();
+        controller.diceRolledRequestedChannel = CreateChannel<BooleanEventChannel>();
         controller.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
     }
 

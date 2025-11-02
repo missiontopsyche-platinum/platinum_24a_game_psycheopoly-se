@@ -22,7 +22,7 @@ public class PieceTester
         Vector3 startPos = piece.transform.position;
         Vector3 target = startPos + new Vector3(3f, 0f, 0f);
 
-        piece.MoveTo(target);
+        piece.MoveTo(target, false);
 
         //wait for movement to finish
         float timeout = 5f;

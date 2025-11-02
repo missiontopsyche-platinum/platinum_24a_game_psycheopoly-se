@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DiceManager : MonoBehaviour
 {
@@ -20,7 +22,7 @@ public class DiceManager : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] public RollDiceRequestedEventChannel rollDiceRequestedChannel;
+    [SerializeField] public BooleanEventChannel rollDiceRequestedChannel;
 
     private void OnEnable()
     {

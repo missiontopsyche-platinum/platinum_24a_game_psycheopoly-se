@@ -6,8 +6,11 @@ using Logger = Logging.Logger;
 
 public class DiceRollPanelController : MonoBehaviour
 {
-    [Header("Dependencies")]
+    [Header ("Event Channels")]
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
+
+    [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
+    [Header("Dependencies")]
     [SerializeField] private DiceManager diceManager; //optional if we want to add a Roll button
 
     [Header("UI")]
@@ -24,18 +27,16 @@ public class DiceRollPanelController : MonoBehaviour
     {
         if (hideUntilFirstRoll) gameObject.SetActive(false);
         if (totalText != null) totalText.text = "Total: -";
-    }
-
-    private void OnEnable()
-    {
         if (rollButton != null) rollButton.onClick.AddListener(OnRollClicked);
         diceRolledChannel?.Subscribe(OnDiceRolled);
+        pieceMoveCompletedChannel?.Subscribe(HideUI);
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (rollButton != null) rollButton.onClick.RemoveListener(OnRollClicked);
         diceRolledChannel?.Unsubscribe(OnDiceRolled);
+        pieceMoveCompletedChannel?.Unsubscribe(HideUI);
     }
 
     private void OnRollClicked()
@@ -55,8 +56,6 @@ public class DiceRollPanelController : MonoBehaviour
         {
             StartCoroutine(AnimateTotalText(e.totalRoll));
         }
-
-        StartCoroutine(DisablePanel());
     }
 
     private IEnumerator AnimateTotalText(int total)
@@ -68,9 +67,8 @@ public class DiceRollPanelController : MonoBehaviour
         totalText.text = baseText + total;
     }
 
-    private IEnumerator DisablePanel()
+    private void HideUI(bool pieceMoveCompleted)
     {
-        yield return new WaitForSecondsRealtime(timeUntilDisableAfterRoll);
         gameObject.SetActive(false);
     }
 }

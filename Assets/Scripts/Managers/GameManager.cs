@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using Logging;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+    [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
     
 
     private int playerCount = 0;
@@ -32,6 +34,9 @@ public class GameManager : MonoBehaviour
     public int dieOne = 0;
     public int dieTwo = 0;
     public int totalRolled = 0;
+
+    private Coroutine currentTurnCoroutine;
+    private bool turnComplete = false;
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
@@ -94,6 +99,7 @@ public class GameManager : MonoBehaviour
     {
         //US156T157 subscribe to DiceRolled Listener
         diceRolledChannel.Subscribe(DiceRolled);
+        pieceMoveCompletedChannel?.Subscribe(PieceMoveCompleted);
     }
 
     //start & end game to satisfy us11-35
@@ -116,6 +122,7 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
+        StopAllCoroutines();
         SetState(GameState.GameOver);
     }
 
@@ -139,6 +146,11 @@ public class GameManager : MonoBehaviour
        diceRolledChannel.Unsubscribe(DiceRolled);
     }
 
+    private void PieceMoveCompleted(bool pieceMoveCompleted)
+    {
+        // in future, should have a state machine for turn progress
+        turnComplete = pieceMoveCompleted;
+    }
 
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
@@ -161,24 +173,47 @@ public class GameManager : MonoBehaviour
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
+        
+        // Wait for game to init
+        StartCoroutine(WaitForGameInit());
+    }
 
-        // start first players turn
+    private IEnumerator WaitForGameInit()
+    {
+        yield return new WaitForSeconds(2f);
+        StartTurn();
+    }
+
+    private void StartTurn()
+    {
+        // temporary, assume every player is a 'human' player
         SetState(GameState.PlayerTurn);
         turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
+        turnComplete = false;
+        currentTurnCoroutine = StartCoroutine(ExecuteTurn());
     }
 
     public void NextTurn()
     {
+        if (currentTurnCoroutine != null)
+            StopCoroutine(currentTurnCoroutine);
+        
         currentPlayer = (currentPlayer + 1) % playerCount;
         currentTurn++;
-        // temporary, assume every player is a 'human' player
-        SetState(GameState.PlayerTurn);
-        turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
+        StartTurn();
     }
 
-    public void ExecuteTurn()
+    private IEnumerator ExecuteTurn()
     {
-        diceRollPanel.enabled = true;
+        diceRollPanel.gameObject.SetActive(true);
+
+        // we should move through the state machine over time, this is a way to wait per frame
+        // to check for event fires.
+        while (!turnComplete)
+            yield return new WaitForEndOfFrame(); // busy wait for turn to complete (event fire etc)
+        
+        // turn is complete, call next turn
+        NextTurn();
     }
 
     //us11-t34 very basic initializer, just initializing GameState...
