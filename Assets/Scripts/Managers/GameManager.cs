@@ -178,10 +178,18 @@ public class GameManager : MonoBehaviour
         StartCoroutine(WaitForGameInit());
     }
 
+    /// <summary>
+    /// This is exposed to allow for testing in editmode, bypasses the init wait.
+    /// </summary>
+    public void CompleteGameInit()
+    {
+        StartTurn();
+    }
+
     private IEnumerator WaitForGameInit()
     {
         yield return new WaitForSeconds(2f);
-        StartTurn();
+        CompleteGameInit();
     }
 
     private void StartTurn()
@@ -205,7 +213,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ExecuteTurn()
     {
-        diceRollPanel.gameObject.SetActive(true);
+        diceRollPanel?.gameObject.SetActive(true);
 
         // we should move through the state machine over time, this is a way to wait per frame
         // to check for event fires.

@@ -63,7 +63,7 @@ public class Piece : MonoBehaviour
         
         // if this is a piece-correction bump, dont say a turn is complete
         if (!isBump)
-            pieceMoveCompletedEventChannel.RaiseEvent(true);
+            pieceMoveCompletedEventChannel?.RaiseEvent(true);
     }
     
     /// <summary>
@@ -83,7 +83,7 @@ public class Piece : MonoBehaviour
             transform.position = target;
         }
         
-        pieceMoveCompletedEventChannel.RaiseEvent(true);
+        pieceMoveCompletedEventChannel?.RaiseEvent(true);
     }
 
     private IEnumerator MoveTowardsTarget(Vector3 target, float simulatedDelta)

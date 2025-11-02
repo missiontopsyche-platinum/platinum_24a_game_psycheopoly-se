@@ -47,6 +47,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel.Subscribe(p => receivedTse = p);
 
             gameManager.StartGame(2);
+            gameManager.CompleteGameInit();
 
             Assert.IsNotNull(receivedTse, "turnStartedChannel should fire with a Player payload.");
             Assert.AreEqual(0, receivedTse.playerId);

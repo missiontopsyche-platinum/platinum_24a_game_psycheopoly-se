@@ -12,8 +12,8 @@ public class PieceTester
     public IEnumerator PieceMovesRight_WhenMoveToCalled()
     {
 #if UNITY_EDITOR
-        var playerPiecePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/PlayerPiece.prefab");
-        Assert.IsNotNull(playerPiecePrefab, "Failed loading prefab at path: Assets/Prefabs/PlayerPiece.prefab");
+        var playerPiecePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Board/PlayerPiece.prefab");
+        Assert.IsNotNull(playerPiecePrefab, "Failed loading prefab at path: Assets/Prefabs/Board/PlayerPiece.prefab");
 
         var pieceObj = Object.Instantiate(playerPiecePrefab);
         var piece = pieceObj.GetComponent<Piece>();
