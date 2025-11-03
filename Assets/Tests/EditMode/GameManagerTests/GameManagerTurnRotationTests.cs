@@ -21,6 +21,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel.Subscribe(Listener);
         
             gameManager.SetUpGame(2);
+            gameManager.CompleteGameInit(); // skip startup timer
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         
@@ -46,6 +47,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel.Subscribe(Listener);
         
             gameManager.SetUpGame(3);
+            gameManager.CompleteGameInit(); // skip startup timer
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         
@@ -75,6 +77,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel.Subscribe(Listener);
         
             gameManager.SetUpGame(4);
+            gameManager.CompleteGameInit(); // skip startup timer
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         

@@ -25,7 +25,7 @@ namespace Tests.EditMode.PlayerTests
             player.SetId(0);
             player.SetPName("Test");
             player.SetMoney(100);
-            Color32 testColor = new Color32(255, 0, 0, 255);
+            Color testColor = new Color(1f, 0, 0, 1f);
             player.SetColor(testColor);
             player.SetPosition(1);
 

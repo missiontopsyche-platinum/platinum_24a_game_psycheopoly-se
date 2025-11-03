@@ -482,7 +482,6 @@ GameObject:
   - component: {fileID: 770501260114189669}
   - component: {fileID: 4852590081984614390}
   - component: {fileID: 3278993607836582000}
-  - component: {fileID: 4768726413858547108}
   m_Layer: 5
   m_Name: PlayerPanel
   m_TagString: Untagged
@@ -576,22 +575,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &4768726413858547108
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6097144998721734038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73e1e3e8a4fff634387ff81a314c1056, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerPanelController
-  turnStartedChannel: {fileID: 0}
-  playerEventChannel: {fileID: 0}
-  playerNameText: {fileID: 0}
-  playerMoneyText: {fileID: 0}
 --- !u!1 &6652730369944666312
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,7 +1139,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerPanelController
   turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
-  playerEventChannel: {fileID: 11400000, guid: 9480f55f1a6baeb4b8967270bdc8b800, type: 2}
+  addPlayerEventChannel: {fileID: 0}
+  playersList: []
   playerNameText: {fileID: 6928103308267896782}
   playerMoneyText: {fileID: 8134415378645163428}
 --- !u!1 &9192229270420014358
@@ -1171,7 +1155,6 @@ GameObject:
   - component: {fileID: 8412040944212186335}
   - component: {fileID: 6794540160504668240}
   - component: {fileID: 9201239767530591252}
-  - component: {fileID: 8855445723149103323}
   m_Layer: 5
   m_Name: DicePanel
   m_TagString: Untagged
@@ -1266,21 +1249,3 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &8855445723149103323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9192229270420014358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6acc73eab9b2c149b49a754e5ed537c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
-  diceRolledChannel: {fileID: 0}
-  diceRolledRequestedChannel: {fileID: 0}
-  dice1RolledText: {fileID: 0}
-  dice2RolledText: {fileID: 0}
-  diceTotalText: {fileID: 0}
-  rollDiceButton: {fileID: 0}

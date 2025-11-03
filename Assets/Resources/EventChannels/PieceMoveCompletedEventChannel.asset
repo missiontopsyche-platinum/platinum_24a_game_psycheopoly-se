@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 202812872a6f4061b09b77f422c12acf, type: 3}
-  m_Name: DiceRolledEventChannel
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::DiceRolledEventChannel
+  m_Script: {fileID: 11500000, guid: e99012a47fdaf9c439ffcf86e35a8634, type: 3}
+  m_Name: PieceMoveCompletedEventChannel
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::BooleanEventChannel

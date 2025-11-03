@@ -12,8 +12,8 @@ public class PieceTester
     public IEnumerator PieceMovesRight_WhenMoveToCalled()
     {
 #if UNITY_EDITOR
-        var playerPiecePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/PlayerPiece.prefab");
-        Assert.IsNotNull(playerPiecePrefab, "Failed loading prefab at path: Assets/Prefabs/PlayerPiece.prefab");
+        var playerPiecePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Board/PlayerPiece.prefab");
+        Assert.IsNotNull(playerPiecePrefab, "Failed loading prefab at path: Assets/Prefabs/Board/PlayerPiece.prefab");
 
         var pieceObj = Object.Instantiate(playerPiecePrefab);
         var piece = pieceObj.GetComponent<Piece>();
@@ -22,7 +22,7 @@ public class PieceTester
         Vector3 startPos = piece.transform.position;
         Vector3 target = startPos + new Vector3(3f, 0f, 0f);
 
-        piece.MoveTo(target);
+        piece.MoveTo(target, false);
 
         //wait for movement to finish
         float timeout = 5f;

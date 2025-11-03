@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using Logging;
@@ -10,15 +11,19 @@ public class GameManager : MonoBehaviour
 
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
+
+    [Header("UI Elements")] [SerializeField]
+    public DiceRollPanelController diceRollPanel;
     
     [Header("Event Channels")]
     //us11-t36 allows for gamestate change action
     [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
-    [SerializeField] public IntEventChannel initializePlayerCountChannel; // used to decouple PlayerManager through events
+    [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+    [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
     
 
     private int playerCount = 0;
@@ -30,13 +35,16 @@ public class GameManager : MonoBehaviour
     public int dieTwo = 0;
     public int totalRolled = 0;
 
+    private Coroutine currentTurnCoroutine;
+    private bool turnComplete = false;
+
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
     {
         { GameState.None,            new HashSet<GameState>{ GameState.Initializing } },
         { GameState.Initializing,    new HashSet<GameState>{ GameState.WaitingForTurn } },
         { GameState.WaitingForTurn,  new HashSet<GameState>{ GameState.PlayerTurn, GameState.GameOver } },
-        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.BotTurn, GameState.GameOver } },
+        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.PlayerTurn, GameState.BotTurn, GameState.GameOver } },
         { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
         { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
     };
@@ -91,6 +99,7 @@ public class GameManager : MonoBehaviour
     {
         //US156T157 subscribe to DiceRolled Listener
         diceRolledChannel.Subscribe(DiceRolled);
+        pieceMoveCompletedChannel?.Subscribe(PieceMoveCompleted);
     }
 
     //start & end game to satisfy us11-35
@@ -113,6 +122,7 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
+        StopAllCoroutines();
         SetState(GameState.GameOver);
     }
 
@@ -120,7 +130,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // us232 t238 start the game once everything is loaded in- happens once.
+        // this is *not* a good solution long term and is simply to demonstrate
+        // current prototype progress.
+        if (gameState == GameState.None)
+            StartGame(4);
     }
 
     /// <summary>
@@ -132,6 +146,11 @@ public class GameManager : MonoBehaviour
        diceRolledChannel.Unsubscribe(DiceRolled);
     }
 
+    private void PieceMoveCompleted(bool pieceMoveCompleted)
+    {
+        // in future, should have a state machine for turn progress
+        turnComplete = pieceMoveCompleted;
+    }
 
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
@@ -154,16 +173,55 @@ public class GameManager : MonoBehaviour
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
+        
+        // Wait for game to init
+        StartCoroutine(WaitForGameInit());
+    }
 
+    /// <summary>
+    /// This is exposed to allow for testing in editmode, bypasses the init wait.
+    /// </summary>
+    public void CompleteGameInit()
+    {
+        StartTurn();
+    }
+
+    private IEnumerator WaitForGameInit()
+    {
+        yield return new WaitForSeconds(2f);
+        CompleteGameInit();
+    }
+
+    private void StartTurn()
+    {
+        // temporary, assume every player is a 'human' player
+        SetState(GameState.PlayerTurn);
         turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
+        turnComplete = false;
+        currentTurnCoroutine = StartCoroutine(ExecuteTurn());
     }
 
     public void NextTurn()
     {
+        if (currentTurnCoroutine != null)
+            StopCoroutine(currentTurnCoroutine);
+        
         currentPlayer = (currentPlayer + 1) % playerCount;
         currentTurn++;
-        turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
+        StartTurn();
+    }
 
+    private IEnumerator ExecuteTurn()
+    {
+        diceRollPanel?.gameObject.SetActive(true);
+
+        // we should move through the state machine over time, this is a way to wait per frame
+        // to check for event fires.
+        while (!turnComplete)
+            yield return new WaitForEndOfFrame(); // busy wait for turn to complete (event fire etc)
+        
+        // turn is complete, call next turn
+        NextTurn();
     }
 
     //us11-t34 very basic initializer, just initializing GameState...
@@ -201,6 +259,7 @@ public class GameManager : MonoBehaviour
         //turn cycling transitin options
         if (from == GameState.WaitingForTurn && to == GameState.PlayerTurn) return true;
         if (from == GameState.PlayerTurn && to == GameState.BotTurn) return true;
+        if (from == GameState.PlayerTurn && to == GameState.PlayerTurn) return true;
         if (from == GameState.BotTurn && to == GameState.WaitingForTurn) return true;
 
         //end of game and restart transitions options

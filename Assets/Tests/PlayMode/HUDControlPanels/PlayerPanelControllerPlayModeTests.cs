@@ -26,7 +26,7 @@ public class PlayerPanelControllerPlayModeTests : ManagerTestBase
         controller.playerMoneyText = CreateAndAttachComponent<Text>("PlayerMoneyText", root);
 
         controller.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
-        controller.playerEventChannel = CreateChannel<PlayerEventChannel>();
+        controller.addPlayerEventChannel = CreateChannel<PlayerEventChannel>();
     }
 
     [TearDown]
@@ -47,7 +47,7 @@ public class PlayerPanelControllerPlayModeTests : ManagerTestBase
         player1.SetMoney(1500);
 
         root.SetActive(true);
-        controller.playerEventChannel.RaiseEvent(player1);
+        controller.addPlayerEventChannel.RaiseEvent(player1);
 
         controller.turnStartedChannel.RaiseEvent(new TurnStartedEvent(0, 1));
         yield return null;

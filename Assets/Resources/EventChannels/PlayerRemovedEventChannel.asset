@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 068779b07ae16814a9f3a17708343f63, type: 3}
-  m_Name: InitializePlayerEventChannel
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::IntEventChannel
+  m_Script: {fileID: 11500000, guid: 955a0bddebaa4f03a210fb89891f9a31, type: 3}
+  m_Name: PlayerRemovedEventChannel
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerEventChannel

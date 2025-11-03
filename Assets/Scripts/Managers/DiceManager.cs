@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DiceManager : MonoBehaviour
 {
@@ -20,7 +22,7 @@ public class DiceManager : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] public RollDiceRequestedEventChannel rollDiceRequestedChannel;
+    [SerializeField] public BooleanEventChannel rollDiceRequestedChannel;
 
     private void OnEnable()
     {
@@ -40,6 +42,7 @@ public class DiceManager : MonoBehaviour
     {
         rollDiceRequestedChannel?.Unsubscribe(RollDiceRequest);
     }
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

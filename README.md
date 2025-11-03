@@ -31,13 +31,46 @@ and select "Run All" from the bottom-right corner. As we develop more tests, the
 
 ## File Structure
 
+### `Assets/`
+
 General file structure within the `Assets/` folder is as such:
-- `Scenes/` - Location of Scene objects
-- `Scripts/`
+- `Materials/` - Location of Material and Shader assets
+- `Prefabs/`
+  - `Board/` - Location of Board specific prefabs for rendering
+  - `HUD` - Location of HUD UI prefab elements
+  - `Managers` - Location of Manager prefabs with pre-hooked event channels
+  - `Misc/` - Location of miscellaneous prefab objects as needed, such as Unity 
+              scene basics.
+- `Resources/`
+  - `Dice` - Location of Dice image assets
+  - `EventChannels/` - Location of EventChannel assets
+  - `Logging/` - Location of LogSettings asset
+- `Scenes/` - Location of Scene assets
+- `Scripts/` 
+  - `Board/` - Location of Board-related scripts
   - `Data/` - Location of data structure classes and scripts
   - `Events/` - Location of Event ScriptableObject definitions
+    - `EventChannelTypes/` - Location of EventChannel concrete definitions for
+                            asset creation
+    - `EventChannelDataStructures/` - Location of data payloads for Events
+  - `Interactable/` - Location of mouse interaction interfaces for rendered game
+  - `Logging` - Location of Logging implementation and documentation
   - `Managers/` - Location of Manager scripts
+  - `UI/` - Location of UI related scripts and controllers
 - `Settings/` - Location of project settings
 - `Tests/`
   - `EditMode/` - Location of EditMode (compile time) tests
   - `PlayMode/` - Location of PlayMode (run time) tests
+  - `Shared/` - Location of shared test base classes
+  
+### `Documentation/`
+
+Contains documentation and artifacts associated with this project.
+
+### `Packages/`
+
+Package manifest for this project so Unity can resolve dependencies automatically.
+
+### `ProjectSettings/`
+
+Contains all the Unity project settings for this project.

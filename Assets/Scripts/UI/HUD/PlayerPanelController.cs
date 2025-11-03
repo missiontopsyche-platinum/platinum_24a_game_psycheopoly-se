@@ -3,15 +3,16 @@ using UnityEngine.UI;
 using Logging;
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 public class PlayerPanelController : UIPanelBase
 {
     [Header("Event Channels")]
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     // TODO: Refactor if new PlayerEventChannel gets added
-    [SerializeField] public PlayerEventChannel playerEventChannel;
+    [SerializeField] public PlayerEventChannel addPlayerEventChannel;
 
-    private List<Player> playersList;
+    public List<Player> playersList;
 
     [Header("UI Elements")]
     [SerializeField] public Text playerNameText;
@@ -20,7 +21,7 @@ public class PlayerPanelController : UIPanelBase
     private void OnEnable()
     {
         Subscribe(turnStartedChannel, DisplayCurrentPlayer);
-        Subscribe(playerEventChannel, AddPlayer);
+        Subscribe(addPlayerEventChannel, AddPlayer);
         Logging.Logger.Trace("PlayerPanelController.OnEnable",
             "Player panel is now enabled.",
             LogCategory.UI,

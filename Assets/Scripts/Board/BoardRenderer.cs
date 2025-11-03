@@ -172,8 +172,11 @@ public class BoardRenderer : MonoBehaviour
     {
         // create and initialize new piece object
         GameObject newPlayer = Instantiate(playerPiecePrefab);
-        Piece piece = newPlayer.AddComponent<Piece>();
+        Piece piece = newPlayer.GetComponent<Piece>();
         piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor());
+        
+        // scale new player game object to board scale
+        newPlayer.transform.localScale *= increment;
         
         // add to pieces list and sort by ID (just in case they're "added" in the wrong order
         playerPieces.Add(piece);
@@ -203,12 +206,14 @@ public class BoardRenderer : MonoBehaviour
             return;
         }
         
-        // start move coroutine
-        movingPiece.MoveTo(spaceRenderers[mpe.newPosition].transform.position);
-        // set internal index state
+        Vector3 targetPosition = spaceRenderers[mpe.newPosition].transform.position;
         movingPiece.spaceIndex = mpe.newPosition;
-        // move pieces if space is 'crowded' (2+ pieces on a space
-        BumpCrowdedSpacePieces(mpe.newPosition);
+        Vector3 bumpPosition = BumpCrowdedSpacePieces(mpe.newPosition, mpe.id);
+        
+        if (bumpPosition == Vector3.zero)
+            movingPiece.MoveTo(targetPosition, false);
+        else
+            movingPiece.MoveToWaypoints(new []{targetPosition, bumpPosition});
     }
 
     /// <summary>
@@ -216,10 +221,11 @@ public class BoardRenderer : MonoBehaviour
     /// pieces to the edges to make room for each one.
     /// </summary>
     /// <param name="targetSpaceIndex">space index we're checking for bump</param>
-    private void BumpCrowdedSpacePieces(int targetSpaceIndex)
+    private Vector3 BumpCrowdedSpacePieces(int targetSpaceIndex, int currentPlayerId)
     {
         Vector3 rawSpacePosition = spaceRenderers[targetSpaceIndex].transform.position;
         List<Piece> piecesOnTarget = new List<Piece>();
+        Vector3 currentPlayerTargetBump = Vector3.zero;
 
         foreach (Piece piece in playerPieces)
         {
@@ -228,14 +234,19 @@ public class BoardRenderer : MonoBehaviour
         }
 
         if (piecesOnTarget.Count < 2) // no bump
-            return;
+            return currentPlayerTargetBump;
         
         // bump pieces
         for (int i = 0; i < piecesOnTarget.Count; i++)
         {
-            // offset position by corner normal * 1/2 increment amount (slightly to the corner)
-            Vector3 targetPosition = rawSpacePosition + (cornerTargets[i] * (increment / 2));
-            piecesOnTarget[i].MoveTo(targetPosition);
+            // offset position by corner normal * 1/4 increment amount (slightly to the corner)
+            Vector3 targetPosition = rawSpacePosition + (cornerTargets[i] * (increment / 4f));
+            if (piecesOnTarget[i].playerId == currentPlayerId)
+                currentPlayerTargetBump = targetPosition;
+            else
+                piecesOnTarget[i].MoveTo(targetPosition, true);
         }
+
+        return currentPlayerTargetBump;
     }
 }
