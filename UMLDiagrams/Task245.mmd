@@ -1,0 +1,50 @@
+stateDiagram-v2
+    direction LR
+
+    %% States
+    state "None" as SNone
+    state "Initializing" as SInit
+    state "WaitingForTurn" as SWait
+    state "PlayerTurn" as SPlayer
+    state "BotTurn" as SBot
+    state "GameOver" as SOver
+
+    %% Start
+    [*] --> SNone
+
+    %% Core legal transitions
+    SNone --> SInit: StartGame()
+    SInit --> SWait: Initialize / SetUpGame
+    SWait --> SPlayer: Begin Player Turn
+    SPlayer --> SBot: End Player Action
+    SBot --> SWait: End Bot Action
+
+    %% Game over
+    SWait --> SOver: Game End
+    SPlayer --> SOver: Game End
+    SBot --> SOver: Game End
+
+    %% Restart
+    SOver --> SInit: Start New Game
+
+    %% Notes
+    note right of SPlayer
+      DiceRolled:
+      - Save dice values
+      - Raise MovePlayerEvent
+      (No state change)
+    end note
+
+    note right of SWait
+      NextTurn():
+      - Increment player and turn
+      - Raise TurnStartedEvent
+      (State stays same)
+    end note
+
+    note left of SInit
+      State changes guarded by:
+      - Allowed[from becomes to]
+      - CanTransition(from,to)
+      Illegal transitions logged
+    end note
