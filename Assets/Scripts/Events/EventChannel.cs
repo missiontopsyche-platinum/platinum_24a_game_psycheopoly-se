@@ -1,8 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Logging;
 
-public class EventChannel<T> : ScriptableObject
+public abstract class EventChannel<T> : ScriptableObject
 {
     private readonly List<Action<T>> listeners = new List<Action<T>>();
 
@@ -10,7 +11,10 @@ public class EventChannel<T> : ScriptableObject
     {
         if (listener == null)
         {
-            Debug.LogWarning("Attempted to subscribe null listener on " + this.name);
+            Logging.Logger.Warn("EventChannel.Subscribe", 
+                "Attempted to subscribe null listener on " + this.name, 
+                LogCategory.Core,
+                this);
             return;
         }
         if (!listeners.Contains(listener))

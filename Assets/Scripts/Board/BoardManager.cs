@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using PsycheOpoly.Events;
+using Logging;
+using Logger = Logging.Logger;
 
 namespace PsycheOpoly.Board{
 
@@ -9,38 +10,74 @@ namespace PsycheOpoly.Board{
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
-        [SerializeField] private int defaultBoardSize = 10; 
+        [SerializeField] private int defaultBoardSize = 40;
+
+        [Header("Render Components")] 
+        [SerializeField] public BoardRenderer boardRenderer;
+
+        [Header("Event Channels")]
+        [SerializeField] public PlayerEventChannel      playerAddedChannel;
+        [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
+        [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
+        [SerializeField] public IntEventChannel         passedGoChannel;
 
         //Task 81 create Space[] array
         private Space[] spaces;
         
         //For Testing purposes
-        public int BoardSize => spaces?.Length ?? 0;
+        public int boardSize => spaces?.Length ?? 0;
 
         //Task 85 player position dictionary
         private readonly Dictionary<int, int> playerPositions = new Dictionary<int, int>();
 
         //Task 88 subscribe and Task 89 unsubscribe 
-        private bool _subscribed;
+        private bool subscribed;
 
-        private void Awake()     => EnsureSubscribed();
+        private void Awake()
+        {
+            EnsureSubscribed();
+            
+            Logger.Initialize(LogSettings.Current());
+        }
+
         private void OnEnable()  => EnsureSubscribed();
+
+        private void Start()
+        {
+            InitializeBoard();
+            movePlayerChannel?.Subscribe(MovePlayer);
+        }
+
         private void OnDisable() => EnsureUnsubscribed();
+
         private void OnDestroy() => EnsureUnsubscribed();
 
+      
         private void EnsureSubscribed()
         {
-            if (_subscribed) return;
+            if (subscribed) return;
             if (!this) return;
-            GameEvents.PlayerMoved += OnPlayerMoved;
-            _subscribed = true;
+            playerAddedChannel?.Subscribe(AddPlayer);
+            movePlayerChannel?.Subscribe(MovePlayer);
+            subscribed = true;
         }
 
         private void EnsureUnsubscribed()
         {
-            if (!_subscribed) return;
-            GameEvents.PlayerMoved -= OnPlayerMoved;
-            _subscribed = false;
+            if (!subscribed) return;
+            playerAddedChannel?.Unsubscribe(AddPlayer);
+            movePlayerChannel?.Unsubscribe(MovePlayer);
+            subscribed = false;
+        }
+
+        // adds a new player. Something weird was happening with the dict and was causing players
+        // to "start" at arbitrary indices rippling down to incorrect positioning for the renderer.
+        private void AddPlayer(Player player)
+        {
+            playerPositions.Add(player.GetId(), 0);
+            Logger.Debug("AddPlayer", 
+                $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}", 
+                LogCategory.Gameplay, this);
         }
 
         //Task 82 create InitializeBoard method 
@@ -55,7 +92,9 @@ namespace PsycheOpoly.Board{
             for (int i = 1; i < size; i++)
                 spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
                                          : new PropertySpace($"Property {i}");
-
+            
+            boardRenderer?.GenerateBoard(spaces);
+            
             EnsureSubscribed();
         }
 
@@ -63,36 +102,74 @@ namespace PsycheOpoly.Board{
         public Space GetSpace(int index)
         {
             if (spaces == null || spaces.Length == 0)
+            {
+                Logging.Logger.Error("BoardManager.GetSpace",
+                    "Board not initialized, call InitializeBoard()",
+                    LogCategory.Gameplay,
+                    this);
                 throw new InvalidOperationException("Board not initialized, call InitializeBoard()");
+            }
             return spaces[NormalizeIndex(index)];
         }
 
-        //Task 96 SetPlayerPosition(int, int) method
+        /// <summary>
+        /// Used to teleport a player to a new space
+        /// This does not use dice rolls. 
+        /// Should be used for events like "Go To Jail" 
+        /// that require a player to not move across other spaces
+        /// Does not check for backwards movement
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <param name="spaceIndex"></param>
         public void SetPlayerPosition(int playerID, int spaceIndex)
         {
             EnsureBoard();
-            playerPositions[playerID] = NormalizeIndex(spaceIndex);
+            if (spaceIndex < 0 || spaceIndex >= spaces.Length)
+            {
+                throw new ArgumentOutOfRangeException("Space Index not in valid range");
+            }
+            else
+            {
+                playerPositions[playerID] = NormalizeIndex(spaceIndex);
+            }
         }
 
-        //Task 86 GetPlayerPosition(int) method
+        /// <summary>
+        /// Returns the position of the specified player
+        /// </summary>
+        /// <param name="playerID"></param>
+        /// <returns></returns>
         public int GetPlayerPosition(int playerID)
         {
             EnsureBoard();
-            return playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
+            int currentPos = playerPositions.TryGetValue(playerID, out var idx) ? idx : 0;
+            return currentPos;
         }
 
-        //Task 87 MovePlayer and Module wrap
-        public int MovePlayer(int playerID, int spacesToMove)
+        /// <summary>
+        /// Moves the player based on the movePlayerEvent being called
+        /// Takes in a MovePlayerEvent object
+        /// Then moves the specified player by the amount specified.
+        /// Verifies if the user passes go.
+        /// </summary>
+        /// <param name="mpe"></param>
+        public void MovePlayer(MovePlayerEvent mpe)
         {
             EnsureBoard();
-            int next = NormalizeIndex(GetPlayerPosition(playerID) + spacesToMove);
-            playerPositions[playerID] = next;
-            return next;
+            int previous = GetPlayerPosition(mpe.id);
+            int next = NormalizeIndex(previous + mpe.spacesToMove);
+            Logger.Debug("Move Player", 
+                $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
+                LogCategory.Gameplay, this);
+            playerPositions[mpe.id] = next;
+            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
+            // Throws an event if the player has a negative move.
+            // This may need a refactor if anything causes the player to move backwards normally.
+            if (next < previous)
+            {
+                passedGoChannel?.RaiseEvent(mpe.id);
+            }
         }
-
-        //Task 90 event handler
-        private void OnPlayerMoved(int playerID, int spacesToMove) => MovePlayer(playerID, spacesToMove);
-
 
         //Helper methods
         //confirms board is set to default size

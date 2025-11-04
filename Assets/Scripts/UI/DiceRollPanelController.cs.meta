@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0f0bbac2e74d66d418d595efa78d0cae
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - diceRolledChannel: {instanceID: 0}
+  - diceManager: {instanceID: 0}
+  - dieOneView: {instanceID: 0}
+  - dieTwoView: {instanceID: 0}
+  - totalText: {instanceID: 0}
+  - rollButton: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

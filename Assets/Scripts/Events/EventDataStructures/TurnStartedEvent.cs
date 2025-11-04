@@ -9,11 +9,11 @@ public class TurnStartedEvent
     /// <summary>
     /// The ID of the Player whose turn it currently is.
     /// </summary>
-    private int playerId { get; }
+    public int playerId { get; private set; }
     /// <summary>
     /// The current turn number.
     /// </summary>
-    private int turnNum { get; }
+    public int turnNum { get; private set; }
 
     /// <summary>
     /// /// Creates a <b>READ-ONLY</b> payload of data regarding a turn starting to be used

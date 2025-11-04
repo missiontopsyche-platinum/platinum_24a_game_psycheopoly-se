@@ -8,15 +8,15 @@ public class PlayerMovedEvent
     /// <summary>
     /// The ID of the Player that was moved.
     /// </summary>
-    private int id { get; }
+    public int id { get; private set; }
     /// <summary>
     /// The previous position of the Player that was moved.
     /// </summary>
-    private int previousPosition { get; }
+    public int previousPosition { get; private set; }
     /// <summary>
     /// The current position of the Player that was moved.
     /// </summary>
-    private int newPosition { get; }
+    public int newPosition { get; private set; }
 
     /// <summary>
     /// Creates a <b>READ-ONLY</b> payload of data regarding a Player moving to be used

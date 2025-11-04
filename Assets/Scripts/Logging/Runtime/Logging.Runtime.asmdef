@@ -1,9 +1,0 @@
-{
-  "name": "Logging.Runtime",
-  "references": [
-	"PsycheOpoly.Runtime"
-  ],
-  "includePlatforms": [],
-  "optionalUnityReferences": [],
-  "overrideReferences": false
-}

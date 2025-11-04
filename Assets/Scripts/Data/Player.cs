@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Logging;
 
 
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
@@ -20,9 +21,8 @@ public class Player : ScriptableObject
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
     private List<int> ownedProperties = new();
-
-    //  This is using color32 struct. R/G/B/A setup. This can be adjusted later.
-    private Color32 color;
+    
+    private Color color;
 
     public void SetId(int id)
     {
@@ -48,6 +48,10 @@ public class Player : ScriptableObject
     {
         if (money < 0)
         {
+            Logging.Logger.Error("Player.SetMoney", 
+                "Money cannot be negative yet...", 
+                LogCategory.Economy,
+                this);
             throw new ArgumentException("Money cannot be negative yet...");
         }
         this.money = money;
@@ -102,12 +106,12 @@ public class Player : ScriptableObject
     public void UnmortgageProperty(int propertyIndex) { }
 
 
-    public void SetColor(Color32 color)
+    public void SetColor(Color color)
     {
         this.color = color;
     }
 
-    public Color32 GetColor()
+    public Color GetColor()
     {
         return this.color;
     }
@@ -116,6 +120,10 @@ public class Player : ScriptableObject
     {
         if (position < 0)
         {
+            Logging.Logger.Error("Player.SetPosition",
+                "Position values must always be positive.", 
+                LogCategory.Gameplay,
+                this);
             throw new System.ArgumentException("Position values must always be positive.");
         }
         this.position = position;
