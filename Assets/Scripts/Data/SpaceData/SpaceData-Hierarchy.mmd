@@ -12,13 +12,19 @@ classDiagram
     class SpaceData{
         +String spaceName
         +Color spaceColor
-        +OnLanded()
-        +OnHover()
-        +OnPassed()
+        +SpaceHoverEventChannel spaceHoverEventChannel
+        +BooleanEventChannel spaceExitEventChannel
+        +OnLanded(player: Player)
+        +OnPassed(player: Player)
+        +OnHover() SpaceHoverEvent
+        +OnExit()
     }
     class OwnableSpaceData{
         +int collaborationValue
         -Player owner
+        -PurchaseOwnableRequestChannel purchaseOwnableRequestChannel
+        -ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChanel
+        +SetOwner(player: Player)
     }
     
     note for PropertyData       "this will be an
@@ -28,7 +34,9 @@ classDiagram
     class PropertyData{
         +int[6] researchFundingValues
         +int dataPointCost
+        -PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel
         -int currentUpgradeLevel
+        +UpgradeProperty()
     }
     
     note for PlanetData         "this will be an
