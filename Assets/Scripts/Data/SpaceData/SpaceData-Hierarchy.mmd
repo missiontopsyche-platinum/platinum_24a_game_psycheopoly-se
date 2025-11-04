@@ -1,0 +1,76 @@
+﻿---
+config:
+    class:
+        hideEmptyMembersBox: true
+---
+classDiagram
+    direction LR
+    
+    note for SpaceData  "add more render
+                        details as needed, but
+                        for now just color is fine"
+    class SpaceData{
+        +String name
+        +Color color
+        +OnLanded()
+        +OnHover()
+        +OnPassed()
+    }
+    class OwnableSpaceData{
+        +int collaborationValue
+        -Player owner
+    }
+    
+    note for PropertyData       "this will be an
+                                array with i=0->5,
+                                where each index indicates
+                                the upgrade level."
+    class PropertyData{
+        +int[6] researchFundingValues
+        +int dataPointCost
+        -int currentUpgradeLevel
+    }
+    
+    note for PlanetData         "this will be an
+                                array i = 0->1,
+                                where index indicates # 
+                                planets owned by player"
+    class PlanetData{
+        +int[2] diceMultipliers
+    }
+    
+    note for InstrumentData     "this will be an
+                                array i= 0->3,
+                                where index indicates #
+                                instruments owned by player"
+    class InstrumentData{
+        +int[4] researchFundingLevels
+    }
+    
+    class CardSpaceData{
+        +enum deckType
+        +CardDeck cardDeck
+    }
+    
+    class TaxSpaceData{
+        +int cost
+    }
+    
+    class GoSpaceData{
+        +int payout
+    }
+
+    class LaunchPadSpaceData
+    class GravityAssistSpaceData
+    class GoForLaunchSpaceData
+
+    SpaceData <|-- TaxSpaceData
+    SpaceData <|-- GoSpaceData
+    SpaceData <|-- GoForLaunchSpaceData
+    SpaceData <|-- GravityAssistSpaceData
+    SpaceData <|-- LaunchPadSpaceData
+    SpaceData <|-- CardSpaceData
+    SpaceData <|-- OwnableSpaceData
+    OwnableSpaceData <|-- PlanetData
+    OwnableSpaceData <|-- InstrumentData
+    OwnableSpaceData <|-- PropertyData
