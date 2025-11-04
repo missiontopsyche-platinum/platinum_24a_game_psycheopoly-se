@@ -76,7 +76,7 @@ namespace Logging
 
             if (!_settings.LoggingEnabled) return false;
 
-            if (!_settings.isRunTimeLoggingEnabled())
+            if (!(_settings.isRunTimeLoggingEnabled() && _settings.isCategoryEnabled(category)))
             {
                 if (!(_settings.ErrorsAlwaysEnabled && level == LogLevel.Error))
                     return false;
