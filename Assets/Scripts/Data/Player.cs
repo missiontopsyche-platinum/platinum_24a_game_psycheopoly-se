@@ -15,11 +15,11 @@ public class Player : ScriptableObject
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
-    private bool inJail;
-    private int jailTurns;
-    private int doublesInRow;
-    private int getOutOfJailFree_Chance;
-    private int getOutOfJailFree_Community;
+    [SerializeField] private bool inJail;
+    [SerializeField] private int jailTurns;
+    [SerializeField] private int doublesInRow;
+    [SerializeField] private int getOutOfJailFree_Chance;
+    [SerializeField] private int getOutOfJailFree_Community;
     private List<int> ownedProperties = new();
     
     private Color color;
@@ -65,13 +65,31 @@ public class Player : ScriptableObject
     //Task 120 Initializing player
     //Basic getters and setters, more logic will have to be added as game
     //continues to be developed and once final confirmation on ruleset
-    public void SetInJail(bool jail) { }
+    public void SetInJail(bool jail)
+    {
+        inJail = jail;
+
+        if (jail)
+        {
+            //reset doubles streak if they hit jail
+            doublesInRow = 0;
+            Logging.Logger.Info("Player.SetInJail", $"{p_Name} was sent to jail.", LogCategory.Gameplay, this);
+        }
+        else
+        {
+            Logging.Logger.Info("Player.SetInJail", $"{p_Name} released from jail.", LogCategory.Gameplay, this);
+        }
+    }
+
     public bool GetInJail() 
     { 
         return inJail; 
     }
 
-    public void SetJailTurns(int turns) { }
+    public void SetJailTurns(int turns)
+    {
+        jailTurns = Mathf.Clamp(turns, 0, 3);
+    }
     public int GetJailTurns() 
     { 
         return jailTurns; 
@@ -96,8 +114,33 @@ public class Player : ScriptableObject
     //initalized in the above code.  We can definitely change the structure
     //as we keep developing the game. 
     public void GoToJail() { }
-    public void ReleaseFromJail() { }
-    public void UseGetOutOfJailFreeCard() { }
+    public void ReleaseFromJail()
+    {
+        SetInJail(false);
+        SetJailTurns(0);
+    }
+    public void UseGetOutOfJailFreeCard()
+    {
+        if (getOutOfJailFree_Chance > 0)
+        {
+            getOutOfJailFree_Chance--;
+            ReleaseFromJail();
+            Logging.Logger.Info("Player.UseGetOutOfJailFreeCard", $"{p_Name} used a Chance Get-Out-Of-Jail-Free card.",
+                LogCategory.Gameplay, this);
+        }
+        else if (getOutOfJailFree_Community > 0)
+        {
+            getOutOfJailFree_Community--;
+            ReleaseFromJail();
+            Logging.Logger.Info("Player.UseGetOutOfJailFreeCard", $"{p_Name} used a Community Chest Get-Out-Of-Jail-Free card.",
+                LogCategory.Gameplay, this);
+        }
+        else
+        {
+            Logging.Logger.Warn("Player.UseGetOutOfJailFreeCard", $"{p_Name} tried to use a card but has none.",
+                LogCategory.Gameplay, this);
+        }
+    }
     public void MovePlayer(int spacesToMove) { }
     public void PayPlayer(Player otherPlayer, int amount) { }
     public void BuyProperty(int propertyIndex, int price) { }

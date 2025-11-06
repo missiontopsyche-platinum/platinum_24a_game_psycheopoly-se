@@ -59,24 +59,7 @@ namespace Assets.Scripts.Managers.Jail
 
         public void UseGetOutOfJailFree(Player player)
         {
-            //TODO: in T287, we'll need to implement these cards. Commented out now to allow the commit. ------------------------------------------------------------
-            //but this logic is sound.
-            //if (player.GetOutOfJailFree_Chance > 0)
-            //{
-            //    player.GetOutOfJailFree_Chance--;
-            //    Debug.Log($"{player.GetPName()} used a Chance Get-Out-Of-Jail-Free card.");
-            //    ReleasePlayer(player);
-            //}
-            //else if (player.GetOutOfJailFree_Community > 0)
-            //{
-            //    player.GetOutOfJailFree_Community--;
-            //    Debug.Log($"{player.GetPName()} used a Community Chest Get-Out-Of-Jail-Free card.");
-            //    ReleasePlayer(player);
-            //}
-            //else
-            //{
-            //    Debug.LogWarning($"{player.GetPName()} has no Get-Out-Of-Jail-Free cards!");
-            //}
+            player.UseGetOutOfJailFreeCard();
         }
 
         public void ForcedExit(Player player)
