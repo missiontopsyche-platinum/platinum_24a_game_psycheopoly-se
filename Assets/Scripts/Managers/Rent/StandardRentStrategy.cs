@@ -29,6 +29,7 @@ namespace Assets.Scripts.Managers.Rent
             int houses = Mathf.Clamp(tile.HouseCount, 0, tile.RentByHouses?.Length > 0 ? tile.RentByHouses.Length - 1 : 0);
 
             //Houses and hotels table if needed will be checked first
+            //Completes task 283
             if (houses > 0 && tile.RentByHouses != null && tile.RentByHouses.Length > houses)
             {
                 return tile.RentByHouses[houses];
