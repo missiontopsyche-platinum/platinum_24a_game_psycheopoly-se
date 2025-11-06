@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.Managers.Jail
 {
-    public interface JailStrategy
+    public interface IJailStrategy
     {
         //this is for the rollng doubles option, players do this every turn
         void AttemptEscape(Player player, int dice1, int dice2);
