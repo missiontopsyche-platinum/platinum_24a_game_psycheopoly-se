@@ -38,4 +38,5 @@ namespace Assets.Scripts.Events.EventChannelTypes
                 Debug.LogWarning("No listeners registered for JailStateChangedEventChannel!");
             }
         }
+    }
 }
