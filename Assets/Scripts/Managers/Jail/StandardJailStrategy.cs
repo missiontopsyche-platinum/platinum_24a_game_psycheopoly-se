@@ -54,12 +54,28 @@ namespace Assets.Scripts.Managers.Jail
             else
             {
                 Debug.LogWarning($"{player.GetPName()} cannot afford the jail fee!");
+                //TODO: bankruptcy comes here
             }
         }
 
         public void UseGetOutOfJailFree(Player player)
         {
-            player.UseGetOutOfJailFreeCard();
+            if (player.GetChanceCardCount() > 0)
+            {
+                player.DecrementChanceCard();
+                ReleasePlayer(player);
+                Debug.Log($"{player.GetPName()} used a Chance Get-Out-Of-Jail-Free card.");
+            }
+            else if (player.GetCommunityCardCount() > 0)
+            {
+                player.DecrementCommunityCard();
+                ReleasePlayer(player);
+                Debug.Log($"{player.GetPName()} used a Community Chest Get-Out-Of-Jail-Free card.");
+            }
+            else
+            {
+                Debug.LogWarning($"{player.GetPName()} has no Get-Out-Of-Jail-Free cards!");
+            }
         }
 
         public void ForcedExit(Player player)

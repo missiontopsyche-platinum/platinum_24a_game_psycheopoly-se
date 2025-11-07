@@ -95,7 +95,31 @@ public class Player : ScriptableObject
         return jailTurns; 
     }
 
-    public void SetDoublesInRow(int count) { }
+    public int GetChanceCardCount()
+    {
+        return getOutOfJailFree_Chance;
+    }
+
+    public int GetCommunityCardCount()
+    {
+        return getOutOfJailFree_Community;
+    }
+
+    public void DecrementChanceCard()
+    {
+        getOutOfJailFree_Chance = Mathf.Max(0, getOutOfJailFree_Chance - 1);
+    }
+
+    public void DecrementCommunityCard()
+    {
+        getOutOfJailFree_Community = Mathf.Max(0, getOutOfJailFree_Community - 1);
+    }
+
+    public void SetDoublesInRow(int count)
+    {
+        doublesInRow = Mathf.Max(0, count);
+
+    }
     public int GetDoublesInRow() 
     { 
         return doublesInRow; 
@@ -119,28 +143,7 @@ public class Player : ScriptableObject
         SetInJail(false);
         SetJailTurns(0);
     }
-    public void UseGetOutOfJailFreeCard()
-    {
-        if (getOutOfJailFree_Chance > 0)
-        {
-            getOutOfJailFree_Chance--;
-            ReleaseFromJail();
-            Logging.Logger.Info("Player.UseGetOutOfJailFreeCard", $"{p_Name} used a Chance Get-Out-Of-Jail-Free card.",
-                LogCategory.Gameplay, this);
-        }
-        else if (getOutOfJailFree_Community > 0)
-        {
-            getOutOfJailFree_Community--;
-            ReleaseFromJail();
-            Logging.Logger.Info("Player.UseGetOutOfJailFreeCard", $"{p_Name} used a Community Chest Get-Out-Of-Jail-Free card.",
-                LogCategory.Gameplay, this);
-        }
-        else
-        {
-            Logging.Logger.Warn("Player.UseGetOutOfJailFreeCard", $"{p_Name} tried to use a card but has none.",
-                LogCategory.Gameplay, this);
-        }
-    }
+    public void UseGetOutOfJailFreeCard() { }
     public void MovePlayer(int spacesToMove) { }
     public void PayPlayer(Player otherPlayer, int amount) { }
     public void BuyProperty(int propertyIndex, int price) { }
