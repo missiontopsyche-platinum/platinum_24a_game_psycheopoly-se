@@ -15,15 +15,15 @@ public class PropertySpaceData : OwnableSpaceData
 
     public override void OnLanded(Player player)
     {
-        if (owner == null)
+        base.OnLanded(player);
+        if (owner == null) return;
+        
+        if (owner.Equals(player))
         {
-            // offer to buy UI in the future
-            purchaseOwnableRequestEventChannel.RaiseEvent(new PurchaseOwnableRequestEvent(
-                player,
-                this,
-                collaborationValue));
-        } else if (owner.Equals(player))
-        {
+            // TODO remove
+            // after double checking the rules, players can upgrade any properties they want at
+            // the start of their turn, not when they land on a property. This should be "do nothing".
+            
             // maybe we move this to GameManager so we can modify how this works
             // in a ruleset later on...
             
@@ -85,6 +85,8 @@ public class PropertySpaceData : OwnableSpaceData
                     $"With {i} Data Points: ${researchFundingValues[i]}");
         }
         payload.AppendInformation($"Cost per Data Point/DISCOVERY: ${dataPointCost}");
+        
+        // In the future, maybe we could indicate how many spaces of this color category the player owns.
         
         // fire event payload
         spaceHoverEventChannel?.RaiseEvent(payload);

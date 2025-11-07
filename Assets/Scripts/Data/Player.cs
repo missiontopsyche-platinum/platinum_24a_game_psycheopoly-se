@@ -20,7 +20,7 @@ public class Player : ScriptableObject
     private int doublesInRow;
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
-    private List<int> ownedProperties = new();
+    private List<OwnableSpaceData> ownedProperties = new();
     
     private Color color;
 
@@ -83,11 +83,27 @@ public class Player : ScriptableObject
         return doublesInRow; 
     }
 
-    public void AddOwnedProperty(int propertyIndex) { }
-    public void RemoveOwnedProperty(int propertyIndex) { }
-    public List<int> GetOwnedProperties() 
+    public void AddOwnedProperty(OwnableSpaceData ownableSpace) { }
+    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace) { }
+    public List<OwnableSpaceData> GetOwnedProperties() 
     { 
         return ownedProperties; 
+    }
+    
+    /// <summary>
+    /// Get the number of Instrument spaces owned by this player.
+    /// </summary>
+    /// <returns>Count of Instruments owned by player.</returns>
+    public int GetNumberInstrumentsOwned()
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+        {
+            if (space.GetType() == typeof(InstrumentSpaceData))
+                count++;
+        }
+
+        return count;
     }
 
     //Placeholders for future logic, I feel like these should be moved into

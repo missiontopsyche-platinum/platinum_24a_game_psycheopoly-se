@@ -10,6 +10,25 @@ public abstract class OwnableSpaceData : SpaceData
     [SerializeField] protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
 
+    public override void OnLanded(Player player)
+    {
+        // moved into OwnableSpaceData because every ownable should offer to buy if no owner
+        if (owner == null)
+        {
+            // offer to buy UI in the future
+            purchaseOwnableRequestEventChannel.RaiseEvent(new PurchaseOwnableRequestEvent(
+                player,
+                this,
+                collaborationValue));
+        }
+        // because theres no return type, its not possible currently for an inherited class to know
+        // if the owner was null this turn, and we just have to hope that owner stays null through the
+        // rest of execution for this OnLanded().
+        
+        // we can refactor in the future to add a return value boolean or something to mitigate that
+        // risk.
+    }
+
     public override SpaceHoverEvent OnHover()
     {
         var payload = base.OnHover();
