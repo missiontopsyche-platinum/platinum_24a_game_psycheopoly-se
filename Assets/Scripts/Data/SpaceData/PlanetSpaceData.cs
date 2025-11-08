@@ -69,6 +69,7 @@ public class PlanetSpaceData : OwnableSpaceData
             diceMultipliers[0] +
             " times the amount shown on the dice.");
 
+        spaceHoverEventChannel.RaiseEvent(payload);
         return payload;
     }
 

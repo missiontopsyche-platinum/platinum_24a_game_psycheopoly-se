@@ -23,6 +23,8 @@ public class GravityAssistSpaceData : SpaceData
         
         payload.AppendInformation(flavorText);
         payload.AppendInformation("Free space with no effects.");
+        
+        spaceHoverEventChannel.RaiseEvent(payload);
 
         return payload;
     }

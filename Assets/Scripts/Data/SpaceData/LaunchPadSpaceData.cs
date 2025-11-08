@@ -34,6 +34,8 @@ public class LaunchPadSpaceData : SpaceData
         payload.AppendInformation("Players Waiting:");
         foreach (Player player in playersInJail)
             payload.AppendInformation(player.GetPName());
+        
+        spaceHoverEventChannel.RaiseEvent(payload);
 
         return payload;
     }

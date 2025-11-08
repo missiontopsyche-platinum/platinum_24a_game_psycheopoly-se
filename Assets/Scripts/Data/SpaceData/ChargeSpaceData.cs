@@ -28,6 +28,8 @@ public class ChargeSpaceData : SpaceData
         payload.AppendInformation(flavorText);
         payload.AppendInformation($"Pay {cost}.");
         
+        spaceHoverEventChannel.RaiseEvent(payload);
+        
         return payload;
     }
 }

@@ -33,6 +33,8 @@ public class CardSpaceData : SpaceData
                 break;
         }
         
+        spaceHoverEventChannel.RaiseEvent(payload);
+        
         return payload;
     }
 }

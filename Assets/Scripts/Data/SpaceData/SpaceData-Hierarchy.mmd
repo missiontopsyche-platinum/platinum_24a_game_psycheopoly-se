@@ -72,6 +72,8 @@ classDiagram
     
     class GoSpaceData{
         +int payout
+        +PayPlayerEventChannel payPlayerEventChannel
+        RaisePayEvent(player: Player)
     }
     %% I could have another base class for flavor text spaces
     %% but its literally the only common variable between like types
@@ -94,7 +96,7 @@ classDiagram
         +PlayerEventChannel goDirectlyToLaunchPadChannel
     }
 
-    SpaceData <|-- TaxSpaceData
+    SpaceData <|-- ChargeSpaceData
     SpaceData <|-- GoSpaceData
     SpaceData <|-- GoForLaunchSpaceData
     SpaceData <|-- GravityAssistSpaceData
