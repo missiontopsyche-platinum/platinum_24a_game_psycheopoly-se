@@ -42,7 +42,7 @@ classDiagram
     note for PlanetData         "this will be an
                                 array i = 0->1,
                                 where index indicates # 
-                                planets owned by player"
+                                planets owned by player - 1"
     class PlanetData{
         +int[2] diceMultipliers
         -DiceRolledEventChannel diceRolledEventChannel
@@ -61,7 +61,6 @@ classDiagram
     }
     
     class CardSpaceData{
-        +enum deckType
         +CardDeck cardDeck
     }
     

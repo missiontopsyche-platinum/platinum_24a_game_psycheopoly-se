@@ -2,8 +2,9 @@ using Events.EventDataStructures;
 using UnityEngine;
 
 public abstract class OwnableSpaceData : SpaceData
-{ 
-    [SerializeField] public int collaborationValue;
+{
+    [SerializeField] public int buyPrice; // board value, price for first purchase
+    [SerializeField] public int collaborationValue; // AKA Mortgage value
     protected Player owner;
 
     [Header("Ownable Event Channels")]
@@ -19,7 +20,7 @@ public abstract class OwnableSpaceData : SpaceData
             purchaseOwnableRequestEventChannel.RaiseEvent(new PurchaseOwnableRequestEvent(
                 player,
                 this,
-                collaborationValue));
+                buyPrice));
         }
         // because theres no return type, its not possible currently for an inherited class to know
         // if the owner was null this turn, and we just have to hope that owner stays null through the
@@ -32,6 +33,7 @@ public abstract class OwnableSpaceData : SpaceData
     public override SpaceHoverEvent OnHover()
     {
         var payload = base.OnHover();
+        payload.AppendInformation($"Purchase Price: {buyPrice}");
         payload.AppendInformation($"Collaboration Value: ${collaborationValue}");
         payload.AppendInformation($"Owner: {(owner ? owner.GetPName() : "None")}");
         return payload;
