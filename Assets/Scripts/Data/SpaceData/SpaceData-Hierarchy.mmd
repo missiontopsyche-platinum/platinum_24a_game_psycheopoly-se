@@ -73,12 +73,26 @@ classDiagram
     class GoSpaceData{
         +int payout
     }
-
-    class LaunchPadSpaceData
+    %% I could have another base class for flavor text spaces
+    %% but its literally the only common variable between like types
+    %% so that seems like massive overkill.
+    class LaunchPadSpaceData {
+        +String flavorText
+        +PlayerEventChannel playerGoesToJailEventChannel
+        +PlayerEventChannel playerLeavesJailEventChannel
+        -List<Player> playersInJail
+        +OnEnable()
+        +OnDisable()
+        -AddPlayerToJail(player: Player)
+        -RemovePlayerFromJail(player: Player)
+    }
     class GravityAssistSpaceData {
         +String flavorText
     }
-    class GoForLaunchSpaceData
+    class GoForLaunchSpaceData {
+        +String flavorText
+        +PlayerEventChannel goDirectlyToLaunchPadChannel
+    }
 
     SpaceData <|-- TaxSpaceData
     SpaceData <|-- GoSpaceData
