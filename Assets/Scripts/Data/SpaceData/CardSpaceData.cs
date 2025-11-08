@@ -1,7 +1,7 @@
 using Events.EventDataStructures;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CardSpaceData", menuName = "Board Spaces/Instrument Space")]
+[CreateAssetMenu(fileName = "CardSpaceData", menuName = "Board Spaces/Card Space")]
 public class CardSpaceData : SpaceData
 {
     [SerializeField] public CardDeck cardDeck;

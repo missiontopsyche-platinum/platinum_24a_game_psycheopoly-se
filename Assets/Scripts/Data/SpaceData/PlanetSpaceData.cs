@@ -2,7 +2,6 @@ using System;
 using Events.EventDataStructures;
 using Logging;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "PlanetSpaceData", menuName = "Board Spaces/Planet Space")]
 public class PlanetSpaceData : OwnableSpaceData
