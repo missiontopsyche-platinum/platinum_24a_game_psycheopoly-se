@@ -98,11 +98,21 @@ public class Player : ScriptableObject
     {
         int count = 0;
         foreach (OwnableSpaceData space in ownedProperties)
-        {
             if (space.GetType() == typeof(InstrumentSpaceData))
                 count++;
-        }
+        return count;
+    }
 
+    /// <summary>
+    /// Get the number of Planet spaces owned by this player.
+    /// </summary>
+    /// <returns>Count of Planets owned by the player.</returns>
+    public int GetNumberPlanetsOwned()
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+            if (space.GetType() == typeof(PlanetSpaceData))
+                count++;
         return count;
     }
 

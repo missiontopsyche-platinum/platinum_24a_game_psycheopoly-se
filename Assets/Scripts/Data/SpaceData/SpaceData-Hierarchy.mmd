@@ -45,6 +45,11 @@ classDiagram
                                 planets owned by player"
     class PlanetData{
         +int[2] diceMultipliers
+        -DiceRolledEventChannel diceRolledEventChannel
+        -int lastDiceRoll
+        +OnEnable()
+        +OnDisable()
+        -StoreLastDiceRoll(dre: DiceRolledEvent)
     }
     
     note for InstrumentData     "this will be an

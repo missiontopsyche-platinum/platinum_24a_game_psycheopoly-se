@@ -23,7 +23,7 @@ public class InstrumentSpaceData : OwnableSpaceData
         }
         else
         {
-            int instrumentsOwned = player.GetNumberInstrumentsOwned();
+            int instrumentsOwned = owner.GetNumberInstrumentsOwned();
             switch (instrumentsOwned)
             {
                 case > 0 and < 5:
