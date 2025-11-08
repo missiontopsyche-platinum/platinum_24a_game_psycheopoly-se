@@ -64,7 +64,7 @@ classDiagram
         +CardDeck cardDeck
     }
     
-    class TaxSpaceData{
+    class ChargeSpaceData{
         -int cost
         -String flavorText
         -ChargePlayerEventChannel chargePlayerEventChannel
@@ -75,7 +75,9 @@ classDiagram
     }
 
     class LaunchPadSpaceData
-    class GravityAssistSpaceData
+    class GravityAssistSpaceData {
+        +String flavorText
+    }
     class GoForLaunchSpaceData
 
     SpaceData <|-- TaxSpaceData
