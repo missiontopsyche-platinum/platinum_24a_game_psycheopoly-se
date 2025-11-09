@@ -29,6 +29,25 @@ namespace Assets.Scripts.Managers.TurnOrder
             while (extraTurn.Count  < count) extraTurn.Add(false);
         }
 
+        //Completes task 273
+        //This wil have to be updated in the second semester once we add more logic
+        public void Eliminate(int idx)
+        { 
+            EnsureSize(idx + 1);
+            eliminated[idx] = true;
+        }
+
+        public void AddSkip(int idx, int n)
+        {
+            EnsureSize(idx + 1);
+            skipCounts[idx] += Mathf.Max(1, n);
+        }
+
+        public void GrantExtraTurn(int idx)
+        { 
+            EnsureSize(idx + 1);
+            extraTurn[idx] = true;
+        }
 
         //IPlayerTurnState
         public bool IsEliminated(int playerIndex)           
