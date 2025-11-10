@@ -157,12 +157,21 @@ namespace PsycheOpoly.Board{
         {
             EnsureBoard();
             int previous = GetPlayerPosition(mpe.id);
-            int next = NormalizeIndex(previous + mpe.spacesToMove);
+            int spaces = mpe.spacesToMove;
+            int next = NormalizeIndex(previous + spaces);
+
+            //path indces from prev to next to be traces
+            int[] path = new int[spaces];
+            for (int i = 0; i<spaces; i++)
+            {
+                path[i] = NormalizeIndex(previous + i + 1);
+            }
+
             Logger.Debug("Move Player", 
                 $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
                 LogCategory.Gameplay, this);
             playerPositions[mpe.id] = next;
-            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
+            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next, path));
             // Throws an event if the player has a negative move.
             // This may need a refactor if anything causes the player to move backwards normally.
             if (next < previous)
