@@ -21,22 +21,6 @@ using Assets.Scripts.Events.EventDataStructures;
 namespace Assets.Scripts.Events.EventChannelTypes
 {
     [CreateAssetMenu(fileName = "JailStateChangedEventChannel", menuName = "Events/Jail State Changed Event Channel")]
-    public class JailStateChangedEventChannel : ScriptableObject
-    {
-        public UnityAction<JailStateChangedEvent> OnEventRaised;
-
-
-        public void RaiseEvent(JailStateChangedEvent jailEvent)
-        {
-            if (OnEventRaised != null)
-            {
-                OnEventRaised.Invoke(jailEvent);
-                Debug.Log($"[Event Raised] Jail state changed for {jailEvent.player.GetPName()} (InJail: {jailEvent.inJail}, Turns: {jailEvent.jailTurns})");
-            }
-            else
-            {
-                Debug.LogWarning("No listeners registered for JailStateChangedEventChannel!");
-            }
-        }
-    }
+    public class JailStateChangedEventChannel : EventChannel<JailStateChangedEvent>
+    { }
 }
