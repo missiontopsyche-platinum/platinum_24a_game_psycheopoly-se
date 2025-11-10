@@ -90,8 +90,9 @@ namespace PsycheOpoly.Board{
             //This will be changed after final rule confirmation from stakeholder
             spaces[0] = new GoSpace("Go");
             for (int i = 1; i < size; i++)
-                spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
-                                         : new PropertySpace($"Property {i}");
+                spaces[i] = (i % 3 == 0) 
+                    ? (Space)new ChanceSpace("Chance")
+                    : (Space)new PropertySpace($"Property {i}");
             
             boardRenderer?.GenerateBoard(spaces);
             
