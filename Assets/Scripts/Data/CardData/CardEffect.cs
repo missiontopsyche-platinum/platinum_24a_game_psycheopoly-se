@@ -1,30 +1,18 @@
-using UnityEngine;
-
 [System.Serializable]
 public abstract class CardEffect
 {
-    public abstract void ApplyEffect(CardEffectContext context);
+    public abstract void ApplyEffect(Player player);
 
-    protected bool IsValidContext(CardEffectContext context)
+    protected bool isValidPlayer(Player player)
     {
-        if (context == null)
+        if (player == null)
         {
-            Logging.Logger.Warn("MoveCardEffect.ApplyEffect",
-                "CardEffectContext is null.",
+            Logging.Logger.Error("CardEffect.IsValidPlayer",
+                "Player context is null in CardEffect.",
                 Logging.LogCategory.Gameplay,
                 this);
             return false;
         }
-
-        if (context.player == null)
-        {
-            Logging.Logger.Warn("MoveCardEffect.ApplyEffect",
-                "Player is null in CardEffectContext.",
-                Logging.LogCategory.Gameplay,
-                this);
-            return false;
-        }
-
         return true;
     }
 }

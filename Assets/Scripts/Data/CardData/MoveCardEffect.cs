@@ -5,34 +5,32 @@ public class MoveCardEffect : CardEffect
     public enum EffectType
     {
         MoveForward,
-        MoveBackward,
-        MoveToSpace,
-        MoveToNearestPropertyType,
+        MoveBackward
     }
     [SerializeField] public EffectType Type;
-    [SerializeField] public int SpacesToMove = 0; // Used to move player forward or backward
-    [SerializeField] public int TargetSpaceIndex = -1; // Used to move player to specific space
-    [SerializeField] public MovePlayerEventChannel movePlayerEventChannel;
+    [SerializeField] public int SpacesToMove = 1;
+    [SerializeField] public MovePlayerEventChannel MovePlayerEventChannel;
 
-    public override void ApplyEffect(CardEffectContext context)
+    public override void ApplyEffect(Player player)
     {
-        if (!IsValidContext(context)) return;
+        if (!isValidPlayer(player)) return;
 
-        Player player = context.player;
+        if (MovePlayerEventChannel == null)
+        {
+            Logging.Logger.Error("MoveCardEffect.ApplyEffect",
+                "MovePlayerEventChannel is not assigned.",
+                Logging.LogCategory.Gameplay,
+                this);
+            return;
+        }
 
         switch (Type)
         {
             case EffectType.MoveForward:
-                movePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), SpacesToMove));
+                MovePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), SpacesToMove));
                 break;
             case EffectType.MoveBackward:
-                movePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), -SpacesToMove));
-                break;
-            case EffectType.MoveToSpace:
-                // TODO: Implement logic to move player to a specific space index
-                break;
-            case EffectType.MoveToNearestPropertyType:
-                // TODO: Implement logic to find nearest property type, get its index, and move player there
+                MovePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), -SpacesToMove));
                 break;
             default:
                 Logging.Logger.Warn("MoveCardEffect.ApplyEffect",

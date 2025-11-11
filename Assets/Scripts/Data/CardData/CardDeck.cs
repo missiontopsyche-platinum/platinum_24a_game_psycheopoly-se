@@ -2,7 +2,6 @@ using Logging;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static JailCardEffect;
 
 [CreateAssetMenu(fileName = "CardDeck", menuName = "Card Data/Card Deck")]
 public class CardDeck : ScriptableObject
@@ -49,8 +48,7 @@ public class CardDeck : ScriptableObject
         foreach (var effect in card.effect)
         {
             // TODO: Create a way for the effect to target another player or banker if needed
-            // So far, this is only effective for moving players and jail card effects
-            effect.ApplyEffect(new CardEffectContext(player, null));
+            effect.ApplyEffect(player);
         }
         ReturnCardToDeck(card);
     }
@@ -74,8 +72,8 @@ public class CardDeck : ScriptableObject
         deckQueue = new Queue<Card>(list);
     }
 
-    private static bool IsGetOutOfJailFreeCard(Card card)
+    private bool IsGetOutOfJailFreeCard(Card card)
     {
-        return card.effect.Any(effect => effect is JailCardEffect { Type: EffectType.ReleaseFromJail });
+        return card.effect.Any(effect => effect is GetOutOfJailCardEffect);
     }
 }
