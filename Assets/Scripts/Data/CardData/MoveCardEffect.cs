@@ -9,22 +9,24 @@ public class MoveCardEffect : CardEffect
         MoveToSpace,
         MoveToNearestPropertyType,
     }
-    [SerializeField] EffectType effectType;
-    [SerializeField] int spacesToMove = 0; // Used to move player forward or backward
-    [SerializeField] int targetSpaceIndex = -1; // Used to move player to specific space
+    [SerializeField] public EffectType Type;
+    [SerializeField] public int SpacesToMove = 0; // Used to move player forward or backward
+    [SerializeField] public int TargetSpaceIndex = -1; // Used to move player to specific space
+    [SerializeField] public MovePlayerEventChannel movePlayerEventChannel;
 
     public override void ApplyEffect(CardEffectContext context)
     {
-        ICardEventPublisher eventPublisher = context.EventPublisher;
+        if (!IsValidContext(context)) return;
+
         Player player = context.player;
 
-        switch (effectType)
+        switch (Type)
         {
             case EffectType.MoveForward:
-                eventPublisher.Publish(new MovePlayerEvent(player.GetId(), spacesToMove));
+                movePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), SpacesToMove));
                 break;
             case EffectType.MoveBackward:
-                eventPublisher.Publish(new MovePlayerEvent(player.GetId(), -spacesToMove));
+                movePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), -SpacesToMove));
                 break;
             case EffectType.MoveToSpace:
                 // TODO: Implement logic to move player to a specific space index
@@ -34,7 +36,7 @@ public class MoveCardEffect : CardEffect
                 break;
             default:
                 Logging.Logger.Warn("MoveCardEffect.ApplyEffect",
-                    "Unknown EffectType in MoveCardEffect: " + effectType.ToString(),
+                    "Unknown EffectType in MoveCardEffect: " + Type.ToString(),
                     Logging.LogCategory.Gameplay,
                     this);
                 break;
