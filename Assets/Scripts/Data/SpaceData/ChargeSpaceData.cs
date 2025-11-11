@@ -12,7 +12,7 @@ public class ChargeSpaceData : SpaceData
     public override void OnLanded(Player player)
     {
         // charge the player the amount determined by the space.
-        chargePlayerEventChannel.RaiseEvent(new ChargePlayerEvent(
+        chargePlayerEventChannel?.RaiseEvent(new ChargePlayerEvent(
             player, cost));
     }
 
@@ -28,7 +28,7 @@ public class ChargeSpaceData : SpaceData
         payload.AppendInformation(flavorText);
         payload.AppendInformation($"Pay {cost}.");
         
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         
         return payload;
     }

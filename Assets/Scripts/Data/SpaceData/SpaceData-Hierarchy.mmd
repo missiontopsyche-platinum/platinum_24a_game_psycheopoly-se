@@ -22,16 +22,16 @@ classDiagram
     class OwnableSpaceData{
         +int collaborationValue
         -Player owner
-        -PurchaseOwnableRequestChannel purchaseOwnableRequestChannel
+        -PurchaseOwnableRequestEventChannel purchaseOwnableRequestChannel
         -ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChanel
         +SetOwner(player: Player)
     }
     
-    note for PropertyData       "this will be an
+    note for PropertySpaceData       "this will be an
                                 array with i=0->5,
                                 where each index indicates
                                 the upgrade level."
-    class PropertyData{
+    class PropertySpaceData{
         +int[6] researchFundingValues
         +int dataPointCost
         -PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel
@@ -43,7 +43,7 @@ classDiagram
                                 array i = 0->1,
                                 where index indicates # 
                                 planets owned by player - 1"
-    class PlanetData{
+    class PlanetSpaceData{
         +int[2] diceMultipliers
         -DiceRolledEventChannel diceRolledEventChannel
         -int lastDiceRoll
@@ -52,11 +52,11 @@ classDiagram
         -StoreLastDiceRoll(dre: DiceRolledEvent)
     }
     
-    note for InstrumentData     "this will be an
+    note for InstrumentSpaceData     "this will be an
                                 array i= 0->3,
                                 where index indicates #
                                 instruments owned by player"
-    class InstrumentData{
+    class InstrumentSpaceData{
         +int[4] researchFundingLevels
     }
     
@@ -103,6 +103,6 @@ classDiagram
     SpaceData <|-- LaunchPadSpaceData
     SpaceData <|-- CardSpaceData
     SpaceData <|-- OwnableSpaceData
-    OwnableSpaceData <|-- PlanetData
-    OwnableSpaceData <|-- InstrumentData
-    OwnableSpaceData <|-- PropertyData
+    OwnableSpaceData <|-- PlanetSpaceData
+    OwnableSpaceData <|-- InstrumentSpaceData
+    OwnableSpaceData <|-- PropertySpaceData

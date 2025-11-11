@@ -27,7 +27,7 @@ public class GoSpaceData : SpaceData
         SpaceHoverEvent payload = base.OnHover();
         
         payload.AppendInformation($"On passing or landing, collect ${payout}.");
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
 
         return payload;
     }

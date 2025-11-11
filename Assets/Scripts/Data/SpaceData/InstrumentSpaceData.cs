@@ -29,7 +29,7 @@ public class InstrumentSpaceData : OwnableSpaceData
                 case > 0 and < 5:
                     // charge player from researchFundingLevels at the correct index (i-1)
                     int chargeAmount = researchFundingLevels[instrumentsOwned - 1];
-                    chargeOwnershipFeeEventChannel.RaiseEvent(new ChargeOwnershipFeeEvent(
+                    chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
                         player, owner,
                         chargeAmount, this));
                     break;
@@ -71,7 +71,7 @@ public class InstrumentSpaceData : OwnableSpaceData
         // owned to make the OnHover accurately reflect the research funding
         // when landed.
         
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         
         return payload;
     }

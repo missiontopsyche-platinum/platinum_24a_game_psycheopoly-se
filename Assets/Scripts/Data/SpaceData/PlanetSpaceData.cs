@@ -31,7 +31,7 @@ public class PlanetSpaceData : OwnableSpaceData
                 case 1 or 2:
                     int multiplierAmount = diceMultipliers[numPlanetsOwned - 1];
                     int charge = multiplierAmount * lastDiceRoll;
-                    chargeOwnershipFeeEventChannel.RaiseEvent(new ChargeOwnershipFeeEvent(
+                    chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
                         player, owner, charge, this));
                     break;
                 case 0:
@@ -69,7 +69,7 @@ public class PlanetSpaceData : OwnableSpaceData
             diceMultipliers[0] +
             " times the amount shown on the dice.");
 
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         return payload;
     }
 

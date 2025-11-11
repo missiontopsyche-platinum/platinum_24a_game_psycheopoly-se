@@ -17,7 +17,7 @@ public abstract class OwnableSpaceData : SpaceData
         if (owner == null)
         {
             // offer to buy UI in the future
-            purchaseOwnableRequestEventChannel.RaiseEvent(new PurchaseOwnableRequestEvent(
+            purchaseOwnableRequestEventChannel?.RaiseEvent(new PurchaseOwnableRequestEvent(
                 player,
                 this,
                 buyPrice));
@@ -36,6 +36,9 @@ public abstract class OwnableSpaceData : SpaceData
         payload.AppendInformation($"Purchase Price: {buyPrice}");
         payload.AppendInformation($"Collaboration Value: ${collaborationValue}");
         payload.AppendInformation($"Owner: {(owner ? owner.GetPName() : "None")}");
+        
+        spaceHoverEventChannel?.RaiseEvent(payload);
+        
         return payload;
     }
 

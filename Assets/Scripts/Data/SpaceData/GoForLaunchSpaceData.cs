@@ -26,7 +26,7 @@ public class GoForLaunchSpaceData : SpaceData
         payload.AppendInformation(flavorText);
         payload.AppendInformation("Go directly to the Launch Pad, do not pass GO.");
         
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         
         return payload;
     }

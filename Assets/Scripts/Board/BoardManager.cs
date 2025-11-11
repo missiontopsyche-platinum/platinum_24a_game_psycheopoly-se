@@ -21,11 +21,11 @@ namespace PsycheOpoly.Board{
         [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
         [SerializeField] public IntEventChannel         passedGoChannel;
 
-        //Task 81 create Space[] array
-        private Space[] spaces;
+        [Header("Board Spaces")] [SerializeField]
+        public SpaceData[] boardSpaces;
         
         //For Testing purposes
-        public int boardSize => spaces?.Length ?? 0;
+        public int boardSize => boardSpaces?.Length ?? 0;
 
         //Task 85 player position dictionary
         private readonly Dictionary<int, int> playerPositions = new Dictionary<int, int>();
@@ -84,24 +84,44 @@ namespace PsycheOpoly.Board{
         public void InitializeBoard(int size = -1)
         {
             if (size <= 0) size = Mathf.Max(3, defaultBoardSize);
-            spaces = new Space[size];
+            boardSpaces = new SpaceData[size];
             
-            //Task 83 which will fill the board with mix of placeholder spaces
-            //This will be changed after final rule confirmation from stakeholder
-            spaces[0] = new GoSpace("Go");
+            // this is placeholder to keep tests working while we make assets.
+            T CreateSpace<T>(Action<T> init) where T : SpaceData
+            {
+                var space = ScriptableObject.CreateInstance<T>();
+                init(space);
+                return space;
+            }
+
+            boardSpaces[0] = CreateSpace<GoSpaceData>(s =>
+            {
+                s.spaceName = "GO!";
+                s.spaceColor = Color.chartreuse;
+            });
+            
             for (int i = 1; i < size; i++)
-                spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
-                                         : new PropertySpace($"Property {i}");
+                boardSpaces[i] = (i % 3 == 0) 
+                    ? CreateSpace<CardSpaceData>(s =>
+                    {
+                        s.spaceName = $"Card: Space #{i}";
+                        s.spaceColor = Color.lavender;
+                    })
+                    : CreateSpace<PropertySpaceData>(s =>
+                    {
+                        s.spaceName = $"Property: Space #{i}";
+                        s.spaceColor = Color.peru;
+                    });
             
-            boardRenderer?.GenerateBoard(spaces);
+            boardRenderer?.GenerateBoard(boardSpaces);
             
             EnsureSubscribed();
         }
 
         //Task 84 which is GetSpace(int) with a wrap around
-        public Space GetSpace(int index)
+        public SpaceData GetSpace(int index)
         {
-            if (spaces == null || spaces.Length == 0)
+            if (boardSpaces == null || boardSpaces.Length == 0)
             {
                 Logging.Logger.Error("BoardManager.GetSpace",
                     "Board not initialized, call InitializeBoard()",
@@ -109,7 +129,7 @@ namespace PsycheOpoly.Board{
                     this);
                 throw new InvalidOperationException("Board not initialized, call InitializeBoard()");
             }
-            return spaces[NormalizeIndex(index)];
+            return boardSpaces[NormalizeIndex(index)];
         }
 
         /// <summary>
@@ -124,7 +144,7 @@ namespace PsycheOpoly.Board{
         public void SetPlayerPosition(int playerID, int spaceIndex)
         {
             EnsureBoard();
-            if (spaceIndex < 0 || spaceIndex >= spaces.Length)
+            if (spaceIndex < 0 || spaceIndex >= boardSpaces.Length)
             {
                 throw new ArgumentOutOfRangeException("Space Index not in valid range");
             }
@@ -175,14 +195,14 @@ namespace PsycheOpoly.Board{
         //confirms board is set to default size
         private void EnsureBoard()
         {
-            if(spaces == null || spaces.Length == 0)
+            if(boardSpaces == null || boardSpaces.Length == 0)
                 InitializeBoard(defaultBoardSize);
         }
 
         //Normalizes Index for board spaces
         private int NormalizeIndex(int raw)
         {
-            int n = spaces?.Length ?? 0;
+            int n = boardSpaces?.Length ?? 0;
             if (n == 0) return 0;
             int m = raw % n;
             return (m < 0) ? m + n : m;

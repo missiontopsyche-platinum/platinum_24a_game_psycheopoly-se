@@ -35,7 +35,7 @@ public class LaunchPadSpaceData : SpaceData
         foreach (Player player in playersInJail)
             payload.AppendInformation(player.GetPName());
         
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
 
         return payload;
     }
@@ -45,13 +45,13 @@ public class LaunchPadSpaceData : SpaceData
 
     private void OnEnable()
     {
-        playerGoesToJailEventChannel.Subscribe(AddPlayerToJail);
-        playerLeavesJailEventChannel.Subscribe(RemovePlayerFromJail);
+        playerGoesToJailEventChannel?.Subscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Subscribe(RemovePlayerFromJail);
     }
     
     private void OnDisable()
     {
-        playerGoesToJailEventChannel.Unsubscribe(AddPlayerToJail);
-        playerLeavesJailEventChannel.Unsubscribe(RemovePlayerFromJail);
+        playerGoesToJailEventChannel?.Unsubscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Unsubscribe(RemovePlayerFromJail);
     }
 }
