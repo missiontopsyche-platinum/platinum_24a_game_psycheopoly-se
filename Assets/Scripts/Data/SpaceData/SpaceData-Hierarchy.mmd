@@ -27,10 +27,10 @@ classDiagram
         +SetOwner(player: Player)
     }
     
-    note for PropertySpaceData       "this will be an
-                                array with i=0->5,
-                                where each index indicates
-                                the upgrade level."
+    note for PropertySpaceData      "this will be an
+                                    array with i=0->5,
+                                    where each index indicates
+                                    the upgrade level."
     class PropertySpaceData{
         +int[6] researchFundingValues
         +int dataPointCost
@@ -39,10 +39,10 @@ classDiagram
         +UpgradeProperty()
     }
     
-    note for PlanetData         "this will be an
-                                array i = 0->1,
-                                where index indicates # 
-                                planets owned by player - 1"
+    note for PlanetSpaceData        "this will be an
+                                    array i = 0->1,
+                                    where index indicates # 
+                                    planets owned by player - 1"
     class PlanetSpaceData{
         +int[2] diceMultipliers
         -DiceRolledEventChannel diceRolledEventChannel
@@ -52,10 +52,10 @@ classDiagram
         -StoreLastDiceRoll(dre: DiceRolledEvent)
     }
     
-    note for InstrumentSpaceData     "this will be an
-                                array i= 0->3,
-                                where index indicates #
-                                instruments owned by player"
+    note for InstrumentSpaceData    "this will be an
+                                    array i= 0->3,
+                                    where index indicates #
+                                    instruments owned by player"
     class InstrumentSpaceData{
         +int[4] researchFundingLevels
     }

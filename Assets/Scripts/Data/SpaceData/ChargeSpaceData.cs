@@ -5,9 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ChargeSpaceData", menuName = "Board Spaces/Charge Space")]
 public class ChargeSpaceData : SpaceData
 {
-    [SerializeField] private int cost = 200;
-    [SerializeField] private String flavorText = "Buy new beakers.";
-    [SerializeField] private ChargePlayerEventChannel chargePlayerEventChannel;
+    [SerializeField] public int cost = 200;
+    [SerializeField] public String flavorText = "Buy new beakers.";
+    [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
     
     public override void OnLanded(Player player)
     {

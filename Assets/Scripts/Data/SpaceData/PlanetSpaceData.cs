@@ -9,7 +9,7 @@ public class PlanetSpaceData : OwnableSpaceData
     [SerializeField] public int[] diceMultipliers = new int[2];
     [SerializeField] public DiceRolledEventChannel diceRolledEventChannel;
 
-    private int lastDiceRoll = 0;
+    public int lastDiceRoll = 0;
     
     public override void OnLanded(Player player)
     {
@@ -81,6 +81,12 @@ public class PlanetSpaceData : OwnableSpaceData
     private void StoreLastDiceRoll(DiceRolledEvent dre)
     {
         lastDiceRoll = dre.totalRoll;
+    }
+
+    public void EnsureSubscribed()
+    {
+        OnDisable();
+        OnEnable();
     }
 
     public void OnEnable() => diceRolledEventChannel?.Subscribe(StoreLastDiceRoll);

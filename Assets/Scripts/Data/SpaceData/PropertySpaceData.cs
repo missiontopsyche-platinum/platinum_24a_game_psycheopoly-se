@@ -9,7 +9,7 @@ public class PropertySpaceData : OwnableSpaceData
     [SerializeField] public int dataPointCost;
 
     [Header("Property Event Channels")] 
-    [SerializeField] private PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
+    [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
     
     private int currentUpgradeLevel = 0;
 

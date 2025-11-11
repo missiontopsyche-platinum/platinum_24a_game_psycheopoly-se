@@ -10,7 +10,7 @@ public class LaunchPadSpaceData : SpaceData
     [SerializeField] public PlayerEventChannel playerGoesToJailEventChannel;
     [SerializeField] public PlayerEventChannel playerLeavesJailEventChannel;
 
-    private List<Player> playersInJail = new ();
+    public List<Player> playersInJail = new ();
     
     public override void OnLanded(Player player)
     {
@@ -42,6 +42,13 @@ public class LaunchPadSpaceData : SpaceData
 
     private void AddPlayerToJail(Player player) => playersInJail.Add(player);
     private void RemovePlayerFromJail(Player player) => playersInJail.Remove(player);
+
+    // for testing
+    public void EnsureSubscribed()
+    {
+        OnDisable();
+        OnEnable();
+    }
 
     private void OnEnable()
     {

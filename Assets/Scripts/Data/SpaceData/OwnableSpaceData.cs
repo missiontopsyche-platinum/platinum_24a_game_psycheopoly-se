@@ -8,8 +8,8 @@ public abstract class OwnableSpaceData : SpaceData
     protected Player owner;
 
     [Header("Ownable Event Channels")]
-    [SerializeField] protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
-    [SerializeField] protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+    [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
 
     public override void OnLanded(Player player)
     {
