@@ -1,4 +1,8 @@
+using Logging;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static JailCardEffect;
 
 [CreateAssetMenu(fileName = "CardDeck", menuName = "Card Data/Card Deck")]
 public class CardDeck : ScriptableObject
@@ -10,8 +14,68 @@ public class CardDeck : ScriptableObject
     };
 
     [SerializeField] public DeckType deckType;
-    
-    // Placeholder. Will contain a list of Cards, and methods to draw cards and apply effects.
+    [SerializeField] private List<Card> cards = new();
+    private Queue<Card> deckQueue = new();
 
-    public void DrawCard(Player player) {}
+    public void OnEnable()
+    {
+        ShuffleDeck();
+    }
+
+    public void ShuffleDeck()
+    {
+        Shuffle();
+    }
+
+    public void DrawCard(Player player)
+    {
+        Card card = deckQueue.Dequeue();
+        if (card == null)
+        {
+            Logging.Logger.Error("CardDeck.DrawCard",
+                "No cards left in the deck to draw.",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
+        
+        if (IsGetOutOfJailFreeCard(card))
+        {
+            player.AddJailCard(card);
+            return;
+        }
+        // The execution happens within the deck.
+        // This is how I understand from the code structure we have so far.
+        foreach (var effect in card.effect)
+        {
+            // TODO: Create a way for the effect to target another player or banker if needed
+            // So far, this is only effective for moving players and jail card effects
+            effect.ApplyEffect(new CardEffectContext(player, null));
+        }
+        ReturnCardToDeck(card);
+    }
+
+    public void ReturnCardToDeck(Card card)
+    {
+        deckQueue.Enqueue(card);
+    }
+
+    private void Shuffle()
+    {
+        var list = deckQueue.ToList();
+        var rng = new System.Random();
+
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = rng.Next(i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+
+        deckQueue = new Queue<Card>(list);
+    }
+
+    private static bool IsGetOutOfJailFreeCard(Card card)
+    {
+        return card.effect.Any(effect => effect is JailCardEffect { Type: EffectType.ReleaseFromJail });
+    }
 }
