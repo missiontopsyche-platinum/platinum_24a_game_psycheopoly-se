@@ -1,0 +1,39 @@
+sequenceDiagram
+    autonumber
+    participant GM as GameManager
+    participant TCM as TurnCycleManager
+    participant PTS as PlayerTurnState
+    participant STR as StandardTurnOrderStrategy
+
+    GM->>TCM: EndTurn() / Advance()
+    TCM->>TCM: Ensure dependencies 
+    TCM->>PTS: EnsureSize(playerCount)
+
+    TCM->>STR: NextPlayerIndex(currentIndex, playerCount, PTS)
+    alt Current player has Extra Turn
+        STR-->>TCM: currentIndex (clear extra turn flag)
+        Note over TCM: Extra turn used so same player goes again
+    else Advance to next playable
+        STR-->>TCM: nextIndex
+    end
+
+    opt Skip or Eliminated encountered
+        TCM->>PTS: IsSkippedThisRound get nextIndex
+        alt Skipped
+            PTS-->>TCM: true (use 1 turn)
+            TCM->>STR: NextPlayerIndex(nextIndex, playerCount, PTS)
+            STR-->>TCM: nextPlayableIndex
+        else Not Skipped
+            TCM->>PTS: IsEliminated(nextIndex)?
+            alt Eliminated
+                PTS-->>TCM: true (skip permanently)
+                TCM->>STR: NextPlayerIndex(nextIndex, playerCount, PTS)
+                STR-->>TCM: nextPlayableIndex
+            else Playable
+                PTS-->>TCM: false
+            end
+        end
+    end
+
+    TCM->>GM: turnStartedChannel.Raise(CurrentPlayerIndex)
+    GM-->>GM: Begin next player's turn
