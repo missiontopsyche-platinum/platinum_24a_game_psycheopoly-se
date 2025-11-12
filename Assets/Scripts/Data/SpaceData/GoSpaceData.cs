@@ -1,6 +1,7 @@
 ﻿using Events.EventDataStructures;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "GoSpaceData", menuName = "Board Spaces/Go! Space")]
 public class GoSpaceData : SpaceData
 {
     [SerializeField] public int payout = 200;

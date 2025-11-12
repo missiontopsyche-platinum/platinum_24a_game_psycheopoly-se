@@ -50,4 +50,6 @@ public abstract class OwnableSpaceData : SpaceData
     {
         owner = newOwner;
     }
+
+    public Player GetOwner() => owner;
 }
