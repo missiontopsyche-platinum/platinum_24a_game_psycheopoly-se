@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using Assets.Scripts.Events.EventDataStructures;
@@ -22,5 +18,7 @@ namespace Assets.Scripts.Events.EventChannelTypes
 {
     [CreateAssetMenu(fileName = "JailStateChangedEventChannel", menuName = "Events/Jail State Changed Event Channel")]
     public class JailStateChangedEventChannel : EventChannel<JailStateChangedEvent>
-    { }
+    {
+        //inhereits logic from EventChannel<T>
+    }
 }
