@@ -126,8 +126,15 @@ public class Player : ScriptableObject
         return doublesInRow; 
     }
 
-    public void AddOwnedProperty(OwnableSpaceData ownableSpace) { }
-    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace) { }
+    public void AddOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        ownedProperties.Add(ownableSpace);
+    }
+
+    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        ownedProperties.Remove(ownableSpace);
+    }
     public List<OwnableSpaceData> GetOwnedProperties() 
     { 
         return ownedProperties; 
