@@ -160,12 +160,27 @@ namespace PsycheOpoly.Board{
             int spaces = mpe.spacesToMove;
             int next = NormalizeIndex(previous + spaces);
 
-            //path indces from prev to next to be traces
-            int[] path = new int[spaces];
-            for (int i = 0; i<spaces; i++)
+            //more robust path building code
+            int steps = Mathf.Abs(spaces);
+            int[] path = new int[steps];
+
+            if (spaces > 0)
             {
-                path[i] = NormalizeIndex(previous + i + 1);
+                //moving forward
+                for (int i = 0; i < steps; i++)
+                {
+                    path[i] = NormalizeIndex(previous + (i + 1));
+                }
             }
+            else if (spaces < 0)
+            {
+                //moving backward
+                for (int i = 0; i < steps; i++)
+                {
+                    path[i] = NormalizeIndex(previous - (i + 1));
+                }
+            }
+            // if spaces == 0 then path = empty
 
             Logger.Debug("Move Player", 
                 $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
