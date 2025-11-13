@@ -1,6 +1,7 @@
+using Events.EventDataStructures;
+using Logging;
 using System.Collections.Generic;
 using UnityEngine;
-using Logging;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public PlayerEventChannel playerRemovedEventChannel;
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public IntEventChannel passedGoChannel;
+    [SerializeField] public MoneyDistributionEventChannel payAllPlayersEventChannel;
+    [SerializeField] public MoneyDistributionEventChannel collectFromAllPlayersEventChannel;
 
     public List<Player> players = new List<Player>();
 
@@ -18,6 +21,16 @@ public class PlayerManager : MonoBehaviour
         // added this to decouple GameManager from PlayerManager to use events instead - hdathert
         initializePlayerCountChannel?.Subscribe(InitializePlayers);
         passedGoChannel?.Subscribe(PassedGo);
+        payAllPlayersEventChannel?.Subscribe(OnPayAllPlayers);
+        collectFromAllPlayersEventChannel?.Subscribe(OnChargeAllPlayers);
+    }
+
+    void OnDestroy()
+    {
+        initializePlayerCountChannel?.Unsubscribe(InitializePlayers);
+        passedGoChannel?.Unsubscribe(PassedGo);
+        payAllPlayersEventChannel?.Unsubscribe(OnPayAllPlayers);
+        collectFromAllPlayersEventChannel?.Unsubscribe(OnChargeAllPlayers);
     }
 
     // Update is called once per frame
@@ -179,4 +192,38 @@ public class PlayerManager : MonoBehaviour
         GetPlayer(id).SetMoney(pMoney + money);
     }
 
+    // Just added this for symmetry. Remove if not needed.
+    public void RemoveMoney(int id, int money)
+    {
+        int pMoney = GetPlayer(id).GetMoney();
+        GetPlayer(id).SetMoney(pMoney - money);
+    }
+
+    public void OnPayAllPlayers(MoneyDistributionEvent payAllPlayersEvent)
+    {
+        Player player = payAllPlayersEvent.Player;
+        int Amount = payAllPlayersEvent.Amount;
+
+        if (player == null) return;
+
+        foreach (Player currentPlayer in players)
+        {
+            if (player == currentPlayer) RemoveMoney(currentPlayer.GetId(), Amount * (players.Count - 1));
+            else AddMoney(currentPlayer.GetId(), Amount);
+        }
+    }
+
+    public void OnChargeAllPlayers(MoneyDistributionEvent collectFromAllPlayersEvent)
+    {
+        Player player = collectFromAllPlayersEvent.Player;
+        int Amount = collectFromAllPlayersEvent.Amount;
+
+        if (player == null) return;
+
+        foreach (Player currentPlayer in players)
+        {
+            if (player == currentPlayer) AddMoney(currentPlayer.GetId(), player.GetMoney() + (Amount * (players.Count - 1)));
+            else RemoveMoney(currentPlayer.GetId(), Amount);
+        }
+    }
 }
