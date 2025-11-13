@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Logging;
 using UnityEngine;
-using Space = PsycheOpoly.Board.Space;
 
 public class BoardRenderer : MonoBehaviour
 {
@@ -22,7 +21,7 @@ public class BoardRenderer : MonoBehaviour
     public List<Piece> playerPieces = new();
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
-    private float increment = 0f;
+    private float increment;
     
     /// <summary>
     /// Corner targets for piece bumping on shared spaces, normalized
@@ -41,25 +40,19 @@ public class BoardRenderer : MonoBehaviour
         playerMovedEventChannel?.Subscribe(MovePiece);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnDestroy()
     {
         ClearBoard();
         playerAddedChannel.Unsubscribe(AddPlayerPiece);
     } 
 
-    public void GenerateBoard(Space[] spaces)
+    public void GenerateBoard(SpaceData[] spaces)
     {
         // only allow board generation in play mode
         if (!Application.isPlaying)
         {
             Logging.Logger.Warn("GenerateBoard",
-                "Board generation attemped in EditMode - skipping.",
+                "Board generation attempted in EditMode - skipping.",
                 LogCategory.UI,
                 this);
             return;
@@ -129,7 +122,7 @@ public class BoardRenderer : MonoBehaviour
         };
     }
 
-    private SpaceRenderer InstantiateSpace(float x, float y, Space spaceData, float scale)
+    private SpaceRenderer InstantiateSpace(float x, float y, SpaceData spaceData, float scale)
     {
         GameObject newSpace = Instantiate(spaceRendererPrefab, transform);
         SpaceRenderer newRenderer = newSpace.GetComponent<SpaceRenderer>();
