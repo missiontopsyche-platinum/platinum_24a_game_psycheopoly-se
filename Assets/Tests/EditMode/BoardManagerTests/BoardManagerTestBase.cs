@@ -17,6 +17,8 @@ namespace Tests.EditMode.BoardManagerTests
             boardManager.boardRenderer = gameObject.AddComponent<BoardRenderer>();
             boardManager.movePlayerChannel = CreateChannel<MovePlayerEventChannel>();
             boardManager.passedGoChannel = CreateChannel<IntEventChannel>();
+            boardManager.playerMovedChannel = CreateChannel<PlayerMovedEventChannel>();
+
             boardManager.movePlayerChannel.Subscribe(boardManager.MovePlayer);
             
             InitializeTestLogger();
