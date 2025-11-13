@@ -117,7 +117,7 @@ namespace Tests.PlayMode.BoardRenderer
         /// <returns></returns>
         protected IEnumerator MovePieceAndWait(int playerId, int targetSpace, float waitTime = 2f)
         {
-            boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace));
+            boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace, null));
             yield return new WaitForSeconds(waitTime);
         }
     }
