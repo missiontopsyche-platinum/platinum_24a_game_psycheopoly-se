@@ -100,4 +100,9 @@ public class PropertySpaceData : OwnableSpaceData
     {
         currentUpgradeLevel += 1;
     }
+
+    public int GetCurrentUpgradeLevel()
+    {
+        return currentUpgradeLevel;
+    }
 }

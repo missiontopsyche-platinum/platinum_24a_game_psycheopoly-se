@@ -4,7 +4,8 @@ using UnityEngine;
 using Logging;
 using Logger = Logging.Logger;
 
-namespace PsycheOpoly.Board{
+namespace PsycheOpoly.Board
+{
 
     [ExecuteAlways]
     public class BoardManager : MonoBehaviour
@@ -12,18 +13,19 @@ namespace PsycheOpoly.Board{
         [Header("Board Settings")]
         [SerializeField] private int defaultBoardSize = 40;
 
-        [Header("Render Components")] 
+        [Header("Render Components")]
         [SerializeField] public BoardRenderer boardRenderer;
 
         [Header("Event Channels")]
-        [SerializeField] public PlayerEventChannel      playerAddedChannel;
+        [SerializeField] public PlayerEventChannel playerAddedChannel;
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
-        [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
-        [SerializeField] public IntEventChannel         passedGoChannel;
+        [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+        [SerializeField] public IntEventChannel passedGoChannel;
+        [SerializeField] public MoveToSpaceEventChannel moveToSpaceEventChannel;
 
         //Task 81 create Space[] array
         private Space[] spaces;
-        
+
         //For Testing purposes
         public int boardSize => spaces?.Length ?? 0;
 
@@ -36,11 +38,11 @@ namespace PsycheOpoly.Board{
         private void Awake()
         {
             EnsureSubscribed();
-            
+
             Logger.Initialize(LogSettings.Current());
         }
 
-        private void OnEnable()  => EnsureSubscribed();
+        private void OnEnable() => EnsureSubscribed();
 
         private void Start()
         {
@@ -52,13 +54,15 @@ namespace PsycheOpoly.Board{
 
         private void OnDestroy() => EnsureUnsubscribed();
 
-      
+
         private void EnsureSubscribed()
         {
             if (subscribed) return;
             if (!this) return;
             playerAddedChannel?.Subscribe(AddPlayer);
             movePlayerChannel?.Subscribe(MovePlayer);
+            // Not really sure how to get the space data yet
+            // moveToSpaceEventChannel?.Subscribe()
             subscribed = true;
         }
 
@@ -67,6 +71,8 @@ namespace PsycheOpoly.Board{
             if (!subscribed) return;
             playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
+            // Not really sure how to get the space data yet
+            // moveToSpaceEventChannel?.Unsubscribe()
             subscribed = false;
         }
 
@@ -75,8 +81,8 @@ namespace PsycheOpoly.Board{
         private void AddPlayer(Player player)
         {
             playerPositions.Add(player.GetId(), 0);
-            Logger.Debug("AddPlayer", 
-                $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}", 
+            Logger.Debug("AddPlayer",
+                $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}",
                 LogCategory.Gameplay, this);
         }
 
@@ -85,16 +91,16 @@ namespace PsycheOpoly.Board{
         {
             if (size <= 0) size = Mathf.Max(3, defaultBoardSize);
             spaces = new Space[size];
-            
+
             //Task 83 which will fill the board with mix of placeholder spaces
             //This will be changed after final rule confirmation from stakeholder
             spaces[0] = new GoSpace("Go");
             for (int i = 1; i < size; i++)
                 spaces[i] = (i % 3 == 0) ? new ChanceSpace("Chance")
                                          : new PropertySpace($"Property {i}");
-            
+
             boardRenderer?.GenerateBoard(spaces);
-            
+
             EnsureSubscribed();
         }
 
@@ -158,8 +164,8 @@ namespace PsycheOpoly.Board{
             EnsureBoard();
             int previous = GetPlayerPosition(mpe.id);
             int next = NormalizeIndex(previous + mpe.spacesToMove);
-            Logger.Debug("Move Player", 
-                $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
+            Logger.Debug("Move Player",
+                $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous + mpe.spacesToMove}, normalized: {next}",
                 LogCategory.Gameplay, this);
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
@@ -175,7 +181,7 @@ namespace PsycheOpoly.Board{
         //confirms board is set to default size
         private void EnsureBoard()
         {
-            if(spaces == null || spaces.Length == 0)
+            if (spaces == null || spaces.Length == 0)
                 InitializeBoard(defaultBoardSize);
         }
 
@@ -188,5 +194,4 @@ namespace PsycheOpoly.Board{
             return (m < 0) ? m + n : m;
         }
     }
-
 }

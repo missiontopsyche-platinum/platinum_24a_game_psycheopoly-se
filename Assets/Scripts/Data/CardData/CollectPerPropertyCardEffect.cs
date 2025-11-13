@@ -5,7 +5,6 @@ public class CollectPerPropertyCardEffect : CardEffect
 {
     [SerializeField] public int ChargeForHouse = 0;
     [SerializeField] public int ChargeForHotel = 0;
-    //[SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel; TODO: This must be refactored to target bank instead of player
     [SerializeField] public PayPlayerEventChannel payPlayerEventChannel;
     public override void ApplyEffect(Player player)
     {
@@ -27,7 +26,6 @@ public class CollectPerPropertyCardEffect : CardEffect
             }
         }
         int totalAmount = (ChargeForHouse * houseCount) + (ChargeForHotel * hotelCount);
-        // chargePlayerEventChannel.RaiseEvent(new ChargePlayerEvent(banker, totalAmount)); TODO: This should charge the bank or banker player
         payPlayerEventChannel.RaiseEvent(new PayPlayerEvent(player, totalAmount));
     }
 }

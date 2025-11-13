@@ -47,7 +47,6 @@ public class CardDeck : ScriptableObject
         // This is how I understand from the code structure we have so far.
         foreach (var effect in card.effect)
         {
-            // TODO: Create a way for the effect to target another player or banker if needed
             effect.ApplyEffect(player);
         }
         ReturnCardToDeck(card);
