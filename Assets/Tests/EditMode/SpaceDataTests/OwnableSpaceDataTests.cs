@@ -39,7 +39,7 @@ namespace Tests.EditMode.SpaceDataTests
             space.OnLanded(ScriptableObject.CreateInstance<Player>());
             
             Assert.NotNull(payload);
-            Assert.Equals(100, payload.cost);
+            Assert.AreEqual(100, payload.cost);
         }
     }
 }

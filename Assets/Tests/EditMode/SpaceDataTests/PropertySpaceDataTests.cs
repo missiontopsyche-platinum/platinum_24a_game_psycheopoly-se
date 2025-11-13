@@ -51,10 +51,10 @@ namespace Tests.EditMode.SpaceDataTests
                 space.OnLanded(player);
                 
                 Assert.NotNull(payload);
-                Assert.Equals(100 + 50 * i, payload.amount);
-                Assert.Equals(owner, payload.toPlayer);
-                Assert.Equals(player, payload.fromPlayer);
-                Assert.Equals(space, payload.sourceSpace);
+                Assert.AreEqual(100 + 50 * i, payload.amount);
+                Assert.AreEqual(owner, payload.toPlayer);
+                Assert.AreEqual(player, payload.fromPlayer);
+                Assert.AreEqual(space, payload.sourceSpace);
                 
                 space.UpgradeProperty();
             }

@@ -51,18 +51,20 @@ namespace Tests.EditMode.SpaceDataTests
             space.chargeOwnershipFeeEventChannel.Subscribe(Listener);
             drec.RaiseEvent(new DiceRolledEvent(3,3,6));
 
-            Assert.Equals(6, space.lastDiceRoll);
+            Assert.AreEqual(6, space.lastDiceRoll);
             
             space.OnLanded(player);
             
             Assert.NotNull(payload);
-            Assert.Equals(6 * 3, payload.amount);
+            Assert.AreEqual(6 * 3, payload.amount);
             
             owner.AddOwnedProperty(
                 ScriptableObject.CreateInstance<PlanetSpaceData>());
             
+            space.OnLanded(player);
+            
             Assert.NotNull(payload);
-            Assert.Equals(6 * 5, payload.amount);
+            Assert.AreEqual(6 * 5, payload.amount);
         }
     }
 }
