@@ -21,7 +21,8 @@ public class Player : ScriptableObject
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
     private List<OwnableSpaceData> ownedProperties = new();
-    
+    private List<Card> getOutOfJailCards = new();
+
     private Color color;
 
     public void SetId(int id)
@@ -125,8 +126,18 @@ public class Player : ScriptableObject
         return doublesInRow; 
     }
 
-    public void AddOwnedProperty(OwnableSpaceData ownableSpace) { }
-    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace) { }
+    public void AddOwnedProperty(OwnableSpaceData ownableSpace) 
+    {
+        // Simple implementation, may need to add more logic later
+        // Added this to test card effects
+        ownedProperties.Add(ownableSpace);
+    }
+    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        // Simple implementation, may need to add more logic later
+        // Added this to test card effects
+        ownedProperties.Remove(ownableSpace);
+    }
     public List<OwnableSpaceData> GetOwnedProperties() 
     { 
         return ownedProperties; 
@@ -205,5 +216,41 @@ public class Player : ScriptableObject
     public int GetPosition()
     {
         return this.position;
+    }
+
+    public void AddJailCard(Card card)
+    {
+        if (card == null)
+        {
+            Logging.Logger.Error("Player.AddJailCard",
+                "Cannot add null card to player's get out of jail cards.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException("Cannot add null card to player's get out of jail cards.");
+        }
+        getOutOfJailCards.Add(card);
+    }
+
+    public void RemoveJailCard(Card card)
+    {
+        if (card == null)
+        {
+            Logging.Logger.Error("Player.RemoveJailCard",
+                "Cannot remove null card from player's get out of jail cards.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException("Cannot remove null card from player's get out of jail cards.");
+        }
+        getOutOfJailCards.Remove(card);
+    }
+
+    public List<Card> GetJailCards()
+    {
+        List<Card> cardsCopy = new List<Card>();
+        foreach (Card card in getOutOfJailCards)
+        {
+            cardsCopy.Add(card);
+        }
+        return cardsCopy;
     }
 }
