@@ -21,6 +21,7 @@ namespace Assets.Scripts.Managers.Movement
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
+        [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
         [SerializeField] private IntEventChannel goToJailChannel;
 
         private int doublesCount = 0;
@@ -31,6 +32,7 @@ namespace Assets.Scripts.Managers.Movement
             diceRolledChannel?.Subscribe(OnDiceRolled);
             pieceMoveCompletedEventChannel?.Subscribe(OnPieceMoveCompleted);
             currentPlayerChannel?.Subscribe(SetCurrentPlayer);
+            turnStartedEventChannel?.Subscribe(OnTurnStarted);
         }
 
 
@@ -39,6 +41,7 @@ namespace Assets.Scripts.Managers.Movement
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
             pieceMoveCompletedEventChannel?.Unsubscribe(OnPieceMoveCompleted);
             currentPlayerChannel?.Unsubscribe(SetCurrentPlayer);
+            turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
 
         }
 
@@ -49,6 +52,33 @@ namespace Assets.Scripts.Managers.Movement
         {
             currentPlayer = p;
         }
+
+        private void OnTurnStarted(TurnStartedEvent turnData)
+        {
+            // find the PlayerManager in the scene
+            PlayerManager pm = FindObjectOfType<PlayerManager>();
+
+            if (pm == null)
+            {
+                Logger.Error("StandardMovementStrategy.OnTurnStarted", "PlayerManager not found in scene.",
+                    LogCategory.Gameplay, this);
+                return;
+            }
+
+            Player p = pm.GetPlayer(turnData.playerId);
+
+            if (p == null)
+            {
+                Logger.Error("StandardMovementStrategy.OnTurnStarted", $"Could not resolve Player for ID {turnData.playerId}",
+                    LogCategory.Gameplay, this);
+                return;
+
+
+            }
+
+            SetCurrentPlayer(p);
+        }
+
 
 
         public void OnDiceRolled(DiceRolledEvent diceEvent)
