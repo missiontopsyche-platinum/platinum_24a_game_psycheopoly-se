@@ -19,6 +19,9 @@ public class CardDeck : ScriptableObject
     [SerializeField] public DeckType deckType;
     [SerializeField] public List<Card> cards = new();
     public Queue<Card> deckQueue;
+    [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
+
+    private Queue<Card> deckQueue = new();
 
     public void OnEnable()
     {
