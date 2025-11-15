@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
   m_Name: Thisbe
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
-  spaceName: 
-  spaceColor: {r: 0, g: 0, b: 0, a: 0}
+  spaceName: Thisbe
+  spaceColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 0}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
-  buyPrice: 0
-  collaborationValue: 0
+  buyPrice: 180
+  collaborationValue: 90
   purchaseOwnableRequestEventChannel: {fileID: 0}
   chargeOwnershipFeeEventChannel: {fileID: 0}
-  researchFundingValues: 000000000000000000000000000000000000000000000000
-  dataPointCost: 0
+  researchFundingValues: 0e00000046000000c800000026020000ee020000b6030000
+  dataPointCost: 100
   purchaseUpgradeRequestEventChannel: {fileID: 0}

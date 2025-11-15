@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
   m_Name: Eunomia
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
-  spaceName: 
-  spaceColor: {r: 0, g: 0, b: 0, a: 0}
+  spaceName: Eunomia
+  spaceColor: {r: 0.5019608, g: 0, b: 0, a: 0}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
-  buyPrice: 0
-  collaborationValue: 0
+  buyPrice: 240
+  collaborationValue: 120
   purchaseOwnableRequestEventChannel: {fileID: 0}
   chargeOwnershipFeeEventChannel: {fileID: 0}
-  researchFundingValues: 000000000000000000000000000000000000000000000000
-  dataPointCost: 0
+  researchFundingValues: 14000000640000002c010000ee0200009d0300004c040000
+  dataPointCost: 150
   purchaseUpgradeRequestEventChannel: {fileID: 0}
