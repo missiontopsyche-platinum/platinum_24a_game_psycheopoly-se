@@ -26,6 +26,8 @@ namespace Assets.Scripts.Managers.Movement
 
         private int doublesCount = 0;
         private Player currentPlayer;
+        private PlayerManager playerManager;
+
 
         private void OnEnable()
         {
@@ -53,23 +55,29 @@ namespace Assets.Scripts.Managers.Movement
             currentPlayer = p;
         }
 
-        private void OnTurnStarted(TurnStartedEvent turnData)
+        private void Awake()
         {
-            // find the PlayerManager in the scene
-            PlayerManager pm = FindObjectOfType<PlayerManager>();
-
-            if (pm == null)
+            playerManager = FindObjectOfType<PlayerManager>();
+            if (playerManager == null)
             {
-                Logger.Error("StandardMovementStrategy.OnTurnStarted", "PlayerManager not found in scene.",
+                Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",
                     LogCategory.Gameplay, this);
-                return;
             }
 
-            Player p = pm.GetPlayer(turnData.playerId);
+        }
+
+
+        private void OnTurnStarted(TurnStartedEvent turnData)
+        {
+            if (playerManager == null)
+                return;
+
+
+            Player p = playerManager.GetPlayer(turnData.playerId);
 
             if (p == null)
             {
-                Logger.Error("StandardMovementStrategy.OnTurnStarted", $"Could not resolve Player for ID {turnData.playerId}",
+                Logger.Error("StandardMovementStrategy.OnTurnStarted", $"Invalid playerId {turnData.playerId}",
                     LogCategory.Gameplay, this);
                 return;
 
