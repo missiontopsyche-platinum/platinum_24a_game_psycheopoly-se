@@ -46,8 +46,11 @@ public class LaunchPadSpaceData : SpaceData
     // for testing
     public void EnsureSubscribed()
     {
-        OnDisable();
-        OnEnable();
+        playerGoesToJailEventChannel?.Unsubscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Unsubscribe(RemovePlayerFromJail);
+        
+        playerGoesToJailEventChannel?.Subscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Subscribe(RemovePlayerFromJail);
     }
 
     private void OnEnable()
