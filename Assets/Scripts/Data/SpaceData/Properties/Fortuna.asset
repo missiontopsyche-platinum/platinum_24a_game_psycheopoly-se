@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
   m_Name: Fortuna
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
-  spaceName: 
-  spaceColor: {r: 0, g: 0, b: 0, a: 0}
+  spaceName: Fortuna
+  spaceColor: {r: 1, g: 0.64705884, b: 0, a: 0}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
-  buyPrice: 0
-  collaborationValue: 0
+  buyPrice: 140
+  collaborationValue: 70
   purchaseOwnableRequestEventChannel: {fileID: 0}
   chargeOwnershipFeeEventChannel: {fileID: 0}
-  researchFundingValues: 000000000000000000000000000000000000000000000000
-  dataPointCost: 0
+  researchFundingValues: 0a0000003200000096000000c201000071020000ee020000
+  dataPointCost: 100
   purchaseUpgradeRequestEventChannel: {fileID: 0}
