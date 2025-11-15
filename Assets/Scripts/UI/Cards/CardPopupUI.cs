@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; 
 
@@ -10,6 +11,8 @@ public class CardPopupUI : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image artworkImage;
     [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
+    [SerializeField] private float fadeDuration = 0.25f;
+
     private Card currentCard;
     private Player currentPlayer;
     private CardDeck currentDeck;
@@ -75,12 +78,11 @@ public class CardPopupUI : MonoBehaviour
             }
 
             //Fade in
-            // Will be implemented in Task 385
-            //if(fadeRoutine != null)
-            //{
-            //    StopCoroutine(fadeRoutine);
-            //}
-            //fadeRoutine = StartCoroutine(FaideIn());
+            if(fadeRoutine != null)
+            {
+                StopCoroutine(fadeRoutine);
+            }
+            fadeRoutine = StartCoroutine(FadeIn());
         }
     }
 
@@ -108,7 +110,7 @@ public class CardPopupUI : MonoBehaviour
         currentDeck = null;
 
         //Fade out
-        //StartHideAnimation();
+        StartHideAnimation();
     }
 
     //Helper to instantly hide without any animation 
@@ -122,6 +124,65 @@ public class CardPopupUI : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+    }
+
+    //starts the hide animiation 
+    private void StartHideAnimation()
+    {
+        if(fadeRoutine != null)
+        {
+            StopCoroutine(fadeRoutine);
+        }
+
+        fadeRoutine = StartCoroutine(FadeOut());
+    }
+
+    private IEnumerator FadeIn()
+    {
+        if(canvasGroup == null)
+        {
+            yield break;
+        }
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+
+        float time = 0f;
+
+        while(time < fadeDuration)
+        {
+            time += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, time / fadeDuration);
+            yield return null;
+        }
+
+        canvasGroup.alpha = 1f;
+    }
+
+    private IEnumerator FadeOut()
+    {
+        if(canvasGroup == null)
+        {
+            gameObject.SetActive(false);
+            yield break;
+        }
+
+        float startalpha = canvasGroup.alpha;
+        float time = 0f;
+
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        while(time < fadeDuration)
+        {
+            time += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(startalpha, 0f, time / fadeDuration);
+            yield return null;
+        }
+
+        canvasGroup.alpha = 0f;
+        gameObject.SetActive(false); 
     }
 
 }
