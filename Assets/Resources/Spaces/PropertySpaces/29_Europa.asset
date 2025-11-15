@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 29_Europa
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
   spaceName: Europa
-  spaceColor: {r: 0.54509807, g: 0, b: 0.54509807, a: 1}
+  spaceColor: {r: 0.63529414, g: 0.16470589, b: 0.49019608, a: 1}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
   buyPrice: 280

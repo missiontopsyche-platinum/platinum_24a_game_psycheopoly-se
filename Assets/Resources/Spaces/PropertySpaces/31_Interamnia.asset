@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
-  m_Name: 27_Davida
+  m_Name: 31_Interamnia
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
-  spaceName: Davida
-  spaceColor: {r: 0.63529414, g: 0.16470589, b: 0.49019608, a: 1}
+  spaceName: Interamnia
+  spaceColor: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
-  buyPrice: 260
-  collaborationValue: 130
+  buyPrice: 300
+  collaborationValue: 150
   purchaseOwnableRequestEventChannel: {fileID: 0}
   chargeOwnershipFeeEventChannel: {fileID: 0}
-  researchFundingValues: 160000006e0000004a01000020030000cf0300007e040000
-  dataPointCost: 150
+  researchFundingValues: 1a0000008200000086010000840300004c040000fb040000
+  dataPointCost: 200
   purchaseUpgradeRequestEventChannel: {fileID: 0}
