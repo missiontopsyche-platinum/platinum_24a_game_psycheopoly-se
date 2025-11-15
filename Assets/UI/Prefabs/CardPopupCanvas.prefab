@@ -562,6 +562,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99f14131ecdce6545a1ce8c1cfb4d7fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::CardPopupUI
+  cardTitleText: {fileID: 2266277964926184384}
+  cardBodyText: {fileID: 9178346689636037677}
+  okButton: {fileID: 3811950362388187880}
+  CanvasGroup: {fileID: 2124444208015256195}
+  artworkImage: {fileID: 4666790704326918140}
 --- !u!1 &5635903033199217837
 GameObject:
   m_ObjectHideFlags: 0
