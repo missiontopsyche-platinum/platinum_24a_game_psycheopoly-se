@@ -30,6 +30,7 @@ public class CardDeck : ScriptableObject
     {
         deckQueue.Clear();
     }
+
     public void ShuffleDeck()
     {
         Shuffle();
@@ -53,6 +54,7 @@ public class CardDeck : ScriptableObject
             player.AddJailCard(card);
             return;
         }
+
         // The execution happens within the deck.
         // This is how I understand from the code structure we have so far.
         foreach (var effect in card.effect)
@@ -73,6 +75,7 @@ public class CardDeck : ScriptableObject
         if (cards.Count == 0) return;
         if (deckQueue == null) deckQueue = new Queue<Card>(cards);
 
+
         var list = deckQueue.ToList();
         var rng = new System.Random();
 
@@ -84,6 +87,7 @@ public class CardDeck : ScriptableObject
 
         deckQueue = new Queue<Card>(list);
     }
+
 
     private bool IsGetOutOfJailFreeCard(Card card)
     {
