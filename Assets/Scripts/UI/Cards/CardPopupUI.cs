@@ -37,6 +37,43 @@ public class CardPopupUI : MonoBehaviour
         currentPlayer = player;
         currentDeck = deck;
 
-        //ShowCard(card);
+        ShowCard(card);
+    }
+
+    private void ShowCard(Card card)
+    {
+        if(card == null)
+        {
+            return; 
+        }
+
+        if(!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+
+            //Assign the UI feilds from card Scriptable Object
+            if(cardTitleText != null) 
+            {
+                cardTitleText.text = card.title;
+            }
+
+            if(cardBodyText != null)
+            {
+                cardBodyText.text = card.bodyText;
+            }
+
+            if(artworkImage != null)
+            {
+                artworkImage.sprite = card.artwork;
+            }
+
+            //Fade in
+            // Will be implemented in Task 385
+            //if(fadeRoutine != null)
+            //{
+            //    StopCoroutine(fadeRoutine);
+            //}
+            //fadeRoutine = StartCoroutine(FaideIn());
+        }
     }
 }
