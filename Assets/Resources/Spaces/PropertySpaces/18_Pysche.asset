@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
-  m_Name: Juno
+  m_Name: 18_Pysche
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
-  spaceName: Juno
-  spaceColor: {r: 0.5019608, g: 0, b: 0, a: 0}
+  spaceName: Pysche
+  spaceColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 0}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
-  buyPrice: 220
-  collaborationValue: 110
+  buyPrice: 180
+  collaborationValue: 90
   purchaseOwnableRequestEventChannel: {fileID: 0}
   chargeOwnershipFeeEventChannel: {fileID: 0}
-  researchFundingValues: 120000005a000000fa000000bc0200006b0300001a040000
-  dataPointCost: 150
+  researchFundingValues: 0e00000046000000c800000026020000ee020000b6030000
+  dataPointCost: 100
   purchaseUpgradeRequestEventChannel: {fileID: 0}

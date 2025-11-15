@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
-  m_Name: Eunomia
+  m_Name: 21_Juno
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
-  spaceName: Eunomia
+  spaceName: Juno
   spaceColor: {r: 0.5019608, g: 0, b: 0, a: 0}
   spaceHoverEventChannel: {fileID: 0}
   onSpaceExitEventChannel: {fileID: 0}
-  buyPrice: 240
-  collaborationValue: 120
+  buyPrice: 220
+  collaborationValue: 110
   purchaseOwnableRequestEventChannel: {fileID: 0}
   chargeOwnershipFeeEventChannel: {fileID: 0}
-  researchFundingValues: 14000000640000002c010000ee0200009d0300004c040000
+  researchFundingValues: 120000005a000000fa000000bc0200006b0300001a040000
   dataPointCost: 150
   purchaseUpgradeRequestEventChannel: {fileID: 0}
