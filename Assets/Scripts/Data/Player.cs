@@ -253,4 +253,17 @@ public class Player : ScriptableObject
         }
         return cardsCopy;
     }
+
+    public List<Card> GetGetOutOfJailCards()
+    {
+        if (getOutOfJailCards == null)
+            getOutOfJailCards = new List<Card>();
+
+        List<Card > cardsCopy = new List<Card>();
+        foreach (Card card in getOutOfJailCards)
+        {
+            cardsCopy.Add(card);
+        }
+        return cardsCopy;
+    }
 }

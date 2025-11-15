@@ -21,6 +21,7 @@ namespace PsycheOpoly.Board
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
         [SerializeField] public MovePlayerEventChannel movePlayerChannel;
         [SerializeField] public IntEventChannel passedGoChannel;
+        // Not sure how to implement this yet, if we should use the space data or the space itself.
         [SerializeField] public MoveToSpaceEventChannel moveToSpaceEventChannel;
 
         //Task 81 create Space[] array

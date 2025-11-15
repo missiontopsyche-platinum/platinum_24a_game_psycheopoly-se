@@ -20,7 +20,7 @@ public class GoToJailCardEffect : CardEffect
             return;
         }
 
-        JailStateChangedEventChannel.RaiseEvent(new JailStateChangedEvent(player, false, TurnsInJail));
+        JailStateChangedEventChannel.RaiseEvent(new JailStateChangedEvent(player, true, TurnsInJail));
     }
 }
 

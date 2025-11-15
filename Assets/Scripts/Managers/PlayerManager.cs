@@ -1,3 +1,5 @@
+using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
 using Events.EventDataStructures;
 using Logging;
 using System.Collections.Generic;
@@ -12,6 +14,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public IntEventChannel passedGoChannel;
     [SerializeField] public MoneyDistributionEventChannel payAllPlayersEventChannel;
     [SerializeField] public MoneyDistributionEventChannel collectFromAllPlayersEventChannel;
+    [SerializeField] public JailStateChangedEventChannel jailStateChangedEventChannel;
+    [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
+    [SerializeField] public PayPlayerEventChannel payPlayerEventChannel;
 
     public List<Player> players = new List<Player>();
 
@@ -21,16 +26,22 @@ public class PlayerManager : MonoBehaviour
         // added this to decouple GameManager from PlayerManager to use events instead - hdathert
         initializePlayerCountChannel?.Subscribe(InitializePlayers);
         passedGoChannel?.Subscribe(PassedGo);
-        payAllPlayersEventChannel?.Subscribe(OnPayAllPlayers);
-        collectFromAllPlayersEventChannel?.Subscribe(OnChargeAllPlayers);
+        payAllPlayersEventChannel?.Subscribe(OnPayAllPlayersEvent);
+        collectFromAllPlayersEventChannel?.Subscribe(OnChargeAllPlayersEvent);
+        jailStateChangedEventChannel?.Subscribe(OnJailStateChangedEvent);
+        chargePlayerEventChannel?.Subscribe(OnChargePlayerEvent);
+        payPlayerEventChannel?.Subscribe(OnPayPlayerEvent);
     }
 
     void OnDestroy()
     {
         initializePlayerCountChannel?.Unsubscribe(InitializePlayers);
         passedGoChannel?.Unsubscribe(PassedGo);
-        payAllPlayersEventChannel?.Unsubscribe(OnPayAllPlayers);
-        collectFromAllPlayersEventChannel?.Unsubscribe(OnChargeAllPlayers);
+        payAllPlayersEventChannel?.Unsubscribe(OnPayAllPlayersEvent);
+        collectFromAllPlayersEventChannel?.Unsubscribe(OnChargeAllPlayersEvent);
+        jailStateChangedEventChannel?.Unsubscribe(OnJailStateChangedEvent);
+        chargePlayerEventChannel?.Unsubscribe(OnChargePlayerEvent);
+        payPlayerEventChannel.Unsubscribe(OnPayPlayerEvent);
     }
 
     // Update is called once per frame
@@ -199,7 +210,7 @@ public class PlayerManager : MonoBehaviour
         GetPlayer(id).SetMoney(pMoney - money);
     }
 
-    public void OnPayAllPlayers(MoneyDistributionEvent payAllPlayersEvent)
+    public void OnPayAllPlayersEvent(MoneyDistributionEvent payAllPlayersEvent)
     {
         Player player = payAllPlayersEvent.Player;
         int Amount = payAllPlayersEvent.Amount;
@@ -213,17 +224,51 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void OnChargeAllPlayers(MoneyDistributionEvent collectFromAllPlayersEvent)
+    public void OnChargeAllPlayersEvent(MoneyDistributionEvent collectFromAllPlayersEvent)
     {
         Player player = collectFromAllPlayersEvent.Player;
         int Amount = collectFromAllPlayersEvent.Amount;
 
-        if (player == null) return;
+        if (player == null)
+        {
+            Logging.Logger.Warn("PlayerManager.OnChargeAllPlayers",
+                "Player is null",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
 
         foreach (Player currentPlayer in players)
         {
             if (player == currentPlayer) AddMoney(currentPlayer.GetId(), player.GetMoney() + (Amount * (players.Count - 1)));
             else RemoveMoney(currentPlayer.GetId(), Amount);
         }
+    }
+
+    public void OnJailStateChangedEvent(JailStateChangedEvent jailStateChangedEvent)
+    {
+        Player player = jailStateChangedEvent.player;
+
+        if (player == null)
+        {
+            Logging.Logger.Warn("PlayerManager.OnChargeAllPlayers",
+                "Player is null",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
+
+        player.SetInJail(jailStateChangedEvent.inJail);
+        player.SetJailTurns(jailStateChangedEvent.jailTurns);
+    }
+
+    public void OnChargePlayerEvent(ChargePlayerEvent chargePlayerEvent)
+    {
+        RemoveMoney(chargePlayerEvent.chargedPlayer.GetId(), chargePlayerEvent.chargeAmount);
+    }
+
+    public void OnPayPlayerEvent(PayPlayerEvent payPlayerEvent)
+    {
+        AddMoney(payPlayerEvent.paidPlayer.GetId(), payPlayerEvent.amountPaid);
     }
 }
