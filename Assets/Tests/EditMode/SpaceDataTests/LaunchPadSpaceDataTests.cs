@@ -47,13 +47,14 @@ namespace Tests.EditMode.SpaceDataTests
         [Test]
         public void PlayerAddedAndRemovedFromJail()
         {
-            playerGoToJailChannel.RaiseEvent(
-                ScriptableObject.CreateInstance<Player>());
-            Assert.Equals(lpsd.playersInJail.Count, 1);
+            Player p = ScriptableObject.CreateInstance<Player>();
+            playerGoToJailChannel.RaiseEvent(p);
             
-            playerLeaveJailChannel.RaiseEvent(
-                ScriptableObject.CreateInstance<Player>());
-            Assert.Equals(lpsd.playersInJail.Count, 0);
+            Assert.AreEqual(lpsd.playersInJail.Count, 1);
+            
+            playerLeaveJailChannel.RaiseEvent(p);
+            
+            Assert.AreEqual(lpsd.playersInJail.Count, 0);
         }
     }
 }

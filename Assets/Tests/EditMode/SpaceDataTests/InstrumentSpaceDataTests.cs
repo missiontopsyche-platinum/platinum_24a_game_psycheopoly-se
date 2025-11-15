@@ -48,11 +48,13 @@ namespace Tests.EditMode.SpaceDataTests
             
             for (int i = 0; i < space.researchFundingLevels.Length; i++)
             {
+                payload = null; 
+                
                 space.OnLanded(player);
                 
-                Assert.NotNull(payload);
-                Assert.Equals(100 + (50 * i), payload.amount);
-                Assert.Equals(space, payload.sourceSpace);
+                Assert.NotNull(payload, $"payload was null on iteration {i}");
+                Assert.AreEqual(100 + (50 * i), payload.amount);
+                Assert.AreEqual(space, payload.sourceSpace);
                 
                 owner.AddOwnedProperty(
                     ScriptableObject.CreateInstance<InstrumentSpaceData>());
