@@ -13,16 +13,19 @@ public class CardDeck : ScriptableObject
     };
 
     [SerializeField] public DeckType deckType;
-    [SerializeField] private List<Card> cards = new();
-    [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
-
-    private Queue<Card> deckQueue = new();
+    [SerializeField] public List<Card> cards = new();
+    public Queue<Card> deckQueue;
 
     public void OnEnable()
     {
+        deckQueue = new Queue<Card>(cards);
         ShuffleDeck();
     }
 
+    public void OnDisable()
+    {
+        deckQueue.Clear();
+    }
     public void ShuffleDeck()
     {
         Shuffle();
@@ -39,8 +42,7 @@ public class CardDeck : ScriptableObject
                 this);
             return;
         }
-        
-        
+
         // The execution happens within the deck.
         // This is how I understand from the code structure we have so far.
         foreach (var effect in card.effect)
@@ -52,11 +54,15 @@ public class CardDeck : ScriptableObject
 
     public void ReturnCardToDeck(Card card)
     {
+        // TODO: When refactoring, call event channel to notify all components
         deckQueue.Enqueue(card);
     }
 
     private void Shuffle()
     {
+        if (cards.Count == 0) return;
+        if (deckQueue == null) deckQueue = new Queue<Card>(cards);
+
         var list = deckQueue.ToList();
         var rng = new System.Random();
 

@@ -16,6 +16,7 @@ public class CardPopupUI : MonoBehaviour
     private Card currentCard;
     private Player currentPlayer;
     private CardDeck currentDeck;
+    public Button OkButton => okButton;
 
     private Coroutine fadeRoutine;
 
