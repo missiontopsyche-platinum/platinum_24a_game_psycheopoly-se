@@ -24,30 +24,36 @@ public class CardPopupPlayModeTests
         const int cycles = 3;
 
         for (int i = 0; i < cycles; i++)
-        {
-            helper.DrawOnce();
+{
+    helper.DrawOnce();
 
-            // ⬇️ instead of WaitUntil (which can hang), poll with a timeout
-            float timeout = 2f;
-            float elapsed = 0f;
-            while (!popup.gameObject.activeSelf && elapsed < timeout)
-            {
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
+    // wait up to 2 seconds for popup to become visible
+    float timeout = 2f;
+    float elapsed = 0f;
+    while (!popup.IsVisible && elapsed < timeout)
+    {
+        elapsed += Time.deltaTime;
+        yield return null;
+    }
 
-            Assert.IsTrue(popup.gameObject.activeSelf,
-                $"Popup never became active after draw #{i + 1}. " +
-                "If this fails, check that CardDeck raises the CardDrawn event and that the popup is subscribed.");
+    Assert.IsTrue(popup.IsVisible,
+        $"Popup never became visible after draw #{i + 1}. " +
+        "If this fails, check that CardDeck raises the CardDrawn event and that the popup is subscribed.");
 
-            // click OK
-            popup.OkButton.onClick.Invoke();
+    // simulate OK click
+    popup.OkButton.onClick.Invoke();
 
-            // wait for fade-out to finish (adjust if your fadeDuration is different)
-            yield return new WaitForSeconds(0.35f);
+    // wait for fade-out
+    timeout = 2f;
+    elapsed = 0f;
+    while (popup.IsVisible && elapsed < timeout)
+    {
+        elapsed += Time.deltaTime;
+        yield return null;
+    }
 
-            Assert.IsFalse(popup.gameObject.activeSelf,
-                $"Popup should be hidden after clicking OK on draw #{i + 1}.");
-        }
+    Assert.IsFalse(popup.IsVisible,
+        $"Popup did not hide after clicking OK on draw #{i + 1}.");
+}
     }
 }

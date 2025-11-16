@@ -20,6 +20,9 @@ public class CardPopupUI : MonoBehaviour
 
     private Coroutine fadeRoutine;
 
+    public bool IsVisible => canvasGroup != null && canvasGroup.alpha > 0.01f;
+
+
     private void OnEnable() 
     {
         if(cardDrawnChannel != null){
@@ -39,6 +42,7 @@ public class CardPopupUI : MonoBehaviour
     private void Awake()
     {
         okButton.onClick.AddListener(OnOkClicked); 
+        HideInstant();
     }
 
     //called when CardDeck raises the CardDrawn Event
@@ -53,38 +57,39 @@ public class CardPopupUI : MonoBehaviour
 
     private void ShowCard(Card card)
     {
-        if(card == null)
+          if (card == null)
         {
-            return; 
+            return;
         }
 
-        if(!gameObject.activeSelf)
+        // Make sure the popup GameObject is active
+        if (!gameObject.activeSelf)
         {
             gameObject.SetActive(true);
-
-            //Assign the UI feilds from card Scriptable Object
-            if(cardTitleText != null) 
-            {
-                cardTitleText.text = card.title; //use real names
-            }
-
-            if(cardBodyText != null)
-            {
-                cardBodyText.text = card.bodyText; //use real description
-            }
-
-            if(artworkImage != null)
-            {
-                artworkImage.sprite = card.artwork; //if we want to add images
-            }
-
-            //Fade in
-            if(fadeRoutine != null)
-            {
-                StopCoroutine(fadeRoutine);
-            }
-            fadeRoutine = StartCoroutine(FadeIn());
         }
+
+        // Assign UI fields from card ScriptableObject
+        if (cardTitleText != null)
+        {
+            cardTitleText.text = card.title;
+        }
+
+        if (cardBodyText != null)
+        {
+            cardBodyText.text = card.bodyText;
+        }
+
+        if (artworkImage != null)
+        {
+            artworkImage.sprite = card.artwork;
+        }
+
+        // Start fade-in
+        if (fadeRoutine != null)
+        {
+            StopCoroutine(fadeRoutine);
+        }
+        fadeRoutine = StartCoroutine(FadeIn());
     }
 
     private void OnOkClicked()
@@ -124,7 +129,6 @@ public class CardPopupUI : MonoBehaviour
             canvasGroup.blocksRaycasts = false;
         }
 
-        gameObject.SetActive(false);
     }
 
     //starts the hide animiation 

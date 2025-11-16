@@ -26,6 +26,8 @@ public class CardDeck : ScriptableObject
 =======
 >>>>>>> 1f46a21 (Setup completed for task 386 to complete playmode tests for the card UI)
 
+    [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
+
     public void OnEnable()
     {
         deckQueue = new Queue<Card>(cards);
@@ -69,11 +71,21 @@ public class CardDeck : ScriptableObject
 
         // The execution happens within the deck.
         // This is how I understand from the code structure we have so far.
-        foreach (var effect in card.effect)
+              if (cardDrawnChannel != null)
         {
-            effect.ApplyEffect(player);
+            cardDrawnChannel.Raise(card, player, this);
         }
-        ReturnCardToDeck(card);
+        else
+        {
+            // Fallback behaviour for when no UI is listening
+            foreach (var effect in card.effect)
+            {
+                effect.ApplyEffect(player);
+            }
+
+            ReturnCardToDeck(card);
+        }
+
     }
 
     public void ReturnCardToDeck(Card card)
