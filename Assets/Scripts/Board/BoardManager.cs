@@ -4,9 +4,8 @@ using UnityEngine;
 using Logging;
 using Logger = Logging.Logger;
 
-namespace PsycheOpoly.Board{
-
-    [ExecuteAlways]
+namespace PsycheOpoly.Board
+{
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
@@ -83,39 +82,38 @@ namespace PsycheOpoly.Board{
         //Task 82 create InitializeBoard method 
         public void InitializeBoard(int size = -1)
         {
-            if (size <= 0) size = Mathf.Max(3, defaultBoardSize);
-            boardSpaces = new SpaceData[size];
-            
-            // this is placeholder to keep tests working while we make assets.
-            T CreateSpace<T>(Action<T> init) where T : SpaceData
-            {
-                var space = ScriptableObject.CreateInstance<T>();
-                init(space);
-                return space;
-            }
-
-            boardSpaces[0] = CreateSpace<GoSpaceData>(s =>
-            {
-                s.spaceName = "GO!";
-                s.spaceColor = Color.chartreuse;
-            });
-            
-            for (int i = 1; i < size; i++)
-                boardSpaces[i] = (i % 3 == 0) 
-                    ? CreateSpace<CardSpaceData>(s =>
-                    {
-                        s.spaceName = $"Card: Space #{i}";
-                        s.spaceColor = Color.lavender;
-                    })
-                    : CreateSpace<PropertySpaceData>(s =>
-                    {
-                        s.spaceName = $"Property: Space #{i}";
-                        s.spaceColor = Color.peru;
-                    });
+            if (!VerifyBoard())
+                return;
             
             boardRenderer?.GenerateBoard(boardSpaces);
             
             EnsureSubscribed();
+        }
+
+        private bool VerifyBoard()
+        {
+            for (int i = 0; i < boardSpaces.Length; i++)
+            {
+                // grab the numbers prefix that is expected for our objects
+                String spaceNumber = boardSpaces[i].ToString().Substring(0, 2);
+                // formats the current index to a string with leading 0s, to match naming conventions
+                String currentIndex = $"{i:00}";
+                
+                // if the prefix is as expected, we continue, or we break early with an error.
+                if (spaceNumber.Equals(currentIndex))
+                    continue;
+                
+                Logger.Error("BoardManager.VerifyBoard",
+                    $"Board Array is incorrect for index {currentIndex}. Ensure SpaceData objects are in correct order.",
+                    LogCategory.Core, this);
+                return false;
+            }
+            
+            Logger.Info("BoardManager.VerifyBoard",
+                "Board has been verified successfully!",
+                LogCategory.Core, this);
+
+            return true;
         }
 
         //Task 84 which is GetSpace(int) with a wrap around
