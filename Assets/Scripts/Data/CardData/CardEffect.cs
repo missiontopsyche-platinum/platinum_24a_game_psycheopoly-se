@@ -1,5 +1,12 @@
+using UnityEngine;
+
+/// <summary>
+/// Abstract base class for all card effects.
+/// A CardEffect represents a single unit of gameplay behavior
+/// that can be combined with other effects to form a complete card.
+/// </summary>
 [System.Serializable]
-public abstract class CardEffect
+public abstract class CardEffect : ScriptableObject
 {
     public abstract void ApplyEffect(Player player);
 

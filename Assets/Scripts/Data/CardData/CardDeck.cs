@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Represents a deck of card ScriptableObjects (Chance or Community Chest).
+/// Provides methods for drawing, shuffling, and returning cards to the deck.
+/// </summary>
 [CreateAssetMenu(fileName = "CardDeck", menuName = "Card Data/Card Deck")]
 public class CardDeck : ScriptableObject
 {
