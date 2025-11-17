@@ -9,7 +9,7 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void EnabledManager_Responds_to_PlayerMovedEvent()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             const int pid = 7;
 
             logger.Trace("BoardEventHandlingTests.EnabledManager_Responds_to_PlayerMovedEvent", 
@@ -30,17 +30,18 @@ namespace Tests.EditMode.BoardManagerTests
         public void Disabled_Manager_DoesNotRespond_then_Resubscribe()
         {
             // TODO review if this behaviour is needed with EventChannels
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             const int pid = 8;
 
             boardManager.SetPlayerPosition(pid, 0);
-            boardManager.enabled = false;  //Triggers OnDisable() to unsubscribe
+            gameObject.SetActive(false);
+            Debug.Log(boardManager.isActiveAndEnabled);
             boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 4));
             logger.Trace("BoardEventHandlingTests.Disabled",
                 $"{pid} Pos: {boardManager.GetPlayerPosition(pid)}");
             Assert.AreEqual(0, boardManager.GetPlayerPosition(pid));
 
-            boardManager.enabled = true; //Triggers OnEnable() to resubscribe
+            gameObject.SetActive(true);
             boardManager.movePlayerChannel?.RaiseEvent(new MovePlayerEvent(pid, 2));
             Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
         }
@@ -51,7 +52,7 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void BoardManager_PassedGo()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             const int pid = 1;
             boardManager.SetPlayerPosition(pid, 5);
             boardManager.passedGoChannel.Subscribe((int player) =>

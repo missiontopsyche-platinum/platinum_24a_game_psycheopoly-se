@@ -6,6 +6,7 @@ using Logger = Logging.Logger;
 
 namespace PsycheOpoly.Board
 {
+    [ExecuteAlways]
     public class BoardManager : MonoBehaviour
     {
         [Header("Board Settings")]
@@ -20,8 +21,9 @@ namespace PsycheOpoly.Board
         [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
         [SerializeField] public IntEventChannel         passedGoChannel;
 
-        [Header("Board Spaces")] [SerializeField]
-        public SpaceData[] boardSpaces;
+        [Header("Board Spaces")]
+        [SerializeField] public BoardSpaceContainer boardSpaceContainer;
+        private SpaceData[] boardSpaces;
         
         //For Testing purposes
         public int boardSize => boardSpaces?.Length ?? 0;
@@ -54,6 +56,9 @@ namespace PsycheOpoly.Board
       
         private void EnsureSubscribed()
         {
+            Logger.Info("BoardManager.EnsureSubscribed",
+                "BoardManager is subscribing.",
+                LogCategory.Core, this);
             if (subscribed) return;
             if (!this) return;
             playerAddedChannel?.Subscribe(AddPlayer);
@@ -63,6 +68,9 @@ namespace PsycheOpoly.Board
 
         private void EnsureUnsubscribed()
         {
+            Logger.Info("BoardManager.EnsureUnsubscribed",
+                "BoardManager is unsubscribing.",
+                LogCategory.Core, this);
             if (!subscribed) return;
             playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
@@ -80,8 +88,14 @@ namespace PsycheOpoly.Board
         }
 
         //Task 82 create InitializeBoard method 
-        public void InitializeBoard(int size = -1)
+        public void InitializeBoard()
         {
+            // if null (for tests), pull default board from resources path.
+            if (boardSpaceContainer == null)
+                boardSpaceContainer = Resources.Load<BoardSpaceContainer>("Spaces/DefaultBoardContainer");
+
+            boardSpaces = boardSpaceContainer.GetSpaces();
+            
             if (!VerifyBoard())
                 return;
             
@@ -194,7 +208,7 @@ namespace PsycheOpoly.Board
         private void EnsureBoard()
         {
             if(boardSpaces == null || boardSpaces.Length == 0)
-                InitializeBoard(defaultBoardSize);
+                InitializeBoard();
         }
 
         //Normalizes Index for board spaces
