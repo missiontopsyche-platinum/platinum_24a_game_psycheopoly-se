@@ -15,14 +15,14 @@ public class Player : ScriptableObject
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
-    private bool inJail;
-    private int jailTurns;
-    private int doublesInRow;
-    private int getOutOfJailFree_Chance;
-    private int getOutOfJailFree_Community;
+    [SerializeField] private bool inJail;
+    [SerializeField] private int jailTurns;
+    [SerializeField] private int doublesInRow;
+    [SerializeField] private int getOutOfJailFree_Chance;
+    [SerializeField] private int getOutOfJailFree_Community;
     private List<OwnableSpaceData> ownedProperties = new();
-    private List<Card> getOutOfJailCards = new();
 
+    
     private Color color;
 
     public void SetId(int id)
@@ -126,16 +126,13 @@ public class Player : ScriptableObject
         return doublesInRow; 
     }
 
-    public void AddOwnedProperty(OwnableSpaceData ownableSpace) 
+    public void AddOwnedProperty(OwnableSpaceData ownableSpace)
     {
-        // Simple implementation, may need to add more logic later
-        // Added this to test card effects
         ownedProperties.Add(ownableSpace);
     }
+
     public void RemoveOwnedProperty(OwnableSpaceData ownableSpace)
     {
-        // Simple implementation, may need to add more logic later
-        // Added this to test card effects
         ownedProperties.Remove(ownableSpace);
     }
     public List<OwnableSpaceData> GetOwnedProperties() 

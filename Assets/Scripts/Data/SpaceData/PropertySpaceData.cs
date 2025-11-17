@@ -9,7 +9,7 @@ public class PropertySpaceData : OwnableSpaceData
     [SerializeField] public int dataPointCost;
 
     [Header("Property Event Channels")] 
-    [SerializeField] private PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
+    [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
     
     private int currentUpgradeLevel = 0;
 
@@ -31,7 +31,7 @@ public class PropertySpaceData : OwnableSpaceData
             if (currentUpgradeLevel < 5)
             {
                 // offer to upgrade space in UI in future
-                purchaseUpgradeRequestEventChannel.RaiseEvent(new PurchaseOwnableRequestEvent(
+                purchaseUpgradeRequestEventChannel?.RaiseEvent(new PurchaseOwnableRequestEvent(
                     player,
                     this,
                     dataPointCost));
@@ -41,7 +41,7 @@ public class PropertySpaceData : OwnableSpaceData
         {
             // charge player from researchFundingValues at the current upgrade level
             int chargeAmount = researchFundingValues[currentUpgradeLevel];
-            chargeOwnershipFeeEventChannel.RaiseEvent(new ChargeOwnershipFeeEvent(
+            chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
                 player, owner,
                 chargeAmount, this));
         }

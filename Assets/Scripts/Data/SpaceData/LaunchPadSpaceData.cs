@@ -10,7 +10,7 @@ public class LaunchPadSpaceData : SpaceData
     [SerializeField] public PlayerEventChannel playerGoesToJailEventChannel;
     [SerializeField] public PlayerEventChannel playerLeavesJailEventChannel;
 
-    private List<Player> playersInJail = new ();
+    public List<Player> playersInJail = new ();
     
     public override void OnLanded(Player player)
     {
@@ -35,7 +35,7 @@ public class LaunchPadSpaceData : SpaceData
         foreach (Player player in playersInJail)
             payload.AppendInformation(player.GetPName());
         
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
 
         return payload;
     }
@@ -43,15 +43,25 @@ public class LaunchPadSpaceData : SpaceData
     private void AddPlayerToJail(Player player) => playersInJail.Add(player);
     private void RemovePlayerFromJail(Player player) => playersInJail.Remove(player);
 
+    // for testing
+    public void EnsureSubscribed()
+    {
+        playerGoesToJailEventChannel?.Unsubscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Unsubscribe(RemovePlayerFromJail);
+        
+        playerGoesToJailEventChannel?.Subscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Subscribe(RemovePlayerFromJail);
+    }
+
     private void OnEnable()
     {
-        playerGoesToJailEventChannel.Subscribe(AddPlayerToJail);
-        playerLeavesJailEventChannel.Subscribe(RemovePlayerFromJail);
+        playerGoesToJailEventChannel?.Subscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Subscribe(RemovePlayerFromJail);
     }
     
     private void OnDisable()
     {
-        playerGoesToJailEventChannel.Unsubscribe(AddPlayerToJail);
-        playerLeavesJailEventChannel.Unsubscribe(RemovePlayerFromJail);
+        playerGoesToJailEventChannel?.Unsubscribe(AddPlayerToJail);
+        playerLeavesJailEventChannel?.Unsubscribe(RemovePlayerFromJail);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Events.EventDataStructures;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "GoSpaceData", menuName = "Board Spaces/Go! Space")]
 public class GoSpaceData : SpaceData
 {
     [SerializeField] public int payout = 200;
@@ -27,7 +28,7 @@ public class GoSpaceData : SpaceData
         SpaceHoverEvent payload = base.OnHover();
         
         payload.AppendInformation($"On passing or landing, collect ${payout}.");
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
 
         return payload;
     }

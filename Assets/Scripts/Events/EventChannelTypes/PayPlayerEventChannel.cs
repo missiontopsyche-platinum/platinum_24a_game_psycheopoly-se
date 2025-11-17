@@ -9,5 +9,5 @@ using UnityEngine;
 /// Payload: <c>PayPlayerPayload</c>
 /// </para>
 /// </summary>
-[CreateAssetMenu(menuName = "Events/PayPlayerEventChannel")]
+[CreateAssetMenu(menuName = "Events/Pay Player Event Channel")]
 public class PayPlayerEventChannel : EventChannel<PayPlayerEvent> { }

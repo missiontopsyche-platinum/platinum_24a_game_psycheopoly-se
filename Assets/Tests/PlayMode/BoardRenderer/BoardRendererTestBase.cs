@@ -1,8 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
-using PsycheOpoly.Board;
 using UnityEngine;
-using Space = PsycheOpoly.Board.Space;
 
 namespace Tests.PlayMode.BoardRenderer
 {
@@ -56,7 +54,7 @@ namespace Tests.PlayMode.BoardRenderer
             boardRenderer.playerAddedChannel = testPlayerEventChannel;
             
             // generate a test board
-            Space[] testSpaces = CreateTestSpaces(40);
+            SpaceData[] testSpaces = CreateTestSpaces(40);
             boardRenderer.GenerateBoard(testSpaces);
         }
 
@@ -69,12 +67,14 @@ namespace Tests.PlayMode.BoardRenderer
             Object.Destroy(testPlayerEventChannel);
         }
 
-        private Space[] CreateTestSpaces(int count)
+        private SpaceData[] CreateTestSpaces(int count)
         {
-            Space[] spaces = new Space[count];
+            SpaceData[] spaces = new SpaceData[count];
             for (int i = 0; i < count; i++)
             {
-                spaces[i] = new PropertySpace($"Space_{i}");
+                PropertySpaceData newSpace = ScriptableObject.CreateInstance<PropertySpaceData>();
+                newSpace.spaceName = $"Space_{i}";
+                spaces[i] = newSpace;
             }
             return spaces;
         }

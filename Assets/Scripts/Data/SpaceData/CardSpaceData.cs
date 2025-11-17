@@ -11,7 +11,7 @@ public class CardSpaceData : SpaceData
         // TODO: Flesh out implementation based on how CardDeck and Cards are implemented.
         // It seems like keeping everything separate makes sense tho, the Space doesnt need to
         // have any logical impact on what a card does.
-        cardDeck.DrawCard(player);
+        cardDeck?.DrawCard(player);
     }
 
     public override void OnPassed(Player player)
@@ -33,7 +33,7 @@ public class CardSpaceData : SpaceData
                 break;
         }
         
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         
         return payload;
     }

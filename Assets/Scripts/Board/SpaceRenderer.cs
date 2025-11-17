@@ -1,37 +1,25 @@
 using Interactable;
 using Logging;
 using UnityEngine;
-using Space = PsycheOpoly.Board.Space;
-using Random = UnityEngine.Random;
 
 public class SpaceRenderer : InteractableGameObject
 {
-    [SerializeField] public Color color;
     [SerializeField] public MeshRenderer meshRenderer;
-
-    private Space space;
+    
+    private SpaceData spaceData;
     
     // debug timer - remove when we add actual functionality.
     private float hoverTime = 1f;
     private float hoverTimer = 0f;
-    
-    // to add: EventChannels to communicate with our other elements
-    
-    private void Awake()
-    {
-        // until we have actual Space parameters as ScriptableObjects, we'll have random colors.
-        color = Random.ColorHSV(0,1,0,1,0,1,1,1);
-    }
 
-    public void SetUpSpace(Space spaceData, float scale)
+    public void SetUpSpace(SpaceData inputSpaceData, float scale)
     {
-        space = spaceData;
-        // scale the space relative to board/camera size
+        spaceData = inputSpaceData;
         transform.localScale *= scale;
-        meshRenderer.material.color = color;
+        meshRenderer.material.color = this.spaceData.spaceColor;
 
-        name = space.Name;
-
+        name = spaceData.spaceName;
+        
         // ensure box collider
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
         if (!boxCollider)
@@ -61,16 +49,19 @@ public class SpaceRenderer : InteractableGameObject
             $"SpaceRenderer: {name}", 
             "On Hover Enter", 
             LogCategory.UI, this);
+
+        spaceData.OnHover();
     }
     
     public override void OnHoverExit()
     {
         Logging.Logger.Info(
-            $"SpaceRenderer: {name}", 
-            "On Hover Exit", 
+            $"SpaceRenderer: {name}",
+            "On Hover Exit",
             LogCategory.UI, this);
-        
         hoverTimer = 0f; // reset hover timer, remove later
+        
+        spaceData.OnExit();
     }
 
     public override void OnHover()

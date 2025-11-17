@@ -8,8 +8,8 @@ public abstract class OwnableSpaceData : SpaceData
     protected Player owner;
 
     [Header("Ownable Event Channels")]
-    [SerializeField] protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
-    [SerializeField] protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+    [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
 
     public override void OnLanded(Player player)
     {
@@ -17,7 +17,7 @@ public abstract class OwnableSpaceData : SpaceData
         if (owner == null)
         {
             // offer to buy UI in the future
-            purchaseOwnableRequestEventChannel.RaiseEvent(new PurchaseOwnableRequestEvent(
+            purchaseOwnableRequestEventChannel?.RaiseEvent(new PurchaseOwnableRequestEvent(
                 player,
                 this,
                 buyPrice));
@@ -36,6 +36,9 @@ public abstract class OwnableSpaceData : SpaceData
         payload.AppendInformation($"Purchase Price: {buyPrice}");
         payload.AppendInformation($"Collaboration Value: ${collaborationValue}");
         payload.AppendInformation($"Owner: {(owner ? owner.GetPName() : "None")}");
+        
+        spaceHoverEventChannel?.RaiseEvent(payload);
+        
         return payload;
     }
 
@@ -47,4 +50,6 @@ public abstract class OwnableSpaceData : SpaceData
     {
         owner = newOwner;
     }
+
+    public Player GetOwner() => owner;
 }

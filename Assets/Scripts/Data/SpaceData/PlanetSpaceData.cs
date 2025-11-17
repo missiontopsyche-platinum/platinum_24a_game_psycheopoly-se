@@ -9,7 +9,7 @@ public class PlanetSpaceData : OwnableSpaceData
     [SerializeField] public int[] diceMultipliers = new int[2];
     [SerializeField] public DiceRolledEventChannel diceRolledEventChannel;
 
-    private int lastDiceRoll = 0;
+    public int lastDiceRoll = 0;
     
     public override void OnLanded(Player player)
     {
@@ -31,7 +31,7 @@ public class PlanetSpaceData : OwnableSpaceData
                 case 1 or 2:
                     int multiplierAmount = diceMultipliers[numPlanetsOwned - 1];
                     int charge = multiplierAmount * lastDiceRoll;
-                    chargeOwnershipFeeEventChannel.RaiseEvent(new ChargeOwnershipFeeEvent(
+                    chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
                         player, owner, charge, this));
                     break;
                 case 0:
@@ -69,7 +69,7 @@ public class PlanetSpaceData : OwnableSpaceData
             diceMultipliers[0] +
             " times the amount shown on the dice.");
 
-        spaceHoverEventChannel.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         return payload;
     }
 
@@ -81,6 +81,12 @@ public class PlanetSpaceData : OwnableSpaceData
     private void StoreLastDiceRoll(DiceRolledEvent dre)
     {
         lastDiceRoll = dre.totalRoll;
+    }
+
+    public void EnsureSubscribed()
+    {
+        OnDisable();
+        OnEnable();
     }
 
     public void OnEnable() => diceRolledEventChannel?.Subscribe(StoreLastDiceRoll);
