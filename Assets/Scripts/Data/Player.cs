@@ -21,8 +21,9 @@ public class Player : ScriptableObject
     [SerializeField] private int getOutOfJailFree_Chance;
     [SerializeField] private int getOutOfJailFree_Community;
     private List<OwnableSpaceData> ownedProperties = new();
+    private List<Card> getOutOfJailCards = new();
 
-    
+
     private Color color;
 
     public void SetId(int id)
