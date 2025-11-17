@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Moves a player forward or backward a fixed number of spaces.
+/// </summary>
+[CreateAssetMenu(fileName = "MoveCardEffect", menuName = "Card Data/Effects/MoveCardEffect")]
 public class MoveCardEffect : CardEffect
 {
     public enum EffectType

@@ -1,6 +1,19 @@
 using Events.EventDataStructures;
 using UnityEngine;
 
+/// <summary>
+/// Pays the acting player based on the number of houses and hotels owned.
+///
+/// Upgrade levels:
+/// - 1–4 = houses
+/// - 5   = hotel
+///
+/// Total:
+/// (ChargeForHouse × houses) + (ChargeForHotel × hotels)
+///
+/// Publishes a PayPlayerEvent to deposit funds.
+/// </summary>
+[CreateAssetMenu(fileName = "CollectPerPropertyCardEffect", menuName = "Card Data/Effects/CollectPerPropertyCardEffect")]
 public class CollectPerPropertyCardEffect : CardEffect
 {
     [SerializeField] public int ChargeForHouse = 0;
