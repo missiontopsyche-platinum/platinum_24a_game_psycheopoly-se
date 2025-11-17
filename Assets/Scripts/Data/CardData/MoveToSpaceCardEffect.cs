@@ -9,14 +9,20 @@ public class MoveToSpaceCardEffect : CardEffect
 {
     // TODO: Not sure what spaces we need atm, will be expanded on Sprint 4
     // to take into account all space data.
-    public enum TargetSpaceKind
+    public enum TargetSpaceType
     {
-        Go,
-        NearestProperty,
-        NearestCardSpace
+        CardSpace,
+        ChargeSpace,
+        GoForLaunchSpace,
+        GoSpace,
+        GravityAssistSpace,
+        InstrumentSpace,
+        LaunchPadSpace,
+        PlanetSpace,
+        PropertySpace
     }
 
-    public TargetSpaceKind targetKind;
+    public TargetSpaceType targetType;
     public MoveToSpaceEventChannel moveToSpaceEventChannel;
 
     public override void ApplyEffect(Player player)
@@ -24,7 +30,7 @@ public class MoveToSpaceCardEffect : CardEffect
         if (player == null || moveToSpaceEventChannel == null)
             return;
 
-        var evt = new MoveToSpaceEvent(player, targetKind);
+        var evt = new MoveToSpaceEvent(player, targetType);
         moveToSpaceEventChannel.RaiseEvent(evt);
     }
 }
