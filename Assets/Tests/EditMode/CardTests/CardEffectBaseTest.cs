@@ -74,6 +74,10 @@ public class CardEffectBaseTest : ManagerTestBase
         MovePlayerEventChannel move = CreateChannel<MovePlayerEventChannel>();
         boardManager.movePlayerChannel = move;
         move.Subscribe(boardManager.MovePlayer);
+
+        MoveToSpaceEventChannel moveTo = CreateChannel<MoveToSpaceEventChannel>();
+        boardManager.moveToSpaceEventChannel = moveTo;
+        moveTo.Subscribe(boardManager.OnMoveToSpaceEvent);
     }
 }
 
