@@ -177,15 +177,40 @@ namespace PsycheOpoly.Board{
         {
             EnsureBoard();
             int previous = GetPlayerPosition(mpe.id);
-            int next = NormalizeIndex(previous + mpe.spacesToMove);
+            int spaces = mpe.spacesToMove;
+            int next = NormalizeIndex(previous + spaces);
+
+            //more robust path building code
+            int steps = Mathf.Abs(spaces);
+            int[] path = new int[steps];
+
+            if (spaces > 0)
+            {
+                //moving forward
+                for (int i = 0; i < steps; i++)
+                {
+                    path[i] = NormalizeIndex(previous + (i + 1));
+                }
+            }
+            else if (spaces < 0)
+            {
+                //moving backward
+                for (int i = 0; i < steps; i++)
+                {
+                    path[i] = NormalizeIndex(previous - (i + 1));
+                }
+            }
+            // if spaces == 0 then path = empty
+
             Logger.Debug("Move Player", 
                 $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
                 LogCategory.Gameplay, this);
             playerPositions[mpe.id] = next;
-            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next));
+            playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next, path));
             // Throws an event if the player has a negative move.
             // This may need a refactor if anything causes the player to move backwards normally.
-            if (next < previous)
+            //fixed bc only forward movement through a full wrap-around should trigger passedGo
+            if (spaces > 0 && next < previous)
             {
                 passedGoChannel?.RaiseEvent(mpe.id);
             }

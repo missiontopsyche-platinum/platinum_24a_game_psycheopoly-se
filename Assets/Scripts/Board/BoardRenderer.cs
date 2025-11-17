@@ -176,7 +176,7 @@ public class BoardRenderer : MonoBehaviour
         playerPieces = playerPieces.OrderBy(playerPiece => playerPiece.playerId).ToList();
         
         // move the piece to the starting location (GO)
-        MovePiece(new PlayerMovedEvent(piece.playerId, 0,0));
+        MovePiece(new PlayerMovedEvent(piece.playerId, 0, 0, null));
     }
 
     /// <summary>
