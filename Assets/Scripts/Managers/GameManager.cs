@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using Logging;
+using PsycheOpoly.Board;
+using Assets.Scripts.Managers.Movement;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,7 +26,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public MovePlayerEventChannel movePlayerChannel;
     [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
-    
+    [SerializeField] private DiceManager diceManager;
+    [SerializeField] private BoardManager boardManager;
+    [SerializeField] private StandardMovementStrategy movementStrategy;
+
 
     private int playerCount = 0;
     private int currentPlayer = 0;
@@ -100,6 +105,28 @@ public class GameManager : MonoBehaviour
         //US156T157 subscribe to DiceRolled Listener
         diceRolledChannel.Subscribe(DiceRolled);
         pieceMoveCompletedChannel?.Subscribe(PieceMoveCompleted);
+
+        //us253-t278 hook up movement strategy to dice/board managers
+        if (movementStrategy != null)
+        {
+            movementStrategy.enabled = true;
+
+            Logging.Logger.Info("GameManager.Start", "StandardMovementStrategy active and listening.",
+                Logging.LogCategory.Core, this);
+        }
+        else
+        {
+            Logging.Logger.Warn("GameManager.Start", "StandardMovementStrategy not assigned in Inspector.",
+                Logging.LogCategory.Core, this);
+        }
+
+        if (boardManager == null)
+            Logging.Logger.Warn("GameManager.Start", "BoardManager reference not assigned.",
+                Logging.LogCategory.Core, this);
+
+        if (diceManager == null)
+            Logging.Logger.Warn("GameManager.Start", "DiceManager reference not assigned.", 
+                Logging.LogCategory.Core, this);
     }
 
     //start & end game to satisfy us11-35
@@ -326,7 +353,10 @@ public class GameManager : MonoBehaviour
 
         if (this.gameState == GameState.PlayerTurn)
         {
-            movePlayerChannel?.RaiseEvent(new MovePlayerEvent(this.currentPlayer, this.totalRolled));
+            // movement now handled by StandardMovementStrategy. no need to raise MovePlayerEvent manually.
+            Logging.Logger.Debug("gameManager.DiceRolled", "Dice roll processed — movement handled by " +
+                "StandardMovementStrategy.",
+                Logging.LogCategory.Gameplay, this);
         }
     }
 }

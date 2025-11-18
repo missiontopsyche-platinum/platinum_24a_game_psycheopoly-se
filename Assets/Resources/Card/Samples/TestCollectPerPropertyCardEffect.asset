@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aeb7dc2494f3824090812e7c3809522, type: 3}
+  m_Name: TestCollectPerPropertyCardEffect
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CollectPerPropertyCardEffect
+  ChargeForHouse: 25
+  ChargeForHotel: 50
+  payPlayerEventChannel: {fileID: 11400000, guid: 414d8ca7870573c42aa34482b20c1703, type: 2}

@@ -21,8 +21,9 @@ public class Player : ScriptableObject
     [SerializeField] private int getOutOfJailFree_Chance;
     [SerializeField] private int getOutOfJailFree_Community;
     private List<OwnableSpaceData> ownedProperties = new();
+    private List<Card> getOutOfJailCards = new();
 
-    
+
     private Color color;
 
     public void SetId(int id)
@@ -213,5 +214,54 @@ public class Player : ScriptableObject
     public int GetPosition()
     {
         return this.position;
+    }
+
+    public void AddJailCard(Card card)
+    {
+        if (card == null)
+        {
+            Logging.Logger.Error("Player.AddJailCard",
+                "Cannot add null card to player's get out of jail cards.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException("Cannot add null card to player's get out of jail cards.");
+        }
+        getOutOfJailCards.Add(card);
+    }
+
+    public void RemoveJailCard(Card card)
+    {
+        if (card == null)
+        {
+            Logging.Logger.Error("Player.RemoveJailCard",
+                "Cannot remove null card from player's get out of jail cards.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException("Cannot remove null card from player's get out of jail cards.");
+        }
+        getOutOfJailCards.Remove(card);
+    }
+
+    public List<Card> GetJailCards()
+    {
+        List<Card> cardsCopy = new List<Card>();
+        foreach (Card card in getOutOfJailCards)
+        {
+            cardsCopy.Add(card);
+        }
+        return cardsCopy;
+    }
+
+    public List<Card> GetGetOutOfJailCards()
+    {
+        if (getOutOfJailCards == null)
+            getOutOfJailCards = new List<Card>();
+
+        List<Card > cardsCopy = new List<Card>();
+        foreach (Card card in getOutOfJailCards)
+        {
+            cardsCopy.Add(card);
+        }
+        return cardsCopy;
     }
 }

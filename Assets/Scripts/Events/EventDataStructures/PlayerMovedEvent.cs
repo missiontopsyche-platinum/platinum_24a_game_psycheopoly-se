@@ -10,13 +10,19 @@ public class PlayerMovedEvent
     /// </summary>
     public int id { get; private set; }
     /// <summary>
-    /// The previous position of the Player that was moved.
+    /// The previous position of the Player that was moved.     this represents the FROM
     /// </summary>
     public int previousPosition { get; private set; }
     /// <summary>
-    /// The current position of the Player that was moved.
+    /// The current position of the Player that was moved.      this represents the TO
     /// </summary>
     public int newPosition { get; private set; }
+
+    /// <summary>
+    /// The ordered list of board indices the player traveled over. allows animation controllers to visualize each step.
+    /// </summary>
+    public int[] pathIndices { get; private set; }
+
 
     /// <summary>
     /// Creates a <b>READ-ONLY</b> payload of data regarding a Player moving to be used
@@ -25,10 +31,11 @@ public class PlayerMovedEvent
     /// <param name="id"><b>READ-ONLY:</b> ID of the <c>Player</c></param>
     /// <param name="previousPosition"><b>READ-ONLY:</b> previous <c>Player</c> position</param>
     /// <param name="newPosition"><b>READ-ONLY:</b> new/current <c>Player</c> position</param>
-    public PlayerMovedEvent(int id, int previousPosition, int newPosition)
+    public PlayerMovedEvent(int id, int previousPosition, int newPosition, int[] pathIndices)
     {
         this.id = id;
         this.previousPosition = previousPosition;
         this.newPosition = newPosition;
+        this.pathIndices = pathIndices ?? new int[0];
     }
 }
