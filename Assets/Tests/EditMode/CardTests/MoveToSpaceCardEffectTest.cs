@@ -65,6 +65,8 @@ public class MoveToSpaceCardEffectTest : CardEffectBaseTest
     [Test]
     public void ApplyEffect_CanBeCalledMultipleTimes_RaisesEventEachTime()
     {
+        InitializeBoardManagerChannels();
+
         var effect = ScriptableObject.CreateInstance<MoveToSpaceCardEffect>();
         var channel = boardManager.moveToSpaceEventChannel;
 
