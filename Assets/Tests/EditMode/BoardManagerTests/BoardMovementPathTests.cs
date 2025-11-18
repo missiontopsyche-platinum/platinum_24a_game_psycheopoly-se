@@ -20,7 +20,7 @@ namespace Tests.EditMode.BoardManagerTests
         [SetUp]
         public void SetUp()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
 
             lastPassedGoPlayer = -1;
             lastMoveEvent = null;
@@ -57,7 +57,7 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void MoveForward_WrapsAroundBoard_ProducesCorrectPath()
         {
-            boardManager.SetPlayerPosition(1, 5);
+            boardManager.SetPlayerPosition(1, 39);
 
             boardManager.MovePlayer(new MovePlayerEvent(1, 3));
 
@@ -100,9 +100,9 @@ namespace Tests.EditMode.BoardManagerTests
 
             boardManager.MovePlayer(new MovePlayerEvent(1, -3));
 
-            Assert.AreEqual(3, boardManager.GetPlayerPosition(1), "Backward wrap incorrect");
+            Assert.AreEqual(37, boardManager.GetPlayerPosition(1), "Backward wrap incorrect");
             CollectionAssert.AreEqual(
-                new[] { 5, 4, 3 },
+                new[] { 39, 38, 37 },
                 lastMoveEvent.pathIndices,
                 "Backward wrap path incorrect"
             );
