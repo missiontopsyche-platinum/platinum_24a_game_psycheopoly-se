@@ -15,12 +15,13 @@ public class Player : ScriptableObject
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
-    private bool inJail;
-    private int jailTurns;
-    private int doublesInRow;
-    private int getOutOfJailFree_Chance;
-    private int getOutOfJailFree_Community;
-    private List<int> ownedProperties = new();
+    [SerializeField] private bool inJail;
+    [SerializeField] private int jailTurns;
+    [SerializeField] private int doublesInRow;
+    [SerializeField] private int getOutOfJailFree_Chance;
+    [SerializeField] private int getOutOfJailFree_Community;
+    private List<OwnableSpaceData> ownedProperties = new();
+
     
     private Color color;
 
@@ -65,29 +66,104 @@ public class Player : ScriptableObject
     //Task 120 Initializing player
     //Basic getters and setters, more logic will have to be added as game
     //continues to be developed and once final confirmation on ruleset
-    public void SetInJail(bool jail) { }
+    public void SetInJail(bool jail)
+    {
+        inJail = jail;
+
+        if (jail)
+        {
+            //reset doubles streak if they hit jail
+            doublesInRow = 0;
+            Logging.Logger.Info("Player.SetInJail", $"{p_Name} was sent to jail.", LogCategory.Gameplay, this);
+        }
+        else
+        {
+            Logging.Logger.Info("Player.SetInJail", $"{p_Name} released from jail.", LogCategory.Gameplay, this);
+        }
+    }
+
     public bool GetInJail() 
     { 
         return inJail; 
     }
 
-    public void SetJailTurns(int turns) { }
+    public void SetJailTurns(int turns)
+    {
+        jailTurns = Mathf.Clamp(turns, 0, 3);
+    }
     public int GetJailTurns() 
     { 
         return jailTurns; 
     }
 
-    public void SetDoublesInRow(int count) { }
+    public int GetChanceCardCount()
+    {
+        return getOutOfJailFree_Chance;
+    }
+
+    public int GetCommunityCardCount()
+    {
+        return getOutOfJailFree_Community;
+    }
+
+    public void DecrementChanceCard()
+    {
+        getOutOfJailFree_Chance = Mathf.Max(0, getOutOfJailFree_Chance - 1);
+    }
+
+    public void DecrementCommunityCard()
+    {
+        getOutOfJailFree_Community = Mathf.Max(0, getOutOfJailFree_Community - 1);
+    }
+
+    public void SetDoublesInRow(int count)
+    {
+        doublesInRow = Mathf.Max(0, count);
+
+    }
     public int GetDoublesInRow() 
     { 
         return doublesInRow; 
     }
 
-    public void AddOwnedProperty(int propertyIndex) { }
-    public void RemoveOwnedProperty(int propertyIndex) { }
-    public List<int> GetOwnedProperties() 
+    public void AddOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        ownedProperties.Add(ownableSpace);
+    }
+
+    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        ownedProperties.Remove(ownableSpace);
+    }
+    public List<OwnableSpaceData> GetOwnedProperties() 
     { 
         return ownedProperties; 
+    }
+    
+    /// <summary>
+    /// Get the number of Instrument spaces owned by this player.
+    /// </summary>
+    /// <returns>Count of Instruments owned by player.</returns>
+    public int GetNumberInstrumentsOwned()
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+            if (space.GetType() == typeof(InstrumentSpaceData))
+                count++;
+        return count;
+    }
+
+    /// <summary>
+    /// Get the number of Planet spaces owned by this player.
+    /// </summary>
+    /// <returns>Count of Planets owned by the player.</returns>
+    public int GetNumberPlanetsOwned()
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+            if (space.GetType() == typeof(PlanetSpaceData))
+                count++;
+        return count;
     }
 
     //Placeholders for future logic, I feel like these should be moved into
@@ -96,7 +172,11 @@ public class Player : ScriptableObject
     //initalized in the above code.  We can definitely change the structure
     //as we keep developing the game. 
     public void GoToJail() { }
-    public void ReleaseFromJail() { }
+    public void ReleaseFromJail()
+    {
+        SetInJail(false);
+        SetJailTurns(0);
+    }
     public void UseGetOutOfJailFreeCard() { }
     public void MovePlayer(int spacesToMove) { }
     public void PayPlayer(Player otherPlayer, int amount) { }
