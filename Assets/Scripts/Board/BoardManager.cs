@@ -4,7 +4,8 @@ using UnityEngine;
 using Logging;
 using Logger = Logging.Logger;
 
-namespace PsycheOpoly.Board{
+namespace PsycheOpoly.Board
+{
 
     [ExecuteAlways]
     public class BoardManager : MonoBehaviour
@@ -12,14 +13,15 @@ namespace PsycheOpoly.Board{
         [Header("Board Settings")]
         [SerializeField] private int defaultBoardSize = 40;
 
-        [Header("Render Components")] 
+        [Header("Render Components")]
         [SerializeField] public BoardRenderer boardRenderer;
 
         [Header("Event Channels")]
-        [SerializeField] public PlayerEventChannel      playerAddedChannel;
+        [SerializeField] public PlayerEventChannel playerAddedChannel;
         [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
-        [SerializeField] public MovePlayerEventChannel  movePlayerChannel;
-        [SerializeField] public IntEventChannel         passedGoChannel;
+        [SerializeField] public MovePlayerEventChannel movePlayerChannel;
+        [SerializeField] public IntEventChannel passedGoChannel;
+        [SerializeField] public MoveToSpaceEventChannel moveToSpaceEventChannel;
 
         [Header("Board Spaces")] [SerializeField]
         public SpaceData[] boardSpaces;
@@ -36,11 +38,11 @@ namespace PsycheOpoly.Board{
         private void Awake()
         {
             EnsureSubscribed();
-            
+
             Logger.Initialize(LogSettings.Current());
         }
 
-        private void OnEnable()  => EnsureSubscribed();
+        private void OnEnable() => EnsureSubscribed();
 
         private void Start()
         {
@@ -52,13 +54,14 @@ namespace PsycheOpoly.Board{
 
         private void OnDestroy() => EnsureUnsubscribed();
 
-      
+
         private void EnsureSubscribed()
         {
             if (subscribed) return;
             if (!this) return;
             playerAddedChannel?.Subscribe(AddPlayer);
             movePlayerChannel?.Subscribe(MovePlayer);
+            moveToSpaceEventChannel?.Subscribe(OnMoveToSpaceEvent);
             subscribed = true;
         }
 
@@ -67,6 +70,7 @@ namespace PsycheOpoly.Board{
             if (!subscribed) return;
             playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
+            moveToSpaceEventChannel?.Unsubscribe(OnMoveToSpaceEvent);
             subscribed = false;
         }
 
@@ -75,8 +79,8 @@ namespace PsycheOpoly.Board{
         private void AddPlayer(Player player)
         {
             playerPositions.Add(player.GetId(), 0);
-            Logger.Debug("AddPlayer", 
-                $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}", 
+            Logger.Debug("AddPlayer",
+                $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}",
                 LogCategory.Gameplay, this);
         }
 
@@ -232,6 +236,105 @@ namespace PsycheOpoly.Board{
             int m = raw % n;
             return (m < 0) ? m + n : m;
         }
-    }
 
+        public void OnMoveToSpaceEvent(MoveToSpaceEvent moveToSpaceEvent)
+        {
+            if (moveToSpaceEvent == null)
+            {
+                Logger.Warn("BoardManager.OnMoveToSpaceEvent",
+                    "moveToSpaceEvent is null",
+                    LogCategory.Gameplay,
+                    this);
+                return;
+            }
+
+            Player player = moveToSpaceEvent.player;
+
+            if (player == null)
+            {
+                Logger.Warn("BoardManager.OnMoveToSpaceEvent",
+                    "Player is null",
+                    LogCategory.Gameplay,
+                    this);
+                return;
+            }
+
+            switch (moveToSpaceEvent.targetKind)
+            {
+                case MoveToSpaceCardEffect.TargetSpaceType.CardSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(CardSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.ChargeSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(ChargeSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.GoForLaunchSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(GoForLaunchSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.GoSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(GoSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.GravityAssistSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(GravityAssistSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.InstrumentSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(InstrumentSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.LaunchPadSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(LaunchPadSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.PlanetSpace:
+                    MovePlayerToClosestSpaceType(player, typeof(PlanetSpaceData));
+                    break;
+
+                case MoveToSpaceCardEffect.TargetSpaceType.PropertySpace:
+                    MovePlayerToClosestSpaceType(player, typeof(PropertySpaceData));
+                    break;
+                default:
+                    Logger.Warn("BoardManager.OnMoveToSpaceEvent",
+                    "Unknown target space type.",
+                    LogCategory.Gameplay,
+                    this);
+                    break;
+            }
+        }
+
+        private void MovePlayerToClosestSpaceType(Player player, Type targetSpaceType)
+        {
+            int playerId = player.GetId();
+            int currentIdx = GetPlayerPosition(playerId);
+            int boardLength = boardSpaces.Length;
+
+            int stepsForward = 0;
+
+            for (int i = 1; i <= boardLength; i++)
+            {
+                int idx = NormalizeIndex(currentIdx + i);
+                SpaceData spaceAtIdx = boardSpaces[idx];
+
+                if (spaceAtIdx != null && targetSpaceType.IsInstanceOfType(spaceAtIdx))
+                {
+                    stepsForward = i;
+                    break;
+                }
+            }
+
+            if (stepsForward <= 0)
+            {
+                Logger.Warn("BoardManager.MovePlayerToClosestSpaceType",
+                    $"No space of type {targetSpaceType.Name} found on the board.",
+                    LogCategory.Gameplay,
+                    this);
+                return;
+            }
+
+            MovePlayer(new MovePlayerEvent(playerId, stepsForward));
+        }
+    }
 }
