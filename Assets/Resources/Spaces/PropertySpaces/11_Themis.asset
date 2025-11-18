@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
   spaceName: Themis
   spaceColor: {r: 1, g: 0.64705884, b: 0, a: 0}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   buyPrice: 140
   collaborationValue: 70
-  purchaseOwnableRequestEventChannel: {fileID: 0}
-  chargeOwnershipFeeEventChannel: {fileID: 0}
+  purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
+  chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   researchFundingValues: 0a0000003200000096000000c201000071020000ee020000
   dataPointCost: 100
-  purchaseUpgradeRequestEventChannel: {fileID: 0}
+  purchaseUpgradeRequestEventChannel: {fileID: 11400000, guid: f709ab2b9d2ef8f43add75ad874f0e54, type: 2}
