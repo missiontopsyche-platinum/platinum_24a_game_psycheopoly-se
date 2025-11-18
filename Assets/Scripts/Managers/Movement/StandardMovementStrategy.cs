@@ -56,7 +56,7 @@ namespace Assets.Scripts.Managers.Movement
 
         private void Awake()
         {
-            playerManager = FindObjectOfType<PlayerManager>();
+            playerManager = FindFirstObjectByType<PlayerManager>();
             if (playerManager == null)
             {
                 Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",

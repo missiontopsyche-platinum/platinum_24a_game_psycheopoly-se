@@ -62,13 +62,13 @@ public class CardPopupUI : MonoBehaviour
             return;
         }
 
-        // Make sure the popup GameObject is active
+        //Makes sure popup GameObject is active
         if (!gameObject.activeSelf)
         {
             gameObject.SetActive(true);
         }
 
-        // Assign UI fields from card ScriptableObject
+        //Assign UI fields from card ScriptableObject
         if (cardTitleText != null)
         {
             cardTitleText.text = card.title;
@@ -84,7 +84,7 @@ public class CardPopupUI : MonoBehaviour
             artworkImage.sprite = card.artwork;
         }
 
-        // Start fade-in
+        //Start fade-in
         if (fadeRoutine != null)
         {
             StopCoroutine(fadeRoutine);
