@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::ChargeSpaceData
   spaceName: Consult Subject Matter Expert
   spaceColor: {r: 0.99215686, g: 0.69803923, b: 0.83137256, a: 1}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   cost: 200
   flavorText: Consult subject matter expert.
-  chargePlayerEventChannel: {fileID: 0}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 2bc2f2ff803557c4bb7886f4969afebd, type: 2}

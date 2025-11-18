@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
   spaceName: Silicate
   spaceColor: {r: 0.6392157, g: 0.5372549, b: 0.44705883, a: 1}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   cardDeck: {fileID: 11400000, guid: a9054948b5ec4d047bd0b7a18e711bca, type: 2}

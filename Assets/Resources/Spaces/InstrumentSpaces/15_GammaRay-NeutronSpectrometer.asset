@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::InstrumentSpaceData
   spaceName: Gamma-Ray/Neutron Spectrometer
   spaceColor: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   buyPrice: 200
   collaborationValue: 75
-  purchaseOwnableRequestEventChannel: {fileID: 0}
-  chargeOwnershipFeeEventChannel: {fileID: 0}
+  purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
+  chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   researchFundingLevels: 190000003200000064000000c8000000

@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlanetSpaceData
   spaceName: Jupiter
   spaceColor: {r: 0.7529412, g: 0.90588236, b: 1, a: 1}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   buyPrice: 150
   collaborationValue: 75
-  purchaseOwnableRequestEventChannel: {fileID: 0}
-  chargeOwnershipFeeEventChannel: {fileID: 0}
+  purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
+  chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   diceMultipliers: 040000000a000000
-  diceRolledEventChannel: {fileID: 0}
+  diceRolledEventChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
   lastDiceRoll: 0

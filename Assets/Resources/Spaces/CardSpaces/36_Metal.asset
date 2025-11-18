@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
   spaceName: Metal
   spaceColor: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   cardDeck: {fileID: 11400000, guid: 24257216466262a4e961f9b63c0a858c, type: 2}
