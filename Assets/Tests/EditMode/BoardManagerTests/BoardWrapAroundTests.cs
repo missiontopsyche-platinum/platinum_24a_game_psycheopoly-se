@@ -7,9 +7,9 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void Move_wraps_forward_past_end()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             int pid = 1;
-            boardManager.SetPlayerPosition(pid, 5);      
+            boardManager.SetPlayerPosition(pid, 39);      
             boardManager.MovePlayer(new MovePlayerEvent(pid, 2));   
             Assert.AreEqual(1, boardManager.GetPlayerPosition(pid));
         }
@@ -17,27 +17,27 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void Move_wraps_multiple_loops()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             int pid = 2;
             boardManager.SetPlayerPosition(pid, 0);
-            boardManager.MovePlayer(new MovePlayerEvent(pid, 14));  
+            boardManager.MovePlayer(new MovePlayerEvent(pid, 82));  
             Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
         }
 
         [Test]
         public void Move_handles_negative_steps()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             int pid = 3;
             boardManager.SetPlayerPosition(pid, 1);
             boardManager.MovePlayer(new MovePlayerEvent(pid, -3)); 
-            Assert.AreEqual(4, boardManager.GetPlayerPosition(pid));
+            Assert.AreEqual(38, boardManager.GetPlayerPosition(pid));
         }
 
         [Test]
         public void GetSpace_wraps_index()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             Assert.DoesNotThrow(() => boardManager.GetSpace(12)); 
             Assert.DoesNotThrow(() => boardManager.GetSpace(-7)); 
         }

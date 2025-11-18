@@ -8,12 +8,12 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void GetSpaceWraps_Positive_And_Negative()
         {
-            boardManager.InitializeBoard(5);
+            boardManager.InitializeBoard();
             var space0 = boardManager.GetSpace(0);
-            var space5 = boardManager.GetSpace(5);
-            var spaceNegative = boardManager.GetSpace(-5);
+            var space40 = boardManager.GetSpace(40);
+            var spaceNegative = boardManager.GetSpace(-40);
 
-            Assert.AreSame(space0, space5);
+            Assert.AreSame(space0, space40);
             Assert.AreSame(space0, spaceNegative);
         }
     }

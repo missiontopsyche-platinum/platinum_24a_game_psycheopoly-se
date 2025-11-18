@@ -6,7 +6,6 @@ using Logger = Logging.Logger;
 
 namespace PsycheOpoly.Board
 {
-
     [ExecuteAlways]
     public class BoardManager : MonoBehaviour
     {
@@ -23,8 +22,9 @@ namespace PsycheOpoly.Board
         [SerializeField] public IntEventChannel passedGoChannel;
         [SerializeField] public MoveToSpaceEventChannel moveToSpaceEventChannel;
 
-        [Header("Board Spaces")] [SerializeField]
-        public SpaceData[] boardSpaces;
+        [Header("Board Spaces")]
+        [SerializeField] public BoardSpaceContainer boardSpaceContainer;
+        private SpaceData[] boardSpaces;
         
         //For Testing purposes
         public int boardSize => boardSpaces?.Length ?? 0;
@@ -57,6 +57,9 @@ namespace PsycheOpoly.Board
 
         private void EnsureSubscribed()
         {
+            Logger.Info("BoardManager.EnsureSubscribed",
+                "BoardManager is subscribing.",
+                LogCategory.Core, this);
             if (subscribed) return;
             if (!this) return;
             playerAddedChannel?.Subscribe(AddPlayer);
@@ -67,6 +70,9 @@ namespace PsycheOpoly.Board
 
         private void EnsureUnsubscribed()
         {
+            Logger.Info("BoardManager.EnsureUnsubscribed",
+                "BoardManager is unsubscribing.",
+                LogCategory.Core, this);
             if (!subscribed) return;
             playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
@@ -85,41 +91,46 @@ namespace PsycheOpoly.Board
         }
 
         //Task 82 create InitializeBoard method 
-        public void InitializeBoard(int size = -1)
+        public void InitializeBoard()
         {
-            if (size <= 0) size = Mathf.Max(3, defaultBoardSize);
-            boardSpaces = new SpaceData[size];
-            
-            // this is placeholder to keep tests working while we make assets.
-            T CreateSpace<T>(Action<T> init) where T : SpaceData
-            {
-                var space = ScriptableObject.CreateInstance<T>();
-                init(space);
-                return space;
-            }
+            // if null (for tests), pull default board from resources path.
+            if (boardSpaceContainer == null)
+                boardSpaceContainer = Resources.Load<BoardSpaceContainer>("Spaces/DefaultBoardContainer");
 
-            boardSpaces[0] = CreateSpace<GoSpaceData>(s =>
-            {
-                s.spaceName = "GO!";
-                s.spaceColor = Color.chartreuse;
-            });
+            boardSpaces = boardSpaceContainer.GetSpaces();
             
-            for (int i = 1; i < size; i++)
-                boardSpaces[i] = (i % 3 == 0) 
-                    ? CreateSpace<CardSpaceData>(s =>
-                    {
-                        s.spaceName = $"Card: Space #{i}";
-                        s.spaceColor = Color.lavender;
-                    })
-                    : CreateSpace<PropertySpaceData>(s =>
-                    {
-                        s.spaceName = $"Property: Space #{i}";
-                        s.spaceColor = Color.peru;
-                    });
+            if (!VerifyBoard())
+                return;
             
             boardRenderer?.GenerateBoard(boardSpaces);
             
             EnsureSubscribed();
+        }
+
+        private bool VerifyBoard()
+        {
+            for (int i = 0; i < boardSpaces.Length; i++)
+            {
+                // grab the numbers prefix that is expected for our objects
+                String spaceNumber = boardSpaces[i].ToString().Substring(0, 2);
+                // formats the current index to a string with leading 0s, to match naming conventions
+                String currentIndex = $"{i:00}";
+                
+                // if the prefix is as expected, we continue, or we break early with an error.
+                if (spaceNumber.Equals(currentIndex))
+                    continue;
+                
+                Logger.Error("BoardManager.VerifyBoard",
+                    $"Board Array is incorrect for index {currentIndex}. Ensure SpaceData objects are in correct order.",
+                    LogCategory.Core, this);
+                return false;
+            }
+            
+            Logger.Info("BoardManager.VerifyBoard",
+                "Board has been verified successfully!",
+                LogCategory.Core, this);
+
+            return true;
         }
 
         //Task 84 which is GetSpace(int) with a wrap around
@@ -225,7 +236,7 @@ namespace PsycheOpoly.Board
         private void EnsureBoard()
         {
             if(boardSpaces == null || boardSpaces.Length == 0)
-                InitializeBoard(defaultBoardSize);
+                InitializeBoard();
         }
 
         //Normalizes Index for board spaces

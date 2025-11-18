@@ -65,7 +65,7 @@ public class InstrumentSpaceData : OwnableSpaceData
         payload.AppendInformation(
             $"If 3:                  {researchFundingLevels[2]}");
         payload.AppendInformation(
-            $"If 4:                  {researchFundingLevels[4]}");
+            $"If 4:                  {researchFundingLevels[3]}");
         
         // In the future, we could query the owner's number of instruments
         // owned to make the OnHover accurately reflect the research funding
