@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 01_Hebe
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
   spaceName: Hebe
-  spaceColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  spaceColor: {r: 1, g: 1, b: 0, a: 1}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   buyPrice: 60
