@@ -119,6 +119,29 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &16783171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #5'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!114 &84377729 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 434027407871146052, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
@@ -130,6 +153,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!114 &112320306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #1'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &126511759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #2'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &128581715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #16'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!1001 &148462919
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -311,6 +403,103 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b55a24a7347066947bfcdd0f17b8c131, type: 3}
+--- !u!114 &151041414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #17'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &239137573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #18'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &264746293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #27'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &271342056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #25'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &290022925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #15'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
 --- !u!1001 &294795782
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -621,6 +810,87 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &337133864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #9'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &339299530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #13'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &373058426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 908982b3b79b4a6f8543ba0124ad4844, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::GoSpaceData
+  spaceName: GO!
+  spaceColor: {r: 0.4980392, g: 1, b: 0, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  payout: 200
+  payPlayerEventChannel: {fileID: 0}
+--- !u!114 &392378597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #20'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,6 +1018,52 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!114 &412706522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #14'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &434438653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #11'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!1001 &503588676
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1087,6 +1403,29 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+--- !u!114 &568792521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #26'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!1001 &581153968
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1153,6 +1492,46 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8ce0f3ad00c5365498925f5fd2378034, type: 3}
+--- !u!114 &588584543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #38'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &629430379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #21'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,6 +1581,103 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &845779307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #33'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &873759015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #4'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &892561339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #30'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &922366799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #31'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1137081990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #12'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
 --- !u!114 &1170598748 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7954374623035833413, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
@@ -1213,6 +1689,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!114 &1251548077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #10'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1261394623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #29'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1313187124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #23'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!114 &1343303340 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4303413024077046694, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
@@ -1224,6 +1769,92 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
+--- !u!114 &1416086286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #35'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1434530044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #7'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1469429864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #22'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1472662930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #6'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
 --- !u!1001 &1520450728
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1293,6 +1924,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e036248c894f592408efc54ff9fff360, type: 3}
+--- !u!114 &1559229551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #32'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1598783539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #34'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!1001 &1652611526
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1361,6 +2038,92 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1c197bdd2a2688499aa7077a417b359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DiceManager
+--- !u!114 &1683636067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #8'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1749062457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #28'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &1749963145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #3'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &1784735220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #37'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
 --- !u!114 &1840355022 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
@@ -1372,6 +2135,80 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f0bbac2e74d66d418d595efa78d0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
+--- !u!114 &1953256248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: 'Property: Space #19'
+  spaceColor: {r: 0.8039216, g: 0.5215687, b: 0.2470588, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  buyPrice: 0
+  collaborationValue: 0
+  purchaseOwnableRequestEventChannel: {fileID: 0}
+  chargeOwnershipFeeEventChannel: {fileID: 0}
+  researchFundingValues: 000000000000000000000000000000000000000000000000
+  dataPointCost: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 0}
+--- !u!114 &2050132818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #36'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &2090453391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #24'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
+--- !u!114 &2115636262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32decf08513a16749b6b48bd4103c42d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardSpaceData
+  spaceName: 'Card: Space #39'
+  spaceColor: {r: 0.9019608, g: 0.9019608, b: 0.9803922, a: 1}
+  spaceHoverEventChannel: {fileID: 0}
+  onSpaceExitEventChannel: {fileID: 0}
+  cardDeck: {fileID: 0}
 --- !u!114 &2125198628 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5282078030251501895, guid: a1fe2d87101194244b2f16e624c87664, type: 3}

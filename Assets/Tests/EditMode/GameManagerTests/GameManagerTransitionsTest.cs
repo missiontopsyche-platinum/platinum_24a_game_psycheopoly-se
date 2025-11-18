@@ -1,4 +1,7 @@
 ﻿using NUnit.Framework;
+using System;
+using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests.EditMode.GameManagerTests
@@ -8,10 +11,8 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void EndGame_FromNone_IsBlocked()
         {
-            LogAssert.Expect("Test [Level: Warn] " +
-                "[Category: Gameplay] " +
-                "[Event Name: GameManager.SetState] " +
-                "[Message: Illegal transition: None -> GameOver]");
+            var pattern = CreateRegexLogPattern("Warn", "Gameplay", "GameManager.SetState", "Illegal transition: None -> GameOver");
+            LogAssert.Expect(LogType.Warning, pattern);
             gameManager.EndGame();
             Assert.AreEqual(GameState.None, gameManager.gameState);
         }

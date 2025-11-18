@@ -95,7 +95,7 @@ namespace Logging
             string currentTimeString = DateTime.Now.ToString("HH:mm:ss:ff");
             if (string.IsNullOrEmpty(message))
                 message = "None";
-            return $"[{currentTimeString}] [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
+            return $"[{currentTimeString}] {_prefix} [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
         }
     }
 }

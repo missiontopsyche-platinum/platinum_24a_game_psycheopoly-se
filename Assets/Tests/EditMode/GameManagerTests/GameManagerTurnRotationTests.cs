@@ -102,16 +102,12 @@ namespace Tests.EditMode.GameManagerTests
         public void SetUpGame_LogsErrorWhenInvalidPlayerCount()
         {
             gameManager.SetUpGame(1);
-            LogAssert.Expect("Test [Level: Error] " +
-                "[Category: Gameplay] " +
-                "[Event Name: GameManager.SetUpGame] " +
-                "[Message: Invalid player count, must be between 2 and 4.]");
-        
+            var pattern = CreateRegexLogPattern("Error", "Gameplay", "GameManager.SetUpGame", "Invalid player count, must be between 2 and 4.");
+            LogAssert.Expect(UnityEngine.LogType.Error, pattern);
+
             gameManager.SetUpGame(5);
-            LogAssert.Expect("Test [Level: Error] " +
-                "[Category: Gameplay] " +
-                "[Event Name: GameManager.SetUpGame] " +
-                "[Message: Invalid player count, must be between 2 and 4.]");
+            pattern = CreateRegexLogPattern("Error", "Gameplay", "GameManager.SetUpGame", "Invalid player count, must be between 2 and 4.");
+            LogAssert.Expect(UnityEngine.LogType.Error, pattern);
         }
     }
 }
