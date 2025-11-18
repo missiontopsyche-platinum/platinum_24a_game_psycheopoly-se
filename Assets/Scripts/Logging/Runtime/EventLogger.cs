@@ -92,9 +92,10 @@ namespace Logging
 
         private string FormatMessage(string eventName, LogLevel level, LogCategory category, string message = null)
         {
+            string currentTimeString = DateTime.Now.ToString("HH:mm:ss:ff");
             if (string.IsNullOrEmpty(message))
                 message = "None";
-            return $"{_prefix} [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
+            return $"[{currentTimeString}] [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
         }
     }
 }
