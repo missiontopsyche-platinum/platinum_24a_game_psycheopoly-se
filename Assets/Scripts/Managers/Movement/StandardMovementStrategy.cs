@@ -3,7 +3,6 @@ using UnityEngine;
 using PsycheOpoly.Board;
 using Logging;
 using Logger = Logging.Logger;
-using Space = PsycheOpoly.Board.Space;
 
 namespace Assets.Scripts.Managers.Movement
 {
@@ -155,7 +154,7 @@ namespace Assets.Scripts.Managers.Movement
 
             int playerId = currentPlayer.GetId();
             int currentPos = boardManager.GetPlayerPosition(playerId);
-            Space landed = boardManager.GetSpace(currentPos);
+            SpaceData landed = boardManager.GetSpace(currentPos);
 
             Logger.Info("StandardMovementStrategy",
                 $"Player {playerId} landed on {landed?.GetType().Name ?? "Unknown"} (Index {currentPos})",
