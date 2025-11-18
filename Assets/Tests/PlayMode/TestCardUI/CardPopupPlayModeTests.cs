@@ -11,14 +11,14 @@ public class CardPopupPlayModeTests
     [UnityTest]
     public IEnumerator Popup_ShowsOnDraw_ClosesOnOk_Repeats()
     {
-        // 1. Load the test scene
+        //Load the test scene
         yield return SceneManager.LoadSceneAsync(TestSceneName, LoadSceneMode.Single);
 
-        // 2. Find popup + helper
-        var popup = Object.FindObjectOfType<CardPopupUI>();
+        //Find popup
+        var popup = Object.FindFirstObjectByType<CardPopupUI>();
         Assert.IsNotNull(popup, "CardPopupUI not found in scene.");
 
-        var helper = Object.FindObjectOfType<TestCardDrawHelper>();
+        var helper = Object.FindFirstObjectByType<TestCardDrawHelper>();
         Assert.IsNotNull(helper, "TestCardDrawHelper not found in scene.");
 
         const int cycles = 3;
@@ -27,7 +27,7 @@ public class CardPopupPlayModeTests
 {
     helper.DrawOnce();
 
-    // wait up to 2 seconds for popup to become visible
+    //wait up 2 seconds for popup to be visible
     float timeout = 2f;
     float elapsed = 0f;
     while (!popup.IsVisible && elapsed < timeout)
@@ -40,10 +40,10 @@ public class CardPopupPlayModeTests
         $"Popup never became visible after draw #{i + 1}. " +
         "If this fails, check that CardDeck raises the CardDrawn event and that the popup is subscribed.");
 
-    // simulate OK click
+    //simulate OK click
     popup.OkButton.onClick.Invoke();
 
-    // wait for fade-out
+    //wait for fade-out
     timeout = 2f;
     elapsed = 0f;
     while (popup.IsVisible && elapsed < timeout)

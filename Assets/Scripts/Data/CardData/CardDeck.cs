@@ -18,15 +18,9 @@ public class CardDeck : ScriptableObject
 
     [SerializeField] public DeckType deckType;
     [SerializeField] public List<Card> cards = new();
-    public Queue<Card> deckQueue;
-<<<<<<< HEAD
     [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
+    public Queue<Card> deckQueue = new();
 
-    private Queue<Card> deckQueue = new();
-=======
->>>>>>> 1f46a21 (Setup completed for task 386 to complete playmode tests for the card UI)
-
-    [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
 
     public void OnEnable()
     {
@@ -38,10 +32,7 @@ public class CardDeck : ScriptableObject
     {
         deckQueue.Clear();
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 1f46a21 (Setup completed for task 386 to complete playmode tests for the card UI)
     public void ShuffleDeck()
     {
         Shuffle();
@@ -58,7 +49,6 @@ public class CardDeck : ScriptableObject
                 this);
             return;
         }
-<<<<<<< HEAD
         
         if (IsGetOutOfJailFreeCard(card))
         {
@@ -66,8 +56,6 @@ public class CardDeck : ScriptableObject
             player.AddJailCard(card);
             return;
         }
-=======
->>>>>>> 1f46a21 (Setup completed for task 386 to complete playmode tests for the card UI)
 
         // The execution happens within the deck.
         // This is how I understand from the code structure we have so far.

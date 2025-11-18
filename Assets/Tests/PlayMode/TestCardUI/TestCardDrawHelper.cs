@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Simple helper used only by PlayMode tests to trigger card draws.
+/// Simple helper used only by PlayMode tests to trigger card draws
 /// </summary>
 public class TestCardDrawHelper : MonoBehaviour
 {
@@ -12,7 +12,7 @@ public class TestCardDrawHelper : MonoBehaviour
     public Player testPlayer;
 
     /// <summary>
-    /// Called by PlayMode tests to draw a single card.
+    /// Called by PlayMode tests to draw a single card
     /// </summary>
     public void DrawOnce()
     {
