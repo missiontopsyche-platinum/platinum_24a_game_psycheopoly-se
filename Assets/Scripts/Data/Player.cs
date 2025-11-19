@@ -23,7 +23,6 @@ public class Player : ScriptableObject
     private List<OwnableSpaceData> ownedProperties = new();
     private List<Card> getOutOfJailCards = new();
 
-
     private Color color;
 
     public void SetId(int id)

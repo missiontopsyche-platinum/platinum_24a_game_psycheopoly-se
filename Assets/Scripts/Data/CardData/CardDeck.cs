@@ -18,7 +18,9 @@ public class CardDeck : ScriptableObject
 
     [SerializeField] public DeckType deckType;
     [SerializeField] public List<Card> cards = new();
-    public Queue<Card> deckQueue;
+    [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
+    public Queue<Card> deckQueue = new();
+
 
     public void OnEnable()
     {
@@ -30,6 +32,7 @@ public class CardDeck : ScriptableObject
     {
         deckQueue.Clear();
     }
+
     public void ShuffleDeck()
     {
         Shuffle();
@@ -53,13 +56,24 @@ public class CardDeck : ScriptableObject
             player.AddJailCard(card);
             return;
         }
+
         // The execution happens within the deck.
         // This is how I understand from the code structure we have so far.
-        foreach (var effect in card.effect)
+              if (cardDrawnChannel != null)
         {
-            effect.ApplyEffect(player);
+            cardDrawnChannel.Raise(card, player, this);
         }
-        ReturnCardToDeck(card);
+        else
+        {
+            // Fallback behaviour for when no UI is listening
+            foreach (var effect in card.effect)
+            {
+                effect.ApplyEffect(player);
+            }
+
+            ReturnCardToDeck(card);
+        }
+
     }
 
     public void ReturnCardToDeck(Card card)
@@ -84,6 +98,7 @@ public class CardDeck : ScriptableObject
 
         deckQueue = new Queue<Card>(list);
     }
+
 
     private bool IsGetOutOfJailFreeCard(Card card)
     {
