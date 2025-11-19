@@ -13,4 +13,20 @@ MonoBehaviour:
   m_Name: CardDeck_Silicate
   m_EditorClassIdentifier: PsycheOpoly.Runtime::CardDeck
   deckType: 1
-  cards: []
+  cards:
+  - {fileID: 11400000, guid: cb9035129848fd640b6b40f8a37c25dc, type: 2}
+  - {fileID: 11400000, guid: ead37241201b3c744806934a297dd238, type: 2}
+  - {fileID: 11400000, guid: 6624891f391981144a6cf605168d320c, type: 2}
+  - {fileID: 11400000, guid: 433fa13997c19ec4fac38636c8a4a74b, type: 2}
+  - {fileID: 11400000, guid: fe8a37bd1e23f6d4ea1e758a04df5997, type: 2}
+  - {fileID: 11400000, guid: 480b7879138624c4cb212feb08a397c4, type: 2}
+  - {fileID: 11400000, guid: 4575e0f64c6e65a4b81c31df0d012d47, type: 2}
+  - {fileID: 11400000, guid: a42317676a82a3042bb050b75e126896, type: 2}
+  - {fileID: 11400000, guid: 31ed176811c9cd54aa7badca930753a1, type: 2}
+  - {fileID: 11400000, guid: 9c1d2ce0196d1094faccb5943d4081a5, type: 2}
+  - {fileID: 11400000, guid: c0e823761989f43428a49f979522684e, type: 2}
+  - {fileID: 11400000, guid: b227aef3a384c8e4ab2cb73ba21ced50, type: 2}
+  - {fileID: 11400000, guid: 5ef45e2f79f824048b970f0b41c654ed, type: 2}
+  - {fileID: 11400000, guid: 2a360a9c008547841bfe39f1d3e2d325, type: 2}
+  - {fileID: 11400000, guid: 7adc7d3283f7edb488c420f98a56a56e, type: 2}
+  - {fileID: 11400000, guid: 7ef022017264a6a4c80b9c9a830133a4, type: 2}

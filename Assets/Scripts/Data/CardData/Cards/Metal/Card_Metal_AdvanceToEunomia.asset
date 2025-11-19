@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_AdvanceToEunomia
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Advance to Eunomia.
+  bodyText: Advance to Eunomia. If you pass GO, collect $200.
+  effect:
+  - {fileID: 11400000, guid: 40ba9e9d8b35f834499470b1ef6a47e9, type: 2}

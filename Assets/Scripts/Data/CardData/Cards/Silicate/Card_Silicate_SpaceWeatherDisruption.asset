@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_SpaceWeatherDisruption
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Space weather disrupts satellite operations.
+  bodyText: Space weather disrupts satellite operations. Pay $50 to enter safe mode.
+  effect:
+  - {fileID: 11400000, guid: 234fc0f7e648d2d4381d81f3768705c6, type: 2}

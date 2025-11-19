@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_GoToLaunchPad_1
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Go to the Launch Pad.
+  bodyText: Go to the Launch Pad. Go directly the the Launch Pad, do not pass Go,
+    do not collect $200.
+  effect:
+  - {fileID: 11400000, guid: d06ce59611db02948bfefb3d23f0ff1c, type: 2}

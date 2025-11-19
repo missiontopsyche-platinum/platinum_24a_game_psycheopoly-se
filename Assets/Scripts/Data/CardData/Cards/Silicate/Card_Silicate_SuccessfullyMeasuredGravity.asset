@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_SuccessfullyMeasuredGravity
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Successfully measure Psyche's gravity field.
+  bodyText: Successfully measure Psyche's gravity field with the X-band radio telecommunications
+    system! Collect $20.
+  effect:
+  - {fileID: 11400000, guid: 0575f42db32d98c4b8a13beaa4d0677e, type: 2}

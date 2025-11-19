@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7a972d27bf629340bb7843845672937, type: 3}
   m_Name: Move_Back3
   m_EditorClassIdentifier: PsycheOpoly.Runtime::MoveCardEffect
-  Type: 0
-  SpacesToMove: 1
-  MovePlayerEventChannel: {fileID: 0}
+  Type: 1
+  SpacesToMove: 3
+  MovePlayerEventChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}

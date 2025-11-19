@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_SubmitArticleToJournal
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Submit your article to a journal.
+  bodyText: Submit your article to a journal. For each data point pay $25. For each
+    discovery pay $100.
+  effect:
+  - {fileID: 11400000, guid: deef57829b4bfd541ae10ce561c87fb7, type: 2}

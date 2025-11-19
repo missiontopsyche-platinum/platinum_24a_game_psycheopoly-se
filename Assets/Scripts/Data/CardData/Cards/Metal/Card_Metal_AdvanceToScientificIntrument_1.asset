@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_AdvanceToScientificIntrument_1
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Advance to nearest Scientific Intrument.
+  bodyText: Advance to nearest Scientific Intrument. If unstudied, you may buy the
+    scientific data. If it has already been studied, pay the scientist twice the
+    research funding to which they are otherwise entitled.
+  effect:
+  - {fileID: 11400000, guid: bb89abf102994f54a9f1d29e1817a1e3, type: 2}

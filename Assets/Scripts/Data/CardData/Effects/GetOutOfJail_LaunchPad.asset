@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e85a2ec8056374ba708b5729a90a47, type: 3}
   m_Name: GetOutOfJail_LaunchPad
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GetOutOfJailCardEffect
-  JailStateChangedEventChannel: {fileID: 0}
+  JailStateChangedEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}

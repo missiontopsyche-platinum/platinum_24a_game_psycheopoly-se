@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_SuccessfullyDetermineLightElements
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Successfully determine the light elements that small metal bodies incorporate!
+  bodyText: Successfully determine the light elements that small metal bodies incorporate!
+    Collect $25.
+  effect:
+  - {fileID: 11400000, guid: 4a013ffc954059d4392b5145649b4aef, type: 2}

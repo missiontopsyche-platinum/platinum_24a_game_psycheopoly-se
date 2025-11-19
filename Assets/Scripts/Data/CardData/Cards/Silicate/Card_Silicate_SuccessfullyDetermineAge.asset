@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_SuccessfullyDetermineAge
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Successfully determine the relative ages of regions of Psyche's surface!
+  bodyText: Successfully determine the relative ages of regions of Psyche's surface!
+    Collect $10.
+  effect:
+  - {fileID: 11400000, guid: 6e5f8cb9f70057049be07921dbe008ae, type: 2}

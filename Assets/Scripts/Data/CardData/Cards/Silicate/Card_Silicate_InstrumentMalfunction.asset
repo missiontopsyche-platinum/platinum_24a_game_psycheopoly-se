@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_InstrumentMalfunction
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Instrument malfunction.
+  bodyText: Instrument malfunction. Pay $15 for the software engineers to resolve
+    the issue.
+  effect:
+  - {fileID: 11400000, guid: 3e982d520d958fb4b9b559a33f949868, type: 2}

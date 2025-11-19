@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cd372eebc17abc4882e902f0b8d5b4a, type: 3}
   m_Name: PayPerProperty_SubmitJournal
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PayPerPropertyCardEffect
-  ChargeForHouse: 0
-  ChargeForHotel: 0
-  chargePlayerEventChannel: {fileID: 0}
+  ChargeForHouse: 25
+  ChargeForHotel: 100
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}

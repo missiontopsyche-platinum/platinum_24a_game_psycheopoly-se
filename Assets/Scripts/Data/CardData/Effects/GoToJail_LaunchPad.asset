@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3489983783891e140a14020ff73e5db9, type: 3}
   m_Name: GoToJail_LaunchPad
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GoToJailCardEffect
-  TurnsInJail: 1
-  JailStateChangedEventChannel: {fileID: 0}
+  TurnsInJail: 3
+  JailStateChangedEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}

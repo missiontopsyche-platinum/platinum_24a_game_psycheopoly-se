@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_SuccessfulMissionLaunch
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Successful mission launch!
+  bodyText: Successful mission launch! Collect $200
+  effect:
+  - {fileID: 11400000, guid: a79b0946ae179ef4899a00db72b5da56, type: 2}

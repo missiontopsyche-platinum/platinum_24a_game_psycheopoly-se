@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_SuccessfullyCharacterizeTopography
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Successfully characterize Psyche's topography!
+  bodyText: Successfully characterize Psyche's topography! Collect $10 from every
+    player to share your findings.
+  effect:
+  - {fileID: 11400000, guid: 2c725e364e091084291718492825b4d7, type: 2}

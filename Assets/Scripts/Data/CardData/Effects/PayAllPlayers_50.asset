@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c613db5e1e244834eb67e86f3ee8bda2, type: 3}
   m_Name: PayAllPlayers_50
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PayAllPlayersCardEffect
-  Amount: 0
-  payAllPlayersEventChannel: {fileID: 0}
+  Amount: 50
+  payAllPlayersEventChannel: {fileID: 11400000, guid: 101d6cb95fd321f47b586ba6b9b3c7dd, type: 2}

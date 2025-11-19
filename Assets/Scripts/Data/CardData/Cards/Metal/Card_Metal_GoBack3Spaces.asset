@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_GoBack3Spaces
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Go back 3 spaces.
+  bodyText: Go back 3 spaces.
+  effect:
+  - {fileID: 11400000, guid: 673f43bc917094647a166c971cfa6eeb, type: 2}

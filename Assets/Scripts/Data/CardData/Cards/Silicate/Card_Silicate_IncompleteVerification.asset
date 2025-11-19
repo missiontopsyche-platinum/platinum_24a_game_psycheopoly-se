@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_IncompleteVerification
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Incomplete verification and validation of the spacecraft's systems.
+  bodyText: Incomplete verification and validation of the spacecraft's systems. Pay
+    $100 for the systems engineers to complete their work.
+  effect:
+  - {fileID: 11400000, guid: 0fdfcd42d8cbc854292d66305afb520e, type: 2}

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_GoForLaunch_1
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Go for launch!
+  bodyText: Go for launch! Get off the Launch Pad free.
+  effect:
+  - {fileID: 11400000, guid: 1ee62a60066af6448b985090db2d6187, type: 2}

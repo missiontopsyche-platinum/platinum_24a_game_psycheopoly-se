@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_Taters
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: We've got Taters!
+  bodyText: We've got Taters! Successfully demonstrate high-bandwidth communications
+    in deep space for the first time! Collect $50.
+  effect:
+  - {fileID: 11400000, guid: 36729293a79e1c44096b311330dc252a, type: 2}

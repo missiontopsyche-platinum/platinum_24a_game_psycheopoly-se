@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_GoToMultispectralImager
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Go to the Multispectral Imager.
+  bodyText: Go to the Multispectral Imager. If you pass GO, collect $200.
+  effect:
+  - {fileID: 11400000, guid: bf4a62a7eeb00814d9d26a425a311d41, type: 2}

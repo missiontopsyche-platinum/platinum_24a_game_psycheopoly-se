@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Silicate_CollisionWithDebris
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Collision with space debris damages the Multispectral Imager.
+  bodyText: Collision with space debris damages the Multispectral Imager. Pay $50
+    to activate the secondary camera.
+  effect:
+  - {fileID: 11400000, guid: 234fc0f7e648d2d4381d81f3768705c6, type: 2}

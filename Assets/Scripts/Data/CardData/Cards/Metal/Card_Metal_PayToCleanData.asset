@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_PayToCleanData
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Pay research assistants to clean up your data.
+  bodyText: Pay research assistants to clean up your data. $40 per data point. $115
+    per discovery.
+  effect:
+  - {fileID: 11400000, guid: a1e1e709ff956f84aa3e70bd244b53cd, type: 2}

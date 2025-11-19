@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
   m_Name: Card_Metal_AdvanceToCeres
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
-  title: 
-  bodyText: 
-  effect: []
+  title: Advance to Ceres.
+  bodyText: Advance to Ceres.
+  effect:
+  - {fileID: 11400000, guid: c86f866759ebfd945a61e7cfa2ae42a2, type: 2}
