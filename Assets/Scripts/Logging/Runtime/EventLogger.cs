@@ -76,7 +76,7 @@ namespace Logging
 
             if (!_settings.LoggingEnabled) return false;
 
-            if (!_settings.isRunTimeLoggingEnabled())
+            if (!(_settings.isRunTimeLoggingEnabled() && _settings.isCategoryEnabled(category)))
             {
                 if (!(_settings.ErrorsAlwaysEnabled && level == LogLevel.Error))
                     return false;
@@ -92,9 +92,10 @@ namespace Logging
 
         private string FormatMessage(string eventName, LogLevel level, LogCategory category, string message = null)
         {
+            string currentTimeString = DateTime.Now.ToString("HH:mm:ss:ff");
             if (string.IsNullOrEmpty(message))
                 message = "None";
-            return $"{_prefix} [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
+            return $"[{currentTimeString}] {_prefix} [Level: {level}] [Category: {category}] [Event Name: {eventName}] [Message: {message}]";
         }
     }
 }

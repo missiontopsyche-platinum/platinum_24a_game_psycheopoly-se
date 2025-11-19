@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Logging;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -60,11 +61,9 @@ namespace Tests.EditMode.PlayerManagerTests
         public void PlayerManager_GetByInvalidIdReturnsNull()
         {
             playerManager.InitializePlayers(2);
-        
-            LogAssert.Expect("Test [Level: Error] " +
-                "[Category: Gameplay] " +
-                "[Event Name: PlayerManager.GetPlayer] " +
-                "[Message: Attempted access of playerID out of bounds: 3]");
+
+            var pattern = CreateRegexLogPattern("Error", "Gameplay", "PlayerManager.GetPlayer", "Attempted access of playerID out of bounds: 3");
+            LogAssert.Expect(UnityEngine.LogType.Error, pattern);
             Assert.IsNull(playerManager.GetPlayer(3));
         }
     }

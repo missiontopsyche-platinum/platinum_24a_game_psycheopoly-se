@@ -1,5 +1,6 @@
 using Logging;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using TestLogger = Logging.Logger; // Alias to avoid namespace clash. Not sure how to resolve without an asmdef file.
 
@@ -48,6 +49,16 @@ namespace Tests.EditMode
             settings.EnabledCategories = LogCategory.All;
             TestLogger.Initialize(settings, "Test", true);
             logger = TestLogger.EventLogger;
+        }
+
+        // This is to ignore the timestamps from the log statements, so it does not fail unit tests.
+        protected Regex CreateRegexLogPattern(string logLevel, string category, string eventName, string message)
+        {
+            return new Regex(
+                        $@"^\[.+\] Test \[Level: {logLevel}\] " +
+                        $@"\[Category: {category}\] " +
+                        $@"\[Event Name: {eventName}\] " +
+                        $@"\[Message: {message}\]$");
         }
     }
 }
