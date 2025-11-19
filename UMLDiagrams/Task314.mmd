@@ -1,0 +1,34 @@
+sequenceDiagram
+    actor Player
+    participant UI as TurnUI
+    participant GM as GameManager
+    participant TOM as TurnOrderManager
+    participant PTS as PlayerTurnState
+    participant PM as PlayerManager
+
+    Player->>UI: End Turn
+    UI->>GM: OnEndTurn()
+
+    GM->>TOM: AdvanceTurn()
+
+    TOM->>PTS: ConsumeSkip(current)
+
+    TOM->>PTS: GetExtraTurn(current)
+    PTS-->>TOM: extraTurn
+
+    alt extra turn
+        TOM-->>GM: Same player continues
+        GM->>UI: UpdateUI(current)
+    else
+        TOM->>PTS: IsEliminated(next)
+        PTS-->>TOM: bool
+
+        loop skip eliminated players
+            TOM->>PTS: IsSkippedThisRound(candidate)
+            PTS-->>TOM: skip
+        end
+
+        TOM-->>GM: nextPlayerIndex
+        GM->>PM: SetActivePlayer(next)
+        GM->>UI: UpdateUI(next)
+    end

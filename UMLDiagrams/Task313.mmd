@@ -1,0 +1,110 @@
+classDiagram
+    class IRentStrategy {
+        <<interface>>
+    }
+
+    class StandardRentStrategy {
+        +ComputeRent(tile, owner, diceTotal, ownership, rules) int
+        -StreetRent(tile, owner, ownership, rules) int
+        -RailroadRent(owner, ownership, rules) int
+        -UtilityRent(owner, diceTotal, ownership, rules) int
+    }
+
+    class IOwnershipService {
+        <<interface>>
+    }
+
+    class OwnershipServiceAdapter {
+        +SetOwner(tile, owner)
+        +GetOwner(tile) Player
+        +CountOwnedInGroup(owner, group) int
+        +CountRailroadsOwned(owner) int
+        +OwnsBothUtilities(owner) bool
+    }
+
+    class IRuleSet {
+        <<interface>>
+    }
+
+    class RuleSet {
+        +RailroadBaseRent() int
+        +UtilityRentSingleMult() int
+        +UtilityRentBothMult() int
+        +StreetsInGroup(group) int
+    }
+
+    class EconomyAdapter {
+        +Transfer(from, to, amount) bool
+    }
+
+    class RentManager {
+        -strategy : IRentStrategy
+        -economy : EconomyAdapter
+        -ownership : OwnershipServiceAdapter
+        -rules : RuleSet
+        +TryChargeRent(tenant, tile, diceTotal)
+    }
+
+    IRentStrategy <|.. StandardRentStrategy
+    IOwnershipService <|.. OwnershipServiceAdapter
+    IRuleSet <|.. RuleSet
+
+    RentManager ..> StandardRentStrategy : uses
+    RentManager ..> EconomyAdapter : uses
+    RentManager ..> OwnershipServiceAdapter : uses
+    RentManager ..> RuleSet : uses
+
+    class ITurnOrderStrategy {
+        <<interface>>
+    }
+
+    class StandardTurnOrderStrategy {
+        +NextPlayerIndex(currentIndex, playerCount, state) int
+        +HasExtraTurn(currentIndex, state) bool
+    }
+
+    class IPlayerTurnState {
+        <<interface>>
+    }
+
+    class PlayerTurnState {
+        -eliminated : List<bool>
+        -skipCounts : List<int>
+        -extraTurn : List<bool>
+        +EnsureSize(count)
+        +Eliminate(index)
+        +AddSkip(index, count)
+        +GrantExtraTurn(index)
+        +IsEliminated(index) bool
+        +IsSkippedThisRound(index) bool
+        +ConsumeSkip(index)
+        +GetExtraTurn(index) bool
+        +SetExtraTurn(index, value)
+    }
+
+    class TurnCycleManager {
+        +CurrentPlayerIndex
+        +Advance() int
+    }
+
+    ITurnOrderStrategy <|.. StandardTurnOrderStrategy
+    IPlayerTurnState <|.. PlayerTurnState
+
+    TurnCycleManager ..> StandardTurnOrderStrategy : uses
+    TurnCycleManager ..> PlayerTurnState : uses
+
+    class IJailStrategy {
+        <<interface>>
+    }
+
+    class StandardJailStrategy {
+        -JailFee
+        -MaxTurnsInJail
+        +AttemptEscape(player, dice1, dice2)
+        +PayFee(player)
+        +UseGetOutOfJailFree(player)
+        +ForcedExit(player)
+        -ReleasePlayer(player)
+    }
+
+    IJailStrategy <|.. StandardJailStrategy
