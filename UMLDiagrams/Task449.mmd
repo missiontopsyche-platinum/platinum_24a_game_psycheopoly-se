@@ -1,0 +1,119 @@
+classDiagram
+
+    class Space {
+        <<abstract>>
+        +name: string
+        +index: int
+        +land(p: Player): void
+    }
+
+    class OwnableSpace {
+        +purchasePrice: int
+        +isMortgaged: bool
+        +owner: Player
+        +canPurchase(p: Player): bool
+        +purchase(p: Player, ctx: PurchaseContext): void
+        +mortgage(): void
+        +unmortgage(): void
+    }
+
+    class Property {
+        +color: ColorGroup
+        +houseCount: int
+        +hotelCount: int
+        +houseCost: int
+    }
+
+    class Railroad {
+        +basePrice: int
+    }
+
+    class Utility {
+        +note: "Purchase uses standard rules"
+    }
+
+    Space <|-- OwnableSpace
+    OwnableSpace <|-- Property
+    OwnableSpace <|-- Railroad
+    OwnableSpace <|-- Utility
+
+    class TitleDeed {
+        +name: string
+        +purchasePrice: int
+        +mortgageValue: int
+        +group: ColorGroup
+    }
+
+    class ColorGroup {
+        <<enumeration>>
+        +Brown
+        +LightBlue
+        +Pink
+        +Orange
+        +Red
+        +Yellow
+        +Green
+        +DarkBlue
+    }
+
+    Property --> ColorGroup
+    OwnableSpace --> TitleDeed : deed 1
+
+    class Player {
+        +name: string
+        +cash: int
+        +pay(amount: int, to: Player): void
+        +receive(amount: int): void
+        +canAfford(price: int): bool
+    }
+
+    class OwnershipService {
+        +getOwner(space: OwnableSpace): Player
+        +setOwner(space: OwnableSpace, owner: Player): void
+        +isOwned(space: OwnableSpace): bool
+    }
+
+    Player "1" --> "0..*" OwnableSpace : owns
+    OwnershipService --> OwnableSpace
+
+    class PurchaseContext {
+        +mode: PurchaseMode
+        +allowAuction: bool
+    }
+
+    class PurchaseActionType {
+        <<enumeration>>
+        +None
+        +OfferToPlayer
+        +AutoBuy
+        +StartAuction
+    }
+
+    class PurchaseDecision {
+        +action: PurchaseActionType
+        +price: int
+        +canAfford: bool
+    }
+
+    PurchaseDecision --> PurchaseActionType
+    PurchaseContext --> Player
+
+    class PurchaseStrategy {
+        <<interface>>
+        +getDecision(space: OwnableSpace, p: Player, ctx: PurchaseContext): PurchaseDecision
+    }
+
+    class StandardPurchaseStrategy {
+        +getDecision(space: OwnableSpace, p: Player, ctx: PurchaseContext): PurchaseDecision
+    }
+
+    class QuickPlayPurchaseStrategy {
+        +getDecision(space: OwnableSpace, p: Player, ctx: PurchaseContext): PurchaseDecision
+    }
+
+    PurchaseStrategy <|.. StandardPurchaseStrategy
+    PurchaseStrategy <|.. QuickPlayPurchaseStrategy
+
+    OwnableSpace --> PurchaseStrategy : uses
+    PurchaseStrategy --> PurchaseDecision
+    PurchaseStrategy --> OwnershipService
