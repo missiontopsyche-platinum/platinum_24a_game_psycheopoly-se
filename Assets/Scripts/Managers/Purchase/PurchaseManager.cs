@@ -65,6 +65,7 @@ namespace Assets.Scripts.Managers.Purchase
             switch (decision.Flow)
             {
                 case PurchaseFlow.AutoBuy:
+                    //Auto buy for now 
                     ExecutePurchase(buyer, tile, decision.Price);
                     break;
 
