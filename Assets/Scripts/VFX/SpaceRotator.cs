@@ -15,6 +15,11 @@ public class SpaceRotator : MonoBehaviour
         sbox = GetComponent<Skybox>();
     }
 
+    private void OnDestroy()
+    {
+        sbox.material.SetFloat("_Rotation", 0);
+    }
+
     // Update is called once per frame
     void Update()
     {

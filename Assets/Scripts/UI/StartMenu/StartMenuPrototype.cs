@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
@@ -20,6 +21,11 @@ public class StartMenuPrototype : MonoBehaviour
     void Start()
     {
         StartCoroutine(FadeUI(fadeIn:true));
+    }
+
+    private void OnDestroy()
+    {
+        tmpMat.SetFloat(ShaderUtilities.ID_FaceDilate, 0);
     }
 
     public void OnClick()
