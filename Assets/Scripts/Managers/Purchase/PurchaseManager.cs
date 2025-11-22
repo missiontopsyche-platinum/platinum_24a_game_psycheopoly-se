@@ -26,14 +26,13 @@ namespace Assets.Scripts.Managers.Purchase
 
             EnsureDependencies();
 
-            var decision = strategy.GetPurchaseDecision(tile, buyer, ownership, rules);
+            PurchaseDecision decision =
+                strategy.GetPurchaseDecision(tile, buyer, ownership, rules);
+
             if (decision.Flow == PurchaseFlow.None || decision.Price <= 0)
                 return;
 
-            //For now auto execute any non None decision
-            //Later this can be added onto with something like
-            //offerToPlayer then open popup
-            ExecutePurchase(buyer, tile, decision.Price);
+            HandleDecision(buyer, tile, decision);
         }
 
         //transfers money and assigns ownership
@@ -59,6 +58,31 @@ namespace Assets.Scripts.Managers.Purchase
 
             if (rules == null)
                 rules = new RuleSet();
+        }
+
+        private void HandleDecision(Player buyer, ITileRentInfo tile, PurchaseDecision decision)
+        {
+            switch (decision.Flow)
+            {
+                case PurchaseFlow.AutoBuy:
+                    ExecutePurchase(buyer, tile, decision.Price);
+                    break;
+
+                case PurchaseFlow.OfferToPlayer:
+                    //TO DO: Hook to a real popup.
+                    //For now use auto accept to keep the flow working
+                    ExecutePurchase(buyer, tile, decision.Price);
+                break;
+
+                case PurchaseFlow.HookAction:
+                    //Placeholder for custom flows like auction manager
+                    //action hook as in task 447
+                    break;
+
+                case PurchaseFlow.None:
+                default:
+                    break;
+            }
         }
     }
 }
