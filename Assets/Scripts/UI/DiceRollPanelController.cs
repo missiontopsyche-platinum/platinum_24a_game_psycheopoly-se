@@ -8,10 +8,8 @@ public class DiceRollPanelController : MonoBehaviour
 {
     [Header ("Event Channels")]
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
-
     [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
-    [Header("Dependencies")]
-    [SerializeField] private DiceManager diceManager; //optional if we want to add a Roll button
+    [SerializeField] private BooleanEventChannel rollDiceRequestedChannel;
 
     [Header("UI")]
     [SerializeField] private DiceFaceView dieOneView;
@@ -42,7 +40,7 @@ public class DiceRollPanelController : MonoBehaviour
     private void OnRollClicked()
     {
         Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);
-        try { diceManager?.RollDice(); }
+        try { rollDiceRequestedChannel.RaiseEvent(true); }
         catch (MissingComponentException ex) { Debug.LogWarning(ex.Message, this); }
     }
 
