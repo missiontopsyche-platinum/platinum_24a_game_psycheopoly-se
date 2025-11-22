@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c613db5e1e244834eb67e86f3ee8bda2, type: 3}
+  m_Name: PayAllPlayers_50
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PayAllPlayersCardEffect
+  Amount: 50
+  payAllPlayersEventChannel: {fileID: 11400000, guid: 101d6cb95fd321f47b586ba6b9b3c7dd, type: 2}

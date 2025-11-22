@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c305cc334aff129499fbb1f3ef8fe96d, type: 3}
+  m_Name: Card_Metal_AdvanceToNearestPlanet
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
+  title: Advance to the nearest Planet.
+  bodyText: Advance to the nearest Planet. If unstudied, you may buy the scientific
+    data. If it has already been studied, throw the dice and pay the scientist a
+    total of ten times the amount thrown.
+  effect:
+  - {fileID: 11400000, guid: 6c28d970a1c4b6b42b7350d11eb2d75b, type: 2}
