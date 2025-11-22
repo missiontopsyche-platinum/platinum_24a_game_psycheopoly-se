@@ -4,12 +4,13 @@
 /// </summary>
 public enum TurnPhase
 {
-    StartTurn = 0,
-    PreRoll = 1,
-    RollingDice = 2,
-    MovingPiece = 3,
-    ResolvingSpace = 4,
-    ResolvingCards = 5,
-    PostTurn = 6,
-    EndTurn = 7
+    None = 0,
+    StartTurn = 1,
+    PreRoll = 2,
+    RollingDice = 3,
+    MovingPiece = 4,
+    ResolvingSpace = 5,
+    ResolvingCards = 6,
+    PostTurn = 7,
+    EndTurn = 8
 }
