@@ -19,4 +19,3 @@ namespace Assets.Scripts.Managers
         }
     }
 }
-
