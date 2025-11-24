@@ -11,6 +11,13 @@ namespace Assets.Scripts.Managers.Purchase
         [SerializeField] private OwnershipServiceAdapter ownership;
         [SerializeField] private RuleSet rules = new RuleSet();
 
+        // for tests only
+        private PurchaseFlow overrideFlow = PurchaseFlow.OfferToPlayer;
+        private System.Action hookOverride = null;
+
+        public void OverrideFlow(PurchaseFlow f) => overrideFlow = f;
+        public void OverrideHook(System.Action a) => hookOverride = a;
+
         private IPurchaseStrategy strategy = new StandardPurchaseStrategy();
 
         private void Awake()
