@@ -3,9 +3,14 @@ using UnityEngine;
 
 namespace Assets.Scripts.Managers.Rules
 {
+    /// <summary>
+    /// interface for rule sets used by rent strategy 
+    /// and later tile effects
+    /// **placeholder for architecture setup in US402-T404**
+    /// </summary>
     public interface IRuleSet
     {
-        //just a placeholder while i build out the concept of the architecture
+        // still a placeholder just adding the summary
     }
 }
 
