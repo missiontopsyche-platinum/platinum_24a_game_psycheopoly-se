@@ -30,3 +30,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2a360a9c008547841bfe39f1d3e2d325, type: 2}
   - {fileID: 11400000, guid: 7adc7d3283f7edb488c420f98a56a56e, type: 2}
   - {fileID: 11400000, guid: 7ef022017264a6a4c80b9c9a830133a4, type: 2}
+  cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
