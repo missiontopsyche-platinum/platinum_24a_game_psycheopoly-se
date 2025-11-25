@@ -1,4 +1,6 @@
 using UnityEngine;
+using Assets.Scripts.Managers.Rent;
+
 
 namespace Assets.Scripts.Managers.Rent
 {
@@ -14,6 +16,7 @@ namespace Assets.Scripts.Managers.Rent
         [SerializeField] private RuleSet rules = new RuleSet();              //rule constants
 
         private IRentStrategy strategy = new StandardRentStrategy();
+        public IOwnershipService Ownership => ownership;
 
         private void Awake()
         {
@@ -51,6 +54,25 @@ namespace Assets.Scripts.Managers.Rent
             if (rules == null)
                 rules = new RuleSet();
         }
+
+        //helpers
+        public void SetOwner(ITileRentInfo tile, Player owner)
+        {
+            EnsureDependencies();
+            ownership.SetOwner(tile, owner);
+        }
+
+        public int CountOwnedInGroup(Player owner, ColorGroup group)
+        {
+            EnsureDependencies();
+            return ownership.CountOwnedInGroup(owner, group);
+        }
+
+        public int CountRailroadsOwned(Player owner)
+        {
+            EnsureDependencies();
+            return ownership.CountRailroadsOwned(owner);
+        }
     }
 
     //Money mover. Replace with your real EconomyManager later.
@@ -72,6 +94,8 @@ namespace Assets.Scripts.Managers.Rent
             return true;
         }
     }
+
+
 
     //Rule constants for standard Monopoly rent. can be converted to ScriptableObject
     [System.Serializable]
