@@ -138,10 +138,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 327057945443998030, guid: b55a24a7347066947bfcdd0f17b8c131, type: 3}
-      propertyPath: turnStartedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
     - target: {fileID: 913164210820008243, guid: b55a24a7347066947bfcdd0f17b8c131, type: 3}
       propertyPath: m_FontData.m_BestFit
       value: 1
