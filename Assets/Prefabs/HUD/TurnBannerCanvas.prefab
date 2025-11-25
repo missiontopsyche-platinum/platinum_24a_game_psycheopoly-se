@@ -420,12 +420,30 @@ MonoBehaviour:
   turnLabel: {fileID: 2649314433219123149}
   continueButton: {fileID: 5843930613950888418}
   canvasGroup: {fileID: 8185259267116603201}
-  turnStartedChannel: {fileID: 0}
-  fadeDuration: 0.25
-  slideOffset: 60
+  turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
+  fadeDuration: 1
+  slideOffset: 180
   ease:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

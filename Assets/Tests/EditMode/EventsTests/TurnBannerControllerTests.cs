@@ -41,5 +41,15 @@ namespace Tests.EditMode.EventsTests
             Assert.IsTrue(controller.gameObject.activeSelf, "Banner should be active after ShowBanner(2).");
             StringAssert.Contains("Player 2", turnLabel.text);
         }
+
+        [Test]
+        public void EditMode_EventsHandledWhileHidden()
+        {
+            controller.Hide();
+            turnStartedEventChannel.RaiseEvent(new TurnStartedEvent(0,0));
+            
+            Assert.IsTrue(cg.interactable);
+            Assert.AreEqual(cg.alpha, 1f);
+        }
     }
 }
