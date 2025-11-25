@@ -24,53 +24,14 @@ namespace Tests.PlayMode.BoardRenderer
 
         [SetUp]
         public void SetUp()
-        {
+        {   
+            //Init logger
             Logger.Initialize(LogSettings.Current());
-            //load test scene
-
+            
+            //Create an on sceneLoaded event handler to build objects
             SceneManager.sceneLoaded += OnSceneLoaded;
 
             SceneManager.LoadScene("PlayTestScene");
-            /*
-            // set up camera
-            GameObject cameraObject = new GameObject("TestCamera");
-            testCamera = cameraObject.AddComponent<Camera>();
-            testCamera.orthographicSize = 5.5f;
-            testCamera.orthographic = true;
-            */
-
-            // create boardrenderer via Scene
-
-
-
-            /*
-            // create boardrenderer
-            boardGameObject = new GameObject("TestBoardRenderer");
-            boardRenderer = boardGameObject.AddComponent<global::BoardRenderer>();
-            
-            // create "space prefab" stand-in
-            spaceRendererPrefab = new GameObject("SpacePrefab");
-            spaceRendererPrefab.AddComponent<BoxCollider>(); // required component of SpaceRenderer
-            SpaceRenderer spaceRenderer = spaceRendererPrefab.AddComponent<SpaceRenderer>();
-            spaceRenderer.meshRenderer = spaceRendererPrefab.AddComponent<MeshRenderer>();
-            
-            // create 'player piece' prefab stand-in
-            playerPiecePrefab = new GameObject("PiecePrefab");
-            Piece piece = playerPiecePrefab.AddComponent<Piece>();
-            piece.meshRenderer = playerPiecePrefab.AddComponent<MeshRenderer>();
-            piece.meshRenderer.material = new Material(Shader.Find("Unlit/Color"));
-            
-            // create event channels, ensure subscription
-            testPlayerEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
-            testMoveEventChannel = ScriptableObject.CreateInstance<PlayerMovedEventChannel>();
-            testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
-
-            boardRenderer.mainCamera = testCamera;
-            boardRenderer.spaceRendererPrefab = spaceRendererPrefab;
-            boardRenderer.playerPiecePrefab = playerPiecePrefab;
-            boardRenderer.playerAddedChannel = testPlayerEventChannel;
-            */
             
             
         }
