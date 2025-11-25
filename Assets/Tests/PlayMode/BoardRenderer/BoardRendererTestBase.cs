@@ -40,10 +40,7 @@ namespace Tests.PlayMode.BoardRenderer
         public void TearDown()
         {
             SceneManager.UnloadScene("PlayTestScene");
-            //Object.Destroy(boardGameObject);
-            //Object.Destroy(testCamera.gameObject);
-            //Object.Destroy(spaceRendererPrefab);
-            //Object.Destroy(testPlayerEventChannel);
+            
         }
 
         private SpaceData[] CreateTestSpaces(int count)
@@ -149,6 +146,11 @@ namespace Tests.PlayMode.BoardRenderer
             // generate a test board
             SpaceData[] testSpaces = CreateTestSpaces(40);
             boardRenderer.GenerateBoard(testSpaces);
+
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            boardManager.ClearPlayers();
+            boardRenderer.ClearPlayers();
         }
     }
 }

@@ -348,5 +348,22 @@ namespace PsycheOpoly.Board
 
             MovePlayer(new MovePlayerEvent(playerId, stepsForward));
         }
+
+        /// <summary>
+        /// This is a helper method for testing.
+        /// While using the test scene the player manager
+        /// automatically fills everything forcing adding plays to tests
+        /// to fail. This is run on every test to fix it.
+        /// </summary>
+        /// <returns></returns>
+        public bool ClearPlayers()
+        {
+            playerPositions.Clear();
+
+            if (playerPositions.Count == 0)
+                return true;
+
+            return false;
+        }
     }
 }
