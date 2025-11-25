@@ -110,6 +110,13 @@ namespace Tests.PlayMode.BoardRenderer
             }
         }
 
+        /// <summary>
+        /// Event handler for "SceneLoaded" event to build out testing objects after
+        /// PlayTestScene has loaded. This is necessary to ensure the scene is loaded
+        /// Before trying to access information
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="mode"></param>
         protected void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             // set up camera using Scene Manager
