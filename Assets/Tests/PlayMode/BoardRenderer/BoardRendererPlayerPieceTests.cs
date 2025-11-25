@@ -1,8 +1,9 @@
-using System.Collections;
+using Logging;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-
+using Logger = Logging.Logger;
 namespace Tests.PlayMode.BoardRenderer
 {
     public class BoardRendererPlayerPieceTests : BoardRendererTestBase
@@ -10,6 +11,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_CreatesNewPiece()
         {
+            Logger.Info("BoardRendererPlayerPieceTests.AddPlayerPiece_CreatesNewPiece", "We're here again", LogCategory.Core, this);
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
 
             yield return AddPlayerAndWait(testPlayer);
@@ -63,7 +65,7 @@ namespace Tests.PlayMode.BoardRenderer
         {
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
-            yield return AddPlayerAndWait(testPlayer);
+            //yield return AddPlayerAndWait(testPlayer);
 
             Vector3 initialPosition = boardRenderer.playerPieces[0].transform.position;
             Vector3 targetSpacePosition = boardRenderer.spaceRenderers[5].transform.position;

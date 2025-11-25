@@ -1,6 +1,10 @@
-using System.Collections;
+using Logging;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using BoardManager = PsycheOpoly.Board.BoardManager; 
+using Logger = Logging.Logger;
 
 namespace Tests.PlayMode.BoardRenderer
 {
@@ -9,6 +13,7 @@ namespace Tests.PlayMode.BoardRenderer
         // components and objects
         protected GameObject boardGameObject;
         protected global::BoardRenderer boardRenderer;
+        protected BoardManager boardManager;
         protected Camera testCamera;
         protected GameObject spaceRendererPrefab;
         protected GameObject playerPiecePrefab;
@@ -20,12 +25,25 @@ namespace Tests.PlayMode.BoardRenderer
         [SetUp]
         public void SetUp()
         {
+            Logger.Initialize(LogSettings.Current());
+            //load test scene
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+            SceneManager.LoadScene("PlayTestScene");
+            /*
             // set up camera
             GameObject cameraObject = new GameObject("TestCamera");
             testCamera = cameraObject.AddComponent<Camera>();
             testCamera.orthographicSize = 5.5f;
             testCamera.orthographic = true;
-            
+            */
+
+            // create boardrenderer via Scene
+
+
+
+            /*
             // create boardrenderer
             boardGameObject = new GameObject("TestBoardRenderer");
             boardRenderer = boardGameObject.AddComponent<global::BoardRenderer>();
@@ -52,19 +70,19 @@ namespace Tests.PlayMode.BoardRenderer
             boardRenderer.spaceRendererPrefab = spaceRendererPrefab;
             boardRenderer.playerPiecePrefab = playerPiecePrefab;
             boardRenderer.playerAddedChannel = testPlayerEventChannel;
+            */
             
-            // generate a test board
-            SpaceData[] testSpaces = CreateTestSpaces(40);
-            boardRenderer.GenerateBoard(testSpaces);
+            
         }
 
         [TearDown]
         public void TearDown()
         {
-            Object.Destroy(boardGameObject);
-            Object.Destroy(testCamera.gameObject);
-            Object.Destroy(spaceRendererPrefab);
-            Object.Destroy(testPlayerEventChannel);
+            SceneManager.UnloadScene("PlayTestScene");
+            //Object.Destroy(boardGameObject);
+            //Object.Destroy(testCamera.gameObject);
+            //Object.Destroy(spaceRendererPrefab);
+            //Object.Destroy(testPlayerEventChannel);
         }
 
         private SpaceData[] CreateTestSpaces(int count)
@@ -119,6 +137,50 @@ namespace Tests.PlayMode.BoardRenderer
         {
             boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace, null));
             yield return new WaitForSeconds(waitTime);
+        }
+
+        protected IEnumerator LoadScenceAsync(string scene)
+        {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("PlayTestScene"); 
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+        }
+
+        protected void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            // set up camera using Scene Manager
+            testCamera = GameObject.FindFirstObjectByType<Camera>();
+            if (testCamera != null)
+            {
+                Logger.Info("BoardManagerTestBase.SetUp",
+                "Sucessfully Found the Camera.",
+                LogCategory.Core, this);
+            }
+
+            // get the board game object
+            boardGameObject = GameObject.Find("Board");
+            if (boardGameObject == null)
+            {
+                Logger.Info("BoardManagerTestBase.SetUp",
+                "Cannot Locate Board.",
+                LogCategory.Core, this);
+                Assert.IsNotNull(boardGameObject, "Why is this fucking null?");
+            }
+
+            boardManager = boardGameObject.GetComponent<BoardManager>() as BoardManager;
+            boardRenderer = boardManager.boardRenderer;
+
+            testPlayerEventChannel = boardManager.playerAddedChannel;
+            testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
+            testMoveEventChannel = boardManager.playerMovedChannel;
+            testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
+
+            // generate a test board
+            SpaceData[] testSpaces = CreateTestSpaces(40);
+            boardRenderer.GenerateBoard(testSpaces);
         }
     }
 }

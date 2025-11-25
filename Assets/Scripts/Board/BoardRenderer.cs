@@ -55,7 +55,7 @@ public class BoardRenderer : MonoBehaviour
                 "Board generation attempted in EditMode - skipping.",
                 LogCategory.UI,
                 this);
-            return;
+            //return;
         }
         
         ClearBoard();
