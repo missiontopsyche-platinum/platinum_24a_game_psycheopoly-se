@@ -57,23 +57,7 @@ public class CardDeck : ScriptableObject
             return;
         }
 
-        // The execution happens within the deck.
-        // This is how I understand from the code structure we have so far.
-              if (cardDrawnChannel != null)
-        {
-            cardDrawnChannel.Raise(card, player, this);
-        }
-        else
-        {
-            // Fallback behaviour for when no UI is listening
-            foreach (var effect in card.effect)
-            {
-                effect.ApplyEffect(player);
-            }
-
-            ReturnCardToDeck(card);
-        }
-
+        cardDrawnChannel?.Raise(card, player, this);
     }
 
     public void ReturnCardToDeck(Card card)
