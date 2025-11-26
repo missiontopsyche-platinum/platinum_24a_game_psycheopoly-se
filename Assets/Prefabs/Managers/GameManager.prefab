@@ -52,6 +52,12 @@ MonoBehaviour:
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
   movePlayerChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
   pieceMoveCompletedChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
+  turnPhaseChangedEventChannel: {fileID: 11400000, guid: 1eee447fd0bbbae41bf605df63c4bd34, type: 2}
+  rollDiceRequestedChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
+  cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
+  diceManager: {fileID: 0}
+  boardManager: {fileID: 0}
+  movementStrategy: {fileID: 0}
   dieOne: 0
   dieTwo: 0
   totalRolled: 0
