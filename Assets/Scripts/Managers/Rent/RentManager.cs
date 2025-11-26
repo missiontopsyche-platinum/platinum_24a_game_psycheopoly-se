@@ -79,8 +79,10 @@ namespace Assets.Scripts.Managers.Rent
             if (!rulesManager)
                 rulesManager = FindObjectOfType<RulesManager>();
 
-            if (rules == null && rulesManager != null)
-                rules = rulesManager.GetRuleSet();
+            if (rules == null)
+                rules = rulesManager != null
+                    ? rulesManager.GetRuleSet()
+                    : new StandardRuleSet();
         }
 
         //helpers

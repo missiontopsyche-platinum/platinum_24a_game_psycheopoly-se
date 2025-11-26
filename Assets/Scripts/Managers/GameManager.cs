@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Logging;
 using PsycheOpoly.Board;
 using Assets.Scripts.Managers.Movement;
+using Assets.Scripts.Managers;
 
 public class GameManager : MonoBehaviour
 {
