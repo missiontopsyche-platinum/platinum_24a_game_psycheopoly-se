@@ -14,6 +14,8 @@ namespace Assets.Scripts.Managers.Rent
         [SerializeField] private EconomyAdapter economy;                     //money mover (placeholder)
         [SerializeField] private OwnershipServiceAdapter ownership;          //ownership source of truth (adapter)
         [SerializeField] private RulesManager rulesManager;
+        [SerializeField] private RentModifierService rentModifiers;
+
 
         private IRuleSet rules;
         private IRentStrategy strategy = new StandardRentStrategy();
@@ -37,7 +39,14 @@ namespace Assets.Scripts.Managers.Rent
             var owner = ownership.GetOwner(tile);
             if (owner == null || owner == tenant) return;
 
-            int rent = strategy.ComputeRent(tile, owner, diceTotal, ownership, rules);
+            //replacing basic rent to use modifiers
+            int baseRent = strategy.ComputeRent(tile, owner, diceTotal, ownership, rules);
+            int rent = rentModifiers != null ? rentModifiers.ApplyAll(baseRent, tile, tenant, owner) : baseRent;
+
+            Logging.Logger.Debug("RentManager.TryChargeRent",
+                $"BaseRent={baseRent} FinalRent={rent} Tenant={tenant?.GetId()} Owner={owner?.GetId()} Tile={tile?.Name}",
+                Logging.LogCategory.Gameplay);
+
             if (rent <= 0) return;
 
             bool ok = economy.Transfer(tenant, owner, rent);
@@ -46,6 +55,9 @@ namespace Assets.Scripts.Managers.Rent
         //Make sure serialized dependencies are not null
         private void EnsureDependencies()
         {
+            if (!rentModifiers)
+                rentModifiers = GetComponent<RentModifierService>() ?? gameObject.AddComponent<RentModifierService>();
+
             if (!economy)
                 economy = GetComponent<EconomyAdapter>() ?? gameObject.AddComponent<EconomyAdapter>();
 

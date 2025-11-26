@@ -20,6 +20,11 @@ namespace Assets.Scripts.Managers
             active ??= standardRuleSet ?? new StandardRuleSet();
         }
 
+        public void SetRules(IRuleSet rules)
+        {
+            if (rules != null) active = rules;
+        }
+
         public IRuleSet GetRuleSet()
         {
             if (active == null)
