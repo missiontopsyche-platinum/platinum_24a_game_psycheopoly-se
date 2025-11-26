@@ -12,5 +12,6 @@ public enum TurnPhase
     ResolvingSpace = 5,
     ResolvingCards = 6,
     PostTurn = 7,
-    EndTurn = 8
+    EndTurn = 8,
+    NextTurn = 9
 }
