@@ -16,6 +16,9 @@ namespace Assets.Scripts.Managers.Rent
         [SerializeField] private RulesManager rulesManager;
         [SerializeField] private RentModifierService rentModifiers;
 
+        [Header("Events")]
+        [SerializeField] private IntEventChannel rentComputedChannel;
+
 
         private IRuleSet rules;
         private IRentStrategy strategy = new StandardRentStrategy();
@@ -35,6 +38,13 @@ namespace Assets.Scripts.Managers.Rent
             if (tenant == null || tile == null) return;
 
             EnsureDependencies();
+            
+            //pre-check
+            if (rules == null)
+            {
+                Logging.Logger.Warn("RentManager", "Rules not initialized; using zero rent.");
+                return;
+            }
 
             var owner = ownership.GetOwner(tile);
             if (owner == null || owner == tenant) return;
@@ -46,6 +56,8 @@ namespace Assets.Scripts.Managers.Rent
             Logging.Logger.Debug("RentManager.TryChargeRent",
                 $"BaseRent={baseRent} FinalRent={rent} Tenant={tenant?.GetId()} Owner={owner?.GetId()} Tile={tile?.Name}",
                 Logging.LogCategory.Gameplay);
+            rentComputedChannel?.RaiseEvent(rent);
+
 
             if (rent <= 0) return;
 
