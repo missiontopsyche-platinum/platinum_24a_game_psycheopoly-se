@@ -3,21 +3,10 @@ using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Purchase;
 
-namespace Tests.EditMode.PurchaseTests
+namespace Tests.EditMode.PurchaseManagerTests
 {
     public class StandardPurchaseStrategyTests
     {
-        private class Tile : ITileRentInfo
-        {
-            public string Name        { get; set; }
-            public TileType Type      { get; set; }
-            public ColorGroup Group   { get; set; }
-            public bool IsMortgaged   { get; set; }
-            public int HouseCount     { get; set; }
-            public int BaseRent       { get; set; }
-            public int[] RentByHouses { get; set; }
-        }
-
         private class Rules : IRuleSet
         {
             public int RailroadBaseRent()      => 25;
@@ -50,29 +39,33 @@ namespace Tests.EditMode.PurchaseTests
         }
 
         [Test]
-        public void Unowned_AffordableStreet_OffersToPlayer()
+        public void Unowned_AffordableStreet_OffersToPlayer_UsesPurchasePrice()
         {
             var strat = new StandardPurchaseStrategy();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Buyer", money: 1_000);
 
-            var tile = new Tile
+            var tile = new TestTileRentInfo
             {
-                Name        = "Test Street",
-                Type        = TileType.Street,
-                Group       = ColorGroup.Red,
-                BaseRent    = 10,
-                HouseCount  = 0,
-                IsMortgaged = false,
-                RentByHouses = new[] { 10, 50, 150, 450, 625, 750 }
+                Name          = "Test Street",
+                Type          = TileType.Street,
+                Group         = ColorGroup.Red,
+                BaseRent      = 10,
+                HouseCount    = 0,
+                IsMortgaged   = false,
+                RentByHouses  = new[] { 10, 50, 150, 450, 625, 750 },
+                PurchasePrice = 120 //this should come from adapter in actual game
             };
 
             var decision = strat.GetPurchaseDecision(tile, buyer, own, rules);
 
             Assert.AreEqual(PurchaseFlow.OfferToPlayer, decision.Flow);
             Assert.IsTrue(decision.CanAfford);
-            Assert.Greater(decision.Price, 0);
+            Assert.AreEqual(120, decision.Price,
+                "Expected strategy to use PurchasePrice from tile (adapter data) rather than a rent-based fallback.");
+
+            Object.DestroyImmediate(buyer);
         }
 
         [Test]
@@ -84,15 +77,16 @@ namespace Tests.EditMode.PurchaseTests
             var buyer = P("Buyer", 1_000);
             var other = P("Other", 1_000);
 
-            var tile = new Tile
+            var tile = new TestTileRentInfo
             {
-                Name        = "Owned Street",
-                Type        = TileType.Street,
-                Group       = ColorGroup.LightBlue,
-                BaseRent    = 20,
-                HouseCount  = 0,
-                IsMortgaged = false,
-                RentByHouses = new[] { 20, 100, 300, 750, 925, 1100 }
+                Name          = "Owned Street",
+                Type          = TileType.Street,
+                Group         = ColorGroup.LightBlue,
+                BaseRent      = 20,
+                HouseCount    = 0,
+                IsMortgaged   = false,
+                RentByHouses  = new[] { 20, 100, 300, 750, 925, 1100 },
+                PurchasePrice = 60
             };
 
             own.SetOwner(tile, other);
@@ -101,6 +95,9 @@ namespace Tests.EditMode.PurchaseTests
 
             Assert.AreEqual(PurchaseFlow.None, decision.Flow);
             Assert.IsFalse(decision.CanAfford);
+
+            Object.DestroyImmediate(buyer);
+            Object.DestroyImmediate(other);
         }
 
         [Test]
@@ -111,21 +108,24 @@ namespace Tests.EditMode.PurchaseTests
             var own   = new Own();
             var buyer = P("Poor Buyer", money: 0);
 
-            var tile = new Tile
+            var tile = new TestTileRentInfo
             {
-                Name        = "Expensive",
-                Type        = TileType.Street,
-                Group       = ColorGroup.Green,
-                BaseRent    = 100,
-                HouseCount  = 0,
-                IsMortgaged = false,
-                RentByHouses = new[] { 100, 500, 1500, 4500, 6250, 7500 }
+                Name          = "Expensive",
+                Type          = TileType.Street,
+                Group         = ColorGroup.Green,
+                BaseRent      = 100,
+                HouseCount    = 0,
+                IsMortgaged   = false,
+                RentByHouses  = new[] { 100, 500, 1500, 4500, 6250, 7500 },
+                PurchasePrice = 400
             };
 
             var decision = strat.GetPurchaseDecision(tile, buyer, own, rules);
 
             Assert.AreEqual(PurchaseFlow.None, decision.Flow);
             Assert.IsFalse(decision.CanAfford);
+
+            Object.DestroyImmediate(buyer);
         }
     }
 }

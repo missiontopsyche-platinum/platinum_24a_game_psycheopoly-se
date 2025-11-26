@@ -35,9 +35,18 @@ namespace Assets.Scripts.Managers.Purchase
             if (currentOwner != null && currentOwner != buyer)
                 return new PurchaseDecision { Flow = PurchaseFlow.None };
 
-            //Placeholder pricing: 4x base rent 
-            //We can add the real purchase price later
-            int price = Mathf.Max(0, tile.BaseRent * 4);
+            /// Prefer data-driven purchase price when available (OwnableSpaceData.buyPrice via IPurchasableTileInfo).
+            // Fallback to 4x base rent for tiles that don't have purchase data wired yet.
+            int price;
+
+            if (tile is IPurchasableTileInfo purchasable)
+            {
+                price = Mathf.Max(0, purchasable.PurchasePrice);
+            }
+            else
+            {
+                price = Mathf.Max(0, tile.BaseRent * 4);
+            }
 
             int have = buyer.GetMoney();
             bool canAfford = have >= price;
