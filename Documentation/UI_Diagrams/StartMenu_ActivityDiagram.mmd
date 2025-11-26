@@ -1,0 +1,17 @@
+﻿stateDiagram-v2
+    %% This needs to be expanded to add options, and whatever
+    %% we decide needs to be a part of setting up a game, such as
+    %% selecting number of players, rulesets, etc.
+    %% but for now, this reflects the reality of our prototype menu.
+    
+    StartMenuDisplays: Start Menu Displays
+    state options <<choice>>
+    PlayerClickStart: Player clicks Start Game
+    SwitchSceneToGameScene: Switch Scene to Game Scene (index 1)
+    
+    [*] --> StartMenuDisplays
+    StartMenuDisplays --> options
+    options --> PlayerClickStart
+    PlayerClickStart --> SwitchSceneToGameScene
+    SwitchSceneToGameScene --> [*]
+    

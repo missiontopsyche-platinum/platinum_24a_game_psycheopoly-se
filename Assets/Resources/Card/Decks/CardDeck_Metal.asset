@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 207fe529b220d0c42b1e80900d8e69eb, type: 3}
+  m_Name: CardDeck_Metal
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardDeck
+  deckType: 0
+  cards:
+  - {fileID: 11400000, guid: 0ddffdf46eae3944992deafb989e6cf1, type: 2}
+  - {fileID: 11400000, guid: 3b6297d99409e9844840ef236e4a4493, type: 2}
+  - {fileID: 11400000, guid: 9c4f7c32dc76c914db36882507f78051, type: 2}
+  - {fileID: 11400000, guid: 4d9f3a4ae2123524dbc4efb8477b3d7f, type: 2}
+  - {fileID: 11400000, guid: 490d167638bd9d84da91f18db1526ec6, type: 2}
+  - {fileID: 11400000, guid: 6695b9a19e7e5784388304eb6ef0503a, type: 2}
+  - {fileID: 11400000, guid: e3d8fa79fe9654449a9db7c5d3a9bb6b, type: 2}
+  - {fileID: 11400000, guid: ac27d76980e9df9498201be568afaf3b, type: 2}
+  - {fileID: 11400000, guid: 74cc00a8b30c4ea43b39e2d569cf12d1, type: 2}
+  - {fileID: 11400000, guid: a275d92be150e4149969c0d24d0b3902, type: 2}
+  - {fileID: 11400000, guid: 9db308f6795c51b439e60de1f0f6615e, type: 2}
+  - {fileID: 11400000, guid: 26ba40b2ce8c258448ac30eb8d1cbbb5, type: 2}
+  - {fileID: 11400000, guid: 63058a9c9fcd99e40ae29bf98fd7c4fe, type: 2}
+  - {fileID: 11400000, guid: d6046962a5b87184a8a9a23ff8f06dd8, type: 2}
+  - {fileID: 11400000, guid: 9832a043da896fc4f9a845a9b6934ba8, type: 2}
+  - {fileID: 11400000, guid: 48a3c211353e14d478ab0ca8c544aa94, type: 2}
+  cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
