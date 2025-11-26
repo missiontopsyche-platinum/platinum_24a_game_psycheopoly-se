@@ -9,13 +9,23 @@ namespace Assets.Scripts.Managers
     /// </summary>
     public class RulesManager : MonoBehaviour
     {
+        [Header("Active Ruleset")]
         [SerializeField] private StandardRuleSet standardRuleSet = new StandardRuleSet();
 
-        // Currently always returns standard rules.
-        // Later tasks may add alternate rule sets.
+        private IRuleSet active;
+
+        private void Awake()
+        {
+            //create new StandardRuleSet if inspector doesn't already have on serialzeied
+            active ??= standardRuleSet ?? new StandardRuleSet();
+        }
+
         public IRuleSet GetRuleSet()
         {
-            return standardRuleSet;
+            if (active == null)
+                active = standardRuleSet ?? new StandardRuleSet();
+
+            return active;
         }
     }
 }

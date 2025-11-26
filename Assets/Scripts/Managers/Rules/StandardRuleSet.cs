@@ -1,4 +1,5 @@
 using UnityEngine;
+using Assets.Scripts.Managers.Rent;
 
 namespace Assets.Scripts.Managers.Rules
 {
@@ -6,8 +7,28 @@ namespace Assets.Scripts.Managers.Rules
     /// basic Monopoly rule implementation still an empty placeholder for US402-T404
     /// Will be populated when rent rule logic is brought oever
     /// </summary>
+    [System.Serializable]
     public class StandardRuleSet : IRuleSet
     {
-        //also again just a placeholder while i build the concept arch
-    }
+        [Tooltip("Base rent for 1 owned railroad (25, 50, 100, 200 scaling).")]
+        [SerializeField] private int railroadBase = 25;
+
+        [Tooltip("Utility multiplier when owner has a single utility.")]
+        [SerializeField] private int utilitySingle = 4;
+
+        [Tooltip("Utility multiplier when owner has both utilities.")]
+        [SerializeField] private int utilityBoth = 10;
+
+        public int RailroadBaseRent() => railroadBase;
+        public int UtilityRentSingleMult() => utilitySingle;
+        public int UtilityRentBothMult() => utilityBoth;
+
+        public int StreetsInGroup(ColorGroup g) =>
+            g switch
+            {
+                ColorGroup.Brown or ColorGroup.DarkBlue => 2,
+                ColorGroup.LightBlue or ColorGroup.Pink or ColorGroup.Orange or ColorGroup.Red or ColorGroup.Yellow or ColorGroup.Green => 3,
+                _ => 0
+            };
+}
 }

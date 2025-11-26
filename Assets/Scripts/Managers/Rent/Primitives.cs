@@ -16,15 +16,6 @@ namespace Assets.Scripts.Managers.Rent
         int[] RentByHouses { get; }   
     }
 
-    /// <summary>Rules/constants centralized to keep StandardRentStrategy clean.</summary>
-    public interface IRuleSet
-    {
-        int RailroadBaseRent();       //usually 25 in game
-        int UtilityRentSingleMult();  //usually 4 in game
-        int UtilityRentBothMult();    //usually 10 in game
-        int StreetsInGroup(ColorGroup g); //total street amount in a color set
-    }
-
     /// <summary>Ownership lookups kept external to Strategy.</summary>
     public interface IOwnershipService
     {

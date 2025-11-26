@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
+    [SerializeField] private RulesManager rulesManager;
+
 
 
     private int playerCount = 0;

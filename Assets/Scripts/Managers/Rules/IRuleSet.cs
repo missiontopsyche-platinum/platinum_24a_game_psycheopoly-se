@@ -1,4 +1,5 @@
 using UnityEngine;
+using Assets.Scripts.Managers.Rent;
 
 
 namespace Assets.Scripts.Managers.Rules
@@ -10,7 +11,10 @@ namespace Assets.Scripts.Managers.Rules
     /// </summary>
     public interface IRuleSet
     {
-        // still a placeholder just adding the summary
+        int RailroadBaseRent();
+        int UtilityRentSingleMult();
+        int UtilityRentBothMult();
+        int StreetsInGroup(ColorGroup group);
     }
 }
 
