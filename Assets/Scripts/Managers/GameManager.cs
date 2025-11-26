@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     //adding in reference to Enum created in the Data folder - nnastase us11-t33
     //default setter
     public GameState gameState { get; set; } = GameState.None;
+    public TurnPhase turnPhase { get; set; } = TurnPhase.None;
 
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
@@ -26,6 +27,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public MovePlayerEventChannel movePlayerChannel;
     [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
+    [SerializeField] public TurnPhaseChangedEventChannel turnPhaseChangedEventChannel;
+    [SerializeField] public BooleanEventChannel rollDiceRequestedChannel;
+    [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
+
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
@@ -52,6 +57,19 @@ public class GameManager : MonoBehaviour
         { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.PlayerTurn, GameState.BotTurn, GameState.GameOver } },
         { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
         { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
+    };
+
+    private static readonly Dictionary<TurnPhase, HashSet<TurnPhase>> PhaseAllowed = new()
+    {
+        { TurnPhase.None,            new() { TurnPhase.StartTurn } },
+        { TurnPhase.StartTurn,       new() { TurnPhase.PreRoll } },
+        { TurnPhase.PreRoll,         new() { TurnPhase.RollingDice } },
+        { TurnPhase.RollingDice,     new() { TurnPhase.MovingPiece } },
+        { TurnPhase.MovingPiece,     new() { TurnPhase.ResolvingSpace } },
+        { TurnPhase.ResolvingSpace,  new() { TurnPhase.ResolvingCards, TurnPhase.PostTurn } },
+        { TurnPhase.ResolvingCards,  new() { TurnPhase.PostTurn, TurnPhase.MovingPiece } },
+        { TurnPhase.PostTurn,        new() { TurnPhase.EndTurn } },
+        { TurnPhase.EndTurn,         new() { TurnPhase.StartTurn } },
     };
 
     //us11t41 duplicate prevention with Awake() method
@@ -105,6 +123,8 @@ public class GameManager : MonoBehaviour
         //US156T157 subscribe to DiceRolled Listener
         diceRolledChannel.Subscribe(DiceRolled);
         pieceMoveCompletedChannel?.Subscribe(PieceMoveCompleted);
+        rollDiceRequestedChannel?.Subscribe(OnRollDiceRequest);
+        cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
 
         //us253-t278 hook up movement strategy to dice/board managers
         if (movementStrategy != null)
@@ -169,14 +189,27 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void OnDestroy()
     {
-       //Unsubscribe from event channels
-       diceRolledChannel.Unsubscribe(DiceRolled);
+        //Unsubscribe from event channels
+        diceRolledChannel?.Unsubscribe(DiceRolled);
+        pieceMoveCompletedChannel?.Unsubscribe(PieceMoveCompleted);
+        rollDiceRequestedChannel?.Unsubscribe(OnRollDiceRequest);
+        cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
     }
 
     private void PieceMoveCompleted(bool pieceMoveCompleted)
     {
         // in future, should have a state machine for turn progress
+        if (!pieceMoveCompleted) return;
+        if (gameState != GameState.PlayerTurn)
+        {
+            Logging.Logger.Error("GameManager.OnRollDiceRequest",
+                $"Illegal action, game state must be {GameState.PlayerTurn} to proceed. Current state: {gameState}",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
         turnComplete = pieceMoveCompleted;
+        TryChangeTurnPhase(TurnPhase.ResolvingSpace);
     }
 
     /// <summary>
@@ -223,9 +256,12 @@ public class GameManager : MonoBehaviour
     {
         // temporary, assume every player is a 'human' player
         SetState(GameState.PlayerTurn);
+        TryChangeTurnPhase(TurnPhase.StartTurn);
         turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
         turnComplete = false;
-        currentTurnCoroutine = StartCoroutine(ExecuteTurn());
+        diceRollPanel?.gameObject.SetActive(true);
+        // This is going to be important when we decouple the UI panel to request a dice roll
+        TryChangeTurnPhase(TurnPhase.PreRoll);
     }
 
     public void NextTurn()
@@ -351,12 +387,63 @@ public class GameManager : MonoBehaviour
         this.dieTwo = diceRolledEvent.dieTwo;
         this.totalRolled = diceRolledEvent.totalRoll;
 
-        if (this.gameState == GameState.PlayerTurn)
+        if (this.gameState == GameState.PlayerTurn && this.turnPhase == TurnPhase.RollingDice)
         {
             // movement now handled by StandardMovementStrategy. no need to raise MovePlayerEvent manually.
             Logging.Logger.Debug("gameManager.DiceRolled", "Dice roll processed — movement handled by " +
                 "StandardMovementStrategy.",
                 Logging.LogCategory.Gameplay, this);
+            TryChangeTurnPhase(TurnPhase.MovingPiece);
         }
+    }
+
+    public void OnRollDiceRequest(bool diceRollRequestedEvent)
+    {
+        if (!diceRollRequestedEvent) return;
+        if (gameState != GameState.PlayerTurn)
+        {
+            Logging.Logger.Error("GameManager.OnRollDiceRequest",
+                $"Illegal action, game state must be {GameState.PlayerTurn} to proceed. Current state: {gameState}",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
+        TryChangeTurnPhase(TurnPhase.RollingDice);
+    }
+
+    public void OnCardDrawnEvent(Card card, Player player, CardDeck deck)
+    {
+        if (card == null || player == null || deck == null) return;
+        if (gameState != GameState.PlayerTurn)
+        {
+            Logging.Logger.Error("GameManager.OnCardDrawnEvent",
+                $"Illegal action, game state must be {GameState.PlayerTurn} to proceed. Current state: {gameState}",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
+        TryChangeTurnPhase(TurnPhase.ResolvingCards);
+    }
+
+    private bool TryChangeTurnPhase(TurnPhase newPhase)
+    {
+        if (newPhase == turnPhase) return false;
+
+        if (!PhaseAllowed.TryGetValue(turnPhase, out var nexts) ||
+            !nexts.Contains(newPhase))
+        {
+            Logging.Logger.Warn("GameManager.TryChangeTurnPhase",
+                $"Illegal turn phase transition: {turnPhase} -> {newPhase}",
+                LogCategory.Gameplay,
+                this);
+            return false;
+        }
+
+        var prev = turnPhase;
+        turnPhase = newPhase;
+
+        turnPhaseChangedEventChannel.RaiseEvent(new TurnPhaseChangedEvent(prev, turnPhase));
+
+        return true;
     }
 }
