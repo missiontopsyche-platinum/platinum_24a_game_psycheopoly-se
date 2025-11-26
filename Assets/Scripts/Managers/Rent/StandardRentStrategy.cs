@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Logging;
+using Assets.Scripts.Managers.Rules;
 
 namespace Assets.Scripts.Managers.Rent
 {
