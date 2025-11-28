@@ -8,7 +8,7 @@ using Logger = Logging.Logger;
 
 namespace Tests.PlayMode.BoardRenderer
 {
-    public class BoardRendererTestBase
+    public class BoardRendererTestBase : PlayTestBase
     {
         // components and objects
         protected GameObject boardGameObject;
@@ -30,10 +30,6 @@ namespace Tests.PlayMode.BoardRenderer
             
             //Create an on sceneLoaded event handler to build objects
             SceneManager.sceneLoaded += OnSceneLoaded;
-
-            SceneManager.LoadScene("PlayTestScene");
-            
-            
         }
 
         [TearDown]
@@ -132,7 +128,8 @@ namespace Tests.PlayMode.BoardRenderer
                 Logger.Info("BoardManagerTestBase.SetUp",
                 "Cannot Locate Board.",
                 LogCategory.Core, this);
-                Assert.IsNotNull(boardGameObject, "Why is this fucking null?");
+                Assert.IsNotNull(boardGameObject, "Wh" +
+                    "y is this fucking null?");
             }
 
             boardManager = boardGameObject.GetComponent<BoardManager>() as BoardManager;
