@@ -15,8 +15,13 @@ namespace Tests.PlayMode
         {
             //Init logger
             InitializeTestLogger();
+            Logging.Logger.Trace("PlayTestBase.SetUp",
+                "Setting up base play test",
+                Logging.LogCategory.UI,
+                this);
 
             SceneManager.LoadScene("PlayTestScene");
+
         }
 
         [TearDown]
@@ -25,8 +30,9 @@ namespace Tests.PlayMode
             SceneManager.UnloadScene("PlayTestScene");
         }
 
+       
 
-        
+
     }
 }
 

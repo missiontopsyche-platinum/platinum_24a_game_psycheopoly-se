@@ -3,11 +3,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using Tests.EditMode;
- 
+using UnityEngine.SceneManagement;
+
+
 namespace Tests.PlayMode
 {
-    public class DicePanelControllerPlayModeTests : PlayTestBase, IOnSceneLoaded
+    public class DicePanelControllerPlayModeTests : PlayTestBase
     {
         private GameObject root;
         private DicePanelController controller;
@@ -15,29 +16,20 @@ namespace Tests.PlayMode
         [SetUp]
         public void SetUp()
         {
-            
+            //Create an on sceneLoaded event handler to build objects
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
             Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
                 "Setting up DicePanelController PlayMode test",
                 Logging.LogCategory.UI,
                 this);
 
-            root = new GameObject("DicePanelControllerPlayModeTests");
-            root.SetActive(false);
-            controller = root.AddComponent<DicePanelController>();
-
-            controller.rollDiceButton = CreateAndAttachComponent<Button>("RollDiceButton", root);
-            controller.dice1RolledText = CreateAndAttachComponent<Text>("Dice1RolledText", root);
-            controller.dice2RolledText = CreateAndAttachComponent<Text>("Dice2RolledText", root);
-            controller.diceTotalText = CreateAndAttachComponent<Text>("DiceTotalText", root);
-
-            controller.diceRolledRequestedChannel = CreateChannel<BooleanEventChannel>();
-            controller.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            DestroyTestObjects(root, controller);
+           
         }
 
         [UnityTest]
@@ -63,9 +55,12 @@ namespace Tests.PlayMode
             Assert.AreEqual("Total: 7", controller.diceTotalText.text);
         }
 
-        [Test]
-        public void RollButton_Click_Raises_RollDiceRequestedEvent()
+        [UnityTest]
+        public IEnumerator RollButton_Click_Raises_RollDiceRequestedEvent()
         {
+
+            yield return null; // wait a frame for the scene to fully load
+
             bool received = false;
             controller.diceRolledRequestedChannel.Subscribe(v => received = v);
 
@@ -85,6 +80,14 @@ namespace Tests.PlayMode
             controller.diceRolledRequestedChannel = null;
             Assert.DoesNotThrow(() => controller.rollDiceButton.onClick.Invoke());
             yield return null;
+        }
+
+        public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            root = GameObject.Find("HUD").transform.Find("HUDRoot").Find("DicePanel").Find("DicePanelController").gameObject;
+            root.SetActive(false);
+            controller = root.GetComponent<DicePanelController>();
+            controller.rollDiceButton = CreateAndAttachComponent<Button>("Button", root);
         }
     }
 }

@@ -2,6 +2,7 @@ using Logging;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Logger = Logging.Logger;
 namespace Tests.PlayMode.BoardRenderer
@@ -224,5 +225,7 @@ namespace Tests.PlayMode.BoardRenderer
             Assert.Less(player0Pos.x, spacePosition.x, "Player 0 should be left of center");
             Assert.Greater(player0Pos.y, spacePosition.y, "Player 0 should be above center");
         }
+
+        
     }
 }

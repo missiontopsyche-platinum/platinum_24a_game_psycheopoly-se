@@ -27,7 +27,7 @@ namespace Tests.PlayMode.BoardRenderer
         {   
             //Init logger
             Logger.Initialize(LogSettings.Current());
-            
+
             //Create an on sceneLoaded event handler to build objects
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -93,16 +93,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitForSeconds(waitTime);
         }
 
-        protected IEnumerator LoadScenceAsync(string scene)
-        {
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("PlayTestScene"); 
-
-            while (!asyncLoad.isDone)
-            {
-                yield return null;
-            }
-        }
-
+      
         /// <summary>
         /// Event handler for "SceneLoaded" event to build out testing objects after
         /// PlayTestScene has loaded. This is necessary to ensure the scene is loaded
