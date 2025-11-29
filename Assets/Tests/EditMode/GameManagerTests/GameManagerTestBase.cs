@@ -27,6 +27,12 @@ namespace Tests.EditMode.GameManagerTests
             // subscribe to event channels
             gameManager.diceRolledChannel.Subscribe(gameManager.DiceRolled);
 
+            gameManager.movePlayerChannel = CreateChannel<MovePlayerEventChannel>();
+            gameManager.pieceMoveCompletedChannel = CreateChannel<BooleanEventChannel>();
+            gameManager.rollDiceRequestedChannel = CreateChannel<BooleanEventChannel>();
+            gameManager.cardDrawnChannel = CreateChannel<CardDrawnEventChannel>();
+            gameManager.turnEndedChannel = CreateChannel<BooleanEventChannel>();
+
 
             InitializeTestLogger();
 

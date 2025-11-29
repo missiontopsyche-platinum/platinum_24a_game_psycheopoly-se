@@ -79,50 +79,66 @@ public class CardDeckTest : ManagerTestBase
     }
 
     [Test]
-    public void DrawCard_ExecutesAllEffects_AndReturnsCardToBottom()
+    public void DrawCard_EnsureCardIsDrawn()
     {
-        var moveChannel = CreateChannel<MovePlayerEventChannel>();
-        var raisedMoves = new List<MovePlayerEvent>();
-        moveChannel.Subscribe(e => raisedMoves.Add(e));
-
+        var cardDrawnChannel = CreateChannel<CardDrawnEventChannel>();
+        var raisedMoves = new List<Card>();
+        cardDrawnChannel.Subscribe((card, player, deck)=> { raisedMoves.Add(card); });
+        deck.cardDrawnChannel = cardDrawnChannel;
         // Card A
-        var a1 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveForward, SpacesToMove = 2, MovePlayerEventChannel = moveChannel };
-        var a2 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveBackward, SpacesToMove = 1, MovePlayerEventChannel = moveChannel };
+        var a1 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveForward, SpacesToMove = 2 };
+        var a2 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveBackward, SpacesToMove = 1 };
         var cardA = MakeCard(a1, a2);
 
         // Card B
-        var b1 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveForward, SpacesToMove = 3, MovePlayerEventChannel = moveChannel };
-        var b2 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveBackward, SpacesToMove = 2, MovePlayerEventChannel = moveChannel };
+        var b1 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveForward, SpacesToMove = 3 };
+        var b2 = new MoveCardEffect { Type = MoveCardEffect.EffectType.MoveBackward, SpacesToMove = 2 };
         var cardB = MakeCard(b1, b2);
 
         // Seed and let OnEnable build & shuffle the deckqueue
         SeedDeckCards(new Card[] { cardA, cardB });
 
-        // First draw produces 2 move events
+        // First draw produces 1 draw events
         raisedMoves.Clear();
         deck.DrawCard(player);
-        Assert.AreEqual(2, raisedMoves.Count, "First draw should execute two effects.");
-        var firstPair = raisedMoves.Select(m => m.spacesToMove).ToArray();
-        bool isA = firstPair.SequenceEqual(new[] { 2, -1 });
-        bool isB = firstPair.SequenceEqual(new[] { 3, -2 });
+        Assert.AreEqual(1, raisedMoves.Count);
+        var firstPair = raisedMoves
+            .SelectMany(c => c.effect)                
+            .OfType<MoveCardEffect>()           
+            .Select(e => e.SpacesToMove)            
+            .ToArray();
+        deck.ReturnCardToDeck(raisedMoves[0]);
+
+        bool isA = firstPair.SequenceEqual(new[] { 2, 1 });
+        bool isB = firstPair.SequenceEqual(new[] { 3, 2 });
         Assert.IsTrue(isA || isB, "First draw should be either Card A (+2,-1) or Card B (+3,-2).");
 
-        // Second draw should execute the other pair
         raisedMoves.Clear();
         deck.DrawCard(player);
-        Assert.AreEqual(2, raisedMoves.Count, "Second draw should execute two effects.");
-        var secondPair = raisedMoves.Select(m => m.spacesToMove).ToArray();
+        Assert.AreEqual(1, raisedMoves.Count);
+        var secondPair = raisedMoves
+            .SelectMany(c => c.effect)               
+            .OfType<MoveCardEffect>()           
+            .Select(e => e.SpacesToMove)             
+            .ToArray();
+        deck.ReturnCardToDeck(raisedMoves[0]);
+
         if (isA)
-            CollectionAssert.AreEqual(new[] { 3, -2 }, secondPair);
+            CollectionAssert.AreEqual(new[] { 3, 2 }, secondPair);
         else
-            CollectionAssert.AreEqual(new[] { 2, -1 }, secondPair);
+            CollectionAssert.AreEqual(new[] { 2, 1 }, secondPair);
 
         // Since cards are returned to the bottom, we test it again.
         raisedMoves.Clear();
         deck.DrawCard(player);
-        Assert.AreEqual(2, raisedMoves.Count, "Third draw should again execute two effects (card returned to bottom).");
-        var third = raisedMoves.Select(m => m.spacesToMove).ToArray();
-        Assert.IsTrue(third.SequenceEqual(new[] { 2, -1 }) || third.SequenceEqual(new[] { 3, -2 }));
+        Assert.AreEqual(1, raisedMoves.Count);
+        var third = raisedMoves
+            .SelectMany(c => c.effect)             
+            .OfType<MoveCardEffect>()      
+            .Select(e => e.SpacesToMove) 
+            .ToArray();
+
+        Assert.IsTrue(third.SequenceEqual(new[] { 2, 1 }) || third.SequenceEqual(new[] { 3, 2 }));
     }
 
     [Test]
