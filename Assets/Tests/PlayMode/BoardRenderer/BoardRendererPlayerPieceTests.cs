@@ -174,7 +174,7 @@ namespace Tests.PlayMode.BoardRenderer
             {
                 yield return MovePieceAndWait(i, 5);
             }
-            yield return new WaitForSeconds(1f); // wait for all pieces to finish movement
+           
             
             // Verify piece is offset in both X and Y 
             for (int i = 0; i < 4; i++)

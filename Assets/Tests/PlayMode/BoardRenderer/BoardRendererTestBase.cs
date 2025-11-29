@@ -14,14 +14,15 @@ namespace Tests.PlayMode.BoardRenderer
         protected GameObject boardGameObject;
         protected global::BoardRenderer boardRenderer;
         protected BoardManager boardManager;
+        protected GameManager gameManager;
         protected Camera testCamera;
         protected GameObject spaceRendererPrefab;
         protected GameObject playerPiecePrefab;
-
+        
         // event channels
         protected PlayerEventChannel testPlayerEventChannel;
         protected PlayerMovedEventChannel testMoveEventChannel;
-
+        protected BooleanEventChannel testPieceMoveCompletedChannel;
         
         [SetUp]
         public void SetUp()
@@ -96,10 +97,14 @@ namespace Tests.PlayMode.BoardRenderer
         /// <param name="targetSpace">target space to move to</param>
         /// <param name="waitTime">default: 2 seconds</param>
         /// <returns></returns>
-        protected IEnumerator MovePieceAndWait(int playerId, int targetSpace, float waitTime = 2f)
+        protected IEnumerator MovePieceAndWait(int playerId, int targetSpace)
         {
+            bool finishedMove = false;
+
+            testPieceMoveCompletedChannel.Subscribe((v) => finishedMove = true);
             boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace, null));
-            yield return new WaitForSeconds(waitTime);
+            
+            yield return new WaitWhile(()=> !finishedMove);
         }
 
       
@@ -131,15 +136,16 @@ namespace Tests.PlayMode.BoardRenderer
                 Assert.IsNotNull(boardGameObject, "Wh" +
                     "y is this fucking null?");
             }
-
+            
             boardManager = boardGameObject.GetComponent<BoardManager>() as BoardManager;
             boardRenderer = boardManager.boardRenderer;
+            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
             testPlayerEventChannel = boardManager.playerAddedChannel;
             testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
             testMoveEventChannel = boardManager.playerMovedChannel;
             testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
-
+            testPieceMoveCompletedChannel = gameManager.pieceMoveCompletedChannel;
             // generate a test board
             SpaceData[] testSpaces = CreateTestSpaces(40);
             boardRenderer.GenerateBoard(testSpaces);
