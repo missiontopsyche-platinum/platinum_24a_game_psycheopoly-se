@@ -2,57 +2,89 @@ using NUnit.Framework;
 using System.Collections;
 using Tests.EditMode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using BoardManager = PsycheOpoly.Board.BoardManager;
 
-public class PlayerPanelControllerPlayModeTests : ManagerTestBase
-{
-    private GameObject root;
-    private PlayerPanelController controller;   
-    [SetUp]
-    public void SetUp()
+namespace Tests.PlayMode {
+    public class PlayerPanelControllerPlayModeTests : PlayTestBase
     {
-        InitializeTestLogger();
-        Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
-            "Setting up DicePanelController PlayMode test", 
-            Logging.LogCategory.UI,
-            this);
+        private GameObject root;
+        private PlayerPanelController controller;
+        [SetUp]
+        public void SetUp()
+        {
+           
+            Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
+                "Setting up DicePanelController PlayMode test",
+                Logging.LogCategory.UI,
+                this);
 
-        root = new GameObject("PlayerPanelControllerPlayModeTests");
-        root.SetActive(false);
-        controller = root.AddComponent<PlayerPanelController>();
+            //Create an on sceneLoaded event handler to build objects
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("PlayTestScene", LoadSceneMode.Single);
+        }
 
-        controller.playerNameText = CreateAndAttachComponent<Text>("PlayerNameText", root);
-        controller.playerMoneyText = CreateAndAttachComponent<Text>("PlayerMoneyText", root);
+        [TearDown]
+        public void TearDown()
+        {
+            //DestroyTestObjects(root, controller);
+        }
 
-        controller.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
-        controller.addPlayerEventChannel = CreateChannel<PlayerEventChannel>();
-    }
+        [UnityTest]
+        public IEnumerator DisplayCurrentPlayer_UpdateTextFields()
+        {
+            yield return new WaitWhile(() => !sceneLoaded); // wait for scene to be fully loaded
 
-    [TearDown]
-    public void TearDown()
-    {
-        DestroyTestObjects(root, controller);
-    }
+            BoardManager boardManager = GameObject.Find("Board").GetComponent<BoardManager>() as BoardManager;
+            boardManager.ClearPlayers();
+            boardManager.boardRenderer.ClearPlayers();
+            controller.ClearPlayers();
+            
+            Assert.IsNotNull(controller.playerNameText, "Player name text should not be null before enabling.");
+            Assert.IsNotNull(controller.playerMoneyText, "Player money text should not be null before enabling.");
 
-    [UnityTest]
-    public IEnumerator DisplayCurrentPlayer_UpdateTextFields()
-    {
-        Assert.IsNotNull(controller.playerNameText, "Player name text should not be null before enabling.");
-        Assert.IsNotNull(controller.playerMoneyText, "Player money text should not be null before enabling.");
+            var player1 = ScriptableObject.CreateInstance<Player>();
+            player1.SetId(0);
+            player1.SetPName("Alice");
+            player1.SetMoney(1500);
 
-        var player1 = ScriptableObject.CreateInstance<Player>();
-        player1.SetId(0);
-        player1.SetPName("Alice");
-        player1.SetMoney(1500);
+            //root.SetActive(true);
+            controller.addPlayerEventChannel.RaiseEvent(player1);
 
-        root.SetActive(true);
-        controller.addPlayerEventChannel.RaiseEvent(player1);
+            controller.turnStartedChannel.RaiseEvent(new TurnStartedEvent(0, 1));
+            yield return null;
 
-        controller.turnStartedChannel.RaiseEvent(new TurnStartedEvent(0, 1));
-        yield return null;
+            Assert.AreEqual("Player: Alice", controller.playerNameText.text);
+            Assert.AreEqual("Money: 1500", controller.playerMoneyText.text);
+        }
 
-        Assert.AreEqual("Player: Alice", controller.playerNameText.text);
-        Assert.AreEqual("Money: 1500", controller.playerMoneyText.text);
+        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            root = GameObject.Find("HUD").transform.Find("HUDRoot").Find("PlayerPanel").Find("PlayerPanelController").gameObject;
+            //root.SetActive(false);
+            controller = root.GetComponent<PlayerPanelController>();
+
+            BoardManager boardManager = GameObject.Find("Board").GetComponent<BoardManager>() as BoardManager;
+            if (boardManager.ClearPlayers())
+            {
+                Logging.Logger.Trace("DicePanelControllerPlayModeTests.OnSceneLoaded",
+                "Succesfully cleared boardManagers",
+                Logging.LogCategory.UI,
+                this);
+            }
+            if (boardManager.boardRenderer.ClearPlayers())
+            {
+                Logging.Logger.Trace("DicePanelControllerPlayModeTests.OnSceneLoaded",
+                "Succesfully cleared boardRenderer",
+                Logging.LogCategory.UI,
+                this);
+            }
+
+            sceneLoaded = true;
+        }
     }
 }
+
+

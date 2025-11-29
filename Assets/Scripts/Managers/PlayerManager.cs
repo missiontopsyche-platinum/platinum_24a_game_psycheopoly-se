@@ -271,4 +271,9 @@ public class PlayerManager : MonoBehaviour
     {
         AddMoney(payPlayerEvent.paidPlayer.GetId(), payPlayerEvent.amountPaid);
     }
+
+    public void ClearPlayers()
+    {
+
+    }
 }

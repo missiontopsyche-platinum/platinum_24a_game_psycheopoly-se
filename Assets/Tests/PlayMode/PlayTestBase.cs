@@ -10,6 +10,8 @@ namespace Tests.PlayMode
 {
     public class PlayTestBase : ManagerTestBase
     {
+        protected bool sceneLoaded = false;
+
         [SetUp]
         public void Setup()
         {
@@ -19,9 +21,6 @@ namespace Tests.PlayMode
                 "Setting up base play test",
                 Logging.LogCategory.UI,
                 this);
-
-            SceneManager.LoadScene("PlayTestScene");
-
         }
 
         [TearDown]
@@ -30,9 +29,7 @@ namespace Tests.PlayMode
             SceneManager.UnloadScene("PlayTestScene");
         }
 
-       
-
-
+        protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) { }
     }
 }
 

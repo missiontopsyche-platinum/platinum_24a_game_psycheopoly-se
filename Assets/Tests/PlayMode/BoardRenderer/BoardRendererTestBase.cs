@@ -22,14 +22,18 @@ namespace Tests.PlayMode.BoardRenderer
         protected PlayerEventChannel testPlayerEventChannel;
         protected PlayerMovedEventChannel testMoveEventChannel;
 
+        
         [SetUp]
         public void SetUp()
-        {   
-            //Init logger
-            Logger.Initialize(LogSettings.Current());
+        {
+            Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
+                "Setting up DicePanelController PlayMode test",
+                Logging.LogCategory.UI,
+                this);
 
             //Create an on sceneLoaded event handler to build objects
             SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("PlayTestScene", LoadSceneMode.Single);
         }
 
         [TearDown]
@@ -101,7 +105,7 @@ namespace Tests.PlayMode.BoardRenderer
         /// </summary>
         /// <param name="scene"></param>
         /// <param name="mode"></param>
-        protected void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             // set up camera using Scene Manager
             testCamera = GameObject.FindFirstObjectByType<Camera>();
@@ -139,6 +143,8 @@ namespace Tests.PlayMode.BoardRenderer
             //function correctly
             boardManager.ClearPlayers();
             boardRenderer.ClearPlayers();
+
+            sceneLoaded = true;
         }
     }
 }

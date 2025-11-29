@@ -12,6 +12,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_CreatesNewPiece()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -30,6 +31,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_SortsById()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -52,6 +54,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_StartsAtGo()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -67,7 +70,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator MovePiece_UpdatesSpaceIndex()
         {
-
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -85,6 +88,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator MovePiece_MovesPhysically()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -108,6 +112,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_NoBumpForSinglePiece()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -128,6 +133,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_BumpsTwoPieces()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -154,6 +160,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_BumpsFourPiecesToCorners()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();
@@ -204,6 +211,7 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_LowerIdGetsFirstCorner()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
             boardManager.ClearPlayers();

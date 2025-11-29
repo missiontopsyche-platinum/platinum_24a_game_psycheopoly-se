@@ -85,4 +85,9 @@ public class PlayerPanelController : UIPanelBase
         }
         playersList.Add(player);
     }
+
+    public void ClearPlayers()
+    {
+        playersList.Clear();
+    }
 }

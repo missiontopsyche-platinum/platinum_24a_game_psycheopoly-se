@@ -6,7 +6,7 @@ using TestLogger = Logging.Logger; // Alias to avoid namespace clash. Not sure h
 
 namespace Tests.EditMode
 {
-    public class ManagerTestBase
+    public class ManagerTestBase : MonoBehaviour
     {
         protected List<ScriptableObject> eventChannels = new();
         protected IEventLogger logger;
