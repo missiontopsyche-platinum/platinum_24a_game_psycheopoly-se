@@ -1144,7 +1144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::TurnPanelController
   turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
-  turnEndedChannel: {fileID: 0}
+  turnEndedChannel: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
   turnNumberText: {fileID: 8218625245189870487}
   endTurnButton: {fileID: 2927938370797607159}
 --- !u!1 &7331706114752802826
