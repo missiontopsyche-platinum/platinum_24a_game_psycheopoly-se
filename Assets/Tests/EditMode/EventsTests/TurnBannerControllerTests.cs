@@ -41,5 +41,43 @@ namespace Tests.EditMode.EventsTests
             Assert.IsTrue(controller.gameObject.activeSelf, "Banner should be active after ShowBanner(2).");
             StringAssert.Contains("Player 2", turnLabel.text);
         }
+
+        [Test]
+        public void EditMode_EventsHandledWhileHidden()
+        {
+            controller.Hide();
+            turnStartedEventChannel.RaiseEvent(new TurnStartedEvent(0,0));
+            
+            Assert.IsTrue(cg.interactable);
+            Assert.AreEqual(cg.alpha, 1f);
+        }
+
+        [Test]
+        public void EditMode_OnEnableSubscribes()
+        {
+            controller.Hide();
+            controller.gameObject.SetActive(false);
+            controller.gameObject.SetActive(true);
+            turnStartedEventChannel.RaiseEvent(new TurnStartedEvent(0,0));
+            Assert.IsTrue(cg.interactable);
+            Assert.AreEqual(cg.alpha, 1f);
+        }
+
+        [Test]
+        public void EditMode_OnDisableUnsubscribes()
+        {
+            controller.Hide();
+            
+            // simulate firing OnDisable, because EditMode won't fire these methods
+            var onDisable = controller.GetType().GetMethod("OnDisable",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            onDisable?.Invoke(controller, null);
+            
+            Assert.IsFalse(controller.IsSubscribed);
+            
+            turnStartedEventChannel.RaiseEvent(new TurnStartedEvent(0,0));
+            Assert.IsFalse(cg.interactable);
+            Assert.AreEqual(cg.alpha, 0f);
+        }
     }
 }

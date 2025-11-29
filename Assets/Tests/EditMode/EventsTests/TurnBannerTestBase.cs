@@ -26,6 +26,8 @@ namespace Tests.EditMode.EventsTests
         protected GameObject buttonGO;
         protected Button continueButton;
 
+        protected TurnStartedEventChannel turnStartedEventChannel;
+
         /// <summary>Creates a canvas so UI components can work in EditMode.</summary>
         protected virtual void CreateCanvas()
         {
@@ -93,6 +95,8 @@ namespace Tests.EditMode.EventsTests
 
             continueButton = buttonGO.GetComponent<Button>();
 
+            turnStartedEventChannel = ScriptableObject.CreateInstance<TurnStartedEventChannel>();
+
             //Wire refs to controller
             controller.GetType().GetField("turnLabel",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
@@ -105,6 +109,10 @@ namespace Tests.EditMode.EventsTests
             controller.GetType().GetField("canvasGroup",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
                 ?.SetValue(controller, cg);
+            
+            controller.GetType().GetField("turnStartedChannel",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(controller, turnStartedEventChannel);
 
             //Manually simulate Awake() because they will not fire in EditMode testing 
             var awake = controller.GetType().GetMethod("Awake",
