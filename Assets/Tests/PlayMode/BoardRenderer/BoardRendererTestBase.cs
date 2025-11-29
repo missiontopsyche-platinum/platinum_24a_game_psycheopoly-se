@@ -80,8 +80,13 @@ namespace Tests.PlayMode.BoardRenderer
         /// <returns></returns>
         protected IEnumerator AddPlayerAndWait(Player player)
         {
+            bool playerAdded = false;
+
+            testPlayerEventChannel.Subscribe((v) => playerAdded = true);
+
             testPlayerEventChannel.RaiseEvent(player);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitWhile(() => !playerAdded);
+
         }
         
         /// <summary>
