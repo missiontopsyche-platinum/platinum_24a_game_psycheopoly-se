@@ -10,6 +10,12 @@ public class GameManager : MonoBehaviour
     //adding in reference to Enum created in the Data folder - nnastase us11-t33
     //default setter
     public GameState gameState { get; set; } = GameState.None;
+
+    /// <summary>
+    /// Current phase within the active player's turn.
+    /// This is driven by <see cref="TryChangeTurnPhase"/> to ensure
+    /// that all transitions follow the allowed turn-phase finite state machine.
+    /// </summary>
     public TurnPhase turnPhase { get; set; } = TurnPhase.None;
 
     //us11-t41 keep one instance of a gamemanager at a time for security
@@ -56,6 +62,16 @@ public class GameManager : MonoBehaviour
         { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
     };
 
+    /// <summary>
+    /// Defines the legal transitions between <see cref="TurnPhase"/> values for
+    /// the turn finite state machine.
+    ///
+    /// Each key is the current phase, and its value is the set of phases that are
+    /// allowed as the next phase. All transitions must go through
+    /// <see cref="TryChangeTurnPhase"/> which validates against this map, and
+    /// also requires the overall <see cref="GameState"/> to be
+    /// <see cref="GameState.PlayerTurn"/>.
+    /// </summary>
     private static readonly Dictionary<TurnPhase, HashSet<TurnPhase>> PhaseAllowed = new()
     {
         { TurnPhase.None,            new() { TurnPhase.StartTurn } },
@@ -196,7 +212,16 @@ public class GameManager : MonoBehaviour
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
     }
 
-    private void PieceMoveCompleted(bool pieceMoveCompleted)
+    /// <summary>
+    /// Listener for the <see cref="pieceMoveCompletedChannel"/> that advances the
+    /// turn FSM from <see cref="TurnPhase.MovingPiece"/> to
+    /// <see cref="TurnPhase.ResolvingSpace"/> once the piece movement animation
+    /// has finished.
+    ///
+    /// If <paramref name="pieceMoveCompleted"/> is false, the FSM does not
+    /// advance.
+    /// </summary>
+    public void PieceMoveCompleted(bool pieceMoveCompleted)
     {
         // in future, should have a state machine for turn progress
         if (!pieceMoveCompleted) return;
@@ -232,6 +257,7 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// This is exposed to allow for testing in editmode, bypasses the init wait.
+    /// Completes any asynchronous game initialization and starts the first player's turn.
     /// </summary>
     public void CompleteGameInit()
     {
@@ -244,6 +270,17 @@ public class GameManager : MonoBehaviour
         CompleteGameInit();
     }
 
+    /// <summary>
+    /// Begins the current player's turn, entering the turn-phase FSM.
+    ///
+    /// This method:
+    /// - Sets <see cref="gameState"/> to <see cref="GameState.PlayerTurn"/>.
+    /// - Transitions the FSM from <see cref="TurnPhase.None"/> (or
+    ///   <see cref="TurnPhase.NextTurn"/>) to <see cref="TurnPhase.StartTurn"/>.
+    /// - Raises <see cref="turnStartedChannel"/> for HUD and other systems.
+    /// - Enables the dice roll panel UI.
+    /// - Advances to <see cref="TurnPhase.PreRoll"/>, where the game
+    ///   waits for a roll dice request.
     private void StartTurn()
     {
         // temporary, assume every player is a 'human' player
@@ -257,6 +294,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Advances to the next player's turn in the turn order, cycling the turn FSM.
+    ///
+    /// This method attempts to move the FSM from <see cref="TurnPhase.PostTurn"/>
+    /// to <see cref="TurnPhase.EndTurn"/> (via <see cref="OnTurnEndedEvent"/>),
+    /// then from <see cref="TurnPhase.EndTurn"/> to
+    /// <see cref="TurnPhase.NextTurn"/>. Once in <see cref="TurnPhase.NextTurn"/>,
+    /// it increments <see cref="currentPlayer"/> and <see cref="currentTurn"/>,
+    /// and calls <see cref="StartTurn"/> to re-enter the pre-roll phase for the
+    /// next player.
+    /// </summary>
     public void NextTurn()
     {
         if (TryChangeTurnPhase(TurnPhase.NextTurn))
@@ -347,6 +395,10 @@ public class GameManager : MonoBehaviour
     /// Dice Rolled event listener. Takes the DiceRolledEvent pushed by the event channel and
     /// then will utilize the contents as necessary. 
     /// For now, it just logs the details and saves the amounts to a class variable 
+    /// 
+    /// Attempts to transition from <see cref="TurnPhase.RollingDice"/> to
+    /// <see cref="TurnPhase.MovingPiece"/> using
+    /// <see cref="TryChangeTurnPhase"/>.
     /// </summary>
     /// <param name="diceRolledEvent"></param>
     /// <returns>DiceRolledEvent object</returns>
@@ -376,6 +428,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Listener for <see cref="rollDiceRequestedChannel"/> raised by the UI
+    /// (e.g., the dice roll button).
+    ///
+    /// When <paramref name="diceRollRequestedEvent"/> is true, this attempts to
+    /// transition the FSM from <see cref="TurnPhase.PreRoll"/> to
+    /// <see cref="TurnPhase.RollingDice"/>. The dice animation and actual roll are
+    /// then handled by the dice/animation systems.
+    /// </summary>
+    /// <param name="diceRollRequestedEvent">
+    /// True when a roll has been requested; false is ignored.
+    /// </param>
     public void OnRollDiceRequest(bool diceRollRequestedEvent)
     {
         if (!diceRollRequestedEvent) return;
@@ -383,6 +447,18 @@ public class GameManager : MonoBehaviour
         TryChangeTurnPhase(TurnPhase.RollingDice);
     }
 
+    /// <summary>
+    /// Listener for <see cref="cardDrawnChannel"/> fired when a player draws a
+    /// card from a deck.
+    ///
+    /// This advances the turn FSM from <see cref="TurnPhase.ResolvingSpace"/> to
+    /// <see cref="TurnPhase.ResolvingCards"/>, indicating that card effects are
+    /// now being processed. Card resolution logic is handled elsewhere; this
+    /// method only updates the phase.
+    /// </summary>
+    /// <param name="card">The card that was drawn.</param>
+    /// <param name="player">The player who drew the card.</param>
+    /// <param name="deck">The deck the card was drawn from.</param>
     public void OnCardDrawnEvent(Card card, Player player, CardDeck deck)
     {
         if (card == null || player == null || deck == null) return;
@@ -390,6 +466,23 @@ public class GameManager : MonoBehaviour
         TryChangeTurnPhase(TurnPhase.ResolvingCards);
     }
 
+    /// <summary>
+    /// Listener for <see cref="turnEndedChannel"/> raised by the End Turn button
+    /// in the UI (e.g., <c>TurnPanelController</c>).
+    ///
+    /// When <paramref name="turnEndedEvent"/> is true, this attempts to move the
+    /// FSM from <see cref="TurnPhase.PostTurn"/> to
+    /// <see cref="TurnPhase.EndTurn"/>. If that transition is allowed, it then
+    /// calls <see cref="NextTurn"/> to advance to the next player's
+    /// <see cref="TurnPhase.StartTurn"/>/PreRoll cycle.
+    ///
+    /// If the current phase is not allowed to transition to
+    /// <see cref="TurnPhase.EndTurn"/>, or if the flag is false, no change is
+    /// made.
+    /// </summary>
+    /// <param name="turnEndedEvent">
+    /// True when the End Turn action has been confirmed; false is ignored.
+    /// </param>
     public void OnTurnEndedEvent(bool turnEndedEvent)
     {
         if (!turnEndedEvent) return;
@@ -397,7 +490,18 @@ public class GameManager : MonoBehaviour
         if (TryChangeTurnPhase(TurnPhase.EndTurn)) NextTurn();
     }
 
-
+    /// <summary>
+    /// Attempts to transition the per-turn FSM to a new <see cref="TurnPhase"/>.
+    /// 
+    /// If both checks pass and <paramref name="newPhase"/> differs from the
+    /// current <see cref="turnPhase"/>, the phase is updated and the method
+    /// returns true.
+    /// </summary>
+    /// <param name="newPhase">The next turn phase.</param>
+    /// <returns>
+    /// True if the phase was changed; false if the transition was illegal or
+    /// redundant.
+    /// </returns>
     private bool TryChangeTurnPhase(TurnPhase newPhase)
     {
         if (newPhase == turnPhase) return false;
