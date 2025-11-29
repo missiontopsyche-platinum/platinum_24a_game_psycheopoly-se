@@ -37,10 +37,7 @@ namespace Tests.PlayMode {
         {
             yield return new WaitWhile(() => !sceneLoaded); // wait for scene to be fully loaded
 
-            BoardManager boardManager = GameObject.Find("Board").GetComponent<BoardManager>() as BoardManager;
-            boardManager.ClearPlayers();
-            boardManager.boardRenderer.ClearPlayers();
-            controller.ClearPlayers();
+            ClearAllPlayers();
             
             Assert.IsNotNull(controller.playerNameText, "Player name text should not be null before enabling.");
             Assert.IsNotNull(controller.playerMoneyText, "Player money text should not be null before enabling.");

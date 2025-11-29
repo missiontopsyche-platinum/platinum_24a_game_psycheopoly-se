@@ -1,10 +1,11 @@
 using Logging;
 using NUnit.Framework;
+using PsycheOpoly.Board;
 using System.Collections;
+using Tests.EditMode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = Logging.Logger;
-using Tests.EditMode;
 
 namespace Tests.PlayMode
 {
@@ -29,7 +30,25 @@ namespace Tests.PlayMode
             SceneManager.UnloadScene("PlayTestScene");
         }
 
-        protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) { }
+        protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        }
+
+        // Call this on any test that involves adding players.
+        protected void ClearAllPlayers()
+        {
+            BoardManager boardManager = GameObject.Find("Board").GetComponent<BoardManager>() as BoardManager;
+            boardManager.ClearPlayers();
+            boardManager.boardRenderer.ClearPlayers();
+
+            GameObject.Find("HUD")
+                .transform
+                .Find("HUDRoot")
+                .Find("PlayerPanel")
+                .Find("PlayerPanelController")
+                .gameObject.GetComponent<PlayerPanelController>()
+                .ClearPlayers();
+                
+        }
     }
 }
 

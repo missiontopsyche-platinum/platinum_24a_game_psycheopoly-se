@@ -15,8 +15,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Logger.Info("BoardRendererPlayerPieceTests.AddPlayerPiece_CreatesNewPiece", "We're here again", LogCategory.Core, this);
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
@@ -34,8 +33,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player player1 = CreateTestPlayer(2, "Player2", Color.red);
             Player player2 = CreateTestPlayer(0, "Player0", Color.blue);
@@ -57,8 +55,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
 
@@ -73,8 +70,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
@@ -91,8 +87,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
@@ -115,8 +110,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
@@ -136,8 +130,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player player1 = CreateTestPlayer(0, "Player1", Color.red);
             Player player2 = CreateTestPlayer(1, "Player2", Color.blue);
@@ -163,8 +156,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player player1 = CreateTestPlayer(0, "Player1", Color.red);
             Player player2 = CreateTestPlayer(1, "Player2", Color.blue);
@@ -214,8 +206,7 @@ namespace Tests.PlayMode.BoardRenderer
             yield return new WaitWhile(() => !sceneLoaded);
             //Ensures any players auto made by the playermanager are cleared so adding player tests
             //function correctly
-            boardManager.ClearPlayers();
-            boardRenderer.ClearPlayers();
+            ClearAllPlayers();
 
             Player player0 = CreateTestPlayer(0, "Player0", Color.red);
             Player player1 = CreateTestPlayer(1, "Player1", Color.blue);
