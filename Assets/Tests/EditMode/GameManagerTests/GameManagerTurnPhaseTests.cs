@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers.Movement;
 using NUnit.Framework;
 using System.Reflection;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace Tests.EditMode.GameManagerTests
 
         private TurnStartedEvent turnStartedEvent;
 
-        private void SetPrivateInt(string fieldName, int value)
+        private void SetPrivate<T>(string fieldName, T value)
         {
             var field = typeof(GameManager)
                 .GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
@@ -66,7 +67,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnPhase = TurnPhase.RollingDice;
 
             var diceEvent = new DiceRolledEvent(2, 3, 5);
-
+            SetPrivate("movementStrategy", new StandardMovementStrategy());
             gameManager.DiceRolled(diceEvent);
 
             Assert.AreEqual(TurnPhase.MovingPiece, gameManager.turnPhase);
@@ -118,9 +119,9 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.gameState = GameState.PlayerTurn;
             gameManager.turnPhase = TurnPhase.PostTurn;
 
-            SetPrivateInt("playerCount", 2);
-            SetPrivateInt("currentPlayer", 0);
-            SetPrivateInt("currentTurn", 0);
+            SetPrivate("playerCount", 2);
+            SetPrivate("currentPlayer", 0);
+            SetPrivate("currentTurn", 0);
 
             gameManager.OnTurnEndedEvent(true);
 
@@ -137,7 +138,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.gameState = GameState.PlayerTurn;
             gameManager.turnPhase = TurnPhase.RollingDice;
 
-            SetPrivateInt("playerCount", 2);
+            SetPrivate("playerCount", 2);
 
             gameManager.OnTurnEndedEvent(true);
 
@@ -150,7 +151,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.gameState = GameState.PlayerTurn;
             gameManager.turnPhase = TurnPhase.PostTurn;
 
-            SetPrivateInt("playerCount", 2);
+            SetPrivate("playerCount", 2);
 
             gameManager.OnTurnEndedEvent(false);
 

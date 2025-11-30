@@ -449,7 +449,7 @@ public class GameManager : MonoBehaviour
                 "StandardMovementStrategy.",
                 Logging.LogCategory.Gameplay, this);
             TryChangeTurnPhase(TurnPhase.MovingPiece);
-            movementStrategy.OnDiceRolled(diceRolledEvent);
+            movementStrategy?.OnDiceRolled(diceRolledEvent);
         }
     }
 
@@ -470,7 +470,7 @@ public class GameManager : MonoBehaviour
         if (!diceRollRequestedEvent || turnPhase != TurnPhase.PreRoll) return;
 
         if (TryChangeTurnPhase(TurnPhase.RollingDice))
-            diceManager.RollDice();
+            diceManager?.RollDice();
         Logging.Logger.Debug("GameManager.OnRollDiceRequest",
             "Dice roll requested, entering RollingDice.",
             LogCategory.Gameplay, this);
