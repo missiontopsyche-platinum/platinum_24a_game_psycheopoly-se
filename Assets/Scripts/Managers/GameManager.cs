@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Logging;
 using PsycheOpoly.Board;
 using Assets.Scripts.Managers.Movement;
+using Assets.Scripts.Managers.TurnOrder;
 
 public class GameManager : MonoBehaviour
 {
@@ -36,9 +37,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel rollDiceRequestedChannel;
     [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] public BooleanEventChannel turnEndedChannel;
+    [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
 
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
+    [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
 
 
@@ -78,7 +81,7 @@ public class GameManager : MonoBehaviour
         { TurnPhase.StartTurn,       new() { TurnPhase.PreRoll } },
         { TurnPhase.PreRoll,         new() { TurnPhase.RollingDice } },
         { TurnPhase.RollingDice,     new() { TurnPhase.MovingPiece } },
-        { TurnPhase.MovingPiece,     new() { TurnPhase.ResolvingSpace } },
+        { TurnPhase.MovingPiece,     new() { TurnPhase.ResolvingSpace, TurnPhase.MovingPiece } },
         { TurnPhase.ResolvingSpace,  new() { TurnPhase.ResolvingCards, TurnPhase.MovingPiece, TurnPhase.PostTurn } },
         { TurnPhase.ResolvingCards,  new() { TurnPhase.PostTurn, TurnPhase.MovingPiece } },
         { TurnPhase.PostTurn,        new() { TurnPhase.EndTurn } },
@@ -140,6 +143,7 @@ public class GameManager : MonoBehaviour
         rollDiceRequestedChannel?.Subscribe(OnRollDiceRequest);
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
+        spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
 
         //us253-t278 hook up movement strategy to dice/board managers
         if (movementStrategy != null)
@@ -210,6 +214,7 @@ public class GameManager : MonoBehaviour
         rollDiceRequestedChannel?.Unsubscribe(OnRollDiceRequest);
         cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
+        spaceResolutionCompletedChannel?.Unsubscribe(OnSpaceResolutionCompleted);
     }
 
     /// <summary>
@@ -224,9 +229,14 @@ public class GameManager : MonoBehaviour
     public void PieceMoveCompleted(bool pieceMoveCompleted)
     {
         // in future, should have a state machine for turn progress
-        if (!pieceMoveCompleted) return;
+        if (!pieceMoveCompleted || turnPhase != TurnPhase.MovingPiece) return;
 
+        Logging.Logger.Debug("GameManager.PieceMoveCompleted",
+            "Piece movement completed, advancing turn phase.",
+            LogCategory.Gameplay,
+            this);
         TryChangeTurnPhase(TurnPhase.ResolvingSpace);
+        movementStrategy?.OnPieceMoveCompleted(pieceMoveCompleted);
     }
 
     /// <summary>
@@ -287,9 +297,15 @@ public class GameManager : MonoBehaviour
         SetState(GameState.PlayerTurn);
         if (TryChangeTurnPhase(TurnPhase.StartTurn))
         {
+            Logging.Logger.Debug("GameManager.StartTurn",
+                    "None finished, entering StartTurn.",
+                    LogCategory.Gameplay, this);
             turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
             diceRollPanel?.gameObject.SetActive(true);
             // This is the "waiting" for dice roll phase, replacing the busy wait.
+            Logging.Logger.Debug("GameManager.StartTurn",
+                    "StartTurn finished, entering PreRoll.",
+                    LogCategory.Gameplay, this);
             TryChangeTurnPhase(TurnPhase.PreRoll);
         }
     }
@@ -309,6 +325,9 @@ public class GameManager : MonoBehaviour
     {
         if (TryChangeTurnPhase(TurnPhase.NextTurn))
         {
+            Logging.Logger.Debug("GameManager.NextTurn",
+                "EndTurn finished, entering NextTurn.",
+                LogCategory.Gameplay, this);
             currentPlayer = (currentPlayer + 1) % playerCount;
             currentTurn++;
             StartTurn();
@@ -415,16 +434,22 @@ public class GameManager : MonoBehaviour
             "Total: " + diceRolledEvent.totalRoll,
             Logging.LogCategory.Gameplay);
 
-        this.dieOne = diceRolledEvent.dieOne;
-        this.dieTwo = diceRolledEvent.dieTwo;
-        this.totalRolled = diceRolledEvent.totalRoll;
+        if (turnPhase != TurnPhase.RollingDice)
+        {
+            Logging.Logger.Warn("GameManager.DiceRolled",
+                $"Ignoring dice roll in phase {turnPhase}",
+                LogCategory.Gameplay, this);
+            return;
+        }
 
-        if (this.gameState == GameState.PlayerTurn && TryChangeTurnPhase(TurnPhase.MovingPiece))
+        if (this.gameState == GameState.PlayerTurn)
         {
             // movement now handled by StandardMovementStrategy. no need to raise MovePlayerEvent manually.
-            Logging.Logger.Debug("gameManager.DiceRolled", "Dice roll processed — movement handled by " +
+            Logging.Logger.Debug("gameManager.DiceRolled", "Dice roll processed movement handled by " +
                 "StandardMovementStrategy.",
                 Logging.LogCategory.Gameplay, this);
+            TryChangeTurnPhase(TurnPhase.MovingPiece);
+            movementStrategy.OnDiceRolled(diceRolledEvent);
         }
     }
 
@@ -442,9 +467,13 @@ public class GameManager : MonoBehaviour
     /// </param>
     public void OnRollDiceRequest(bool diceRollRequestedEvent)
     {
-        if (!diceRollRequestedEvent) return;
+        if (!diceRollRequestedEvent || turnPhase != TurnPhase.PreRoll) return;
 
-        TryChangeTurnPhase(TurnPhase.RollingDice);
+        if (TryChangeTurnPhase(TurnPhase.RollingDice))
+            diceManager.RollDice();
+        Logging.Logger.Debug("GameManager.OnRollDiceRequest",
+            "Dice roll requested, entering RollingDice.",
+            LogCategory.Gameplay, this);
     }
 
     /// <summary>
@@ -464,6 +493,9 @@ public class GameManager : MonoBehaviour
         if (card == null || player == null || deck == null) return;
 
         TryChangeTurnPhase(TurnPhase.ResolvingCards);
+        Logging.Logger.Debug("GameManager.OnCardDrawnEvent",
+            "Card drawn, entering ResolvingCards.",
+            LogCategory.Gameplay, this);
     }
 
     /// <summary>
@@ -487,7 +519,46 @@ public class GameManager : MonoBehaviour
     {
         if (!turnEndedEvent) return;
 
-        if (TryChangeTurnPhase(TurnPhase.EndTurn)) NextTurn();
+        if (turnPhase == TurnPhase.PostTurn && TryChangeTurnPhase(TurnPhase.EndTurn))
+        {
+            Logging.Logger.Debug("GameManager.OnTurnEndedEvent",
+                "Turn ended, entering EndTurn.",
+                LogCategory.Gameplay, this);
+            turnCycleManager?.Advance();
+            NextTurn(); // TODO: kept this until we can fully delegate turn cycling to TurnCycleManager
+        }
+    }
+
+    /// <summary>
+    /// Handles completion of all space-resolution logic during the player's turn.
+    ///
+    /// This method is invoked when the <c>spaceResolutionCompletedChannel</c>
+    /// signals that a space's effects (purchase, rent, cards, taxes, etc.)
+    /// have fully resolved. 
+    ///
+    /// If the current <see cref="turnPhase"/> is <see cref="TurnPhase.ResolvingSpace"/>
+    /// or <see cref="TurnPhase.ResolvingCards"/>, the method attempts to
+    /// transition the FSM into <see cref="TurnPhase.PostTurn"/>. This marks the
+    /// end of all mid-turn resolution and enables the player to end their turn
+    /// or perform any UI actions associated with PostTurn.
+    /// </summary>
+    /// <param name="completed">
+    /// A boolean flag raised by the space resolution event channel.
+    /// Expected to be <c>true</c> when resolution has concluded.
+    /// </param>
+    private void OnSpaceResolutionCompleted(bool completed)
+    {
+        if (!completed) return;
+
+        if (turnPhase == TurnPhase.ResolvingSpace || turnPhase == TurnPhase.ResolvingCards)
+        {
+            if (TryChangeTurnPhase(TurnPhase.PostTurn))
+            {
+                Logging.Logger.Debug("GameManager.OnSpaceResolutionCompleted",
+                    "Resolution finished, entering PostTurn.",
+                    LogCategory.Gameplay, this);
+            }
+        }
     }
 
     /// <summary>
