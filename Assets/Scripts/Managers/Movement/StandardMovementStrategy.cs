@@ -14,14 +14,16 @@ namespace Assets.Scripts.Managers.Movement
     {
         [Header("Dependencies")]
         [SerializeField] private BoardManager boardManager;
-        [SerializeField] private PlayerEventChannel currentPlayerChannel;
+        //[SerializeField] private PlayerEventChannel currentPlayerChannel;
 
         [Header("Event Channels")]
-        [SerializeField] private DiceRolledEventChannel diceRolledChannel;
+        // Some channels are commented out as a work around for gamemanager to invoke methods directly.
+        //[SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
-        [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
+        //[SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
         [SerializeField] private IntEventChannel goToJailChannel;
+        [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
 
         private int doublesCount = 0;
         private Player currentPlayer;
@@ -30,20 +32,30 @@ namespace Assets.Scripts.Managers.Movement
 
         private void OnEnable()
         {
-            diceRolledChannel?.Subscribe(OnDiceRolled);
-            pieceMoveCompletedEventChannel?.Subscribe(OnPieceMoveCompleted);
-            currentPlayerChannel?.Subscribe(SetCurrentPlayer);
+            //diceRolledChannel?.Subscribe(OnDiceRolled);
+            //pieceMoveCompletedEventChannel?.Subscribe(OnPieceMoveCompleted);
+            //currentPlayerChannel?.Subscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Subscribe(OnTurnStarted);
         }
 
 
         private void OnDisable()
         {
-            diceRolledChannel?.Unsubscribe(OnDiceRolled);
-            pieceMoveCompletedEventChannel?.Unsubscribe(OnPieceMoveCompleted);
-            currentPlayerChannel?.Unsubscribe(SetCurrentPlayer);
+            //diceRolledChannel?.Unsubscribe(OnDiceRolled);
+            //pieceMoveCompletedEventChannel?.Unsubscribe(OnPieceMoveCompleted);
+            //currentPlayerChannel?.Unsubscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
 
+        }
+
+        void Start()
+        {
+            GameObject targetGameObject = GameObject.Find("Board");
+            if (targetGameObject != null)
+                // US442 workaround for BoardManager reference
+                boardManager = targetGameObject.GetComponent<BoardManager>();
+            else
+                Debug.LogWarning("Target GameObject not found!");
         }
 
         /// <summary>
@@ -85,7 +97,6 @@ namespace Assets.Scripts.Managers.Movement
 
             SetCurrentPlayer(p);
         }
-
 
 
         public void OnDiceRolled(DiceRolledEvent diceEvent)
@@ -175,6 +186,8 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Debug("StandardMovementStrategy", "Turn complete.", LogCategory.Gameplay, this);
                 doublesCount = 0;
             }
+
+            spaceResolutionCompletedChannel?.RaiseEvent(true);
         }
 
         //helprs
