@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
         { TurnPhase.StartTurn,       new() { TurnPhase.PreRoll } },
         { TurnPhase.PreRoll,         new() { TurnPhase.RollingDice } },
         { TurnPhase.RollingDice,     new() { TurnPhase.MovingPiece } },
-        { TurnPhase.MovingPiece,     new() { TurnPhase.ResolvingSpace, TurnPhase.MovingPiece } },
+        { TurnPhase.MovingPiece,     new() { TurnPhase.ResolvingSpace, TurnPhase.MovingPiece, TurnPhase.ResolvingCards } },
         { TurnPhase.ResolvingSpace,  new() { TurnPhase.ResolvingCards, TurnPhase.MovingPiece, TurnPhase.PostTurn } },
         { TurnPhase.ResolvingCards,  new() { TurnPhase.PostTurn, TurnPhase.MovingPiece } },
         { TurnPhase.PostTurn,        new() { TurnPhase.EndTurn } },
