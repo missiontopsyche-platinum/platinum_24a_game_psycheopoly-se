@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GoForLaunchSpaceData
   spaceName: Go For Launch!
   spaceColor: {r: 0.65882355, g: 0.65882355, b: 0.65882355, a: 1}
-  spaceHoverEventChannel: {fileID: 0}
-  onSpaceExitEventChannel: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   flavorText: GO FOR LAUNCH!
   goDirectlyToLaunchPadChannel: {fileID: 0}

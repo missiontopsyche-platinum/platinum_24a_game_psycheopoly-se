@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: SilicateCardDeck
   m_EditorClassIdentifier: PsycheOpoly.Runtime::CardDeck
   deckType: 0
+  cards: []
+  cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
