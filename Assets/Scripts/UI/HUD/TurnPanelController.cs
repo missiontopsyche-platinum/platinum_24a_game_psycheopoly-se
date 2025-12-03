@@ -15,7 +15,7 @@ public class TurnPanelController : UIPanelBase
     private void OnEnable()
     {
         Subscribe(turnStartedChannel, DisplayCurrentTurn);
-        endTurnButton.onClick.AddListener(OnEndTurnClicked);
+        endTurnButton?.onClick.AddListener(OnEndTurnClicked);
         Logging.Logger.Trace("TurnPanelController.OnEnable",
             "Turn panel is now enabled.",
             LogCategory.UI,
@@ -24,7 +24,7 @@ public class TurnPanelController : UIPanelBase
 
     private void OnDisable()
     {
-        endTurnButton.onClick.RemoveListener(OnEndTurnClicked);
+        endTurnButton?.onClick.RemoveListener(OnEndTurnClicked);
         ClearSubscriptions();
         Logging.Logger.Trace("TurnPanelController.OnDisable",
             "Turn panel is now disabled.",
