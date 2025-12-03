@@ -52,13 +52,14 @@ public class GameManager : MonoBehaviour
 
 
     private int playerCount = 0;
-    private int currentPlayer = 0;
+    //private int currentPlayer = 0;
     private int currentTurn = 0;
 
     //The below are for testing that the event is properly registering in the class
     public int dieOne = 0;
     public int dieTwo = 0;
     public int totalRolled = 0;
+
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
@@ -156,6 +157,7 @@ public class GameManager : MonoBehaviour
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
 
+
         //us253-t278 hook up movement strategy to dice/board managers
         if (movementStrategy != null)
         {
@@ -250,6 +252,7 @@ public class GameManager : MonoBehaviour
         movementStrategy?.OnPieceMoveCompleted(pieceMoveCompleted);
     }
 
+
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
     /// </summary>
@@ -266,6 +269,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         this.playerCount = playerCount;
+
         initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
 
         //wire turn system for US395
@@ -288,7 +292,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CompleteGameInit()
     {
-        StartTurn();
+        // Fire FIRST turn; TurnFlowCoordinator handles the rest
+        SetState(GameState.PlayerTurn);
+        turnStartedChannel?.RaiseEvent(new TurnStartedEvent(0, 0));
     }
 
     private IEnumerator WaitForGameInit()
@@ -297,6 +303,7 @@ public class GameManager : MonoBehaviour
         CompleteGameInit();
     }
 
+<<<<<<< HEAD
     /// <summary>
     /// Begins the current player's turn, entering the turn-phase FSM.
     ///
@@ -356,6 +363,59 @@ public class GameManager : MonoBehaviour
             StartTurn();
         }
     }
+=======
+    //commented out for US395
+    //private void StartTurn()
+    //{
+    //    // temporary, assume every player is a 'human' player
+    //    SetState(GameState.PlayerTurn);
+
+    //    //us395, downstream systems listem to TurnCycleManager
+    //    int activePlayer = turnCycleManager != null
+    //        ? turnCycleManager.CurrentPlayerIndex
+    //        : currentPlayer;
+    //    turnStartedChannel.RaiseEvent(new TurnStartedEvent(activePlayer, currentTurn));
+
+    //    //TurnFlowCoordinator will handle turn sequence.
+    //    //turnComplete = false;
+    //    //currentTurnCoroutine = StartCoroutine(ExecuteTurn());
+    //}
+
+    //commented out for US395
+    //public void NextTurn()
+    //{
+    //    if (currentTurnCoroutine != null)
+    //        StopCoroutine(currentTurnCoroutine);
+
+    //    //rotation now delegated to the TurnCycleManager US395
+    //    if (turnCycleManager != null)
+    //    {
+    //        int nextPlayer = turnCycleManager.Advance();
+    //        currentPlayer = nextPlayer;   // keep old field synced for now...
+    //    }
+    //    else
+    //    {
+    //        currentPlayer = (currentPlayer + 1) % playerCount;
+    //    }
+
+    //    currentTurn++;
+    //    StartTurn();
+    //}
+
+    //commented out for US395
+    //private IEnumerator ExecuteTurn()
+    //{
+    //    diceRollPanel?.gameObject.SetActive(true);
+
+    //    // we should move through the state machine over time, this is a way to wait per frame
+    //    // to check for event fires.
+    //    while (!turnComplete)
+    //        yield return new WaitForEndOfFrame(); // busy wait for turn to complete (event fire etc)
+
+    //    // turn is complete, call next turn
+    //    NextTurn();
+    //}
+>>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
 
     //us11-t34 very basic initializer, just initializing GameState...
     public void Initialize()
@@ -484,7 +544,8 @@ public class GameManager : MonoBehaviour
         //added for US395 in prep for task398; TurnFlowCoordinator will use TurnStrategy for a doubles roll
         if (playerTurnState != null && this.dieOne == this.dieTwo)
         {
-            playerTurnState.SetExtraTurn(currentPlayer, true);
+            int active = turnCycleManager?.CurrentPlayerIndex ?? 0;
+            playerTurnState.SetExtraTurn(active, true);
         }
     }
 

@@ -52,9 +52,6 @@ namespace Assets.Scripts.Managers.TurnOrder
 
             CurrentPlayerIndex = next;
 
-            if (gameManager && gameManager.turnStartedChannel != null)
-                gameManager.turnStartedChannel.RaiseEvent(new TurnStartedEvent(CurrentPlayerIndex, 0)); 
-
             return CurrentPlayerIndex;
         }
 

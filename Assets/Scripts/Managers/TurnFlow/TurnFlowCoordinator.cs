@@ -12,13 +12,13 @@ namespace Assets.Scripts.Managers.TurnFlow
     public class TurnFlowCoordinator : MonoBehaviour
     {
         [Header("Event Channels In")]
-        [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+        [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
 
         [Header("Event Channels Out")]
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
-        [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
+        [SerializeField] private TurnStartedEventChannel turnStartedChannel;
 
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
@@ -95,7 +95,7 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             // turn order manager for next player
             int nextPlayer = turnCycleManager.Advance();
-            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
         }
     }
 
