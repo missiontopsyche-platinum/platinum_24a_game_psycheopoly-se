@@ -30,16 +30,13 @@ public class GameManager : MonoBehaviour
     //us11-t36 allows for gamestate change action
     [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
-    [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] public MovePlayerEventChannel movePlayerChannel;
     [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
     [SerializeField] public BooleanEventChannel rollDiceRequestedChannel;
     [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] public BooleanEventChannel turnEndedChannel;
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
-
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
@@ -47,6 +44,11 @@ public class GameManager : MonoBehaviour
     // this is not used right now, but will be in the future
     [SerializeField] private RulesManager rulesManager;
 
+
+    [Header("Turn Order System")]
+    [SerializeField] private PlayerTurnState playerTurnState;
+
+    private ITurnOrderStrategy turnOrderStrategy = new StandardTurnOrderStrategy();
 
 
     private int playerCount = 0;
@@ -107,7 +109,12 @@ public class GameManager : MonoBehaviour
         //keeps game object
         DontDestroyOnLoad(gameObject);
 
-        
+        //turn system dependencies added for US395
+        if (!turnCycleManager)
+            turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
+
+        if (!playerTurnState)
+            playerTurnState = FindFirstObjectByType<PlayerTurnState>();
     }
 
     //Task 112 which is a guarded transition API
@@ -259,8 +266,14 @@ public class GameManager : MonoBehaviour
             return;
         }
         this.playerCount = playerCount;
-        currentPlayer = 0;
         initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
+
+        //wire turn system for US395
+        if (turnCycleManager != null)
+            turnCycleManager.ResetCycle(playerCount, 0);
+
+        if (playerTurnState != null)
+            playerTurnState.EnsureSize(playerCount);
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
@@ -304,7 +317,11 @@ public class GameManager : MonoBehaviour
             Logging.Logger.Debug("GameManager.StartTurn",
                     "None finished, entering StartTurn.",
                     LogCategory.Gameplay, this);
-            turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
+            //US395 edit
+            int activePlayer = turnCycleManager != null
+                        ? turnCycleManager.CurrentPlayerIndex
+                        : currentPlayer;
+            turnStartedChannel.RaiseEvent(new TurnStartedEvent(activePlayer, currentTurn));
             diceRollPanel?.gameObject.SetActive(true);
             // This is the "waiting" for dice roll phase, replacing the busy wait.
             Logging.Logger.Debug("GameManager.StartTurn",
@@ -332,7 +349,9 @@ public class GameManager : MonoBehaviour
             Logging.Logger.Debug("GameManager.NextTurn",
                 "EndTurn finished, entering NextTurn.",
                 LogCategory.Gameplay, this);
-            currentPlayer = (currentPlayer + 1) % playerCount;
+            currentPlayer = turnCycleManager != null
+                ? turnCycleManager.Advance()
+                : (currentPlayer + 1) % playerCount;
             currentTurn++;
             StartTurn();
         }
@@ -438,6 +457,11 @@ public class GameManager : MonoBehaviour
             "Total: " + diceRolledEvent.totalRoll,
             Logging.LogCategory.Gameplay);
 
+        dieOne = diceRolledEvent.dieOne;
+        dieTwo = diceRolledEvent.dieTwo;
+        totalRolled = diceRolledEvent.totalRoll;
+
+
         if (turnPhase != TurnPhase.RollingDice)
         {
             Logging.Logger.Warn("GameManager.DiceRolled",
@@ -454,6 +478,13 @@ public class GameManager : MonoBehaviour
                 Logging.LogCategory.Gameplay, this);
             TryChangeTurnPhase(TurnPhase.MovingPiece);
             movementStrategy?.OnDiceRolled(diceRolledEvent);
+        }
+
+
+        //added for US395 in prep for task398; TurnFlowCoordinator will use TurnStrategy for a doubles roll
+        if (playerTurnState != null && this.dieOne == this.dieTwo)
+        {
+            playerTurnState.SetExtraTurn(currentPlayer, true);
         }
     }
 
