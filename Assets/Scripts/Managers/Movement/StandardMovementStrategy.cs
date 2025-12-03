@@ -50,12 +50,15 @@ namespace Assets.Scripts.Managers.Movement
 
         void Start()
         {
-            GameObject targetGameObject = GameObject.Find("Board");
-            if (targetGameObject != null)
-                // US442 workaround for BoardManager reference
-                boardManager = targetGameObject.GetComponent<BoardManager>();
-            else
-                Debug.LogWarning("Target GameObject not found!");
+            if (boardManager == null)
+            {
+                boardManager = FindAnyObjectByType<BoardManager>();
+                if (boardManager == null)
+                    Logger.Error(
+                        "StandardMovementStrategy.Start",
+                        "Board Manager component not found in scene!",
+                        LogCategory.Core, this);
+            }
         }
 
         /// <summary>
