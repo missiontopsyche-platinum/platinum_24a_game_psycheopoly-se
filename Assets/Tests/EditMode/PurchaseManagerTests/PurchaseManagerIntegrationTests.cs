@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Purchase;
+using Assets.Scripts.Managers.Rules;
 
 namespace Tests.EditMode.PurchaseTests
 {
@@ -19,7 +20,7 @@ namespace Tests.EditMode.PurchaseTests
 
             //Use StandardPurchaseStrategy directly to get expected price
             var strat = new StandardPurchaseStrategy();
-            var rules = new RuleSet();
+            var rules = new StandardRuleSet();
             var decision = strat.GetPurchaseDecision(prop, buyer, ownership, rules);
 
             Assert.AreEqual(PurchaseFlow.OfferToPlayer, decision.Flow,

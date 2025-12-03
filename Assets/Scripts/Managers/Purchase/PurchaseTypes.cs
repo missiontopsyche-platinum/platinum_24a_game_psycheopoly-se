@@ -1,4 +1,5 @@
 using Assets.Scripts.Managers.Rent;
+using Assets.Scripts.Managers.Rules;
 
 namespace Assets.Scripts.Managers.Purchase
 {
