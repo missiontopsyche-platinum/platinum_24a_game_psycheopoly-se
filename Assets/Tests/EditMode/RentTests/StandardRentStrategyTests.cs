@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using Assets.Scripts.Managers.Rent;
+using Assets.Scripts.Managers.Rules;
 
 namespace Tests.EditMode.RentTests
 {

@@ -5,6 +5,7 @@ using Logging;
 using PsycheOpoly.Board;
 using Assets.Scripts.Managers.Movement;
 using Assets.Scripts.Managers.TurnOrder;
+using Assets.Scripts.Managers;
 
 public class GameManager : MonoBehaviour
 {
@@ -43,6 +44,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
+    [SerializeField] private RulesManager rulesManager;
+
 
 
     private int playerCount = 0;
