@@ -83,8 +83,9 @@ namespace PsycheOpoly.Board
         // adds a new player. Something weird was happening with the dict and was causing players
         // to "start" at arbitrary indices rippling down to incorrect positioning for the renderer.
         private void AddPlayer(Player player)
-        {
-            playerPositions.Add(player.GetId(), 0);
+        {   
+            // This was changed to try add for debuggin US421
+            playerPositions.TryAdd(player.GetId(), 0);
             Logger.Debug("AddPlayer",
                 $"Player {player.GetId()} added at position {playerPositions[player.GetId()]}",
                 LogCategory.Gameplay, this);
@@ -346,6 +347,23 @@ namespace PsycheOpoly.Board
             }
 
             MovePlayer(new MovePlayerEvent(playerId, stepsForward));
+        }
+
+        /// <summary>
+        /// This is a helper method for testing.
+        /// While using the test scene the player manager
+        /// automatically fills everything forcing adding plays to tests
+        /// to fail. This is run on every test to fix it.
+        /// </summary>
+        /// <returns></returns>
+        public bool ClearPlayers()
+        {
+            playerPositions.Clear();
+
+            if (playerPositions.Count == 0)
+                return true;
+
+            return false;
         }
     }
 }

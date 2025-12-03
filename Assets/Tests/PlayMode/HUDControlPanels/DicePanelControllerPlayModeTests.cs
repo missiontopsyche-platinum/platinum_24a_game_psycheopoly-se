@@ -3,85 +3,100 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using Tests.EditMode;
+using UnityEngine.SceneManagement;
 
-public class DicePanelControllerPlayModeTests : ManagerTestBase
+
+namespace Tests.PlayMode
 {
-    private GameObject root;
-    private DicePanelController controller;
-
-    [SetUp]
-    public void SetUp()
+    public class DicePanelControllerPlayModeTests : PlayTestBase
     {
-        InitializeTestLogger();
-        Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
-            "Setting up DicePanelController PlayMode test", 
-            Logging.LogCategory.UI,
-            this);
+        private GameObject root;
+        private DicePanelController controller;
+        private bool sceneLoaded = false;
 
-        root = new GameObject("DicePanelControllerPlayModeTests");
-        root.SetActive(false);
-        controller = root.AddComponent<DicePanelController>();
+        [SetUp]
+        public void SetUp()
+        {
+            Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
+                "Setting up DicePanelController PlayMode test",
+                Logging.LogCategory.UI,
+                this);
 
-        controller.rollDiceButton = CreateAndAttachComponent<Button>("RollDiceButton", root);
-        controller.dice1RolledText = CreateAndAttachComponent<Text>("Dice1RolledText", root);
-        controller.dice2RolledText = CreateAndAttachComponent<Text>("Dice2RolledText", root);
-        controller.diceTotalText = CreateAndAttachComponent<Text>("DiceTotalText", root);
+            //Create an on sceneLoaded event handler to build objects
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("PlayTestScene", LoadSceneMode.Single);
 
-        controller.diceRolledRequestedChannel = CreateChannel<BooleanEventChannel>();
-        controller.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
-    }
+        }
 
-    [TearDown]
-    public void TearDown()
-    {
-        DestroyTestObjects(root, controller);
-    }
+        [TearDown]
+        public void TearDown()
+        {
+           
+        }
 
-    [UnityTest]
-    public IEnumerator DisplayDiceRoll_UpdatesTexts_OnEvent()
-    {
-        // Sanity check
-        Assert.IsNotNull(controller.rollDiceButton, "Roll button should not be null before enabling.");
-        Assert.IsNotNull(controller.dice1RolledText);
-        Assert.IsNotNull(controller.dice2RolledText);
-        Assert.IsNotNull(controller.diceTotalText);
+        [UnityTest]
+        public IEnumerator DisplayDiceRoll_UpdatesTexts_OnEvent()
+        {
+            yield return new WaitWhile(() => !sceneLoaded);
 
-        // Enable GameObject
-        root.SetActive(true);
-        yield return null; // waiting for Unity finish enabling frame
+            // Sanity check
+            Assert.IsNotNull(controller.rollDiceButton, "Roll button should not be null before enabling.");
+            Assert.IsNotNull(controller.dice1RolledText);
+            Assert.IsNotNull(controller.dice2RolledText);
+            Assert.IsNotNull(controller.diceTotalText);
 
-        var diceEvent = new DiceRolledEvent (2, 5, 7 );
-        controller.diceRolledChannel.RaiseEvent(diceEvent);
+            // Enable GameObject
+            root.SetActive(true);
+            yield return null; // waiting for Unity finish enabling frame
 
-        yield return null; // waiting for one frame for listener to process
+            var diceEvent = new DiceRolledEvent(2, 5, 7);
+            controller.diceRolledChannel.RaiseEvent(diceEvent);
 
-        Assert.AreEqual("Die One: 2", controller.dice1RolledText.text);
-        Assert.AreEqual("Die Two: 5", controller.dice2RolledText.text);
-        Assert.AreEqual("Total: 7", controller.diceTotalText.text);
-    }
+            yield return null; // waiting for one frame for listener to process
 
-    [Test]
-    public void RollButton_Click_Raises_RollDiceRequestedEvent()
-    {
-        bool received = false;
-        controller.diceRolledRequestedChannel.Subscribe(v => received = v);
+            Assert.AreEqual("Die One: 2", controller.dice1RolledText.text);
+            Assert.AreEqual("Die Two: 5", controller.dice2RolledText.text);
+            Assert.AreEqual("Total: 7", controller.diceTotalText.text);
+        }
 
-        // Sanity check
-        Assert.IsNotNull(controller.rollDiceButton, "rollDiceButton should be assigned before enabling.");
+        [UnityTest]
+        public IEnumerator RollButton_Click_Raises_RollDiceRequestedEvent()
+        {
 
-        // Note: Activate object so OnEnable hooks listener
-        root.SetActive(true);
+            yield return new WaitWhile(() => !sceneLoaded);
 
-        controller.rollDiceButton.onClick.Invoke();
-        Assert.IsTrue(received, "RollDiceRequestedEventChannel to receive true when button click.");
-    }
+            bool received = false;
+            controller.diceRolledRequestedChannel.Subscribe(v => received = v);
 
-    [UnityTest]
-    public IEnumerator RollButton_Click_WithNullChannel_DoesNotThrow()
-    {
-        controller.diceRolledRequestedChannel = null;
-        Assert.DoesNotThrow(() => controller.rollDiceButton.onClick.Invoke());
-        yield return null;
+            // Sanity check
+            Assert.IsNotNull(controller.rollDiceButton, "rollDiceButton should be assigned before enabling.");
+
+            // Note: Activate object so OnEnable hooks listener
+            root.SetActive(true);
+
+            controller.rollDiceButton.onClick.Invoke();
+            Assert.IsTrue(received, "RollDiceRequestedEventChannel to receive true when button click.");
+        }
+
+        [UnityTest]
+        public IEnumerator RollButton_Click_WithNullChannel_DoesNotThrow()
+        {
+            yield return new WaitWhile(() => !sceneLoaded);
+
+            controller.diceRolledRequestedChannel = null;
+            Assert.DoesNotThrow(() => controller.rollDiceButton.onClick.Invoke());
+            yield return null;
+        }
+
+        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            
+            root = GameObject.Find("HUD").transform.Find("HUDRoot").Find("DicePanel").Find("DicePanelController").gameObject;
+           
+            root.SetActive(false);
+            controller = root.GetComponent<DicePanelController>();
+            controller.rollDiceButton = CreateAndAttachComponent<Button>("Button", root);
+            sceneLoaded = true;
+        }
     }
 }

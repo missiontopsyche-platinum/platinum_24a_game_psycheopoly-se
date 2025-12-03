@@ -1,8 +1,10 @@
-using System.Collections;
+using Logging;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-
+using Logger = Logging.Logger;
 namespace Tests.PlayMode.BoardRenderer
 {
     public class BoardRendererPlayerPieceTests : BoardRendererTestBase
@@ -10,6 +12,12 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_CreatesNewPiece()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
+            Logger.Info("BoardRendererPlayerPieceTests.AddPlayerPiece_CreatesNewPiece", "We're here again", LogCategory.Core, this);
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
 
             yield return AddPlayerAndWait(testPlayer);
@@ -22,6 +30,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_SortsById()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player player1 = CreateTestPlayer(2, "Player2", Color.red);
             Player player2 = CreateTestPlayer(0, "Player0", Color.blue);
             Player player3 = CreateTestPlayer(1, "Player1", Color.green);
@@ -39,6 +52,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator AddPlayerPiece_StartsAtGo()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
 
             yield return AddPlayerAndWait(testPlayer);
@@ -49,6 +67,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator MovePiece_UpdatesSpaceIndex()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
             yield return AddPlayerAndWait(testPlayer);
@@ -61,6 +84,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator MovePiece_MovesPhysically()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
             yield return AddPlayerAndWait(testPlayer);
@@ -79,6 +107,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_NoBumpForSinglePiece()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player testPlayer = CreateTestPlayer(0, "TestPlayer", Color.blue);
             
             yield return AddPlayerAndWait(testPlayer);
@@ -94,6 +127,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_BumpsTwoPieces()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player player1 = CreateTestPlayer(0, "Player1", Color.red);
             Player player2 = CreateTestPlayer(1, "Player2", Color.blue);
             yield return AddPlayerAndWait(player1);
@@ -115,6 +153,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_BumpsFourPiecesToCorners()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player player1 = CreateTestPlayer(0, "Player1", Color.red);
             Player player2 = CreateTestPlayer(1, "Player2", Color.blue);
             Player player3 = CreateTestPlayer(2, "Player3", Color.green);
@@ -131,7 +174,7 @@ namespace Tests.PlayMode.BoardRenderer
             {
                 yield return MovePieceAndWait(i, 5);
             }
-            yield return new WaitForSeconds(1f); // wait for all pieces to finish movement
+           
             
             // Verify piece is offset in both X and Y 
             for (int i = 0; i < 4; i++)
@@ -160,6 +203,11 @@ namespace Tests.PlayMode.BoardRenderer
         [UnityTest]
         public IEnumerator BumpCrowdedSpacePieces_LowerIdGetsFirstCorner()
         {
+            yield return new WaitWhile(() => !sceneLoaded);
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            ClearAllPlayers();
+
             Player player0 = CreateTestPlayer(0, "Player0", Color.red);
             Player player1 = CreateTestPlayer(1, "Player1", Color.blue);
         
@@ -176,5 +224,7 @@ namespace Tests.PlayMode.BoardRenderer
             Assert.Less(player0Pos.x, spacePosition.x, "Player 0 should be left of center");
             Assert.Greater(player0Pos.y, spacePosition.y, "Player 0 should be above center");
         }
+
+        
     }
 }
