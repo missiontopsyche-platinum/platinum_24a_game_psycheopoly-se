@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using Logging;
+using Assets.Scripts.Managers.Rules;
 
 namespace Assets.Scripts.Managers.Rent
 {
@@ -30,33 +32,68 @@ namespace Assets.Scripts.Managers.Rent
 
             //Houses and hotels table if needed will be checked first
             //Completes task 283
+            //edited for task403
             if (houses > 0 && tile.RentByHouses != null && tile.RentByHouses.Length > houses)
             {
-                return tile.RentByHouses[houses];
+                int rent = tile.RentByHouses[houses];
+
+                Logging.Logger.Debug("RentStrategy.Street",
+                    $"[{tile.Name}] HouseCount={houses} Rent={rent}",
+                    LogCategory.Gameplay);
+
+                return rent;
             }
 
             //If there are no houses check monoploy which doubles base rent
-            bool hasMonopoly = own.CountOwnedInGroup(owner, tile.Group) >= rules.StreetsInGroup(tile.Group);
-            return hasMonopoly ? tile.BaseRent * 2 : tile.BaseRent;
+            bool hasMonopoly =
+               own.CountOwnedInGroup(owner, tile.Group) >= rules.StreetsInGroup(tile.Group);
+
+            int finalRent = hasMonopoly ? tile.BaseRent * 2 : tile.BaseRent;
+
+            Logging.Logger.Debug("RentStrategy.Street",
+                $"[{tile.Name}] Houses=0 BaseRent={tile.BaseRent} Monopoly={hasMonopoly} Final={finalRent}",
+                LogCategory.Gameplay);
+
+            return finalRent;
+
+
         }
 
         private int RailroadRent(Player owner, IOwnershipService own, IRuleSet rules)
         {
-            int n = Mathf.Clamp(own.CountRailroadsOwned(owner), 0, 4);
-            if (n <= 0) return 0;
+            int count = Mathf.Clamp(own.CountRailroadsOwned(owner), 0, 4);
+            if (count <= 0) return 0;
 
-            //Doubles based on how many owned
             int baseRent = rules.RailroadBaseRent();
-            int rent = baseRent << (n - 1);
+
+            int rent = baseRent << (count - 1);
+
+            Logging.Logger.Debug("RentStrategy.Railroad",
+                $"RailroadsOwned={count} BaseRent={baseRent} Final={rent}",
+                LogCategory.Gameplay);
+
             return rent;
         }
 
         private int UtilityRent(Player owner, int diceTotal, IOwnershipService own, IRuleSet rules)
         {
-            if (diceTotal < 0) diceTotal = 0;
+            int total = Mathf.Max(0, diceTotal);
             bool ownsBoth = own.OwnsBothUtilities(owner);
-            int mult = ownsBoth ? rules.UtilityRentBothMult() : rules.UtilityRentSingleMult();
-            return diceTotal * mult; 
+
+
+            int mult = ownsBoth ?
+                rules.UtilityRentBothMult() :
+                rules.UtilityRentSingleMult();
+
+            int rent = total * mult;
+
+            Logging.Logger.Debug("RentStrategy.Utility",
+                $"Dice={total} OwnsBoth={ownsBoth} Mult={mult} Final={rent}",
+                LogCategory.Gameplay);
+
+            return rent;
+
+
         }
 
     }
