@@ -19,16 +19,20 @@ namespace Tests.EditMode.GameManagerTests
                 lastReceivedPlayer = tse.playerId;
             }
             gameManager.turnStartedChannel.Subscribe(Listener);
-        
+
+            gameManager.Initialize();
             gameManager.SetUpGame(2);
-            gameManager.CompleteGameInit(); // skip startup timer
+            gameManager.CompleteGameInit();
+
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
@@ -45,20 +49,24 @@ namespace Tests.EditMode.GameManagerTests
                 lastReceivedPlayer = tse.playerId;
             }
             gameManager.turnStartedChannel.Subscribe(Listener);
-        
+
+            gameManager.Initialize();
             gameManager.SetUpGame(3);
             gameManager.CompleteGameInit(); // skip startup timer
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(2, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(4, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
@@ -75,24 +83,29 @@ namespace Tests.EditMode.GameManagerTests
                 lastReceivedPlayer = tse.playerId;
             }
             gameManager.turnStartedChannel.Subscribe(Listener);
-        
+
+            gameManager.Initialize();
             gameManager.SetUpGame(4);
             gameManager.CompleteGameInit(); // skip startup timer
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(2, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(4, callbackCount);
             Assert.AreEqual(3, lastReceivedPlayer);
-        
+
+            gameManager.turnPhase = TurnPhase.EndTurn;
             gameManager.NextTurn();
             Assert.AreEqual(5, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
@@ -101,10 +114,12 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void SetUpGame_LogsErrorWhenInvalidPlayerCount()
         {
+            gameManager.Initialize();
             gameManager.SetUpGame(1);
             var pattern = CreateRegexLogPattern("Error", "Gameplay", "GameManager.SetUpGame", "Invalid player count, must be between 2 and 4.");
             LogAssert.Expect(UnityEngine.LogType.Error, pattern);
 
+            gameManager.Initialize();
             gameManager.SetUpGame(5);
             pattern = CreateRegexLogPattern("Error", "Gameplay", "GameManager.SetUpGame", "Invalid player count, must be between 2 and 4.");
             LogAssert.Expect(UnityEngine.LogType.Error, pattern);

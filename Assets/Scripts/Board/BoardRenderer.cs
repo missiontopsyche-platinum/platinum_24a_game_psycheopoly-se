@@ -44,6 +44,7 @@ public class BoardRenderer : MonoBehaviour
     {
         ClearBoard();
         playerAddedChannel.Unsubscribe(AddPlayerPiece);
+        playerMovedEventChannel?.Unsubscribe(MovePiece);
     } 
 
     public void GenerateBoard(SpaceData[] spaces)

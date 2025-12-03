@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Purchase;
+using Assets.Scripts.Managers.Rules;
 using Tests.EditMode; 
 
 public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase

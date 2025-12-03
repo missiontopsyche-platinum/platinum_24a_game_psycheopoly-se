@@ -18,4 +18,4 @@ MonoBehaviour:
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   cost: 200
   flavorText: Hire contractor.
-  chargePlayerEventChannel: {fileID: 11400000, guid: 2bc2f2ff803557c4bb7886f4969afebd, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}

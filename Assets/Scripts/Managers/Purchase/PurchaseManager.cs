@@ -1,5 +1,6 @@
 using UnityEngine;
 using Assets.Scripts.Managers.Rent;
+using Assets.Scripts.Managers.Rules;
 
 namespace Assets.Scripts.Managers.Purchase
 {
@@ -9,7 +10,7 @@ namespace Assets.Scripts.Managers.Purchase
     {
         [Header("Dependencies")]
         [SerializeField] private OwnershipServiceAdapter ownership;
-        [SerializeField] private RuleSet rules = new RuleSet();
+        [SerializeField] private IRuleSet rules = new StandardRuleSet();
 
         // for tests only
         private PurchaseFlow overrideFlow = PurchaseFlow.OfferToPlayer;
@@ -64,7 +65,7 @@ namespace Assets.Scripts.Managers.Purchase
                             gameObject.AddComponent<OwnershipServiceAdapter>();
 
             if (rules == null)
-                rules = new RuleSet();
+                rules = new StandardRuleSet();
         }
 
         private void HandleDecision(Player buyer, ITileRentInfo tile, PurchaseDecision decision)

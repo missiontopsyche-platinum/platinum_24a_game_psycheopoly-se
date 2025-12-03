@@ -1,6 +1,7 @@
 using Logging;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 /// <summary>
@@ -18,13 +19,12 @@ public class CardDeck : ScriptableObject
 
     [SerializeField] public DeckType deckType;
     [SerializeField] public List<Card> cards = new();
-    [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
+    [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
     public Queue<Card> deckQueue = new();
 
 
     public void OnEnable()
     {
-        deckQueue = new Queue<Card>(cards);
         ShuffleDeck();
     }
 
@@ -40,7 +40,28 @@ public class CardDeck : ScriptableObject
 
     public void DrawCard(Player player)
     {
+        if (cards == null || cards.Count == 0)
+        {
+            Logging.Logger.Error("CardDeck.DrawCard",
+                "Deck has no cards configured. Cannot draw.",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
+
+        if (deckQueue == null || deckQueue.Count == 0)
+        {
+            Logging.Logger.Warn("CardDeck.DrawCard",
+                "Deck is empty or null, rebuilding and reshuffling.",
+                LogCategory.Gameplay,
+                this);
+
+            deckQueue = new Queue<Card>(cards);
+            ShuffleDeck();
+        }
+
         Card card = deckQueue.Dequeue();
+
         if (card == null)
         {
             Logging.Logger.Error("CardDeck.DrawCard",
@@ -57,23 +78,7 @@ public class CardDeck : ScriptableObject
             return;
         }
 
-        // The execution happens within the deck.
-        // This is how I understand from the code structure we have so far.
-              if (cardDrawnChannel != null)
-        {
-            cardDrawnChannel.Raise(card, player, this);
-        }
-        else
-        {
-            // Fallback behaviour for when no UI is listening
-            foreach (var effect in card.effect)
-            {
-                effect.ApplyEffect(player);
-            }
-
-            ReturnCardToDeck(card);
-        }
-
+        cardDrawnChannel?.Raise(card, player, this);
     }
 
     public void ReturnCardToDeck(Card card)
@@ -84,8 +89,11 @@ public class CardDeck : ScriptableObject
 
     private void Shuffle()
     {
-        if (cards.Count == 0) return;
-        if (deckQueue == null) deckQueue = new Queue<Card>(cards);
+        if (cards == null || cards.Count == 0)
+            return;
+
+        if (deckQueue == null || deckQueue.Count == 0)
+            deckQueue = new Queue<Card>(cards);
 
         var list = deckQueue.ToList();
         var rng = new System.Random();
