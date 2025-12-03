@@ -99,6 +99,9 @@ namespace Assets.Scripts.Managers.Movement
             }
 
             SetCurrentPlayer(p);
+            
+            // this needs to get reset on every turn to ensure 'doubles count' from the last player doesn't impact the next.
+            doublesCount = 0;
         }
 
 
