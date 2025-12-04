@@ -37,30 +37,18 @@ namespace Tests.EditMode.GameManagerTests
 
             gameManager.Initialize();
             gameManager.SetUpGame(2);
-<<<<<<< HEAD
-            gameManager.CompleteGameInit();
-=======
+
             gameManager.CompleteGameInit(); // fires TurnStartedEvent(0,0)
->>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
 
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
 
-<<<<<<< HEAD
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-            Assert.AreEqual(2, callbackCount);
-            Assert.AreEqual(1, lastReceivedPlayer);
 
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-=======
             AdvanceAndFireTurn(1);
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
 
             AdvanceAndFireTurn(2);
->>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         }
@@ -78,10 +66,7 @@ namespace Tests.EditMode.GameManagerTests
 
             gameManager.turnStartedChannel.Subscribe(Listener);
 
-<<<<<<< HEAD
-=======
-            //setup
->>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
+
             gameManager.Initialize();
             gameManager.SetUpGame(3);
             gameManager.CompleteGameInit(); // fires TurnStartedEvent(0,0)
@@ -89,20 +74,7 @@ namespace Tests.EditMode.GameManagerTests
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
 
-<<<<<<< HEAD
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-            Assert.AreEqual(2, callbackCount);
-            Assert.AreEqual(1, lastReceivedPlayer);
 
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-            Assert.AreEqual(3, callbackCount);
-            Assert.AreEqual(2, lastReceivedPlayer);
-
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-=======
             // player 1
             AdvanceAndFireTurn(1);
             Assert.AreEqual(2, callbackCount);
@@ -115,7 +87,6 @@ namespace Tests.EditMode.GameManagerTests
 
             // back to player 0
             AdvanceAndFireTurn(3);
->>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
             Assert.AreEqual(4, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         }
@@ -140,25 +111,7 @@ namespace Tests.EditMode.GameManagerTests
             Assert.AreEqual(1, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
 
-<<<<<<< HEAD
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-            Assert.AreEqual(2, callbackCount);
-            Assert.AreEqual(1, lastReceivedPlayer);
 
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-            Assert.AreEqual(3, callbackCount);
-            Assert.AreEqual(2, lastReceivedPlayer);
-
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-            Assert.AreEqual(4, callbackCount);
-            Assert.AreEqual(3, lastReceivedPlayer);
-
-            gameManager.turnPhase = TurnPhase.EndTurn;
-            gameManager.NextTurn();
-=======
             // player 1
             AdvanceAndFireTurn(1);
             Assert.AreEqual(2, callbackCount);
@@ -176,7 +129,6 @@ namespace Tests.EditMode.GameManagerTests
 
             // loop back > player 0
             AdvanceAndFireTurn(4);
->>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
             Assert.AreEqual(5, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         }
