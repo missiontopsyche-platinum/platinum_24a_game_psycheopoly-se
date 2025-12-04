@@ -303,7 +303,6 @@ public class GameManager : MonoBehaviour
         CompleteGameInit();
     }
 
-<<<<<<< HEAD
     /// <summary>
     /// Begins the current player's turn, entering the turn-phase FSM.
     ///
@@ -325,9 +324,7 @@ public class GameManager : MonoBehaviour
                     "None finished, entering StartTurn.",
                     LogCategory.Gameplay, this);
             //US395 edit
-            int activePlayer = turnCycleManager != null
-                        ? turnCycleManager.CurrentPlayerIndex
-                        : currentPlayer;
+            int activePlayer = turnCycleManager?.CurrentPlayerIndex ?? 0;
             turnStartedChannel.RaiseEvent(new TurnStartedEvent(activePlayer, currentTurn));
             diceRollPanel?.gameObject.SetActive(true);
             // This is the "waiting" for dice roll phase, replacing the busy wait.
@@ -356,66 +353,15 @@ public class GameManager : MonoBehaviour
             Logging.Logger.Debug("GameManager.NextTurn",
                 "EndTurn finished, entering NextTurn.",
                 LogCategory.Gameplay, this);
-            currentPlayer = turnCycleManager != null
+
+            int next = turnCycleManager != null
                 ? turnCycleManager.Advance()
-                : (currentPlayer + 1) % playerCount;
+                : 0;
             currentTurn++;
             StartTurn();
         }
     }
-=======
-    //commented out for US395
-    //private void StartTurn()
-    //{
-    //    // temporary, assume every player is a 'human' player
-    //    SetState(GameState.PlayerTurn);
 
-    //    //us395, downstream systems listem to TurnCycleManager
-    //    int activePlayer = turnCycleManager != null
-    //        ? turnCycleManager.CurrentPlayerIndex
-    //        : currentPlayer;
-    //    turnStartedChannel.RaiseEvent(new TurnStartedEvent(activePlayer, currentTurn));
-
-    //    //TurnFlowCoordinator will handle turn sequence.
-    //    //turnComplete = false;
-    //    //currentTurnCoroutine = StartCoroutine(ExecuteTurn());
-    //}
-
-    //commented out for US395
-    //public void NextTurn()
-    //{
-    //    if (currentTurnCoroutine != null)
-    //        StopCoroutine(currentTurnCoroutine);
-
-    //    //rotation now delegated to the TurnCycleManager US395
-    //    if (turnCycleManager != null)
-    //    {
-    //        int nextPlayer = turnCycleManager.Advance();
-    //        currentPlayer = nextPlayer;   // keep old field synced for now...
-    //    }
-    //    else
-    //    {
-    //        currentPlayer = (currentPlayer + 1) % playerCount;
-    //    }
-
-    //    currentTurn++;
-    //    StartTurn();
-    //}
-
-    //commented out for US395
-    //private IEnumerator ExecuteTurn()
-    //{
-    //    diceRollPanel?.gameObject.SetActive(true);
-
-    //    // we should move through the state machine over time, this is a way to wait per frame
-    //    // to check for event fires.
-    //    while (!turnComplete)
-    //        yield return new WaitForEndOfFrame(); // busy wait for turn to complete (event fire etc)
-
-    //    // turn is complete, call next turn
-    //    NextTurn();
-    //}
->>>>>>> 156ca90 (refactored turn flow, TurnCycleManager now handles turn progression (not GameManager), AND updated tests accordingly)
 
     //us11-t34 very basic initializer, just initializing GameState...
     public void Initialize()
