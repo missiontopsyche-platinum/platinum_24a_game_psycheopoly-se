@@ -11,6 +11,7 @@ public class PlayerPanelController : UIPanelBase
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
     // TODO: Refactor if new PlayerEventChannel gets added
     [SerializeField] public PlayerEventChannel addPlayerEventChannel;
+    [SerializeField] public BooleanEventChannel updatePlayerDataChannel;
 
     public List<Player> playersList;
 
@@ -18,10 +19,14 @@ public class PlayerPanelController : UIPanelBase
     [SerializeField] public Text playerNameText;
     [SerializeField] public Text playerMoneyText;
 
+    private int currentPlayerId;
+
     private void OnEnable()
     {
         Subscribe(turnStartedChannel, DisplayCurrentPlayer);
         Subscribe(addPlayerEventChannel, AddPlayer);
+        Subscribe(updatePlayerDataChannel, UpdatePlayerData);
+        
         Logging.Logger.Trace("PlayerPanelController.OnEnable",
             "Player panel is now enabled.",
             LogCategory.UI,
@@ -48,7 +53,15 @@ public class PlayerPanelController : UIPanelBase
             return;
         }
 
-        int currentPlayerId = turnStartedEvent.playerId;
+        currentPlayerId = turnStartedEvent.playerId;
+        
+        UpdatePlayerUI();
+    }
+
+    
+
+    private void UpdatePlayerUI()
+    {
         var player = playersList?.Find(player => player.GetId() == currentPlayerId);
 
         if (player == null)
@@ -72,6 +85,8 @@ public class PlayerPanelController : UIPanelBase
             LogCategory.UI,
             this);
     }
+    
+    public void UpdatePlayerData(bool _) => UpdatePlayerUI();
 
     public void AddPlayer(Player player)
     {

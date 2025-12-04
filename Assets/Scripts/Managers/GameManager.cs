@@ -6,6 +6,7 @@ using PsycheOpoly.Board;
 using Assets.Scripts.Managers.Movement;
 using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers;
+using Events.EventDataStructures;
 
 public class GameManager : MonoBehaviour
 {
@@ -39,7 +40,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] public BooleanEventChannel turnEndedChannel;
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
+    
+    [Header("Event Channels/Ownership Channels")]
+    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+    [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+    [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
 
+    [Header("Manager References")]
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
@@ -148,6 +155,10 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
+        
+        // hook up to temporary methods for handling rent/purchase
+        purchaseOwnableRequestEventChannel?.Subscribe(QuickPurchase);
+        chargeOwnershipFeeEventChannel?.Subscribe(QuickRent);
 
         //us253-t278 hook up movement strategy to dice/board managers
         if (movementStrategy != null)
@@ -155,21 +166,21 @@ public class GameManager : MonoBehaviour
             movementStrategy.enabled = true;
 
             Logging.Logger.Info("GameManager.Start", "StandardMovementStrategy active and listening.",
-                Logging.LogCategory.Core, this);
+                LogCategory.Core, this);
         }
         else
         {
             Logging.Logger.Warn("GameManager.Start", "StandardMovementStrategy not assigned in Inspector.",
-                Logging.LogCategory.Core, this);
+                LogCategory.Core, this);
         }
 
         if (boardManager == null)
             Logging.Logger.Warn("GameManager.Start", "BoardManager reference not assigned.",
-                Logging.LogCategory.Core, this);
+                LogCategory.Core, this);
 
         if (diceManager == null)
             Logging.Logger.Warn("GameManager.Start", "DiceManager reference not assigned.", 
-                Logging.LogCategory.Core, this);
+                LogCategory.Core, this);
     }
 
     //start & end game to satisfy us11-35
@@ -219,6 +230,10 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Unsubscribe(OnSpaceResolutionCompleted);
+        
+        // unhook temporary methods for handling rent/purchase
+        purchaseOwnableRequestEventChannel?.Unsubscribe(QuickPurchase);
+        chargeOwnershipFeeEventChannel?.Unsubscribe(QuickRent);
     }
 
     /// <summary>
@@ -295,6 +310,7 @@ public class GameManager : MonoBehaviour
     /// - Enables the dice roll panel UI.
     /// - Advances to <see cref="TurnPhase.PreRoll"/>, where the game
     ///   waits for a roll dice request.
+    /// </summary>
     private void StartTurn()
     {
         // temporary, assume every player is a 'human' player
@@ -478,6 +494,76 @@ public class GameManager : MonoBehaviour
         Logging.Logger.Debug("GameManager.OnRollDiceRequest",
             "Dice roll requested, entering RollingDice.",
             LogCategory.Gameplay, this);
+    }
+
+    /// <summary>
+    /// Extremely quick and temporary implementation of purchase logic for the end-of-semester
+    /// prototype, to be fully replaced by the strategy pattern for handling rules.
+    /// </summary>
+    /// <param name="pore"></param>
+    public void QuickPurchase(PurchaseOwnableRequestEvent pore)
+    {
+        if (turnPhase != TurnPhase.ResolvingSpace)
+            return;
+        
+        if (pore.requestedPlayer.GetMoney() >= pore.requestedSpace.buyPrice)
+        {
+            pore.requestedPlayer.SetMoney(pore.requestedPlayer.GetMoney() - pore.requestedSpace.buyPrice);
+            pore.requestedSpace.SetOwner(pore.requestedPlayer);
+            
+            pore.requestedPlayer.AddOwnedProperty(pore.requestedSpace);
+            
+            Logging.Logger.Info("GameManager.QuickPurchase",
+                $"Purchased: {pore.requestedSpace.spaceName} for ${pore.requestedSpace.buyPrice}",
+                LogCategory.Economy, this);
+        }
+        else
+        {
+            Logging.Logger.Debug("GameManager.QuickPurchase",
+                $"Player {pore.requestedPlayer.GetPName()} " +
+                $"does not have enough money to purchase {pore.requestedSpace.spaceName}",
+                LogCategory.Economy, this);
+        }
+
+        playerDataUpdatedEventChannel.RaiseEvent(true);
+        TryChangeTurnPhase(TurnPhase.PostTurn);
+    }
+
+    /// <summary>
+    /// Extremely quick and temporary implementation of rent logic for the end-of-semester
+    /// prototype, to be fully replaced by the strategy pattern for handling rules.
+    /// </summary>
+    /// <param name="cofe"></param>
+    public void QuickRent(ChargeOwnershipFeeEvent cofe)
+    {
+        if (turnPhase != TurnPhase.ResolvingSpace)
+            return;
+
+        int playerMoney = cofe.fromPlayer.GetMoney();
+        int actualPayment = Mathf.Min(cofe.amount, playerMoney);  // pay what you can for now...
+    
+        cofe.fromPlayer.SetMoney(playerMoney - actualPayment);
+        cofe.toPlayer.SetMoney(cofe.toPlayer.GetMoney() + actualPayment);
+    
+        if (actualPayment < cofe.amount)
+        {
+            // player cant pay full rent.
+            // we'll handle bankruptcy etc in Semester 2
+            Logging.Logger.Warn("GameManager.QuickRent",
+                $"Player {cofe.fromPlayer.GetPName()} could only pay ${actualPayment} of ${cofe.amount} rent " +
+                $"to {cofe.toPlayer.GetPName()} on {cofe.sourceSpace.spaceName}",
+                LogCategory.Economy, this);
+        }
+        else
+        {
+            Logging.Logger.Info("GameManager.QuickRent",
+                $"{cofe.fromPlayer.GetPName()} paid ${actualPayment} rent to {cofe.toPlayer.GetPName()} " +
+                $"for {cofe.sourceSpace.spaceName}",
+                LogCategory.Economy, this);
+        }
+        
+        playerDataUpdatedEventChannel.RaiseEvent(true);
+        TryChangeTurnPhase(TurnPhase.PostTurn);
     }
 
     /// <summary>

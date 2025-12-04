@@ -1457,6 +1457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerPanelController
   turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
   addPlayerEventChannel: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
+  updatePlayerDataChannel: {fileID: 11400000, guid: 4aa6a3d44e5700a41b40f36abb24ff19, type: 2}
   playersList: []
   playerNameText: {fileID: 6928103308267896782}
   playerMoneyText: {fileID: 8134415378645163428}

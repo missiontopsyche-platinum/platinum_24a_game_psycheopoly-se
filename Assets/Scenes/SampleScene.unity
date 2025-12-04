@@ -1497,25 +1497,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1840355022}
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
-      propertyPath: cardDrawnChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
-    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: movementStrategy
       value: 
       objectReference: {fileID: 1420659637}
-    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
-      propertyPath: turnEndedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
-    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
-      propertyPath: rollDiceRequestedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
-    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
-      propertyPath: spaceResolutionCompletedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
     - target: {fileID: 6717631317294787115, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: m_Name
       value: GameManager
