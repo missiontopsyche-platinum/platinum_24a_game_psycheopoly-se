@@ -217,14 +217,16 @@ namespace PsycheOpoly.Board
                 }
             }
             // if spaces == 0 then path = empty
-
+            
             Logger.Debug("Move Player", 
                 $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
                 LogCategory.Gameplay, this);
+            
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next, path));
             // Throws an event if the player has a negative move.
             // This may need a refactor if anything causes the player to move backwards normally.
+            
             //fixed bc only forward movement through a full wrap-around should trigger passedGo
             if (spaces > 0 && next < previous)
             {

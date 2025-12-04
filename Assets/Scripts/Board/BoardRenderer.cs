@@ -203,11 +203,31 @@ public class BoardRenderer : MonoBehaviour
         Vector3 targetPosition = spaceRenderers[mpe.newPosition].transform.position;
         movingPiece.spaceIndex = mpe.newPosition;
         Vector3 bumpPosition = BumpCrowdedSpacePieces(mpe.newPosition, mpe.id);
+        Vector3[] vSteps = BuildVectorPathFromIndexPath(mpe.pathIndices);
         
         if (bumpPosition == Vector3.zero)
-            movingPiece.MoveTo(targetPosition, false);
+            movingPiece.MoveToWaypoints(vSteps);
         else
-            movingPiece.MoveToWaypoints(new []{targetPosition, bumpPosition});
+        {
+            vSteps[^1] = bumpPosition; // ^1 means get the last element... C# 8.0 feature. equivalent to ".Length - x".
+            movingPiece.MoveToWaypoints(vSteps);
+        }
+    }
+
+    private Vector3[] BuildVectorPathFromIndexPath(int[] path)
+    {
+        if (path.Length < 1)
+            return new [] { Vector3.zero };
+        
+        Vector3[] vPath = new Vector3[path.Length];
+        
+        for (int i = 0; i < path.Length; i++)
+        {
+            Vector3 vStep = spaceRenderers[path[i]].transform.position;
+            vPath[i] = vStep;
+        }
+
+        return vPath;
     }
 
     /// <summary>
@@ -238,7 +258,7 @@ public class BoardRenderer : MonoBehaviour
             if (piecesOnTarget[i].playerId == currentPlayerId)
                 currentPlayerTargetBump = targetPosition;
             else
-                piecesOnTarget[i].MoveTo(targetPosition, true);
+                piecesOnTarget[i].MoveTo(targetPosition, true); // this shuffles existing pieces into a new bump pos
         }
 
         return currentPlayerTargetBump;
