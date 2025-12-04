@@ -367,7 +367,7 @@ namespace PsycheOpoly.Board
         {
             if (jsce.inJail)
             {
-                MovePlayerToClosestSpaceType(jsce.player, typeof(GoForLaunchSpaceData));
+                MovePlayerToClosestSpaceType(jsce.player, typeof(LaunchPadSpaceData));
             }
         }
 
