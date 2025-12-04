@@ -187,7 +187,6 @@ public class CardPopupUI : MonoBehaviour
         }
 
         canvasGroup.alpha = 0f;
-        gameObject.SetActive(false); 
     }
 
 }
