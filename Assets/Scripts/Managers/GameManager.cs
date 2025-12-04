@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
 
 
     private int playerCount = 0;
-    //private int currentPlayer = 0;
+    private int currentPlayer = 0;
     private int currentTurn = 0;
 
     //The below are for testing that the event is properly registering in the class
@@ -269,7 +269,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         this.playerCount = playerCount;
-
+        currentPlayer = 0;
         initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
 
         //wire turn system for US395
@@ -292,9 +292,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void CompleteGameInit()
     {
-        // Fire FIRST turn; TurnFlowCoordinator handles the rest
-        SetState(GameState.PlayerTurn);
-        turnStartedChannel?.RaiseEvent(new TurnStartedEvent(0, 0));
+        StartTurn();
     }
 
     private IEnumerator WaitForGameInit()
@@ -323,9 +321,7 @@ public class GameManager : MonoBehaviour
             Logging.Logger.Debug("GameManager.StartTurn",
                     "None finished, entering StartTurn.",
                     LogCategory.Gameplay, this);
-            //US395 edit
-            int activePlayer = turnCycleManager?.CurrentPlayerIndex ?? 0;
-            turnStartedChannel.RaiseEvent(new TurnStartedEvent(activePlayer, currentTurn));
+            turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
             diceRollPanel?.gameObject.SetActive(true);
             // This is the "waiting" for dice roll phase, replacing the busy wait.
             Logging.Logger.Debug("GameManager.StartTurn",
@@ -354,9 +350,7 @@ public class GameManager : MonoBehaviour
                 "EndTurn finished, entering NextTurn.",
                 LogCategory.Gameplay, this);
 
-            int next = turnCycleManager != null
-                ? turnCycleManager.Advance()
-                : 0;
+            currentPlayer = (currentPlayer + 1) % playerCount;
             currentTurn++;
             StartTurn();
         }
