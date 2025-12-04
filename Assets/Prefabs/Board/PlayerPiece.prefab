@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Piece
   pieceColor: {r: 1, g: 1, b: 1, a: 1}
-  moveSpeed: 3
+  moveSpeed: 6
   pieceMoveCompletedEventChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
   meshRenderer: {fileID: 2349965106266167517}
   playerId: 0

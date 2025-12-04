@@ -127,6 +127,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 327057945443998030, guid: b55a24a7347066947bfcdd0f17b8c131, type: 3}
+      propertyPath: fadeDuration
+      value: 0.25
+      objectReference: {fileID: 0}
     - target: {fileID: 913164210820008243, guid: b55a24a7347066947bfcdd0f17b8c131, type: 3}
       propertyPath: m_FontData.m_BestFit
       value: 1
@@ -1418,38 +1422,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerManager
       objectReference: {fileID: 0}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: passedGoChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: payPlayerEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: playerAddedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: chargePlayerEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: payAllPlayersEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 101d6cb95fd321f47b586ba6b9b3c7dd, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: playerRemovedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: a2eeb94d4d11ebb4397f738c4b414089, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: jailStateChangedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: collectFromAllPlayersEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 31774ba8ec1c33a42b7ff50e3cd9b844, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1683,6 +1655,10 @@ PrefabInstance:
       propertyPath: moveToSpaceEventChannel
       value: 
       objectReference: {fileID: 11400000, guid: 7a9765d84a0a54b409423e8a0415aac9, type: 2}
+    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
+      propertyPath: jailStateChangedEventChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -58,6 +58,8 @@ MonoBehaviour:
   spaceResolutionCompletedChannel: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
+  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}
   playerDataUpdatedEventChannel: {fileID: 11400000, guid: 4aa6a3d44e5700a41b40f36abb24ff19, type: 2}
   diceManager: {fileID: 0}
   boardManager: {fileID: 0}

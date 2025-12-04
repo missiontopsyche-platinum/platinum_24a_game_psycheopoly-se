@@ -41,10 +41,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel turnEndedChannel;
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
     
-    [Header("Event Channels/Ownership Channels")]
+    [Header("Space Resolution Event Channels")]
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
+    
 
     [Header("Manager References")]
     [SerializeField] private DiceManager diceManager;

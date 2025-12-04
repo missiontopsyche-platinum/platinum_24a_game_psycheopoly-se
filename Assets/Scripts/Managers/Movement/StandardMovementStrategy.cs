@@ -28,7 +28,8 @@ namespace Assets.Scripts.Managers.Movement
         private int doublesCount = 0;
         private Player currentPlayer;
         private PlayerManager playerManager;
-
+        private int[] lastPath;
+        private bool normalMoveCompletedThisTurn = false;
 
         private void OnEnable()
         {
@@ -67,6 +68,7 @@ namespace Assets.Scripts.Managers.Movement
         private void SetCurrentPlayer(Player p)
         {
             currentPlayer = p;
+            normalMoveCompletedThisTurn = false;
         }
 
         private void Awake()
@@ -160,17 +162,29 @@ namespace Assets.Scripts.Managers.Movement
 
             MovePlayerEvent moveEvent = new MovePlayerEvent(currentPlayer.GetId(), total, pathIndices);
             movePlayerChannel?.RaiseEvent(moveEvent);
+            
+            // store to run "OnPassed" on spaces
+            lastPath = pathIndices;
         }
 
         public void OnPieceMoveCompleted(bool success)
         {
-            if (!success || currentPlayer == null)
+            if (!success || currentPlayer == null || normalMoveCompletedThisTurn)
                 return;
 
 
 
             int playerId = currentPlayer.GetId();
             int currentPos = boardManager.GetPlayerPosition(playerId);
+
+            // loop through last path (skip current space) and run each on-passed method (catch passing GO)
+            foreach (int index in lastPath)
+            {
+                if (index == currentPos) continue;
+                
+                boardManager.GetSpace(index)?.OnPassed(currentPlayer);
+            }
+            
             SpaceData landed = boardManager.GetSpace(currentPos);
 
             Logger.Info("StandardMovementStrategy",
@@ -194,6 +208,8 @@ namespace Assets.Scripts.Managers.Movement
             }
 
             spaceResolutionCompletedChannel?.RaiseEvent(true);
+
+            normalMoveCompletedThisTurn = true;
         }
 
         //helprs

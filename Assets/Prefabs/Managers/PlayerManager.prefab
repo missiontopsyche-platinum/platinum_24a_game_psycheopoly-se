@@ -44,6 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e73d5229aa3a7429dda88fa656ad99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerManager
-  playerAddedEventChannel: {fileID: 11400000, guid: 9480f55f1a6baeb4b8967270bdc8b800, type: 2}
-  playerRemovedEventChannel: {fileID: 11400000, guid: 9480f55f1a6baeb4b8967270bdc8b800, type: 2}
+  playerAddedEventChannel: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
+  playerRemovedEventChannel: {fileID: 11400000, guid: a2eeb94d4d11ebb4397f738c4b414089, type: 2}
   initializePlayerCountChannel: {fileID: 11400000, guid: 1ffd839d51a8772428ccd8ac76dfcb46, type: 2}
+  passedGoChannel: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
+  payAllPlayersEventChannel: {fileID: 11400000, guid: 101d6cb95fd321f47b586ba6b9b3c7dd, type: 2}
+  collectFromAllPlayersEventChannel: {fileID: 11400000, guid: 31774ba8ec1c33a42b7ff50e3cd9b844, type: 2}
+  jailStateChangedEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}
+  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  playerDataUpdatedEventChannel: {fileID: 11400000, guid: 4aa6a3d44e5700a41b40f36abb24ff19, type: 2}
+  players: []

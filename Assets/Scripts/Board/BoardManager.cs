@@ -232,14 +232,17 @@ namespace PsycheOpoly.Board
             
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next, path));
+            
             // Throws an event if the player has a negative move.
             // This may need a refactor if anything causes the player to move backwards normally.
             
-            //fixed bc only forward movement through a full wrap-around should trigger passedGo
-            if (spaces > 0 && next < previous)
-            {
-                passedGoChannel?.RaiseEvent(mpe.id);
-            }
+            // removing because passing a space is handled by SpaceData now.
+            
+            // //fixed bc only forward movement through a full wrap-around should trigger passedGo
+            // if (spaces > 0 && next < previous)
+            // {
+            //     passedGoChannel?.RaiseEvent(mpe.id);
+            // }
         }
 
         //Helper methods

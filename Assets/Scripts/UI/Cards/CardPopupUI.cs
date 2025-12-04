@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
+using Logger = Logging.Logger;
 
 public class CardPopupUI : MonoBehaviour
 {
@@ -97,6 +98,7 @@ public class CardPopupUI : MonoBehaviour
         //If something went wrong just hide the card 
         if(currentCard == null || currentPlayer == null || currentDeck == null)
         {
+            Debug.LogError("Card UI missing information for onclicked, hiding.");
             HideInstant();
             return;
         }
@@ -104,6 +106,9 @@ public class CardPopupUI : MonoBehaviour
         //execute card effect 
         foreach (var effect in currentCard.effect)
         {
+            Logger.Info("CardPopupUI.OnOkClicked",
+                $"Running Card Effect {effect}");
+            
             effect.ApplyEffect(currentPlayer);
         }
 
