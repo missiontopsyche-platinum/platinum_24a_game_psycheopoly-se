@@ -22,6 +22,8 @@ namespace Assets.Scripts.Managers.TurnOrder
         {
             EnsureDeps();
             ResetCycle(playerCount, startingPlayerIndex);
+            CurrentPlayerIndex = startingPlayerIndex;
+
         }
 
         private void EnsureDeps()

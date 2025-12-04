@@ -26,6 +26,12 @@ namespace Tests.EditMode.GameManagerTests
             var turnStateGO = new GameObject("PlayerTurnState");
             var turnState = turnStateGO.AddComponent<PlayerTurnState>();
 
+            var tflowGO = new GameObject("TurnFlowCoordinator");
+            var tflow = tflowGO.AddComponent<Assets.Scripts.Managers.TurnFlow.TurnFlowCoordinator>();
+            tflowGO.SetActive(true);
+
+            tflowGO.transform.SetParent(gameObject.transform.parent);
+
             // let GameManager discover these using FindFirstObjectByType in Awake()
             turnCycleGO.transform.SetParent(gameObject.transform.parent);
             turnStateGO.transform.SetParent(gameObject.transform.parent);
@@ -55,6 +61,33 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnEndedChannel = CreateChannel<BooleanEventChannel>();
             gameManager.spaceResolutionCompletedChannel = CreateChannel<BooleanEventChannel>();
 
+            // Wire channels into TurnFlowCoordinator (reflection)
+            var tflowType = typeof(Assets.Scripts.Managers.TurnFlow.TurnFlowCoordinator);
+
+            tflowType.GetField("turnStartedInChannel", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, gameManager.turnStartedChannel);
+
+            tflowType.GetField("turnEndedChannel", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, gameManager.turnEndedChannel);
+
+            tflowType.GetField("diceRolledChannel", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, gameManager.diceRolledChannel);
+
+            tflowType.GetField("pieceMoveCompletedChannel", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, gameManager.pieceMoveCompletedChannel);
+
+            tflowType.GetField("turnStartedOutChannel", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, gameManager.turnStartedChannel);
+
+            // Dependencies
+            tflowType.GetField("turnCycleManager", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, turnCycle);
+
+            tflowType.GetField("playerManager", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.SetValue(tflow, null); // optional for test
+
+            tflowType.GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance)
+    ?.Invoke(tflow, null);
 
             InitializeTestLogger();
         }

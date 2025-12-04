@@ -1,4 +1,5 @@
 using Assets.Scripts.Managers.Movement;
+using Assets.Scripts.Managers.TurnOrder;
 using NUnit.Framework;
 using System.Reflection;
 using UnityEngine;
@@ -111,6 +112,7 @@ namespace Tests.EditMode.GameManagerTests
             Assert.AreEqual(TurnPhase.ResolvingCards, gameManager.turnPhase);
         }
 
+        //this test changes logically for US395; GameManager doesn't "pre-roll" on its own
         [Test]
         public void TurnEndedEvent_FromPostTurn_RunsEndTurnNextTurnAndBackToPreRoll()
         {
@@ -119,17 +121,21 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.gameState = GameState.PlayerTurn;
             gameManager.turnPhase = TurnPhase.PostTurn;
 
-            SetPrivate("playerCount", 2);
-            SetPrivate("currentPlayer", 0);
-            SetPrivate("currentTurn", 0);
+            // no longer have currentPlayer or currentTurn on GameManager
+            // TurnCycleManager holds the active player index
+            var tcm = Object.FindFirstObjectByType<TurnCycleManager>();
+            tcm.ResetCycle(2, 0);
 
             gameManager.OnTurnEndedEvent(true);
 
-            Assert.AreEqual(TurnPhase.PreRoll, gameManager.turnPhase);
+            // GameManager ONLY moves PostTurn >EndTurn now
+            Assert.AreEqual(TurnPhase.EndTurn, gameManager.turnPhase);
 
+            // TurnFlowCoordinator should have fired TurnStartedEvent for next player
             Assert.IsNotNull(turnStartedEvent, "TurnStartedEvent was not raised.");
+
             Assert.AreEqual(1, turnStartedEvent.playerId, "Next player index should be 1.");
-            Assert.AreEqual(1, turnStartedEvent.turnNum, "Turn number should increment to 1.");
+            Assert.AreEqual(0, turnStartedEvent.turnNum, "Turn number is no longer tracked in GameManager.");
         }
 
         [Test]

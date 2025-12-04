@@ -15,10 +15,11 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
+        [SerializeField] private BooleanEventChannel turnEndedChannel;
 
         [Header("Event Channels Out")]
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
-        [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+        [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
 
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
@@ -34,23 +35,29 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             if (!playerManager)
                 playerManager = FindFirstObjectByType<PlayerManager>();
+
+            //fallback for editmode tests
+            var gm = FindFirstObjectByType<GameManager>();
+            if (!turnStartedInChannel && gm) turnStartedInChannel = gm.turnStartedChannel;
+            if (!turnEndedChannel && gm) turnEndedChannel = gm.turnEndedChannel;
         }
 
 
 
         private void OnEnable()
         {
-            turnStartedChannel?.Subscribe(OnTurnStarted);
+            turnStartedInChannel?.Subscribe(OnTurnStarted);
             diceRolledChannel?.Subscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
-
+            turnEndedChannel?.Subscribe(OnTurnEnded);
         }
 
         private void OnDisable()
         {
-            turnStartedChannel?.Unsubscribe(OnTurnStarted);
+            turnStartedInChannel?.Unsubscribe(OnTurnStarted);
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
+            turnEndedChannel?.Unsubscribe(OnTurnEnded);
         }
 
         // a new turn's started, reset state, wait for new roll
@@ -58,6 +65,12 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             activePlayer = data.playerId;
             phase = TurnPhase.AwaitingRoll;
+        }
+
+        private void OnTurnEnded(bool ended)
+        {
+            if (!ended) return;
+            CompleteTurnFlow();
         }
 
         // after dice roll, wait for movement to contine
@@ -88,14 +101,13 @@ namespace Assets.Scripts.Managers.TurnFlow
         // decide if another turn is in order or if we can move onto next plater
         private void CompleteTurnFlow()
         {
-            if (turnCycleManager == null || playerManager == null)
+            if (turnCycleManager == null)
                 return;
 
             phase = TurnPhase.Completed;
 
-            // turn order manager for next player
             int nextPlayer = turnCycleManager.Advance();
-            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
         }
     }
 
