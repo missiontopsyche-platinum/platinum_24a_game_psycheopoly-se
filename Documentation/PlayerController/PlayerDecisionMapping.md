@@ -22,6 +22,7 @@ Each entry follows this pattern:
 7. [End Turn](#7-end-turn)
 8. [Asset Liquidation (Bankruptcy Flow)](#8-asset-liquidation-bankruptcy-flow)
 9. [Card Effects](#9-card-effects)
+10. [Roll Dice](#10-roll-dice)
 
 ---
 
@@ -194,6 +195,32 @@ entry point should be documented.
 
 **Notes**: Most cards are automatic effects. Some (like GOOJ card) are stored for later use.
 We're moving the flow to `PlayerController` to unify player feedback and UI controls.
+
+---
+
+[_Return to Top_](#player-decision-mapping)
+
+---
+
+## 10. Roll Dice
+
+**Trigger**: Player-initiated during their turn (when they haven't rolled yet)
+- Available at turn start
+- HumanPlayerController exposes "Roll Dice" button
+- AIPlayerController automatically triggers after processing turn start
+
+**Decision Point**: Is the player ready to roll the dice and move?
+
+**Player Methods**:
+- `bool CanRollDice()` - validation (hasn't rolled this turn, not in jail attempting roll, etc.)
+- `void ExecuteRollDice()` - triggers dice roll, publishes result event
+
+**Notes**: Previously automatic at turn start. Moving to player-initiated for consistency
+with controller pattern. HumanPlayerController shows "Roll Dice" button at turn start.
+AIPlayerController calls this automatically after minimal delay (for realism/visibility).
+GameManager handles actual dice roll logic and movement after Player publishes roll event.
+Taking this out of turn phase order for human player aligns with Property Management being
+out of turn phase, and gives more autonomy to human players.
 
 ---
 
