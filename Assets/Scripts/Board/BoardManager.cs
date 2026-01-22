@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
 using UnityEngine;
 using Logging;
 using Logger = Logging.Logger;
@@ -21,10 +23,14 @@ namespace PsycheOpoly.Board
         [SerializeField] public MovePlayerEventChannel movePlayerChannel;
         [SerializeField] public IntEventChannel passedGoChannel;
         [SerializeField] public MoveToSpaceEventChannel moveToSpaceEventChannel;
+        [SerializeField] public JailStateChangedEventChannel jailStateChangedEventChannel;
 
         [Header("Board Spaces")]
         [SerializeField] public BoardSpaceContainer boardSpaceContainer;
         private SpaceData[] boardSpaces;
+        
+        // don't like this magic number... maybe we could find it in initialize.
+        private const int JailIndex = 10;
         
         //For Testing purposes
         public int boardSize => boardSpaces?.Length ?? 0;
@@ -65,6 +71,7 @@ namespace PsycheOpoly.Board
             playerAddedChannel?.Subscribe(AddPlayer);
             movePlayerChannel?.Subscribe(MovePlayer);
             moveToSpaceEventChannel?.Subscribe(OnMoveToSpaceEvent);
+            jailStateChangedEventChannel?.Subscribe(OnJailStateChanged);
             subscribed = true;
         }
 
@@ -77,6 +84,7 @@ namespace PsycheOpoly.Board
             playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
             moveToSpaceEventChannel?.Unsubscribe(OnMoveToSpaceEvent);
+            jailStateChangedEventChannel?.Unsubscribe(OnJailStateChanged);
             subscribed = false;
         }
 
@@ -217,19 +225,24 @@ namespace PsycheOpoly.Board
                 }
             }
             // if spaces == 0 then path = empty
-
+            
             Logger.Debug("Move Player", 
                 $"Player {mpe.id} moved {mpe.spacesToMove}, from {previous} to {previous+mpe.spacesToMove}, normalized: {next}", 
                 LogCategory.Gameplay, this);
+            
             playerPositions[mpe.id] = next;
             playerMovedChannel?.RaiseEvent(new PlayerMovedEvent(mpe.id, previous, next, path));
+            
             // Throws an event if the player has a negative move.
             // This may need a refactor if anything causes the player to move backwards normally.
-            //fixed bc only forward movement through a full wrap-around should trigger passedGo
-            if (spaces > 0 && next < previous)
-            {
-                passedGoChannel?.RaiseEvent(mpe.id);
-            }
+            
+            // removing because passing a space is handled by SpaceData now.
+            
+            // //fixed bc only forward movement through a full wrap-around should trigger passedGo
+            // if (spaces > 0 && next < previous)
+            // {
+            //     passedGoChannel?.RaiseEvent(mpe.id);
+            // }
         }
 
         //Helper methods
@@ -347,6 +360,18 @@ namespace PsycheOpoly.Board
             }
 
             MovePlayer(new MovePlayerEvent(playerId, stepsForward));
+        }
+
+        /// <summary>
+        /// This is a temp function to make the player move to the Jail space when they are jailed from things like a card.
+        /// </summary>
+        /// <param name="jsce"></param>
+        private void OnJailStateChanged(JailStateChangedEvent jsce)
+        {
+            if (jsce.inJail)
+            {
+                MovePlayerToClosestSpaceType(jsce.player, typeof(LaunchPadSpaceData));
+            }
         }
 
         /// <summary>

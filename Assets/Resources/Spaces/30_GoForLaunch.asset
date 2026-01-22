@@ -18,3 +18,4 @@ MonoBehaviour:
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   flavorText: GO FOR LAUNCH!
   goDirectlyToLaunchPadChannel: {fileID: 0}
+  jailStateChangedEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}

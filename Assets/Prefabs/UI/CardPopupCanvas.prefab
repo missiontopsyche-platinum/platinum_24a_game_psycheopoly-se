@@ -565,9 +565,10 @@ MonoBehaviour:
   cardTitleText: {fileID: 2266277964926184384}
   cardBodyText: {fileID: 9178346689636037677}
   okButton: {fileID: 3811950362388187880}
-  CanvasGroup: {fileID: 2124444208015256195}
+  canvasGroup: {fileID: 2124444208015256195}
   artworkImage: {fileID: 4666790704326918140}
   cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
+  fadeDuration: 0.25
 --- !u!1 &5635903033199217837
 GameObject:
   m_ObjectHideFlags: 0

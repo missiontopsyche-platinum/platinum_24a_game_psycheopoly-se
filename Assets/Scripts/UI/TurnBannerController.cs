@@ -72,7 +72,9 @@ public class TurnBannerController : MonoBehaviour
 
     private void OnTurnStarted(TurnStartedEvent payload)
     {
-        turnLabel.text = $"Player {payload.playerId}'s Turn";
+        // this is a quick fix, in the future, we might need to have some sort of way for the UI to query players from
+        // the playermanager
+        turnLabel.text = $"Player {payload.playerId + 1}'s Turn";
         Show();
     }
 

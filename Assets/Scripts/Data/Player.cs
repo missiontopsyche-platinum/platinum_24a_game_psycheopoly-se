@@ -55,6 +55,11 @@ public class Player : ScriptableObject
                 this);
             throw new ArgumentException("Money cannot be negative yet...");
         }
+        
+        Logging.Logger.Info("Player.SetMoney",
+            $"Setting {p_Name}'s money from ${this.money} to ${money}.",
+            LogCategory.Economy, this);
+        
         this.money = money;
     }
 
