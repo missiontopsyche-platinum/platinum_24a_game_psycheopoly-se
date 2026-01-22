@@ -26,6 +26,12 @@ public class PayPlayerCardEffect : CardEffect
             return;
         }
 
+        Logging.Logger.Info("PayPlayerCardEffect.ApplyEffect",
+            $"Effect: Paying {player.GetPName()} ${amount}.",
+            Logging.LogCategory.Gameplay,
+            this);
+        
         payPlayerEventChannel.RaiseEvent(new PayPlayerEvent(player, amount));
+        
     }
 }

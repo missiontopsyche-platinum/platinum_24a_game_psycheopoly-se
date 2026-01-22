@@ -4,6 +4,7 @@ using Events.EventDataStructures;
 using Logging;
 using System.Collections.Generic;
 using UnityEngine;
+using Logger = Logging.Logger;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public JailStateChangedEventChannel jailStateChangedEventChannel;
     [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
     [SerializeField] public PayPlayerEventChannel payPlayerEventChannel;
+    [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
 
     public List<Player> players = new List<Player>();
 
@@ -264,12 +266,24 @@ public class PlayerManager : MonoBehaviour
 
     public void OnChargePlayerEvent(ChargePlayerEvent chargePlayerEvent)
     {
+        Logger.Info("PlayerManager.OnChargePlayerEvent",
+            $"Charging {chargePlayerEvent.chargedPlayer.GetPName()} ${chargePlayerEvent.chargeAmount}",
+            LogCategory.Economy, this);
+        
         RemoveMoney(chargePlayerEvent.chargedPlayer.GetId(), chargePlayerEvent.chargeAmount);
+        
+        playerDataUpdatedEventChannel.RaiseEvent(true);
     }
 
     public void OnPayPlayerEvent(PayPlayerEvent payPlayerEvent)
     {
+        Logger.Info("PlayerManager.OnPayPlayerEvent",
+            $"Paying {payPlayerEvent.paidPlayer.GetPName()} ${payPlayerEvent.amountPaid}",
+            LogCategory.Economy, this);
+        
         AddMoney(payPlayerEvent.paidPlayer.GetId(), payPlayerEvent.amountPaid);
+        
+        playerDataUpdatedEventChannel.RaiseEvent(true);
     }
 
     public void ClearPlayers()

@@ -52,12 +52,20 @@ MonoBehaviour:
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
   movePlayerChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
   pieceMoveCompletedChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
-  turnPhaseChangedEventChannel: {fileID: 11400000, guid: 1eee447fd0bbbae41bf605df63c4bd34, type: 2}
   rollDiceRequestedChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
   cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
+  turnEndedChannel: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
+  spaceResolutionCompletedChannel: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
+  purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
+  chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
+  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}
+  playerDataUpdatedEventChannel: {fileID: 11400000, guid: 4aa6a3d44e5700a41b40f36abb24ff19, type: 2}
   diceManager: {fileID: 0}
   boardManager: {fileID: 0}
+  turnCycleManager: {fileID: 0}
   movementStrategy: {fileID: 0}
+  rulesManager: {fileID: 0}
   dieOne: 0
   dieTwo: 0
   totalRolled: 0
