@@ -22,6 +22,8 @@ namespace Assets.Scripts.Managers.TurnOrder
         {
             EnsureDeps();
             ResetCycle(playerCount, startingPlayerIndex);
+            CurrentPlayerIndex = startingPlayerIndex;
+
         }
 
         private void EnsureDeps()
@@ -51,9 +53,6 @@ namespace Assets.Scripts.Managers.TurnOrder
             int next = strategy.NextPlayerIndex(CurrentPlayerIndex, playerCount, playerTurnState);
 
             CurrentPlayerIndex = next;
-
-            if (gameManager && gameManager.turnStartedChannel != null)
-                gameManager.turnStartedChannel.RaiseEvent(new TurnStartedEvent(CurrentPlayerIndex, 0)); 
 
             return CurrentPlayerIndex;
         }
