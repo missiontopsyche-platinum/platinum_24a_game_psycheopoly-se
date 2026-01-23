@@ -25,6 +25,7 @@ namespace Assets.Scripts.Managers.Rules
     }
     public enum WinConditionType
     {
+        TurnLimit
     }
 }
 
