@@ -72,6 +72,7 @@ public class PlayerManager : MonoBehaviour
             this);
 
         players.Clear();  //prevent duplicates when starting new game
+        EnsureDependencies();
         int startingMoney = activeRuleset.PlayerStartingMoney();
         int startingPosition = 0; //GO
 
@@ -197,6 +198,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="id"></param>
     public void PassedGo(int id)
     {
+        EnsureDependencies();
         AddMoney(id, activeRuleset.GOSalary()); 
     }
 
@@ -293,5 +295,16 @@ public class PlayerManager : MonoBehaviour
         AddMoney(payPlayerEvent.paidPlayer.GetId(), payPlayerEvent.amountPaid);
         
         playerDataUpdatedEventChannel.RaiseEvent(true);
+    }
+
+    private void EnsureDependencies()
+    {
+        if (!rulesManager)
+            rulesManager = FindFirstObjectByType<RulesManager>();
+
+        if (activeRuleset == null)
+            activeRuleset = rulesManager != null
+                ? rulesManager.ActiveRules
+                : new StandardRuleSet();
     }
 }
