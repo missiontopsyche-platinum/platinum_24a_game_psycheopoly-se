@@ -19,10 +19,25 @@ namespace Assets.Scripts.Managers.Rules
         [Tooltip("Utility multiplier when owner has both utilities.")]
         [SerializeField] private int utilityBoth = 10;
 
+        [Tooltip("Starting money for each player.")]
+        [SerializeField] private int playerStartingMoney = 1500;
+
+        [Tooltip("Salary received when passing GO.")]
+        [SerializeField] private int gOSalary = 200;
+
+        [Tooltip("Fee to pay when leaving jail.")]
+        [SerializeField] private int jailFee = 50;
+
+        [Tooltip("Win condition type for the game.")]
+        [SerializeField] private WinConditionType winCondition = WinConditionType.LastPlayerStanding;
+        [SerializeField] private int targetMoney = 5000;
+
+        [Tooltip("Turn limit for TurnLimit win condition.")]
+        [SerializeField] private int turnLimit = 20;
+
         public int RailroadBaseRent() => railroadBase;
         public int UtilityRentSingleMult() => utilitySingle;
         public int UtilityRentBothMult() => utilityBoth;
-
         public int StreetsInGroup(ColorGroup g) =>
             g switch
             {
@@ -30,5 +45,5 @@ namespace Assets.Scripts.Managers.Rules
                 ColorGroup.LightBlue or ColorGroup.Pink or ColorGroup.Orange or ColorGroup.Red or ColorGroup.Yellow or ColorGroup.Green => 3,
                 _ => 0
             };
-}
+    }
 }

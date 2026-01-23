@@ -11,17 +11,16 @@ namespace Assets.Scripts.Managers.Rules
     /// </summary>
     public interface IRuleSet
     {
-
-        int PlayerStartingMoney { get; }
-        int GOSalary { get; }
-        int JailFee { get; }
-        WinConditionType WinConditionType { get; }
-        int TargetMoney { get; }
-        int TurnLimit { get; }
         int RailroadBaseRent();
         int UtilityRentSingleMult();
         int UtilityRentBothMult();
         int StreetsInGroup(ColorGroup group);
+        int PlayerStartingMoney();
+        int GOSalary();
+        int JailFee();
+        WinConditionType WinCondition();
+        int TargetMoney();
+        int TurnLimit();
     }
     public enum WinConditionType
     {
