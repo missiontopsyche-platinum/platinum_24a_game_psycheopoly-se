@@ -81,7 +81,7 @@ namespace Assets.Scripts.Managers.Rent
 
             if (rules == null)
                 rules = rulesManager != null
-                    ? rulesManager.GetRuleSet()
+                    ? rulesManager.ActiveRules
                     : new StandardRuleSet();
         }
 
