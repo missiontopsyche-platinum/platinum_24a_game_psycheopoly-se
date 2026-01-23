@@ -197,7 +197,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="id"></param>
     public void PassedGo(int id)
     {
-        AddMoney(id, 200); 
+        AddMoney(id, activeRuleset.GOSalary()); 
     }
 
     /// <summary>
