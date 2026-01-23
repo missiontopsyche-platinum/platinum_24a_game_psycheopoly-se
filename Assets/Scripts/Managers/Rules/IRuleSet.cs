@@ -23,5 +23,8 @@ namespace Assets.Scripts.Managers.Rules
         int UtilityRentBothMult();
         int StreetsInGroup(ColorGroup group);
     }
+    public enum WinConditionType
+    {
+    }
 }
 
