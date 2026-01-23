@@ -21,6 +21,7 @@ namespace Assets.Scripts.Managers.Rules
         WinConditionType WinCondition();
         int TargetMoney();
         int TurnLimit();
+        int MaxJailTurns();
     }
     public enum WinConditionType
     {
