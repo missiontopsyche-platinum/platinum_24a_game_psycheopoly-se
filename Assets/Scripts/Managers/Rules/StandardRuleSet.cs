@@ -30,6 +30,8 @@ namespace Assets.Scripts.Managers.Rules
 
         [Tooltip("Win condition type for the game.")]
         [SerializeField] private WinConditionType winCondition = WinConditionType.LastPlayerStanding;
+
+        [Tooltip("Target money for TargetMoney win condition.")]
         [SerializeField] private int targetMoney = 5000;
 
         [Tooltip("Turn limit for TurnLimit win condition.")]
@@ -45,5 +47,11 @@ namespace Assets.Scripts.Managers.Rules
                 ColorGroup.LightBlue or ColorGroup.Pink or ColorGroup.Orange or ColorGroup.Red or ColorGroup.Yellow or ColorGroup.Green => 3,
                 _ => 0
             };
+        public int PlayerStartingMoney() => playerStartingMoney;
+        public int GOSalary() => gOSalary;
+        public int JailFee() => jailFee;
+        public WinConditionType WinCondition() => winCondition;
+        public int TargetMoney() => targetMoney;
+        public int TurnLimit() => turnLimit;
     }
 }
