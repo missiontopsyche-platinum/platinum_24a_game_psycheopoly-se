@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Assets.Scripts.Managers.Jail;
 using System.Reflection;
+using Assets.Scripts.Managers.Rules;
 
 /// <summary>
 /// this contains all tests for the JailStrategy as it currently operates
@@ -15,6 +16,7 @@ namespace Assets.Tests.EditMode.JailTests
 
         private Player testPlayer;
         private StandardJailStrategy jailStrategy;
+        private IRuleSet RuleSet;
 
         [SetUp]
         public void SetUp()
@@ -25,7 +27,9 @@ namespace Assets.Tests.EditMode.JailTests
             testPlayer.SetInJail(true);
             testPlayer.SetJailTurns(0);
 
-            jailStrategy = new StandardJailStrategy();
+            RuleSet = new StandardRuleSet();
+
+            jailStrategy = new StandardJailStrategy(RuleSet);
         }
 
         [TearDown]

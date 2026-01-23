@@ -26,7 +26,7 @@ namespace Assets.Scripts.Managers.Rules
         [SerializeField] private int gOSalary = 200;
 
         [Tooltip("Fee to pay when leaving jail.")]
-        [SerializeField] private int jailFee = 50;
+        [SerializeField] private int jailFee = 100;
 
         [Tooltip("Win condition type for the game.")]
         [SerializeField] private WinConditionType winCondition = WinConditionType.LastPlayerStanding;
@@ -36,6 +36,9 @@ namespace Assets.Scripts.Managers.Rules
 
         [Tooltip("Turn limit for TurnLimit win condition.")]
         [SerializeField] private int turnLimit = 20;
+
+        [Tooltip("Max turn limit for jail time.")]
+        [SerializeField] private int maxJailTurns = 3;
 
         public int RailroadBaseRent() => railroadBase;
         public int UtilityRentSingleMult() => utilitySingle;
@@ -53,5 +56,7 @@ namespace Assets.Scripts.Managers.Rules
         public WinConditionType WinCondition() => winCondition;
         public int TargetMoney() => targetMoney;
         public int TurnLimit() => turnLimit;
+
+        public int MaxJailTurns() => maxJailTurns;
     }
 }
