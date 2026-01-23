@@ -25,6 +25,8 @@ namespace Assets.Scripts.Managers.Rules
     }
     public enum WinConditionType
     {
+        LastPlayerStanding,
+        TargetMoney,
         TurnLimit
     }
 }
