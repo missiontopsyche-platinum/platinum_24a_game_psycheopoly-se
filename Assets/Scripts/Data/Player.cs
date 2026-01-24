@@ -291,4 +291,17 @@ public class Player : ScriptableObject
         return true;
     }
 
+    /// <summary>
+    /// Attempts to spend money. Validates
+    /// player money first, then spends if it can.
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <returns>Returns True if the money is spent. Returns false if the player does not have money.</returns>
+    public bool TrySpend(int amount)
+    {
+        if (!CanAfford(amount)) return false;
+   
+        SetMoney(GetMoney() - amount);
+        return true;
+    }
 }
