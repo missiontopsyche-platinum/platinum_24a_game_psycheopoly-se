@@ -304,4 +304,13 @@ public class Player : ScriptableObject
         SetMoney(GetMoney() - amount);
         return true;
     }
+
+    /// <summary>
+    /// Adds specified amount of money to player total.
+    /// </summary>
+    /// <param name="amount"></param>
+    public void AddMoney(int amount)
+    {
+        SetMoney(GetMoney() + amount);
+    }
 }
