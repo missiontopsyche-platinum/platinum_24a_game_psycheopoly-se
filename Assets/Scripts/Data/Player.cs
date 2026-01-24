@@ -268,4 +268,27 @@ public class Player : ScriptableObject
         }
         return cardsCopy;
     }
+
+    /// <summary>
+    /// Validates if the player has enough money to make a purchase or spend money
+    /// </summary>
+    /// <param name="amount">Int - how much the payment is</param>
+    /// <returns>Bool - False if the player has less money than the amount, true if the player has enough money</returns>
+    public bool CanAfford(int amount)
+    {
+        if (money < amount) return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if the player has money.
+    /// </summary>
+    /// <returns>Bool: True if the player has less than or 0 money, false otherwise</returns>
+    public bool IsBankrupt() {
+        if (money > 0) return false;
+
+        return true;
+    }
+
 }
