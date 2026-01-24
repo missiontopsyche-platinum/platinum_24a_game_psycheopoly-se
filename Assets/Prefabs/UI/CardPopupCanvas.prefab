@@ -704,6 +704,7 @@ MonoBehaviour:
   okButton: {fileID: 3811950362388187880}
   canvasGroup: {fileID: 2124444208015256195}
   artworkImage: {fileID: 4666790704326918140}
+  cardView: {fileID: 0}
   cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
   fadeDuration: 0.25
 --- !u!1 &5635903033199217837
@@ -796,6 +797,7 @@ GameObject:
   - component: {fileID: 2914210936368304164}
   - component: {fileID: 1559061016067095989}
   - component: {fileID: 9177798914744513283}
+  - component: {fileID: 2603740799952338372}
   m_Layer: 5
   m_Name: CardView
   m_TagString: Untagged
@@ -863,6 +865,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2603740799952338372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5983330354882020956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fd5fa7ec90b18c49a0ca1270ffbfb7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::CardView
+  cardTitleText: {fileID: 2266277964926184384}
+  cardBodyText: {fileID: 9178346689636037677}
+  artworkImage: {fileID: 1942042122764305496}
 --- !u!1 &6021206494962795078
 GameObject:
   m_ObjectHideFlags: 0
