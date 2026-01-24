@@ -77,5 +77,18 @@ namespace Tests.EditMode.PlayerTests
             player.SetMoney(0);
             Assert.IsTrue(player.IsBankrupt());
         }
+
+        [Test]
+        public void Player_CanSpend()
+        {
+            player.SetMoney(1000);
+            Assert.IsTrue(player.TrySpend(500));
+        }
+        [Test]
+        public void Player_CanNotSpend()
+        {
+            player.SetMoney(1000);
+            Assert.IsFalse(player.TrySpend(1100));
+        }
     }
 }
