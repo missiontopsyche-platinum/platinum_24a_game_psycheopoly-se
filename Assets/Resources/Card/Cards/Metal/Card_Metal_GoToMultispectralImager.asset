@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Go to the Multispectral Imager.
   bodyText: Go to the Multispectral Imager. If you pass GO, collect $200.
+  artwork: {fileID: 21300000, guid: f0f8964d591acd74bba6a931a2142b8e, type: 3}
   effect:
   - {fileID: 11400000, guid: bf4a62a7eeb00814d9d26a425a311d41, type: 2}

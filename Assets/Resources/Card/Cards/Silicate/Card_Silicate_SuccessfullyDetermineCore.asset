@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Successfully determine that Psyche is a core!
   bodyText: Successfully determine that Psyche is a core! Collect $100.
+  artwork: {fileID: 21300000, guid: c5468867b41a4c44485199ee59a96ac5, type: 3}
   effect:
   - {fileID: 11400000, guid: 4b91ca483beb2d14592a551ffd001d2e, type: 2}
