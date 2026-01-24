@@ -137,7 +137,8 @@ public class CardPopupUI : MonoBehaviour
     //starts the hide animiation 
     private void StartHideAnimation()
     {
-        if(fadeRoutine != null)
+        if (cardView != null) cardView.Clear();
+        if (fadeRoutine != null)
         {
             StopCoroutine(fadeRoutine);
         }
