@@ -534,14 +534,41 @@ public class GameManager : MonoBehaviour
     {
         // This scaffold method is a placeholder for handling property purchase requests.
         // Full implementation will validate the request, checking game state,
-        // player turn, and turn phase, executing it in PurchaseManager.
+        // player turn, and turn phase, before delegating to PurchaseManager.
+        // Also not sure where the event should be raised, PurchaseManager or GameManager.
+        /*if (Event.player == null || Event.Title == null)
+        {
+            PropertyPurchaseRejectedEventChannel?.RaiseEvent("Error: Missing purchase context.");
+            return;
+        }
 
-        /*
-        if (Event.player == null || Event.Title == null) return;
-        if (!IsPlayerTurn(Event.Player)) return;
-        if (turnPhase != TurnPhase.ResolvingSpace) return;
+        if (!IsPlayerTurn(Event.Player))
+        {
+            PropertyPurchaseRejectedEventChannel.RaiseEvent(Message="Error: Invalid player turn.");
+            return;
+        }
 
-        
+        if (turnPhase != TurnPhase.ResolvingSpace)
+        {
+            PropertyPurchaseRejectedEventChannel.RaiseEvent(Message = "Error: Illegal TurnPhase");
+            return;
+        }
+
+        if (!purchaseManager.TryHandlePurchase(Event.Player, Event.Tile))
+        {
+            PropertyPurchaseRejectedEventChannel.RaiseEvent(Message = "Error: Purchase execution failed.");
+            return;
+        }
+
+        if (TryChangeTurnPhase(TurnPhase.PostTurn))
+        {
+            Logging.Logger.Debug("GameManager.OnPropertyPurchaseRequest",
+                "Property purchase request during ResolvingSpace, entering PostTurn.",
+                LogCategory.Gameplay, 
+                this);
+
+            PropertyPurchaseAcceptedEventChannel.RaiseEvent(Message = "Success: Property purchase accepted.");
+        }*/
     }
 
     /// <summary>
