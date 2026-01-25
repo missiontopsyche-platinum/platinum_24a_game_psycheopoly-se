@@ -6,7 +6,10 @@ using PsycheOpoly.Board;
 using Assets.Scripts.Managers.Movement;
 using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.Purchase;
 using Events.EventDataStructures;
+using Assets.Scripts.Managers.TurnFlow;
+using UnityEditor.VersionControl;
 
 public class GameManager : MonoBehaviour
 {
@@ -44,14 +47,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
     // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
 
-
     [Header("Manager References")]
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
-    // this is not used right now, but will be in the future
     [SerializeField] private RulesManager rulesManager;
+    [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private PurchaseManager purchaseManager;
 
 
     [Header("Turn Order System")]
@@ -59,15 +62,12 @@ public class GameManager : MonoBehaviour
 
     private ITurnOrderStrategy turnOrderStrategy = new StandardTurnOrderStrategy();
 
-
     private int playerCount = 0;
-
 
     //The below are for testing that the event is properly registering in the class
     public int dieOne = 0;
     public int dieTwo = 0;
     public int totalRolled = 0;
-
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
@@ -530,33 +530,18 @@ public class GameManager : MonoBehaviour
             LogCategory.Gameplay, this);
     }
 
-    public void OnPropertyPurchaseRequest() // TODO: add PropertyPurchaseRequestEvent in param
+    public void OnPropertyPurchaseRequest() // TODO: add PropertyPurchaseRequestEvent(event) in param
     {
-        /* TODO: US 555: implement turn validation and execute purchase here via PurchaseManager.
-         * if (turnPhase != TurnPhase.ResolvingSpace)
-            return;
-        
-        if (pore.requestedPlayer.GetMoney() >= pore.requestedSpace.buyPrice)
-        {
-            pore.requestedPlayer.SetMoney(pore.requestedPlayer.GetMoney() - pore.requestedSpace.buyPrice);
-            pore.requestedSpace.SetOwner(pore.requestedPlayer);
-            
-            pore.requestedPlayer.AddOwnedProperty(pore.requestedSpace);
-            
-            Logging.Logger.Info("GameManager.QuickPurchase",
-                $"Purchased: {pore.requestedSpace.spaceName} for ${pore.requestedSpace.buyPrice}",
-                LogCategory.Economy, this);
-        }
-        else
-        {
-            Logging.Logger.Debug("GameManager.QuickPurchase",
-                $"Player {pore.requestedPlayer.GetPName()} " +
-                $"does not have enough money to purchase {pore.requestedSpace.spaceName}",
-                LogCategory.Economy, this);
-        }
+        // This scaffold method is a placeholder for handling property purchase requests.
+        // Full implementation will validate the request, checking game state,
+        // player turn, and turn phase, executing it in PurchaseManager.
 
-        playerDataUpdatedEventChannel.RaiseEvent(true);
-        TryChangeTurnPhase(TurnPhase.PostTurn);*/
+        /*
+        if (Event.player == null || Event.Title == null) return;
+        if (!IsPlayerTurn(Event.Player)) return;
+        if (turnPhase != TurnPhase.ResolvingSpace) return;
+
+        
     }
 
     /// <summary>
@@ -722,5 +707,15 @@ public class GameManager : MonoBehaviour
         turnPhase = newPhase;
 
         return true;
+    }
+
+    private bool IsPlayerTurn(Player player)
+    {
+        if (player == null) return false;
+
+        int requestId = player.GetId();
+        // Validate current turn order
+        bool matchesTurnCycle = requestId == turnCycleManager?.CurrentPlayerIndex;
+        return matchesTurnCycle;
     }
 }

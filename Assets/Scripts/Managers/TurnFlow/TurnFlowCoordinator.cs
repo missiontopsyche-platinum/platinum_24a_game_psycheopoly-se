@@ -23,18 +23,14 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
-        [SerializeField] private PlayerManager playerManager;
 
-        private TurnPhase phase = TurnPhase.None;
-        private int activePlayer = -1;
+        public TurnPhase Phase { get; private set; } = TurnPhase.None;
+        public int ActivePlayer { get; private set; } = -1;
 
         private void Awake()
         {
             if (!turnCycleManager)
                 turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
-
-            if (!playerManager)
-                playerManager = FindFirstObjectByType<PlayerManager>();
 
             //fallback for editmode tests
             var gm = FindFirstObjectByType<GameManager>();
@@ -63,8 +59,8 @@ namespace Assets.Scripts.Managers.TurnFlow
         // a new turn's started, reset state, wait for new roll
         private void OnTurnStarted(TurnStartedEvent data)
         {
-            activePlayer = data.playerId;
-            phase = TurnPhase.AwaitingRoll;
+            ActivePlayer = data.playerId;
+            Phase = TurnPhase.AwaitingRoll;
         }
 
         private void OnTurnEnded(bool ended)
@@ -76,8 +72,8 @@ namespace Assets.Scripts.Managers.TurnFlow
         // after dice roll, wait for movement to contine
         private void OnDiceRolled(DiceRolledEvent diceEvent)
         {
-            if (phase != TurnPhase.AwaitingRoll) return;
-            phase = TurnPhase.AwaitingMovement;
+            if (Phase != TurnPhase.AwaitingRoll) return;
+            Phase = TurnPhase.AwaitingMovement;
         }
 
 
@@ -85,14 +81,14 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void OnPieceMoveCompleted(bool success)
         {
             if (!success) return;
-            if (phase != TurnPhase.AwaitingMovement) return;
+            if (Phase != TurnPhase.AwaitingMovement) return;
 
 
-            phase = TurnPhase.AwaitingResolution;
+            Phase = TurnPhase.AwaitingResolution;
 
             // OnLanded() has already run at this point.
             // No tile effect system fires a "done" event, so we emit our own.
-            actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(activePlayer));
+            actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
 
             CompleteTurnFlow();
         }
@@ -104,7 +100,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             if (turnCycleManager == null)
                 return;
 
-            phase = TurnPhase.Completed;
+            Phase = TurnPhase.Completed;
 
             int nextPlayer = turnCycleManager.Advance();
             turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
