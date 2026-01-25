@@ -11,14 +11,30 @@ namespace Managers.PlayerControllers
         /// <summary>
         /// Gets the Player ScriptableObject
         /// </summary>
-        public Player ControlledPlayer => controlledPlayer;
+        public Player GetControlledPlayer() => controlledPlayer;
         
-        // event channels (todo task 481)
+        // event channels || may need to add more as requirements change. Potentially have all channels in all subclasses.
+        private TurnStartedEventChannel turnStartedEventChannel;
+        protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+        protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+        protected PayPlayerEventChannel passedGoPaymentChannel;
+        protected CardDrawnEventChannel cardDrawnEventChannel;
 
-        // constructor, needs to be called in future subclass constructors with `super(player)`
-        public PlayerController(Player player)
+        // constructor, needs to be called in future subclass constructors with `super(args)`
+        public PlayerController(
+            Player player, 
+            TurnStartedEventChannel turnStarted, 
+            PurchaseOwnableRequestEventChannel purchaseRequest, 
+            ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
+            PayPlayerEventChannel passedGoPayment)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
+            turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
+            purchaseOwnableRequestEventChannel =
+                purchaseRequest ?? throw new System.ArgumentNullException(nameof(purchaseRequest));
+            chargeOwnershipFeeEventChannel =
+                chargeOwnershipFee ?? throw new System.ArgumentNullException(nameof(chargeOwnershipFee));
+            passedGoPaymentChannel = passedGoPayment ?? throw new System.ArgumentNullException(nameof(passedGoPayment));
         }
         
         // general event handling
@@ -29,22 +45,26 @@ namespace Managers.PlayerControllers
         /// </summary>
         public virtual void Subscribe()
         {
-            // to be implemented in task 2
+            turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
         }
 
         /// <summary>
-        /// Unsubscribe from all game event channels. Does not need to be extended in subclasses,
-        /// since they all will share common event channels.
+        /// Unsubscribe from all game event channels. This should be extended in subclasses to account for
+        /// subclass-specific event channels and called with <c>base.Unsubscribe()</c>.
         /// </summary>
-        public void Unsubscribe()
+        public virtual void Unsubscribe()
         {
-            // to be implemented in task 2
+            turnStartedEventChannel?.Unsubscribe(CatchTurnStartedEvent);
         }
         
-        // Needs to include method for checking turn status. Thinking for this is to use TurnStartedEvent to
-        // check against this Player's ID, and if they match then its this players turn (`isMyTurn = true`).
-        // Otherwise, `isMyTurn` will be false. This means that all of the active PlayerControllers will
-        // determine if its their turn every time a TurnStartedEvent fires, and we don't need to monitor
-        // multiple channels at a time to determine when Controllers should be reactive.
+        /// <summary>
+        /// Catches the TurnStartedEvent, and evaluates if it is this Player's turn or not, and sets the
+        /// boolean state accordingly.
+        /// </summary>
+        /// <param name="tse">Turn Started Event, containing payload information about the new turn.</param>
+        private void CatchTurnStartedEvent(TurnStartedEvent tse)
+        {
+            
+        }
     }
 }
