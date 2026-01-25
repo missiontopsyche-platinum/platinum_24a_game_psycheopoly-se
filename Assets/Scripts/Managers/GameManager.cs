@@ -530,14 +530,10 @@ public class GameManager : MonoBehaviour
             LogCategory.Gameplay, this);
     }
 
-    /// <summary>
-    /// Extremely quick and temporary implementation of purchase logic for the end-of-semester
-    /// prototype, to be fully replaced by the strategy pattern for handling rules.
-    /// </summary>
-    /// <param name="pore"></param>
-    public void QuickPurchase(PurchaseOwnableRequestEvent pore)
+    public void OnPropertyPurchaseRequest() // TODO: add PropertyPurchaseRequestEvent in param
     {
-        if (turnPhase != TurnPhase.ResolvingSpace)
+        /* TODO: US 555: implement turn validation and execute purchase here via PurchaseManager.
+         * if (turnPhase != TurnPhase.ResolvingSpace)
             return;
         
         if (pore.requestedPlayer.GetMoney() >= pore.requestedSpace.buyPrice)
@@ -560,7 +556,7 @@ public class GameManager : MonoBehaviour
         }
 
         playerDataUpdatedEventChannel.RaiseEvent(true);
-        TryChangeTurnPhase(TurnPhase.PostTurn);
+        TryChangeTurnPhase(TurnPhase.PostTurn);*/
     }
 
     /// <summary>
