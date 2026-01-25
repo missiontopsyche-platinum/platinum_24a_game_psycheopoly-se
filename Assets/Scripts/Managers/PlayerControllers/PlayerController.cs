@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Logging;
+using UnityEngine;
 
 namespace Managers.PlayerControllers
 {
@@ -59,12 +60,17 @@ namespace Managers.PlayerControllers
         
         /// <summary>
         /// Catches the TurnStartedEvent, and evaluates if it is this Player's turn or not, and sets the
-        /// boolean state accordingly.
+        /// boolean state accordingly (<c>isMyTurn</c>).
         /// </summary>
         /// <param name="tse">Turn Started Event, containing payload information about the new turn.</param>
         private void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
+            isMyTurn = tse.playerId == controlledPlayer.GetId();
             
+            if (isMyTurn)
+                Logging.Logger.Info("PlayerController.CatchTurnStartedEvent",
+                    $"Player {controlledPlayer.GetId()} turn started.",
+                    LogCategory.Gameplay, this);
         }
     }
 }
