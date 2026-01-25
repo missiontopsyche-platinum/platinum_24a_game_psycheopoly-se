@@ -40,10 +40,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
     
     [Header("Space Resolution Event Channels")]
-    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
-    
+    // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
+
 
     [Header("Manager References")]
     [SerializeField] private DiceManager diceManager;
@@ -164,9 +164,9 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
-        
+        // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
+
         // hook up to temporary methods for handling rent/purchase
-        purchaseOwnableRequestEventChannel?.Subscribe(QuickPurchase);
         chargeOwnershipFeeEventChannel?.Subscribe(QuickRent);
 
 
@@ -240,9 +240,9 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Unsubscribe(OnSpaceResolutionCompleted);
-        
+        // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
+
         // unhook temporary methods for handling rent/purchase
-        purchaseOwnableRequestEventChannel?.Unsubscribe(QuickPurchase);
         chargeOwnershipFeeEventChannel?.Unsubscribe(QuickRent);
     }
 
