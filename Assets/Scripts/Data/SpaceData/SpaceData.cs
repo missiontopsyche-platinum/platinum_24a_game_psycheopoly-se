@@ -22,8 +22,7 @@ public abstract class SpaceData : ScriptableObject
 
     public virtual SpaceHoverEvent OnHover()
     {
-        return new SpaceHoverEvent(spaceName, spaceColor);
-
+        var payload = new SpaceHoverEvent(spaceName, spaceColor);
         payload.AppendInformation($"Type: {GetType().Name}");
 
         return payload;
