@@ -13,7 +13,9 @@ public class TileAlwaysVisibleUI : MonoBehaviour
         if (space == null) return;
 
         if (nameText != null)
-            nameText.text = space.GetShortName();
+            nameText.text = string.IsNullOrWhiteSpace(space.shortDisplayName)
+                ? space.spaceName
+                : space.shortDisplayName;
 
         if (groupBarImage != null)
             groupBarImage.color = space.groupColor;

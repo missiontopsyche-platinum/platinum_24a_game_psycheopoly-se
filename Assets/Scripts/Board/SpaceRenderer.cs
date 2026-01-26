@@ -16,6 +16,7 @@ public class SpaceRenderer : InteractableGameObject
     public void SetUpSpace(SpaceData inputSpaceData, float scale)
     {
         spaceData = inputSpaceData;
+        alwaysVisibleUI?.Apply(spaceData);
         transform.localScale *= scale;
         meshRenderer.material.color = this.spaceData.spaceColor;
 
