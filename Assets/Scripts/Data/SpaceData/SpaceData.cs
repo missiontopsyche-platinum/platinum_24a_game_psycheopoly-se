@@ -8,6 +8,11 @@ public abstract class SpaceData : ScriptableObject
     [SerializeField] public String spaceName;
     [SerializeField] public Color spaceColor;
 
+    //Always visible wihtin the UI
+    [SerializeField] public string shortDisplayName;
+    [SerializeField] public Color groupColor = Color.white;
+    [SerializeField] public Sprite smallIcon;
+
     [Header("Event Channels")] 
     [SerializeField] public SpaceHoverEventChannel spaceHoverEventChannel;
     [SerializeField] public BooleanEventChannel onSpaceExitEventChannel;
@@ -18,6 +23,13 @@ public abstract class SpaceData : ScriptableObject
     public virtual SpaceHoverEvent OnHover()
     {
         return new SpaceHoverEvent(spaceName, spaceColor);
+    }
+
+    public string GetShortName()
+    {
+        if (!string.IsNullOrWhiteSpace(shortDisplayName))
+            return shortDisplayName;
+        return spaceName;
     }
 
     public void OnExit() => onSpaceExitEventChannel?.RaiseEvent(true);

@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpaceRenderer : InteractableGameObject
 {
     [SerializeField] public MeshRenderer meshRenderer;
+    [SerializeField] private TileAlwaysVisibleUI alwaysVisibleUI;
     
     private SpaceData spaceData;
     
@@ -19,6 +20,9 @@ public class SpaceRenderer : InteractableGameObject
         meshRenderer.material.color = this.spaceData.spaceColor;
 
         name = spaceData.spaceName;
+
+        if (alwaysVisibleUI != null)
+            alwaysVisibleUI.Apply(spaceData);
         
         // ensure box collider
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
