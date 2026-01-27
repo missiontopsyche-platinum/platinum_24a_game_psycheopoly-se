@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Go for launch!
   bodyText: Go for launch! Get off the Launch Pad free.
+  artwork: {fileID: 21300000, guid: d8d642559b6cd87478db7ce862c13798, type: 3}
   effect:
   - {fileID: 11400000, guid: 1ee62a60066af6448b985090db2d6187, type: 2}

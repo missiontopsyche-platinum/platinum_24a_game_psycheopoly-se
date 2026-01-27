@@ -15,5 +15,6 @@ MonoBehaviour:
   title: We've got Taters!
   bodyText: We've got Taters! Successfully demonstrate high-bandwidth communications
     in deep space for the first time! Collect $50.
+  artwork: {fileID: 21300000, guid: 799e3b184589b88449cb90c5eb2cab35, type: 3}
   effect:
   - {fileID: 11400000, guid: 36729293a79e1c44096b311330dc252a, type: 2}

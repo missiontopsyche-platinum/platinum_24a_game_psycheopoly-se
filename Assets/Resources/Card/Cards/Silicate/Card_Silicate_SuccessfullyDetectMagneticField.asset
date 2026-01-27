@@ -15,5 +15,6 @@ MonoBehaviour:
   title: Successfully detect Psyche's remnant magnetic field.
   bodyText: Successfully detect Psyche's remnant magnetic field with the Magnetometer!
     Collect $150.
+  artwork: {fileID: 21300000, guid: 76a38bf2382f6a6428532bb92a09e30f, type: 3}
   effect:
   - {fileID: 11400000, guid: cbe6ffb7554a699408c4607da9d78a5a, type: 2}

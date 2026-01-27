@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Successful mission launch!
   bodyText: Successful mission launch! Collect $200
+  artwork: {fileID: 21300000, guid: 516638d7b485b63438fc1d0aae1a2cb1, type: 3}
   effect:
   - {fileID: 11400000, guid: a79b0946ae179ef4899a00db72b5da56, type: 2}

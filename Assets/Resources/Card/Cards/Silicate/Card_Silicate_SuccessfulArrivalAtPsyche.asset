@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Successful arrival at the Psyche asteroid!
   bodyText: Successful arrival at the Psyche asteroid! Collect $100.
+  artwork: {fileID: 21300000, guid: dd0d75aacc8ae1c47ae77fbe2e60a115, type: 3}
   effect:
   - {fileID: 11400000, guid: 4b91ca483beb2d14592a551ffd001d2e, type: 2}

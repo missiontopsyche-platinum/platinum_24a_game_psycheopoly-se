@@ -1,6 +1,8 @@
-using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Rules;
+using Logging;
+using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Managers.Purchase
 {
@@ -46,14 +48,14 @@ namespace Assets.Scripts.Managers.Purchase
         //transfers money and assigns ownership
         private void ExecutePurchase(Player buyer, ITileRentInfo tile, int price)
         {
-            int have = buyer.GetMoney();
-            if (have < price)
+          
+            if(!buyer.TrySpend(price))
             {
-                //Should not happen if strategy did its job but guards anyway.
-                price = have;
+               Logging.Logger.Error("PurchaseManager.ExecutePurchase",
+               "Player does not have enough money.",
+               LogCategory.Gameplay,
+               this);
             }
-
-            buyer.SetMoney(have - price);
             ownership.SetOwner(tile, buyer);
         }
 
