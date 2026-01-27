@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Successfully determine the conditions Psyche formed under!
   bodyText: Successfully determine the conditions Psyche formed under! Collect $100.
+  artwork: {fileID: 21300000, guid: c40b62ea4e2151e4197b427b184c0312, type: 3}
   effect:
   - {fileID: 11400000, guid: 4b91ca483beb2d14592a551ffd001d2e, type: 2}

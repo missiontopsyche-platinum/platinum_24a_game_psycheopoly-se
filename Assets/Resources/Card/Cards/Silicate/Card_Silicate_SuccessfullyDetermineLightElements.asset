@@ -15,5 +15,6 @@ MonoBehaviour:
   title: Successfully determine the light elements that small metal bodies incorporate!
   bodyText: Successfully determine the light elements that small metal bodies incorporate!
     Collect $25.
+  artwork: {fileID: 21300000, guid: bd63bac81272dc349819e8068bcac69f, type: 3}
   effect:
   - {fileID: 11400000, guid: 4a013ffc954059d4392b5145649b4aef, type: 2}
