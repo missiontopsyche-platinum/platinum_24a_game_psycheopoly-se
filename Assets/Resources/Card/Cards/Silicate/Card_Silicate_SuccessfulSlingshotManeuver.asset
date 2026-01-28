@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Successful slingshot maneuver!
   bodyText: Successful slingshot maneuver! Collect $50.
+  artwork: {fileID: 21300000, guid: 0932271f315010a49bcde3c2c0081683, type: 3}
   effect:
   - {fileID: 11400000, guid: 36729293a79e1c44096b311330dc252a, type: 2}

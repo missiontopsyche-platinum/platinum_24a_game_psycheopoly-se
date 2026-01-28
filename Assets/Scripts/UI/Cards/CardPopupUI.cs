@@ -11,6 +11,7 @@ public class CardPopupUI : MonoBehaviour
     [SerializeField] private Button okButton;
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image artworkImage;
+    [SerializeField] private CardView cardView;
     [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] private float fadeDuration = 0.25f;
 
@@ -70,19 +71,16 @@ public class CardPopupUI : MonoBehaviour
         }
 
         //Assign UI fields from card ScriptableObject
-        if (cardTitleText != null)
+        if (cardView != null)
         {
-            cardTitleText.text = card.title;
+            cardView.SetCard(card);
         }
-
-        if (cardBodyText != null)
+        else
         {
-            cardBodyText.text = card.bodyText;
-        }
-
-        if (artworkImage != null)
-        {
-            artworkImage.sprite = card.artwork;
+            // keep old behavior if CardView isn't wired yet, old functionality
+            if (cardTitleText != null) cardTitleText.text = card.title;
+            if (cardBodyText != null) cardBodyText.text = card.bodyText;
+            if (artworkImage != null) artworkImage.sprite = card.artwork;
         }
 
         //Start fade-in
@@ -139,7 +137,8 @@ public class CardPopupUI : MonoBehaviour
     //starts the hide animiation 
     private void StartHideAnimation()
     {
-        if(fadeRoutine != null)
+        if (cardView != null) cardView.Clear();
+        if (fadeRoutine != null)
         {
             StopCoroutine(fadeRoutine);
         }

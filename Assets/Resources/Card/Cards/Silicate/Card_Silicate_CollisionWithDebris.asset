@@ -15,5 +15,6 @@ MonoBehaviour:
   title: Collision with space debris damages the Multispectral Imager.
   bodyText: Collision with space debris damages the Multispectral Imager. Pay $50
     to activate the secondary camera.
+  artwork: {fileID: 21300000, guid: 279f2ba433a5bf941a9011b1810d0c83, type: 3}
   effect:
   - {fileID: 11400000, guid: 234fc0f7e648d2d4381d81f3768705c6, type: 2}

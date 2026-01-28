@@ -16,5 +16,6 @@ MonoBehaviour:
   bodyText: Advance to the nearest Planet. If unstudied, you may buy the scientific
     data. If it has already been studied, throw the dice and pay the scientist a
     total of ten times the amount thrown.
+  artwork: {fileID: 21300000, guid: c36bdbf54214c61478bde9fe603ac6e3, type: 3}
   effect:
   - {fileID: 11400000, guid: 6c28d970a1c4b6b42b7350d11eb2d75b, type: 2}

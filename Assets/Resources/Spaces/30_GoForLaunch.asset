@@ -16,6 +16,7 @@ MonoBehaviour:
   spaceColor: {r: 0.65882355, g: 0.65882355, b: 0.65882355, a: 1}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
+  artwork: {fileID: 21300000, guid: 11cc0fb242bc64147950f7bdfd7e6e6d, type: 3}
   flavorText: GO FOR LAUNCH!
   goDirectlyToLaunchPadChannel: {fileID: 0}
   jailStateChangedEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}

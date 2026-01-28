@@ -15,5 +15,6 @@ MonoBehaviour:
   title: Submit your article to a journal.
   bodyText: Submit your article to a journal. For each data point pay $25. For each
     discovery pay $100.
+  artwork: {fileID: 21300000, guid: e0d5b1efec9988747bbec4d1454e74b7, type: 3}
   effect:
   - {fileID: 11400000, guid: deef57829b4bfd541ae10ce561c87fb7, type: 2}
