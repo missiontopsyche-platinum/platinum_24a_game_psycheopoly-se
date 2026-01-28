@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Advance to Ceres.
   bodyText: Advance to Ceres.
+  artwork: {fileID: 21300000, guid: 3badd6aa50dabe94d86ba59d3c0b9bcc, type: 3}
   effect:
   - {fileID: 11400000, guid: c86f866759ebfd945a61e7cfa2ae42a2, type: 2}

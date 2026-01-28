@@ -16,6 +16,7 @@ MonoBehaviour:
   spaceColor: {r: 1, g: 0.8235294, b: 0.9098039, a: 1}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
+  artwork: {fileID: 21300000, guid: 4f93af0cc6dddfc4b97e5beccaa65e8d, type: 3}
   flavorText: WAITING FOR LAUNCH.
   playerGoesToJailEventChannel: {fileID: 0}
   playerLeavesJailEventChannel: {fileID: 0}

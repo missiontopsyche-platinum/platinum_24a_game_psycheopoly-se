@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Go back 3 spaces.
   bodyText: Go back 3 spaces.
+  artwork: {fileID: 21300000, guid: 61f0abb60a9d4c8498798b7f1f6799be, type: 3}
   effect:
   - {fileID: 11400000, guid: 673f43bc917094647a166c971cfa6eeb, type: 2}

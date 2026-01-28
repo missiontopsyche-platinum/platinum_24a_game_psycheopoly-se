@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpaceRenderer : InteractableGameObject
 {
     [SerializeField] public MeshRenderer meshRenderer;
+    private SpriteRenderer spriteRenderer;
     
     private SpaceData spaceData;
     
@@ -15,11 +16,37 @@ public class SpaceRenderer : InteractableGameObject
     public void SetUpSpace(SpaceData inputSpaceData, float scale)
     {
         spaceData = inputSpaceData;
+
+        //safety
+        if (meshRenderer == null)
+        {
+            meshRenderer = GetComponent<MeshRenderer>();
+        }
+
         transform.localScale *= scale;
-        meshRenderer.material.color = this.spaceData.spaceColor;
+        if (spaceData != null && spaceData.Artwork != null && meshRenderer != null)
+        {
+            var mat = meshRenderer.material;
+            Texture2D tex = spaceData.Artwork.texture;
+
+            // add texture (URP uses _BaseMap, Built-in uses _MainTex)
+            if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+            else if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+            else mat.mainTexture = tex;
+
+            //no tint
+            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", Color.white);
+            else if (mat.HasProperty("_Color")) mat.SetColor("_Color", Color.white);
+            else mat.color = Color.white;
+        }
+        else if (meshRenderer != null)
+        {
+            // Original behavior: color-only tile
+            meshRenderer.material.color = this.spaceData.spaceColor;
+        }
 
         name = spaceData.spaceName;
-        
+
         // ensure box collider
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
         if (!boxCollider)
