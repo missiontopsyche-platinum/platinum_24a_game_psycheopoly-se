@@ -4,7 +4,7 @@ US533 – Board Layout Options
 --------------------------Option 1: ScriptableObject-driven (current implementation[US517])
 
 - board spaces are defined as data (ScriptableObjects), and the board is built from that data at runtime.
-- how the board is already being implemented from US517, where board spaces and their properties are data-driven and rendered by the board/space renderer.
+- how the board is already being implemented from US517, where board spaces and their properties are data-driven and rendered by the board/space renderer at runtime
 
 Pros:
 - Already partially implemented (US517)
@@ -36,6 +36,29 @@ Cons:
 - Higher bug risk
 - Harder to debug
 - Likely more than we need right now
+
+
+
+
+
+--------------------------Option 3: Hybrid Option
+
+- this essentially would build off of option1, with the overall goal to stop the 40 individual SpaceRenderer objects from generating at runtime (although their artwork, text, etc. is already set in the inspector for the SO's)
+- basically, at runtime we are only binding the SpaceData to the SpaceRenderer's, ultimately still keeping the SetUpSpace(data, scale), but without Instantiate() and GetPositionSpace()
+- i did research on this so it still needs some thought but the goal would be to stop instantiating each space prefab in a loop at runtime, stop computing positions at runtime, and we wouldn't be getting spaces rotated at runtime (if we decide to rotate spaces [still up for discussion]).
+- this would be done by placing the 40 SpaceRenderer objects in Unity (in a scene or prefab) ahead of time so they'll exist in the hierarchy outside/before PlayMode
+
+Pros:
+- Keeps a good chunk of Option 1 (artwork, text, etc. is already loaded in the inspectors)
+- Less runtime complexity
+- Theoretically would be easier to debug than option 2 (more visual checks)
+- Should be faster at runtime
+
+Cons:
+- Would require us to edit scene/prefabs
+- Still going to hit visual/resolution issues
+
+
 
 
 
