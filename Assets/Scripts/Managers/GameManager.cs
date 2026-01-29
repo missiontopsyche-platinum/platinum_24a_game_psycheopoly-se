@@ -45,24 +45,16 @@ public class GameManager : MonoBehaviour
     [Header("Space Resolution Event Channels")]
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
-    // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
-    // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
-    // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
 
     [Header("Manager References")]
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
-    [SerializeField] private RulesManager rulesManager;
-    [SerializeField] private PlayerManager playerManager;
-    [SerializeField] private PurchaseManager purchaseManager;
 
 
     [Header("Turn Order System")]
     [SerializeField] private PlayerTurnState playerTurnState;
-
-    private ITurnOrderStrategy turnOrderStrategy = new StandardTurnOrderStrategy();
 
     private int playerCount = 0;
 
@@ -166,9 +158,6 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
-        // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
-        // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
-        // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
 
         // hook up to temporary methods for handling rent/purchase
         chargeOwnershipFeeEventChannel?.Subscribe(QuickRent);
@@ -244,9 +233,6 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Unsubscribe(OnSpaceResolutionCompleted);
-        // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
-        // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
-        // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
 
         // unhook temporary methods for handling rent/purchase
         chargeOwnershipFeeEventChannel?.Unsubscribe(QuickRent);
@@ -535,13 +521,11 @@ public class GameManager : MonoBehaviour
             "Dice roll requested, entering RollingDice.",
             LogCategory.Gameplay, this);
     }
-
-    public void OnPropertyPurchaseRequest() // TODO: add PropertyPurchaseRequestEvent(event) in param
+    // This was created under the assumption that GameManager will delegate the work to other manager
+    // , since the team discussed that there should be no coupling between managers.
+    // This will need to be deleted or replaced.
+    public void OnPropertyPurchaseRequest()
     {
-        // This scaffold method is a placeholder for handling property purchase requests.
-        // Full implementation will validate the request, checking game state,
-        // player turn, and turn phase, before delegating to PurchaseManager.
-        // Also not sure where the event should be raised, PurchaseManager or GameManager.
         /*if (Event.player == null || Event.Title == null)
         {
             PropertyPurchaseRejectedEventChannel?.RaiseEvent("Error: Missing purchase context.");
