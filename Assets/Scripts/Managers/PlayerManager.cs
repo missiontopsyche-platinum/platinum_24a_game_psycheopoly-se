@@ -201,8 +201,8 @@ public class PlayerManager : MonoBehaviour
     /// <param name="money"></param>
     public void AddMoney(int id, int money)
     {
-        int pMoney = GetPlayer(id).GetMoney();
-        GetPlayer(id).SetMoney(pMoney + money);
+       
+        GetPlayer(id).AddMoney(money);
     }
 
     // Just added this for symmetry. Remove if not needed.
