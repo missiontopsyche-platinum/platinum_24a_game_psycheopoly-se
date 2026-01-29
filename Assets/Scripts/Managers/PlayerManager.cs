@@ -208,8 +208,16 @@ public class PlayerManager : MonoBehaviour
     // Just added this for symmetry. Remove if not needed.
     public void RemoveMoney(int id, int money)
     {
-        int pMoney = GetPlayer(id).GetMoney();
-        GetPlayer(id).SetMoney(pMoney - money);
+        if (GetPlayer(id).TrySpend(money)) { return; }
+
+        // THis is probably not correct. It should instead probably raise an event saying if it succeeds or fails. 
+        else
+        {
+          Logging.Logger.Info("PlayerManager.RemoveMoney",
+          $"Player with ID: {id} did not have enough money.",
+          LogCategory.Gameplay,
+          this);
+        }
     }
 
     public void OnPayAllPlayersEvent(MoneyDistributionEvent payAllPlayersEvent)
