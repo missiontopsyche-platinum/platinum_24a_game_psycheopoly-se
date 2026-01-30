@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
+using Logging;
 
 namespace Managers.PlayerControllers
 {
@@ -50,28 +51,33 @@ namespace Managers.PlayerControllers
         public override void Subscribe()
         {
             base.Subscribe();
-            uiActionEventChannel.Subscribe(HandleUIAction);
-            purchaseOwnableRequestEventChannel.Subscribe(HandlePurchaseOwnableEvent);
+            uiActionEventChannel?.Subscribe(HandleUIAction);
+            purchaseOwnableRequestEventChannel?.Subscribe(HandlePurchaseOwnableEvent);
+            chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnership);
+            passedGoPaymentChannel?.Subscribe(HandlePassedGo);
         }
 
         public override void Unsubscribe()
         {
             base.Unsubscribe();
-            uiActionEventChannel.Unsubscribe(HandleUIAction);
-            purchaseOwnableRequestEventChannel.Unsubscribe(HandlePurchaseOwnableEvent);
+            uiActionEventChannel?.Unsubscribe(HandleUIAction);
+            purchaseOwnableRequestEventChannel?.Unsubscribe(HandlePurchaseOwnableEvent);
+            chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnership);
+            passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
         {
             if (!isMyTurn) return;
-            
+
             uiActivationEventChannel.RaiseEvent(
                 new UIActivationEvent(
-                    UIType.PropertyPurchase, 
+                    UIType.PropertyPurchase,
                     new PurchaseActivationContext(
                         pore.requestedSpace,
                         pore.cost,
-                        controlledPlayer.GetMoney() >= pore.cost)));
+                        // controlledPlayer.CanAfford(pore.requestedSpace)))); // when the method is added to Player, we can uncomment this.
+                        controlledPlayer.GetMoney() >= pore.cost))); // remove this when Player has CanAfford method
         }
 
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
@@ -96,20 +102,40 @@ namespace Managers.PlayerControllers
             
             switch (uiae.UIType)
             {
-                // We should probably have some guard clauses to make sure
-                // context is the correct type before casting like this.
                 case UIType.PropertyPurchase:
-                    ResolvePropertyPurchase((PurchaseActionContext)uiae.Context);
+                    if(uiae.Context is PurchaseActionContext purchaseContext)
+                        ResolvePropertyPurchase(purchaseContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
                     break;
                 // expand with more UITypes as they're implemented
                 default:
+                    Logger.Debug("HumanPlayerController.HandleUIAction",
+                        $"Unhandled UI Type: ${uiae.UIType}",
+                        LogCategory.UI);
                     break;
             }
         }
 
         private void ResolvePropertyPurchase(PurchaseActionContext pac)
         {
-            // call Player methods to resolve purchase
+            // uncomment these when the methods are implemented
+            if (pac.Purchased)
+            {
+                // controlledPlayer.ExecutePurchase(pac.Property);
+                Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
+                    $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
+                    LogCategory.Gameplay);
+            }
+            else
+            {
+                // controlledPlayer.DeclinePurchase(pac.Property);
+                Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
+                    $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.name}",
+                    LogCategory.Gameplay);
+            }
         }
     }
 }
