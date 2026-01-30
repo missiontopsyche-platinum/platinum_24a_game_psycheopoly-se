@@ -5,11 +5,11 @@ using UnityEngine;
 /// Pays the acting player based on the number of houses and hotels owned.
 ///
 /// Upgrade levels:
-/// - 1–4 = houses
+/// - 1â€“4 = houses
 /// - 5   = hotel
 ///
 /// Total:
-/// (ChargeForHouse × houses) + (ChargeForHotel × hotels)
+/// (ChargeForHouse Ã— houses) + (ChargeForHotel Ã— hotels)
 ///
 /// Publishes a PayPlayerEvent to deposit funds.
 /// </summary>
