@@ -23,7 +23,7 @@ namespace Assets.Scripts.Managers.Rules
         [SerializeField] private int playerStartingMoney = 1500;
 
         [Tooltip("Salary received when passing GO.")]
-        [SerializeField] private int gOSalary = 200;
+        [SerializeField] private int goSalary = 200;
 
         [Tooltip("Fee to pay when leaving jail.")]
         [SerializeField] private int jailFee = 100;
@@ -51,7 +51,7 @@ namespace Assets.Scripts.Managers.Rules
                 _ => 0
             };
         public int PlayerStartingMoney() => playerStartingMoney;
-        public int GOSalary() => gOSalary;
+        public int GOSalary() => goSalary;
         public int JailFee() => jailFee;
         public WinConditionType WinCondition() => winCondition;
         public int TargetMoney() => targetMoney;
