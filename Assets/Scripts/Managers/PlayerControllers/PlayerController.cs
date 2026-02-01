@@ -78,6 +78,12 @@ namespace Managers.PlayerControllers
         private void CatchPurchaseOwnableEvent(PurchaseOwnableRequestEvent purchaseOwnableEvent)
         {
             if (purchaseOwnableEvent.requestedPlayer != controlledPlayer) return;
+
+            if (!controlledPlayer.CanAfford(purchaseOwnableEvent.cost)) return; // TODO: Change to fire event fail. Currently no event channel exists for this. Will need a bool event channel.
+
+            if (!controlledPlayer.ExecutePurchase(purchaseOwnableEvent.requestedSpace, purchaseOwnableEvent.cost)) return; // TODO: Change to fire event fail.
+
+            //TODO: Fire event to say the purchase was succesful. 
         }
     }
 }
