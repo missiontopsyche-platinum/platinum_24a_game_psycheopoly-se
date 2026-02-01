@@ -318,6 +318,7 @@ public class Player : ScriptableObject
     }
 
     /// <summary>
+    /// For full breakdown of event flow, see document at Documentation/PlayerController/ValidationLayerFlow.md
     /// Executes purchase. Called by PC after doing verification and checking that the player is correct.
     /// It then verifies if the player has enough money.
     /// The Execute Purchase then uses TrySpend() to once again verify if there is enough money, and then spends if it can. 
