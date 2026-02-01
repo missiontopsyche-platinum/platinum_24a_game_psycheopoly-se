@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpaceRenderer : InteractableGameObject
 {
     [SerializeField] public MeshRenderer meshRenderer;
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private TileAlwaysVisibleUI alwaysVisibleUI;
     
     private SpaceData spaceData;
     
@@ -16,13 +16,7 @@ public class SpaceRenderer : InteractableGameObject
     public void SetUpSpace(SpaceData inputSpaceData, float scale)
     {
         spaceData = inputSpaceData;
-
-        //safety
-        if (meshRenderer == null)
-        {
-            meshRenderer = GetComponent<MeshRenderer>();
-        }
-
+        alwaysVisibleUI?.Apply(spaceData);
         transform.localScale *= scale;
         if (spaceData != null && spaceData.Artwork != null && meshRenderer != null)
         {
@@ -47,6 +41,9 @@ public class SpaceRenderer : InteractableGameObject
 
         name = spaceData.spaceName;
 
+        if (alwaysVisibleUI != null)
+            alwaysVisibleUI.Apply(spaceData);
+        
         // ensure box collider
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
         if (!boxCollider)
