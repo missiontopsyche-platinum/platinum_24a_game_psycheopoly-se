@@ -10,7 +10,6 @@ namespace Assets.Scripts.Managers.Rent
     public class RentManager : MonoBehaviour
     {
         [Header("Dependencies")]
-        [SerializeField] private PlayerManager playerManager;                //not used by rent calc yet
         [SerializeField] private EconomyAdapter economy;                     //money mover (placeholder)
         [SerializeField] private OwnershipServiceAdapter ownership;          //ownership source of truth (adapter)
         [SerializeField] private RulesManager rulesManager;
@@ -77,11 +76,11 @@ namespace Assets.Scripts.Managers.Rent
                 ownership = GetComponent<OwnershipServiceAdapter>() ?? gameObject.AddComponent<OwnershipServiceAdapter>();
 
             if (!rulesManager)
-                rulesManager = FindObjectOfType<RulesManager>();
+                rulesManager = FindFirstObjectByType<RulesManager>();
 
             if (rules == null)
                 rules = rulesManager != null
-                    ? rulesManager.GetRuleSet()
+                    ? rulesManager.ActiveRules
                     : new StandardRuleSet();
         }
 
