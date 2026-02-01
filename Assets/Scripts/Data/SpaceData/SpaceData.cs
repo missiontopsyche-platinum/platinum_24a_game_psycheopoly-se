@@ -25,11 +25,14 @@ public abstract class SpaceData : ScriptableObject
     public abstract void OnLanded(Player player);
     public abstract void OnPassed(Player player);
 
+    //US528-t530; previously event was created and immeditatley discarded, this
+    //makes sure it is shared with listeners so UI can respond
     public virtual SpaceHoverEvent OnHover()
     {
         var payload = new SpaceHoverEvent(spaceName, spaceColor);
         payload.AppendInformation($"Type: {GetType().Name}");
 
+        spaceHoverEventChannel?.RaiseEvent(payload);
         return payload;
     }
 
