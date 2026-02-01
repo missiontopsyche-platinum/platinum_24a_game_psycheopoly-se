@@ -16,4 +16,5 @@ MonoBehaviour:
   spaceColor: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
+  artwork: {fileID: 21300000, guid: 73973722a45f5bd4bbe87c1fa081489f, type: 3}
   cardDeck: {fileID: 11400000, guid: 346d645a1872251409be08ceb078990f, type: 2}

@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Space weather disrupts satellite operations.
   bodyText: Space weather disrupts satellite operations. Pay $50 to enter safe mode.
+  artwork: {fileID: 21300000, guid: 3df6b6f2327007b4caa4fa12035b3f38, type: 3}
   effect:
   - {fileID: 11400000, guid: 234fc0f7e648d2d4381d81f3768705c6, type: 2}

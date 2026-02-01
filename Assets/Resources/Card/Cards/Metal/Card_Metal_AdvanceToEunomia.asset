@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
   title: Advance to Eunomia.
   bodyText: Advance to Eunomia. If you pass GO, collect $200.
+  artwork: {fileID: 21300000, guid: bdd9d5d050a409e4e96bb71f9f396175, type: 3}
   effect:
   - {fileID: 11400000, guid: 40ba9e9d8b35f834499470b1ef6a47e9, type: 2}

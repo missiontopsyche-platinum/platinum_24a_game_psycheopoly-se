@@ -16,5 +16,6 @@ MonoBehaviour:
   bodyText: Advance to nearest Scientific Intrument. If unstudied, you may buy the
     scientific data. If it has already been studied, pay the scientist twice the
     research funding to which they are otherwise entitled.
+  artwork: {fileID: 21300000, guid: d65bf04e00c6a0049bd4a98b227a3986, type: 3}
   effect:
   - {fileID: 11400000, guid: bb89abf102994f54a9f1d29e1817a1e3, type: 2}

@@ -17,6 +17,11 @@ public abstract class SpaceData : ScriptableObject
     [SerializeField] public SpaceHoverEventChannel spaceHoverEventChannel;
     [SerializeField] public BooleanEventChannel onSpaceExitEventChannel;
 
+    [Header("Artwork")]
+    [SerializeField] public Sprite artwork;
+
+    public Sprite Artwork => artwork;
+
     public abstract void OnLanded(Player player);
     public abstract void OnPassed(Player player);
 

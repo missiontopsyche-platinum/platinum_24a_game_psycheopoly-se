@@ -16,6 +16,7 @@ MonoBehaviour:
   spaceColor: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
+  artwork: {fileID: 21300000, guid: 96cb99585d4bae74383004cdfe74defe, type: 3}
   buyPrice: 200
   collaborationValue: 75
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
