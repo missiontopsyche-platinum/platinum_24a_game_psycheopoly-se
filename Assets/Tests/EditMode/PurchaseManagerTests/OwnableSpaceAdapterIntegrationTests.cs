@@ -89,6 +89,13 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
 
         public int StreetsInGroup(ColorGroup g) =>
             (g == ColorGroup.Brown || g == ColorGroup.DarkBlue) ? 2 : 3;
+        public int PlayerStartingMoney() => 1500;
+        public int GOSalary()             => 200;
+        public int JailFee()              => 50;
+        public WinConditionType WinCondition() => WinConditionType.LastPlayerStanding;
+        public int TargetMoney()          => 5000;
+        public int TurnLimit()            => 20;
+        public int MaxJailTurns()         => 3;
     }
 
     private class TestOwnership : IOwnershipService

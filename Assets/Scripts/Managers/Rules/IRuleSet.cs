@@ -15,6 +15,19 @@ namespace Assets.Scripts.Managers.Rules
         int UtilityRentSingleMult();
         int UtilityRentBothMult();
         int StreetsInGroup(ColorGroup group);
+        int PlayerStartingMoney();
+        int GOSalary();
+        int JailFee();
+        WinConditionType WinCondition();
+        int TargetMoney();
+        int TurnLimit();
+        int MaxJailTurns();
+    }
+    public enum WinConditionType
+    {
+        LastPlayerStanding,
+        TargetMoney,
+        TurnLimit
     }
 }
 
