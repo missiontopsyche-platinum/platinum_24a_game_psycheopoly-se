@@ -30,7 +30,9 @@ public abstract class SpaceData : ScriptableObject
         var payload = new SpaceHoverEvent(spaceName, spaceColor);
         payload.AppendInformation($"Type: {GetType().Name}");
 
-        spaceHoverEventChannel?.RaiseEvent(payload);
+        // THIS SHOULD NOT BE CALLED HERE - the derived classes *must* override this and attach their
+        // special information.
+        // spaceHoverEventChannel?.RaiseEvent(payload); 
         return payload;
     }
 
