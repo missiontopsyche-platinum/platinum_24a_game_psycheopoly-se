@@ -1,4 +1,5 @@
-﻿using Logging;
+﻿using Events.EventDataStructures;
+using Logging;
 using UnityEngine;
 
 namespace Managers.PlayerControllers
@@ -47,6 +48,7 @@ namespace Managers.PlayerControllers
         public virtual void Subscribe()
         {
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
+            purchaseOwnableRequestEventChannel?.Subscribe(CatchPurchaseOwnableEvent);
         }
 
         /// <summary>
@@ -71,6 +73,17 @@ namespace Managers.PlayerControllers
                 Logging.Logger.Info("PlayerController.CatchTurnStartedEvent",
                     $"Player {controlledPlayer.GetId()} turn started.",
                     LogCategory.Gameplay, this);
+        }
+
+        private void CatchPurchaseOwnableEvent(PurchaseOwnableRequestEvent purchaseOwnableEvent)
+        {
+            if (purchaseOwnableEvent.requestedPlayer != controlledPlayer) return;
+
+            if (!controlledPlayer.CanAfford(purchaseOwnableEvent.cost)) return; // TODO: Change to fire event fail. Currently no event channel exists for this. Will need a bool event channel.
+
+            if (!controlledPlayer.ExecutePurchase(purchaseOwnableEvent.requestedSpace, purchaseOwnableEvent.cost)) return; // TODO: Change to fire event fail.
+
+            //TODO: Fire event to say the purchase was succesful. 
         }
     }
 }

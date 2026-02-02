@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Managers.Rules;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers.Jail
@@ -11,8 +12,14 @@ namespace Assets.Scripts.Managers.Jail
     //escaping jail.
     public class StandardJailStrategy : IJailStrategy
     {
-        private const int JailFee = 100;
-        private const int MaxTurnsInJail = 3;
+        private readonly IRuleSet ruleSet;
+        private int MaxTurnsInJail;
+
+        public StandardJailStrategy(IRuleSet ruleSet)
+        {
+            this.ruleSet = ruleSet ?? throw new ArgumentNullException(nameof(ruleSet));
+            MaxTurnsInJail = ruleSet.MaxJailTurns();
+        }
 
         public void AttemptEscape(Player player, int dice1, int dice2)
         {
@@ -41,10 +48,11 @@ namespace Assets.Scripts.Managers.Jail
         //first iteration is just going to charge the fee if the player can afford it
         public void PayFee(Player player)
         {
-            if (player.GetMoney() >= JailFee)
+            int jailFee = ruleSet.JailFee();
+            if (player.GetMoney() >= jailFee)
             {
-                player.SetMoney(player.GetMoney() - JailFee);
-                Debug.Log($"{player.GetPName()} paid ${JailFee} to leave jail.");
+                player.SetMoney(player.GetMoney() - jailFee);
+                Debug.Log($"{player.GetPName()} paid ${jailFee} to leave jail.");
                 ReleasePlayer(player);
             }
             else
@@ -77,10 +85,11 @@ namespace Assets.Scripts.Managers.Jail
         public void ForcedExit(Player player)
         {
             int money = player.GetMoney();
-            if (money >= JailFee)
+            int jailFee = ruleSet.JailFee();
+            if (money >= jailFee)
             {
-                player.SetMoney(money - JailFee);
-                Debug.Log($"{player.GetPName()} was forced to pay ${JailFee} after 3 turns.");
+                player.SetMoney(money - jailFee);
+                Debug.Log($"{player.GetPName()} was forced to pay ${jailFee} after 3 turns.");
             }
             else
             {

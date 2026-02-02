@@ -49,7 +49,7 @@ namespace Assets.Scripts.Managers.Purchase
         private void ExecutePurchase(Player buyer, ITileRentInfo tile, int price)
         {
           
-            if(!buyer.TrySpend(price))
+            if(!buyer.CanAfford(price))
             {
                Logging.Logger.Error("PurchaseManager.ExecutePurchase",
                "Player does not have enough money.",

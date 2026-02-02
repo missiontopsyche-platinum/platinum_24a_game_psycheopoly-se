@@ -19,10 +19,30 @@ namespace Assets.Scripts.Managers.Rules
         [Tooltip("Utility multiplier when owner has both utilities.")]
         [SerializeField] private int utilityBoth = 10;
 
+        [Tooltip("Starting money for each player.")]
+        [SerializeField] private int playerStartingMoney = 1500;
+
+        [Tooltip("Salary received when passing GO.")]
+        [SerializeField] private int goSalary = 200;
+
+        [Tooltip("Fee to pay when leaving jail.")]
+        [SerializeField] private int jailFee = 100;
+
+        [Tooltip("Win condition type for the game.")]
+        [SerializeField] private WinConditionType winCondition = WinConditionType.LastPlayerStanding;
+
+        [Tooltip("Target money for TargetMoney win condition.")]
+        [SerializeField] private int targetMoney = 5000;
+
+        [Tooltip("Turn limit for TurnLimit win condition.")]
+        [SerializeField] private int turnLimit = 20;
+
+        [Tooltip("Max turn limit for jail time.")]
+        [SerializeField] private int maxJailTurns = 3;
+
         public int RailroadBaseRent() => railroadBase;
         public int UtilityRentSingleMult() => utilitySingle;
         public int UtilityRentBothMult() => utilityBoth;
-
         public int StreetsInGroup(ColorGroup g) =>
             g switch
             {
@@ -30,5 +50,13 @@ namespace Assets.Scripts.Managers.Rules
                 ColorGroup.LightBlue or ColorGroup.Pink or ColorGroup.Orange or ColorGroup.Red or ColorGroup.Yellow or ColorGroup.Green => 3,
                 _ => 0
             };
-}
+        public int PlayerStartingMoney() => playerStartingMoney;
+        public int GOSalary() => goSalary;
+        public int JailFee() => jailFee;
+        public WinConditionType WinCondition() => winCondition;
+        public int TargetMoney() => targetMoney;
+        public int TurnLimit() => turnLimit;
+
+        public int MaxJailTurns() => maxJailTurns;
+    }
 }
