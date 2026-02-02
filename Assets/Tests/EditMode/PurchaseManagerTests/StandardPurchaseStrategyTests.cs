@@ -3,6 +3,7 @@ using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Purchase;
 using Assets.Scripts.Managers.Rules;
+using UnityEngine.UIElements.Experimental;
 
 namespace Tests.EditMode.PurchaseManagerTests
 {
@@ -16,6 +17,15 @@ namespace Tests.EditMode.PurchaseManagerTests
 
             public int StreetsInGroup(ColorGroup g) =>
                 (g == ColorGroup.Brown || g == ColorGroup.DarkBlue) ? 2 : 3;
+
+            public int PlayerStartingMoney() => 1500;
+
+            public int GOSalary() => 200;
+            public int JailFee() => 50;
+            public WinConditionType WinCondition() => WinConditionType.LastPlayerStanding;
+            public int TargetMoney() => 5000;
+            public int TurnLimit() => 20;
+            public int MaxJailTurns() => 3;
         }
 
         private class Own : IOwnershipService

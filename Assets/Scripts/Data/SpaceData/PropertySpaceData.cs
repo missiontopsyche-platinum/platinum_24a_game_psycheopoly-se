@@ -88,8 +88,7 @@ public class PropertySpaceData : OwnableSpaceData
         
         // In the future, maybe we could indicate how many spaces of this color category the player owns.
         
-        // fire event payload
-        spaceHoverEventChannel?.RaiseEvent(payload);
+        //spaceHoverEventChannel?.RaiseEvent(payload);
         return payload;
     }
 

@@ -1,8 +1,11 @@
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
+using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.Rules;
 using Events.EventDataStructures;
 using Logging;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using Logger = Logging.Logger;
 
@@ -21,6 +24,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
 
     public List<Player> players = new List<Player>();
+
+    [SerializeField] private RulesManager rulesManager;
+    private IRuleSet activeRuleset;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -66,7 +72,8 @@ public class PlayerManager : MonoBehaviour
             this);
 
         players.Clear();  //prevent duplicates when starting new game
-        int startingMoney = 1500; //Amount based on normal Monopoly game
+        EnsureDependencies();
+        int startingMoney = activeRuleset.PlayerStartingMoney();
         int startingPosition = 0; //GO
 
         for (int i = 0; i < numPlayers; i++)
@@ -191,7 +198,8 @@ public class PlayerManager : MonoBehaviour
     /// <param name="id"></param>
     public void PassedGo(int id)
     {
-        AddMoney(id, 200); 
+        EnsureDependencies();
+        AddMoney(id, activeRuleset.GOSalary()); 
     }
 
     /// <summary>
@@ -200,8 +208,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="id"></param>
     /// <param name="money"></param>
     public void AddMoney(int id, int money)
-    {
-       
+    {       
         GetPlayer(id).AddMoney(money);
     }
 
@@ -294,8 +301,14 @@ public class PlayerManager : MonoBehaviour
         playerDataUpdatedEventChannel.RaiseEvent(true);
     }
 
-    public void ClearPlayers()
+    private void EnsureDependencies()
     {
+        if (!rulesManager)
+            rulesManager = FindFirstObjectByType<RulesManager>();
 
+        if (activeRuleset == null)
+            activeRuleset = rulesManager != null
+                ? rulesManager.ActiveRules
+                : new StandardRuleSet();
     }
 }
