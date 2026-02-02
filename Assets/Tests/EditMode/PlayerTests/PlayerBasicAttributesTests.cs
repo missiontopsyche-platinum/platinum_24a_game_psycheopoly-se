@@ -49,5 +49,46 @@ namespace Tests.EditMode.PlayerTests
             Assert.Throws<System.ArgumentException>(() =>
                 player.SetPosition(-100));
         }
+
+        [Test]
+        public void Player_CanAfford()
+        {
+            player.SetMoney(1000); // Assure player has money
+            Assert.IsTrue(player.CanAfford(500));
+        }
+
+        [Test]
+        public void Player_CanNotAfford()
+        {
+            player.SetMoney(1000); // Assure player has money
+            Assert.IsFalse(player.CanAfford(1100));
+        }
+
+        [Test]
+        public void Player_IsNotBankrupt()
+        {
+            player.SetMoney(1000);
+            Assert.IsFalse(player.IsBankrupt());
+        }
+
+        [Test]
+        public void Player_IsBankrupt()
+        {
+            player.SetMoney(0);
+            Assert.IsTrue(player.IsBankrupt());
+        }
+
+        [Test]
+        public void Player_CanSpend()
+        {
+            player.SetMoney(1000);
+            Assert.IsTrue(player.TrySpend(500));
+        }
+        [Test]
+        public void Player_CanNotSpend()
+        {
+            player.SetMoney(1000);
+            Assert.IsFalse(player.TrySpend(1100));
+        }
     }
 }
