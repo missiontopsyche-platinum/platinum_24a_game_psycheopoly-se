@@ -37,8 +37,7 @@ public abstract class OwnableSpaceData : SpaceData
         payload.AppendInformation($"Collaboration Value: ${collaborationValue}");
         payload.AppendInformation($"Owner: {(owner ? owner.GetPName() : "None")}");
         
-        //we don't want to broadcast the hover here just yet.
-        //spaceHoverEventChannel?.RaiseEvent(payload);
+        spaceHoverEventChannel?.RaiseEvent(payload);
         
         return payload;
     }
