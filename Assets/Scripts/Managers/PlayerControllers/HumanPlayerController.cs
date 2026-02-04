@@ -76,7 +76,8 @@ namespace Managers.PlayerControllers
                     new PurchaseActivationContext(
                         pore.requestedSpace,
                         pore.cost,
-                        controlledPlayer.CanAfford(pore.requestedSpace.buyPrice)))); // when the method is added to Player, we can uncomment this.
+                        controlledPlayer.CanAfford(pore.requestedSpace.buyPrice)))); 
+
         }
 
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
@@ -123,7 +124,7 @@ namespace Managers.PlayerControllers
             // uncomment these when the methods are implemented
             if (pac.Purchased)
             {
-                // controlledPlayer.ExecutePurchase(pac.Property);
+                controlledPlayer.ExecutePurchase(pac.Property, pac.Property.buyPrice);
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
                     $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
                     LogCategory.Gameplay);
