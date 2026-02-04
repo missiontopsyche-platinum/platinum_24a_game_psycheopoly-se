@@ -1,7 +1,8 @@
-using System;
-using UnityEngine;
-using System.Collections.Generic;
+using Assets.Scripts.Managers.Rent;
 using Logging;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
@@ -20,6 +21,7 @@ public class Player : ScriptableObject
     [SerializeField] private int doublesInRow;
     [SerializeField] private int getOutOfJailFree_Chance;
     [SerializeField] private int getOutOfJailFree_Community;
+
     private List<OwnableSpaceData> ownedProperties = new();
     private List<Card> getOutOfJailCards = new();
 
@@ -182,10 +184,11 @@ public class Player : ScriptableObject
         SetInJail(false);
         SetJailTurns(0);
     }
+
     public void UseGetOutOfJailFreeCard() { }
     public void MovePlayer(int spacesToMove) { }
     public void PayPlayer(Player otherPlayer, int amount) { }
-    public void BuyProperty(int propertyIndex, int price) { }
+    public void BuyProperty(int propertyIndex, int price) { } // replaced by Execute Purchase function. 
     public void SellProperty(int propertyIndex, int price) { }
     public void MortgageProperty(int propertyIndex) { }
     public void UnmortgageProperty(int propertyIndex) { }
@@ -312,5 +315,23 @@ public class Player : ScriptableObject
     public void AddMoney(int amount)
     {
         SetMoney(GetMoney() + amount);
+    }
+
+    /// <summary>
+    /// For full breakdown of event flow, see document at Documentation/PlayerController/ValidationLayerFlow.md
+    /// Executes purchase. Called by PC after doing verification and checking that the player is correct.
+    /// It then verifies if the player has enough money.
+    /// The Execute Purchase then uses TrySpend() to once again verify if there is enough money, and then spends if it can. 
+    /// I
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="price"></param>
+    /// <returns>Bool - True if purchase is successful. False if the purchase fails due to no money</returns>
+    public bool ExecutePurchase(OwnableSpaceData tile, int price)
+    {
+        if (!TrySpend(price)) return false;
+
+        ownedProperties.Add(tile);
+        return true;
     }
 }
