@@ -76,8 +76,7 @@ namespace Managers.PlayerControllers
                     new PurchaseActivationContext(
                         pore.requestedSpace,
                         pore.cost,
-                        // controlledPlayer.CanAfford(pore.requestedSpace)))); // when the method is added to Player, we can uncomment this.
-                        controlledPlayer.GetMoney() >= pore.cost))); // remove this when Player has CanAfford method
+                        controlledPlayer.CanAfford(pore.requestedSpace.buyPrice)))); // when the method is added to Player, we can uncomment this.
         }
 
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
