@@ -1,3 +1,4 @@
+using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Rules;
 using Logging;

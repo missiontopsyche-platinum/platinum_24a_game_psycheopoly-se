@@ -12,7 +12,6 @@ namespace Assets.Scripts.Managers.TurnOrder
 
         [Header("Dependencies")]
         [SerializeField] private PlayerTurnState playerTurnState;
-        [SerializeField] private GameManager gameManager; //To raise existing events if needed
 
         private ITurnOrderStrategy strategy = new StandardTurnOrderStrategy();
 
@@ -30,11 +29,6 @@ namespace Assets.Scripts.Managers.TurnOrder
         {
             if (!playerTurnState)
                 playerTurnState = GetComponent<PlayerTurnState>() ?? gameObject.AddComponent<PlayerTurnState>();
-
-            if (!gameManager)
-            {
-                gameManager = Object.FindFirstObjectByType<GameManager>();
-            }
         }
 
         public void ResetCycle(int count, int startIndex = 0)

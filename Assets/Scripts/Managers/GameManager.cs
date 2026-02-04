@@ -6,6 +6,7 @@ using PsycheOpoly.Board;
 using Assets.Scripts.Managers.Movement;
 using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.Purchase;
 using Events.EventDataStructures;
 
 public class GameManager : MonoBehaviour
@@ -40,18 +41,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
     
     [Header("Space Resolution Event Channels")]
-    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
-    
+    // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
+    // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
+    // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
 
     [Header("Manager References")]
     [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
-    // this is not used right now, but will be in the future
     [SerializeField] private RulesManager rulesManager;
+    [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private PurchaseManager purchaseManager;
 
 
     [Header("Turn Order System")]
@@ -59,15 +62,12 @@ public class GameManager : MonoBehaviour
 
     private ITurnOrderStrategy turnOrderStrategy = new StandardTurnOrderStrategy();
 
-
     private int playerCount = 0;
-
 
     //The below are for testing that the event is properly registering in the class
     public int dieOne = 0;
     public int dieTwo = 0;
     public int totalRolled = 0;
-
 
     // Task 111 legal state transition map
     private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
@@ -164,9 +164,11 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
-        
+        // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
+        // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
+        // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
+
         // hook up to temporary methods for handling rent/purchase
-        purchaseOwnableRequestEventChannel?.Subscribe(QuickPurchase);
         chargeOwnershipFeeEventChannel?.Subscribe(QuickRent);
 
 
@@ -240,9 +242,11 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Unsubscribe(OnSpaceResolutionCompleted);
-        
+        // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
+        // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
+        // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
+
         // unhook temporary methods for handling rent/purchase
-        purchaseOwnableRequestEventChannel?.Unsubscribe(QuickPurchase);
         chargeOwnershipFeeEventChannel?.Unsubscribe(QuickRent);
     }
 
@@ -530,37 +534,45 @@ public class GameManager : MonoBehaviour
             LogCategory.Gameplay, this);
     }
 
-    /// <summary>
-    /// Extremely quick and temporary implementation of purchase logic for the end-of-semester
-    /// prototype, to be fully replaced by the strategy pattern for handling rules.
-    /// </summary>
-    /// <param name="pore"></param>
-    public void QuickPurchase(PurchaseOwnableRequestEvent pore)
+    public void OnPropertyPurchaseRequest() // TODO: add PropertyPurchaseRequestEvent(event) in param
     {
-        if (turnPhase != TurnPhase.ResolvingSpace)
+        // This scaffold method is a placeholder for handling property purchase requests.
+        // Full implementation will validate the request, checking game state,
+        // player turn, and turn phase, before delegating to PurchaseManager.
+        // Also not sure where the event should be raised, PurchaseManager or GameManager.
+        /*if (Event.player == null || Event.Title == null)
+        {
+            PropertyPurchaseRejectedEventChannel?.RaiseEvent("Error: Missing purchase context.");
             return;
-        
-        if (pore.requestedPlayer.GetMoney() >= pore.requestedSpace.buyPrice)
-        {
-            pore.requestedPlayer.SetMoney(pore.requestedPlayer.GetMoney() - pore.requestedSpace.buyPrice);
-            pore.requestedSpace.SetOwner(pore.requestedPlayer);
-            
-            pore.requestedPlayer.AddOwnedProperty(pore.requestedSpace);
-            
-            Logging.Logger.Info("GameManager.QuickPurchase",
-                $"Purchased: {pore.requestedSpace.spaceName} for ${pore.requestedSpace.buyPrice}",
-                LogCategory.Economy, this);
-        }
-        else
-        {
-            Logging.Logger.Debug("GameManager.QuickPurchase",
-                $"Player {pore.requestedPlayer.GetPName()} " +
-                $"does not have enough money to purchase {pore.requestedSpace.spaceName}",
-                LogCategory.Economy, this);
         }
 
-        playerDataUpdatedEventChannel.RaiseEvent(true);
-        TryChangeTurnPhase(TurnPhase.PostTurn);
+        if (!IsPlayerTurn(Event.Player))
+        {
+            PropertyPurchaseRejectedEventChannel.RaiseEvent(Message="Error: Invalid player turn.");
+            return;
+        }
+
+        if (turnPhase != TurnPhase.ResolvingSpace)
+        {
+            PropertyPurchaseRejectedEventChannel.RaiseEvent(Message = "Error: Illegal TurnPhase");
+            return;
+        }
+
+        if (!purchaseManager.TryHandlePurchase(Event.Player, Event.Tile))
+        {
+            PropertyPurchaseRejectedEventChannel.RaiseEvent(Message = "Error: Purchase execution failed.");
+            return;
+        }
+
+        if (TryChangeTurnPhase(TurnPhase.PostTurn))
+        {
+            Logging.Logger.Debug("GameManager.OnPropertyPurchaseRequest",
+                "Property purchase request during ResolvingSpace, entering PostTurn.",
+                LogCategory.Gameplay, 
+                this);
+
+            PropertyPurchaseAcceptedEventChannel.RaiseEvent(Message = "Success: Property purchase accepted.");
+        }*/
     }
 
     /// <summary>
@@ -726,5 +738,15 @@ public class GameManager : MonoBehaviour
         turnPhase = newPhase;
 
         return true;
+    }
+
+    private bool IsPlayerTurn(Player player)
+    {
+        if (player == null) return false;
+
+        int requestId = player.GetId();
+        // Validate current turn order
+        bool matchesTurnCycle = requestId == turnCycleManager?.CurrentPlayerIndex;
+        return matchesTurnCycle;
     }
 }
