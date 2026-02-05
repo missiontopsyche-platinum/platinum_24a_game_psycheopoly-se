@@ -14,6 +14,11 @@ public class OnHoverUI : MonoBehaviour
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text bodyText;
 
+    [Header("Info Grid")]
+    [SerializeField] private TMP_Text costValueText;
+    [SerializeField] private TMP_Text rentValueText;
+    [SerializeField] private TMP_Text ownerValueText;
+
     private void Awake()
     {
         Hide();
@@ -33,16 +38,17 @@ public class OnHoverUI : MonoBehaviour
 
     private void OnSpaceHover(SpaceHoverEvent e)
     {
-        if (e == null)
+        if (e == null || e.spaceData == null)
         {
             Hide();
             return;
         }
 
-        //One panel at a time
+        //Title
         if (titleText != null)
-            titleText.text = e.spaceName;
+            titleText.text = e.spaceData.GetShortName();
 
+        //keep bodyText for extra lines
         if (bodyText != null)
         {
             var sb = new StringBuilder();
@@ -51,9 +57,45 @@ public class OnHoverUI : MonoBehaviour
             bodyText.text = sb.ToString();
         }
 
+        //hide rows unless set
+        SetRow(costValueText, false);
+        SetRow(rentValueText, false);
+        SetRow(ownerValueText, false);
+
+        //Property binding 
+        if (e.spaceData is PropertySpaceData property)
+        {
+            //cost
+            if (costValueText != null)
+            {
+                costValueText.text = property.buyPrice.ToString();
+                SetRow(costValueText, true);
+            }
+
+            // rent
+            if (rentValueText != null)
+            {
+                rentValueText.text = property.collaborationValue.ToString();
+                SetRow(rentValueText, true);
+            }
+
+            //owner
+            if (ownerValueText != null)
+            {
+                ownerValueText.text = "Unowned";
+                SetRow(ownerValueText, true);
+            }
+        }
+
         Show();
     }
 
+    private static void SetRow(TMP_Text valueText, bool visible)
+    {
+        if (valueText == null) return;
+        // assumes the TMP is a child of the row (CostRow/RentRow/OwnerRow)
+        valueText.transform.parent.gameObject.SetActive(visible);
+    }
     private void OnSpaceExit(bool _)
     {
         Hide();
