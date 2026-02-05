@@ -2,6 +2,7 @@ using System.Text;
 using Events.EventDataStructures;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OnHoverUI : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class OnHoverUI : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text bodyText;
+
+    [Header("Art")]
+    [SerializeField] private Image iconImage;
+    [SerializeField] private Image artworkImage;
 
     [Header("Info Grid")]
     [SerializeField] private TMP_Text costValueText;
@@ -57,6 +62,10 @@ public class OnHoverUI : MonoBehaviour
             bodyText.text = sb.ToString();
         }
 
+        //binds the art from SO
+        SetImage(iconImage, e.smallIcon);
+        SetImage(artworkImage, e.artwork);
+
         //hide rows unless set
         SetRow(costValueText, false);
         SetRow(rentValueText, false);
@@ -93,9 +102,19 @@ public class OnHoverUI : MonoBehaviour
     private static void SetRow(TMP_Text valueText, bool visible)
     {
         if (valueText == null) return;
-        // assumes the TMP is a child of the row (CostRow/RentRow/OwnerRow)
+        //assumes the TMP is a child of the row
         valueText.transform.parent.gameObject.SetActive(visible);
     }
+
+    private static void SetImage(Image img, Sprite sprite){
+        if (img == null) 
+        {
+            return; 
+        }
+        img.sprite = sprite;
+        img.enabled = sprite != null;
+    }
+
     private void OnSpaceExit(bool _)
     {
         Hide();

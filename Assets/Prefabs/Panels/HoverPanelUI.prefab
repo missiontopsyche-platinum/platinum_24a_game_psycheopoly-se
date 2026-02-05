@@ -1742,6 +1742,8 @@ MonoBehaviour:
   canvasGroup: {fileID: 4486295716104875362}
   titleText: {fileID: 3941118106923312164}
   bodyText: {fileID: 5185679715491331673}
+  iconImage: {fileID: 9208565179751665763}
+  artworkImage: {fileID: 4841463038596015684}
   costValueText: {fileID: 7068955655573776476}
   rentValueText: {fileID: 3991199458944540680}
   ownerValueText: {fileID: 8423582591849449361}
