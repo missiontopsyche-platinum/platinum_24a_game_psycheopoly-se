@@ -12,6 +12,7 @@ public class Player : ScriptableObject
     private int id;
     private string p_Name;
     private int money;
+    private int assets;
     private int position = 0;
 
     //Added for task 120
@@ -68,6 +69,11 @@ public class Player : ScriptableObject
     public int GetMoney()
     {
         return this.money;
+    }
+
+    public int GetAssests()
+    {
+        return this.assets;
     }
 
     //Task 120 Initializing player
@@ -395,6 +401,7 @@ public class Player : ScriptableObject
         if (!TrySpend(price)) return false;
 
         ownedProperties.Add(tile);
+        assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
         return true;
     }
 
