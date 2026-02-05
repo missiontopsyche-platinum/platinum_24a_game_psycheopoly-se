@@ -12,7 +12,11 @@ public class Player : ScriptableObject
     private int id;
     private string p_Name;
     private int money;
+<<<<<<< HEAD
     private int assets = 0;
+=======
+    private int assets;
+>>>>>>> 0aaf75e (Task 598 - Calculate player asset total. Added assest tracking to player SO and updated Execute purchase to add to asset total.)
     private int position = 0;
 
     //Added for task 120
@@ -253,7 +257,7 @@ public class Player : ScriptableObject
     public bool UnmortgageProperty(OwnableSpaceData tile) {
         if (!tile.isMortgaged) return false;
 
-        if (this.TrySpend(tile.mortgagePayoffValue)) //this will need updating when US571 pushes to dev
+        if (this.TrySpend(tile.mortgagePayoffValue) == FinancialStatus.Success) //this will need updating when US571 pushes to dev
         {
             tile.isMortgageable = true;
             tile.isMortgaged = false;
@@ -406,7 +410,6 @@ public class Player : ScriptableObject
     {
         FinancialStatus status = TrySpend(price);
         if (status  != FinancialStatus.Success) return status;
-
         this.AddOwnedProperty(tile);
         assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
         return status;
