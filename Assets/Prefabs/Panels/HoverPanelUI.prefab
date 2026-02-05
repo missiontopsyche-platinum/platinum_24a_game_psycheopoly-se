@@ -1885,6 +1885,7 @@ GameObject:
   - component: {fileID: 3527586321095055043}
   - component: {fileID: 4841463038596015684}
   - component: {fileID: 3715346739147010336}
+  - component: {fileID: 7767627288681258773}
   m_Layer: 5
   m_Name: ArtworkImage
   m_TagString: Untagged
@@ -1969,3 +1970,17 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
+--- !u!114 &7767627288681258773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8677735208427112339}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
+  m_AspectMode: 3
+  m_AspectRatio: 4.285714
