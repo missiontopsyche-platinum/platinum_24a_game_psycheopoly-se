@@ -56,10 +56,20 @@ public class OnHoverUI : MonoBehaviour
         //keep bodyText for extra lines
         if (bodyText != null)
         {
-            var sb = new StringBuilder();
-            foreach (var line in e.spaceInformation)
-                sb.AppendLine(line);
-            bodyText.text = sb.ToString();
+            if (e.spaceData is PropertySpaceData)
+            {
+                bodyText.gameObject.SetActive(false);
+            }
+            else
+            {
+                bodyText.gameObject.SetActive(true);
+
+                var sb = new StringBuilder();
+                foreach (var line in e.spaceInformation)
+                    sb.AppendLine(line);
+
+                bodyText.text = sb.ToString();
+            }
         }
 
         //binds the art from SO
