@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 26384901}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &26384901
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -384,7 +385,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.98039216, g: 0.490196, b: 0.4470588, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -423,6 +424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 33461322}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &33461322
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -654,7 +656,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.64705884, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.64705884, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -693,6 +695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 79421812}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &79421812
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -852,6 +855,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 92451822}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &92451822
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1083,7 +1087,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.85882354, b: 0.34509805, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.85882354, b: 0.34509802, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -1205,7 +1209,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.9764706, g: 0.81960785, b: 0, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.97647053, g: 0.81960785, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -1244,6 +1248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 139796783}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &139796783
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1573,6 +1578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 165142903}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &165142903
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1804,7 +1810,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.7647059, g: 0.60784316, b: 0.88235295, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.7647059, g: 0.60784316, b: 0.88235295, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -1926,7 +1932,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.64705884, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.64705884, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -2138,6 +2144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 315083081}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &315083081
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2286,6 +2293,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 330260055}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &330260055
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2654,7 +2662,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.85882354, b: 0.34509805, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.85882354, b: 0.34509802, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -2776,7 +2784,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5019608, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5019608, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -3025,7 +3033,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5019608, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5019608, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -3147,7 +3155,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5019608, g: 0, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5019608, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -3432,9 +3440,69 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7859252217808347615, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7859252217808347615, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7859252217808347615, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7859252217808347615, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7859252217808347615, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8134415378645163428, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: m_FontData.m_BestFit
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352863061247330335, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352863061247330335, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352863061247330335, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352863061247330335, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8352863061247330335, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729747441294186353, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729747441294186353, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729747441294186353, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729747441294186353, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8729747441294186353, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8796066225938654035, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3608,7 +3676,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.99215686, g: 0.69803923, b: 0.83137256, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9921568, g: 0.69803923, b: 0.83137256, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -3796,7 +3864,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.94509804, g: 0.8862745, b: 0.8862745, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.945098, g: 0.8862745, b: 0.8862745, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -3835,6 +3903,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 591739429}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &591739429
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3983,6 +4052,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 591968434}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &591968434
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4214,7 +4284,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.8235294, b: 0.9098039, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.8235294, b: 0.9098039, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -4253,6 +4323,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 612578155}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &612578155
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4401,6 +4472,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 622347276}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &622347276
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4632,7 +4704,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -4671,6 +4743,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 663158680}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &663158680
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4819,6 +4892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 666390516}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &666390516
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4967,6 +5041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 673322216}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &673322216
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5198,7 +5273,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.62745106, g: 0.62745106, b: 0.62745106, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -5320,7 +5395,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.63529414, g: 0.16470589, b: 0.49019608, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.63529414, g: 0.16470584, b: 0.490196, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -5442,7 +5517,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.62745106, g: 0.62745106, b: 0.62745106, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -5481,6 +5556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 715763325}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &715763325
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5712,7 +5788,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.98039216, g: 0.490196, b: 0.4470588, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -5834,7 +5910,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -5873,6 +5949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 780688057}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &780688057
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6070,6 +6147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 891463110}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &891463110
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6301,7 +6379,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -6423,7 +6501,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.64705884, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.64705884, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -6545,7 +6623,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.8745098, g: 0.39607844, b: 0.2627451, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.8745098, g: 0.3960784, b: 0.26274508, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -6584,6 +6662,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 947337298}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &947337298
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6815,7 +6894,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.9433962, g: 0.88554645, b: 0.88554645, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.9433962, g: 0.88554645, b: 0.88554645, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -6937,7 +7016,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.6392157, g: 0.5372549, b: 0.44705883, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.6392157, g: 0.5372549, b: 0.4470588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -7059,7 +7138,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.98039216, g: 0.490196, b: 0.4470588, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -7181,7 +7260,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.62745106, g: 0.62745106, b: 0.62745106, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -7220,6 +7299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1022367690}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1022367690
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7368,6 +7448,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1048824768}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1048824768
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7599,7 +7680,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.6392157, g: 0.5372549, b: 0.44705883, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.6392157, g: 0.5372549, b: 0.4470588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -7638,6 +7719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1100760774}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1100760774
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7869,7 +7951,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -7908,6 +7990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1148832889}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1148832889
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8056,6 +8139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1155415252}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1155415252
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8215,6 +8299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1172749030}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1172749030
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8446,7 +8531,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.7529412, g: 0.90588236, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.7529412, g: 0.90588236, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -8496,6 +8581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1343393718}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1343393718
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8727,7 +8813,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -8849,7 +8935,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.6392157, g: 0.5372549, b: 0.44705883, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.6392157, g: 0.5372549, b: 0.4470588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -8971,7 +9057,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.63529414, g: 0.16470589, b: 0.49019608, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.63529414, g: 0.16470584, b: 0.490196, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -9010,6 +9096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1404918595}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1404918595
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9158,6 +9245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1488619692}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1488619692
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9389,7 +9477,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.63529414, g: 0.16470589, b: 0.49019608, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.63529414, g: 0.16470584, b: 0.490196, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -9428,6 +9516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1494405116}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1494405116
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9659,7 +9748,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -9870,7 +9959,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 0, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -9992,7 +10081,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.8235294, g: 0.78431374, b: 0.78431374, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -10114,7 +10203,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.65882355, g: 0.65882355, b: 0.65882355, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.65882355, g: 0.65882355, b: 0.65882355, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -10153,6 +10242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1626814489}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1626814489
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10369,6 +10459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1661303711}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1661303711
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10517,6 +10608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1741114439}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1741114439
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10665,6 +10757,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1827246448}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1827246448
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10824,6 +10917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1865946369}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1865946369
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10972,6 +11066,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1872882657}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1872882657
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11120,6 +11215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1899754528}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1899754528
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11268,6 +11364,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1905887678}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1905887678
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11416,6 +11513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1909463423}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &1909463423
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11647,7 +11745,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -11686,6 +11784,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 2036776159}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &2036776159
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11917,7 +12016,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.7647059, g: 0.60784316, b: 0.88235295, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.7647059, g: 0.60784316, b: 0.88235295, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -12039,7 +12138,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 0.85882354, b: 0.34509805, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.85882354, b: 0.34509802, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
@@ -12089,6 +12188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 2132245907}
+  alwaysVisibleUI: {fileID: 0}
 --- !u!23 &2132245907
 MeshRenderer:
   m_ObjectHideFlags: 0
