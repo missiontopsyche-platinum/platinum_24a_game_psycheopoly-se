@@ -354,7 +354,7 @@ public class Player : ScriptableObject
             return FinancialStatus.MortageRequired;
         };
 
-        return FinancialStatus.CanAfford;
+        return FinancialStatus.Success;
     }
 
     /// <summary>
@@ -373,14 +373,15 @@ public class Player : ScriptableObject
     /// </summary>
     /// <param name="amount"></param>
     /// <returns>Returns True if the money is spent. Returns false if the player does not have money.</returns>
-    public bool TrySpend(int amount)
+    public FinancialStatus TrySpend(int amount)
     {
-        if (!CanAfford(amount)) {
-            if (IsBankrupt(amount)) return false; // TODO: Update to return enum based on if can afford or if bankrupt. 
-        };
+        FinancialStatus status = CanAfford(amount);
+        if (status == FinancialStatus.Success)
+        {
+            SetMoney(GetMoney() - amount);
+        }
    
-        SetMoney(GetMoney() - amount);
-        return true;
+        return status;
     }
 
     /// <summary>
@@ -402,13 +403,14 @@ public class Player : ScriptableObject
     /// <param name="tile"></param>
     /// <param name="price"></param>
     /// <returns>Bool - True if purchase is successful. False if the purchase fails due to no money</returns>
-    public bool ExecutePurchase(OwnableSpaceData tile, int price)
+    public FinancialStatus ExecutePurchase(OwnableSpaceData tile, int price)
     {
-        if (!TrySpend(price)) return false;
+        FinancialStatus status = TrySpend(price);
+        if (status  != FinancialStatus.Success) return status;
 
         ownedProperties.Add(tile);
         assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
-        return true;
+        return status;
     }
 
     /// <summary>
@@ -453,10 +455,12 @@ public class Player : ScriptableObject
         int payoff = (int)(p.collaborationValue * 1.10f);
         p.mortgagePayoffValue = payoff;
 
-    // Player Enums for Bankruptcy. This may get moved to PC class later
+
+    // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later
+
     public enum FinancialStatus
     {
-        CanAfford,
+        Success,
         MortageRequired,
         Bankrupt
     }
