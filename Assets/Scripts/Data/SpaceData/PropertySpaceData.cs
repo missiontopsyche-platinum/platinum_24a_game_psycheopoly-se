@@ -12,13 +12,19 @@ public class PropertySpaceData : OwnableSpaceData
     [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
     
     private int currentUpgradeLevel = 0;
+    public int MaxUpgradeLevel =>
+    researchFundingValues != null && researchFundingValues.Length > 0
+        ? researchFundingValues.Length - 1
+        : 0;
+    public bool IsMaxed => currentUpgradeLevel >= MaxUpgradeLevel;
+    public bool CanUpgrade() => !IsMaxed && dataPointCost > 0;
 
     public override void OnLanded(Player player)
     {
         base.OnLanded(player);
         if (owner == null) return;
         
-        if (owner.Equals(player))
+        /*if (owner.Equals(player))
         {
             // TODO remove
             // after double checking the rules, players can upgrade any properties they want at
@@ -40,6 +46,14 @@ public class PropertySpaceData : OwnableSpaceData
         else
         {
             // charge player from researchFundingValues at the current upgrade level
+            int chargeAmount = researchFundingValues[currentUpgradeLevel];
+            chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
+                player, owner,
+                chargeAmount, this));
+        }*/
+
+        if (!owner.Equals(player))
+        {
             int chargeAmount = researchFundingValues[currentUpgradeLevel];
             chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
                 player, owner,
@@ -103,5 +117,20 @@ public class PropertySpaceData : OwnableSpaceData
     public int GetCurrentUpgradeLevel()
     {
         return currentUpgradeLevel;
+    }
+
+    public bool TryUpgrade()
+    {
+        if (!CanUpgrade())
+            return false;
+
+        currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel + 1, 0, MaxUpgradeLevel);
+        return true;
+    }
+
+    // For testing
+    public void SetUpgradeLevel(int level)
+    {
+        currentUpgradeLevel = Mathf.Clamp(level, 0, MaxUpgradeLevel);
     }
 }
