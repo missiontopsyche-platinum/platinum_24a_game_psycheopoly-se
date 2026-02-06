@@ -13,11 +13,23 @@ namespace Events.EventDataStructures
         public String spaceName { get; private set; }
         public Color spaceColor { get; private set; }
         public List<String> spaceInformation;
-        
-        public SpaceHoverEvent(String spaceName, Color spaceColor)
+
+        //references the ScriptableObject
+        public SpaceData spaceData { get; private set; }
+
+        public Sprite smallIcon { get; private set; }
+        public Sprite artwork { get; private set; }
+                
+        public SpaceHoverEvent(SpaceData data)
         {
-            this.spaceName = spaceName;
-            this.spaceColor = spaceColor;
+            spaceData = data;
+
+            spaceName = data != null ? data.spaceName : string.Empty;
+            spaceColor = data != null ? data.spaceColor : Color.white;
+
+            smallIcon = data != null ? data.smallIcon : null;
+            artwork = data != null ? data.artwork : null;
+
             spaceInformation = new List<string>();
         }
 

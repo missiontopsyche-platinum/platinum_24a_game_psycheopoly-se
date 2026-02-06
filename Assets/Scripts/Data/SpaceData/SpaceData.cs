@@ -27,7 +27,7 @@ public abstract class SpaceData : ScriptableObject
 
     public virtual SpaceHoverEvent OnHover()
     {
-        var payload = new SpaceHoverEvent(spaceName, spaceColor);
+        var payload = new SpaceHoverEvent(this);
         payload.AppendInformation($"Type: {GetType().Name}");
 
         // THIS SHOULD NOT BE CALLED HERE - the derived classes *must* override this and attach their
