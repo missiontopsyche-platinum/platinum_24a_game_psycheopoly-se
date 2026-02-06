@@ -1,4 +1,5 @@
 using Events.EventDataStructures;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PropertySpaceData", menuName = "Board Spaces/Property Space")]
@@ -7,18 +8,46 @@ public class PropertySpaceData : OwnableSpaceData
     [Header("Property-Specific Values")]
     [SerializeField] public int[] researchFundingValues = new int[6];
     [SerializeField] public int dataPointCost;
+    [SerializeField, Range(1.0f, 2.0f)] public float upgradeCostMultiplier = 1.5f;
+    [SerializeField, HideInInspector] private int[] upgradeCostByLevel;
 
     [Header("Property Event Channels")] 
     [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
     
     private int currentUpgradeLevel = 0;
+    private int[] ints;
+    private int upgradeCost;
+
+    public PropertySpaceData(int[] ints, int upgradeCost)
+    {
+        this.ints = ints;
+        this.upgradeCost = upgradeCost;
+    }
+
+    public int MaxUpgradeLevel =>
+    researchFundingValues != null
+        ? researchFundingValues.Length - 1
+        : 0;
+    public bool IsMaxed => currentUpgradeLevel >= MaxUpgradeLevel;
+    public int[] UpgradeCostByLevel => upgradeCostByLevel;
+    public bool CanUpgrade() => !IsMaxed && dataPointCost > 0;
+
+    private void OnEnable()
+    {
+        BuildUpgradeCostTable();
+    }
+
+    private void OnValidate()
+    {
+        BuildUpgradeCostTable();
+    }
 
     public override void OnLanded(Player player)
     {
         base.OnLanded(player);
         if (owner == null) return;
         
-        if (owner.Equals(player))
+        /*if (owner.Equals(player))
         {
             // TODO remove
             // after double checking the rules, players can upgrade any properties they want at
@@ -40,6 +69,14 @@ public class PropertySpaceData : OwnableSpaceData
         else
         {
             // charge player from researchFundingValues at the current upgrade level
+            int chargeAmount = researchFundingValues[currentUpgradeLevel];
+            chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
+                player, owner,
+                chargeAmount, this));
+        }*/
+
+        if (!owner.Equals(player))
+        {
             int chargeAmount = researchFundingValues[currentUpgradeLevel];
             chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
                 player, owner,
@@ -103,5 +140,84 @@ public class PropertySpaceData : OwnableSpaceData
     public int GetCurrentUpgradeLevel()
     {
         return currentUpgradeLevel;
+    }
+
+    public bool TryUpgrade()
+    {
+        if (!CanUpgrade())
+            return false;
+
+        currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel + 1, 0, MaxUpgradeLevel);
+        this.VerifyMortagableStatus();
+        return true;
+    }
+
+    // For testing
+    public void SetUpgradeLevel(int level)
+    {
+        currentUpgradeLevel = Mathf.Clamp(level, 0, MaxUpgradeLevel);
+    }
+    public void SetDataPointCost(int cost)
+    {
+        dataPointCost = cost;
+    }
+    public void SetUpgradeCostByLevel(int[] levels)
+    {
+        upgradeCostByLevel = levels;
+    }
+    public void SetResearchFundingValues(int[] values)
+    {
+        researchFundingValues = values;
+    }
+
+    public int GetUpgradeCostForLevel(int level)
+    {
+        if (level < 1 || level > MaxUpgradeLevel)
+            return 0;
+
+        int currentMultiplier = (int)Mathf.Pow(upgradeCostMultiplier, level);
+        return dataPointCost * RoundToNearestTens(currentMultiplier);
+    }
+
+    public int GetNextUpgradeCost()
+    {
+        if (IsMaxed)
+            return 0;
+
+        return GetUpgradeCostForLevel(currentUpgradeLevel + 1);
+    }
+
+    private static int RoundToNearestTens(int number)
+    {
+        double divided = number / 10.0;
+
+        double rounded = Math.Round(divided);
+
+        int result = (int)rounded * 10;
+
+        return result;
+    }
+
+    private void BuildUpgradeCostTable()
+    {
+        int max = MaxUpgradeLevel;
+
+        if (max <= 0 || dataPointCost <= 0)
+        {
+            upgradeCostByLevel = Array.Empty<int>();
+            return;
+        }
+
+        upgradeCostByLevel = new int[max];
+        for (int i = 0; i < max; i++)
+            upgradeCostByLevel[i] = GetUpgradeCostForLevel(i);
+    }
+
+    private void VerifyMortagableStatus()
+    {
+        if (this.currentUpgradeLevel > 0) 
+            this.isMortageable = false;
+
+        this.isMortageable = true;
     }
 }
