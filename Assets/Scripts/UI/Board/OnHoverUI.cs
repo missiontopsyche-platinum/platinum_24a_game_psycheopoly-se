@@ -2,6 +2,7 @@ using System.Text;
 using Events.EventDataStructures;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OnHoverUI : MonoBehaviour
 {
@@ -13,6 +14,15 @@ public class OnHoverUI : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text bodyText;
+
+    [Header("Art")]
+    [SerializeField] private Image iconImage;
+    [SerializeField] private Image artworkImage;
+
+    [Header("Info Grid")]
+    [SerializeField] private TMP_Text costValueText;
+    [SerializeField] private TMP_Text rentValueText;
+    [SerializeField] private TMP_Text ownerValueText;
 
     private void Awake()
     {
@@ -33,25 +43,86 @@ public class OnHoverUI : MonoBehaviour
 
     private void OnSpaceHover(SpaceHoverEvent e)
     {
-        if (e == null)
+        if (e == null || e.spaceData == null)
         {
             Hide();
             return;
         }
 
-        //One panel at a time
+        //Title
         if (titleText != null)
-            titleText.text = e.spaceName;
+            titleText.text = e.spaceData.GetShortName();
 
+        //keep bodyText for extra lines
         if (bodyText != null)
         {
-            var sb = new StringBuilder();
-            foreach (var line in e.spaceInformation)
-                sb.AppendLine(line);
-            bodyText.text = sb.ToString();
+            if (e.spaceData is PropertySpaceData)
+            {
+                bodyText.gameObject.SetActive(false);
+            }
+            else
+            {
+                bodyText.gameObject.SetActive(true);
+
+                var sb = new StringBuilder();
+                foreach (var line in e.spaceInformation)
+                    sb.AppendLine(line);
+
+                bodyText.text = sb.ToString();
+            }
+        }
+
+        //binds the art from SO
+        SetImage(iconImage, e.smallIcon);
+        SetImage(artworkImage, e.artwork);
+
+        //hide rows unless set
+        SetRow(costValueText, false);
+        SetRow(rentValueText, false);
+        SetRow(ownerValueText, false);
+
+        //Property binding 
+        if (e.spaceData is PropertySpaceData property)
+        {
+            //cost
+            if (costValueText != null)
+            {
+                costValueText.text = property.buyPrice.ToString();
+                SetRow(costValueText, true);
+            }
+
+            // rent
+            if (rentValueText != null)
+            {
+                rentValueText.text = property.collaborationValue.ToString();
+                SetRow(rentValueText, true);
+            }
+
+            //owner
+            if (ownerValueText != null)
+            {
+                ownerValueText.text = "Unowned";
+                SetRow(ownerValueText, true);
+            }
         }
 
         Show();
+    }
+
+    private static void SetRow(TMP_Text valueText, bool visible)
+    {
+        if (valueText == null) return;
+        //assumes the TMP is a child of the row
+        valueText.transform.parent.gameObject.SetActive(visible);
+    }
+
+    private static void SetImage(Image img, Sprite sprite){
+        if (img == null) 
+        {
+            return; 
+        }
+        img.sprite = sprite;
+        img.enabled = sprite != null;
     }
 
     private void OnSpaceExit(bool _)
