@@ -346,11 +346,15 @@ public class Player : ScriptableObject
     /// </summary>
     /// <param name="amount">Int - how much the payment is</param>
     /// <returns>Bool - False if the player has less money than the amount, true if the player has enough money</returns>
-    public bool CanAfford(int amount)
+    public FinancialStatus CanAfford(int amount)
     {
-        if (money < amount) return false;
+        if (money < amount) {
+            if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
 
-        return true;
+            return FinancialStatus.MortageRequired;
+        };
+
+        return FinancialStatus.CanAfford;
     }
 
     /// <summary>
@@ -407,7 +411,6 @@ public class Player : ScriptableObject
         return true;
     }
 
-
     /// <summary>
     /// Returns a list of all properties the player can mortage.
     /// The isMortageable flag must be set or removed when buying or selling upgrades on the prop. 
@@ -449,5 +452,12 @@ public class Player : ScriptableObject
         //We can refactor this to deal with rounding at a later time.
         int payoff = (int)(p.collaborationValue * 1.10f);
         p.mortgagePayoffValue = payoff;
+
+    // Player Enums for Bankruptcy. This may get moved to PC class later
+    public enum FinancialStatus
+    {
+        CanAfford,
+        MortageRequired,
+        Bankrupt
     }
 }
