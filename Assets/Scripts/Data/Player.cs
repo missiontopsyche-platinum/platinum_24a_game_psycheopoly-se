@@ -12,11 +12,7 @@ public class Player : ScriptableObject
     private int id;
     private string p_Name;
     private int money;
-<<<<<<< HEAD
     private int assets = 0;
-=======
-    private int assets;
->>>>>>> 0aaf75e (Task 598 - Calculate player asset total. Added assest tracking to player SO and updated Execute purchase to add to asset total.)
     private int position = 0;
 
     //Added for task 120
@@ -355,10 +351,10 @@ public class Player : ScriptableObject
         if (money < amount) {
             if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
 
-            return FinancialStatus.MortageRequired;
+            return FinancialStatus.MortgageRequired;
         };
 
-        return FinancialStatus.CanAfford;
+        return FinancialStatus.Success;
     }
 
     /// <summary>
@@ -380,7 +376,7 @@ public class Player : ScriptableObject
     public FinancialStatus TrySpend(int amount)
     {
 
-        if (CanAfford(amount))
+        if (CanAfford(amount) == FinancialStatus.Success)
         {
             SetMoney(GetMoney() - amount);
             return FinancialStatus.Success;
@@ -389,6 +385,7 @@ public class Player : ScriptableObject
         if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
    
         return FinancialStatus.MortgageRequired;
+
     }
 
     /// <summary>
@@ -414,10 +411,27 @@ public class Player : ScriptableObject
     {
         FinancialStatus status = TrySpend(price);
         if (status  != FinancialStatus.Success) return status;
+
         this.AddOwnedProperty(tile);
+        ownedProperties.Add(tile);
+
         assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
         return status;
     }
+
+
+    /// <summary>
+    /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
+    /// </summary>
+    public void ClearOwnership()
+    {
+        foreach (OwnableSpaceData space in this.GetOwnedProperties())
+        {
+            space.SetOwner(null);
+            this.RemoveOwnedProperty(space);
+        }
+    }
+
 
     /// <summary>
     /// Returns a list of all properties the player can mortage.
@@ -521,11 +535,13 @@ public class Player : ScriptableObject
         p.mortgagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
     }
 
-    // Player Enums for Bankruptcy. This may get moved to PC class later
+
+    // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later
+
     public enum FinancialStatus
     {
-        CanAfford,
-        MortageRequired,
+        Success,
+        MortgageRequired,
         Bankrupt
 
     }
