@@ -346,15 +346,12 @@ public class Player : ScriptableObject
     /// </summary>
     /// <param name="amount">Int - how much the payment is</param>
     /// <returns>Bool - False if the player has less money than the amount, true if the player has enough money</returns>
-    public FinancialStatus CanAfford(int amount)
+    public bool CanAfford(int amount)
     {
-        if (money < amount) {
-            if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
+        if (money < amount) return false;
 
-            return FinancialStatus.MortgageRequired;
-        };
+        return true;
 
-        return FinancialStatus.Success;
     }
 
     /// <summary>
@@ -375,17 +372,15 @@ public class Player : ScriptableObject
     /// <returns>Returns True if the money is spent. Returns false if the player does not have money.</returns>
     public FinancialStatus TrySpend(int amount)
     {
+        if (CanAfford(amount))
 
-        if (CanAfford(amount) == FinancialStatus.Success)
         {
             SetMoney(GetMoney() - amount);
             return FinancialStatus.Success;
         }
-
         if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
    
         return FinancialStatus.MortgageRequired;
-
     }
 
     /// <summary>
