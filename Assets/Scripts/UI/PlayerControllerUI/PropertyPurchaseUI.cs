@@ -14,6 +14,7 @@ public class PropertyPurchaseUI : MonoBehaviour
     [SerializeField] private TMP_Text ownableNameText;
     [SerializeField] private TMP_Text ownableByBuyPriceText;
     [SerializeField] private Button acceptButton;
+    [SerializeField] private TMP_Text buttonText;
     [SerializeField] private RectTransform propertyTextCanvas;
     [SerializeField] private RectTransform instrumentTextCanvas;
     [SerializeField] private RectTransform planetTextCanvas;
@@ -73,7 +74,17 @@ public class PropertyPurchaseUI : MonoBehaviour
             ownableColorPanel.color = context.Property.groupColor;
             ownableNameText.text = context.Property.spaceName;
             ownableByBuyPriceText.text = $"Buy Price: ${context.Property.buyPrice}";
-            acceptButton.interactable = context.CanAfford;
+
+            if (context.CanAfford)
+            {
+                acceptButton.interactable = true;
+                buttonText.text = "Purchase";
+            }
+            else
+            {
+                acceptButton.interactable = false;
+                buttonText.text = "Unable to Afford Purchase";
+            }
             Show();
         }
         else
@@ -102,32 +113,25 @@ public class PropertyPurchaseUI : MonoBehaviour
     {
         // the pattern here is to make the UI rendering consistent.
         // This is pretty brittle, and could use another look later on.
-        propertyRentsText.text = $"""
-                                 ${property.researchFundingValues[0]}
-                                 ${property.researchFundingValues[1]}
-                                 ${property.researchFundingValues[2]}
-                                 ${property.researchFundingValues[3]}
-                                 ${property.researchFundingValues[4]}
-                                 ${property.researchFundingValues[5]}
-                                 
-                                 ${property.collaborationValue}
-                                 """;
-        propertyUpgradesText.text = $"""
-                                     ${property.dataPointCost}
-                                     
-                                     
-                                     ${property.dataPointCost}
-                                     """;
+         propertyRentsText.text = $"${property.researchFundingValues[0]}\n" +
+                                  $"${property.researchFundingValues[2]}\n" +
+                                  $"${property.researchFundingValues[1]}\n" +
+                                  $"${property.researchFundingValues[3]}\n" +
+                                  $"${property.researchFundingValues[4]}\n" +
+                                  $"${property.researchFundingValues[5]}\n" +
+                                  "\n" +
+                                  $"${property.collaborationValue}";
+        propertyUpgradesText.text = $"${property.dataPointCost}" +
+                                    "\n\n" +
+                                    $"${property.dataPointCost}";
     }
 
     private void SetInstrumentText(InstrumentSpaceData instrument)
     {
-        instrumentPricesText.text = $"""
-                                     ${instrument.researchFundingLevels[0]}
-                                     ${instrument.researchFundingLevels[1]}
-                                     ${instrument.researchFundingLevels[2]}
-                                     ${instrument.researchFundingLevels[3]}
-                                     """;
+         instrumentPricesText.text = $"${instrument.researchFundingLevels[0]}\n" +
+                                     $"${instrument.researchFundingLevels[1]}\n" +
+                                     $"${instrument.researchFundingLevels[2]}\n" +
+                                     $"${instrument.researchFundingLevels[3]}\n";
     }
 
     public void OnPurchaseClick() => FirePurchaseAction(true);
