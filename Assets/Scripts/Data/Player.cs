@@ -12,7 +12,7 @@ public class Player : ScriptableObject
     private int id;
     private string p_Name;
     private int money;
-    private int assets;
+    private int assets = 0;
     private int position = 0;
 
     //Added for task 120
@@ -354,11 +354,11 @@ public class Player : ScriptableObject
     }
 
     /// <summary>
-    /// Checks if the player has money.
+    /// Task 599 - adjust method to calculate money + assets. 
     /// </summary>
     /// <returns>Bool: True if the player has less than or 0 money, false otherwise</returns>
-    public bool IsBankrupt() {
-        if (money > 0) return false;
+    public bool IsBankrupt(int price) {
+        if (money + assets > price) return false;
 
         return true;
     }
@@ -371,7 +371,9 @@ public class Player : ScriptableObject
     /// <returns>Returns True if the money is spent. Returns false if the player does not have money.</returns>
     public bool TrySpend(int amount)
     {
-        if (!CanAfford(amount)) return false;
+        if (!CanAfford(amount)) {
+            if (IsBankrupt(amount)) return false; // TODO: Update to return enum based on if can afford or if bankrupt. 
+        };
    
         SetMoney(GetMoney() - amount);
         return true;

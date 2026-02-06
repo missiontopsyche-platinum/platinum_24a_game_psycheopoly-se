@@ -68,14 +68,14 @@ namespace Tests.EditMode.PlayerTests
         public void Player_IsNotBankrupt()
         {
             player.SetMoney(1000);
-            Assert.IsFalse(player.IsBankrupt());
+            Assert.IsFalse(player.IsBankrupt(1));
         }
 
         [Test]
         public void Player_IsBankrupt()
         {
             player.SetMoney(0);
-            Assert.IsTrue(player.IsBankrupt());
+            Assert.IsTrue(player.IsBankrupt(1));
         }
 
         [Test]
