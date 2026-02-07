@@ -88,7 +88,9 @@ namespace Managers.PlayerControllers
             if (!isMyTurn) return;
             
             // activate Rent notification UI
+
             // call Player method for charging rent
+
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
@@ -152,7 +154,8 @@ namespace Managers.PlayerControllers
                 controlledPlayer.ExecutePurchase(pac.Property, pac.Property.buyPrice);
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
                     $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
-                    LogCategory.Gameplay);
+                    LogCategory.Gameplay); 
+                //Fire
             }
             else
             {
