@@ -485,6 +485,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 5179765076115702518}
   alwaysVisibleUI: {fileID: 7848572510365182022}
+  ownedIconGO: {fileID: 8532746667322075388}
+  mortgagedIconGO: {fileID: 5731127626699985332}
 --- !u!1 &7960537776821662584
 GameObject:
   m_ObjectHideFlags: 0

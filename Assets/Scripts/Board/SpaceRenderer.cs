@@ -6,7 +6,10 @@ public class SpaceRenderer : InteractableGameObject
 {
     [SerializeField] public MeshRenderer meshRenderer;
     [SerializeField] private TileAlwaysVisibleUI alwaysVisibleUI;
-    
+    [SerializeField] private GameObject ownedIconGO;
+    [SerializeField] private GameObject mortgagedIconGO;
+
+
     private SpaceData spaceData;
     
     // debug timer - remove when we add actual functionality.
@@ -40,6 +43,15 @@ public class SpaceRenderer : InteractableGameObject
         }
 
         name = spaceData.spaceName;
+
+        //US577 only show indicators for Property spaces
+        bool isProperty = spaceData is PropertySpaceData;
+
+        if (ownedIconGO != null)
+            ownedIconGO.SetActive(isProperty);
+
+        if (mortgagedIconGO != null)
+            mortgagedIconGO.SetActive(isProperty);
 
         if (alwaysVisibleUI != null)
             alwaysVisibleUI.Apply(spaceData);
