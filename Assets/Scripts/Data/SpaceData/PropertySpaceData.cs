@@ -1,4 +1,5 @@
 using Events.EventDataStructures;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PropertySpaceData", menuName = "Board Spaces/Property Space")]
@@ -7,17 +8,30 @@ public class PropertySpaceData : OwnableSpaceData
     [Header("Property-Specific Values")]
     [SerializeField] public int[] researchFundingValues = new int[6];
     [SerializeField] public int dataPointCost;
+    [SerializeField, Range(1.0f, 2.0f)] public float upgradeCostMultiplier = 1.5f;
+    [SerializeField, HideInInspector] private int[] upgradeCostByLevel;
 
     [Header("Property Event Channels")] 
     [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
     
     private int currentUpgradeLevel = 0;
     public int MaxUpgradeLevel =>
-    researchFundingValues != null && researchFundingValues.Length > 0
+    researchFundingValues != null
         ? researchFundingValues.Length - 1
         : 0;
     public bool IsMaxed => currentUpgradeLevel >= MaxUpgradeLevel;
+    public int[] UpgradeCostByLevel => upgradeCostByLevel;
     public bool CanUpgrade() => !IsMaxed && dataPointCost > 0;
+
+    private void OnEnable()
+    {
+        BuildUpgradeCostTable();
+    }
+
+    private void OnValidate()
+    {
+        BuildUpgradeCostTable();
+    }
 
     public override void OnLanded(Player player)
     {
@@ -132,5 +146,48 @@ public class PropertySpaceData : OwnableSpaceData
     public void SetUpgradeLevel(int level)
     {
         currentUpgradeLevel = Mathf.Clamp(level, 0, MaxUpgradeLevel);
+    }
+
+    public int GetUpgradeCostForLevel(int level)
+    {
+        if (level < 1 || level > MaxUpgradeLevel)
+            return 0;
+
+        int currentMultiplier = (int)Mathf.Pow(upgradeCostMultiplier, level);
+        return dataPointCost * RoundToNearestTens(currentMultiplier);
+    }
+
+    public int GetNextUpgradeCost()
+    {
+        if (IsMaxed)
+            return 0;
+
+        return GetUpgradeCostForLevel(currentUpgradeLevel + 1);
+    }
+
+    private static int RoundToNearestTens(int number)
+    {
+        double divided = number / 10.0;
+
+        double rounded = Math.Round(divided);
+
+        int result = (int)rounded * 10;
+
+        return result;
+    }
+
+    private void BuildUpgradeCostTable()
+    {
+        int max = MaxUpgradeLevel;
+
+        if (max <= 0 || dataPointCost <= 0)
+        {
+            upgradeCostByLevel = Array.Empty<int>();
+            return;
+        }
+
+        upgradeCostByLevel = new int[max];
+        for (int i = 0; i < max; i++)
+            upgradeCostByLevel[i] = GetUpgradeCostForLevel(i);
     }
 }
