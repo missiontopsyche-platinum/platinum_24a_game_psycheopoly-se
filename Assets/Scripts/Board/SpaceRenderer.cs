@@ -56,6 +56,7 @@ public class SpaceRenderer : InteractableGameObject
 
         if (ownedIconGO != null)
             ownedIconGO.SetActive(isProperty && isOwned);
+
         // TODO: enable when mortgage state exists ------------------------------------------------
         if (mortgagedIconGO != null)
             mortgagedIconGO.SetActive(false);
