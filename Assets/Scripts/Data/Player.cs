@@ -456,10 +456,15 @@ public class Player : ScriptableObject
     }
 
     /// Called upon becoming bankrupt
+    /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
     /// </summary>
     public void ClearOwnership()
     {
-
+        foreach (OwnableSpaceData space in this.GetOwnedProperties())
+        {
+            space.SetOwner(null);
+            this.RemoveOwnedProperty(space);
+        }
     }
 
 
