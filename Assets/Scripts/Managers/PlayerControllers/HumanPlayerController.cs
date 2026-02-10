@@ -97,6 +97,9 @@ namespace Managers.PlayerControllers
                 if (controlledPlayer.IsBankrupt(cofe.amount))
                 {
                     // TODO: Call event channel for UI
+
+                    controlledPlayer.ClearOwnership();
+
                 }
             }
         }
