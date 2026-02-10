@@ -5,6 +5,7 @@ using Logging;
 using UnityEngine;
 using Logger = Logging.Logger;
 
+
 namespace Managers.PlayerControllers
 {
     public class HumanPlayerController : PlayerController
@@ -14,14 +15,13 @@ namespace Managers.PlayerControllers
         // event channels
         private UIActivationEventChannel uiActivationEventChannel;
         private UIActionEventChannel uiActionEventChannel;
-
         private MortgageFinishedEventChannel mortgageFinishedEventChannel;
+
 
         // event channel for bankruptcy
-        
         [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
-        private MortgageFinishedEventChannel mortageFinishedEventChannel;
-        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
+
+
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
