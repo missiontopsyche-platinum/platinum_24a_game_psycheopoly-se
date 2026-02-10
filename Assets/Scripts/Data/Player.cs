@@ -453,6 +453,14 @@ public class Player : ScriptableObject
         //We can refactor this to deal with rounding at a later time.
         int payoff = (int)(p.collaborationValue * 1.10f);
         p.mortgagePayoffValue = payoff;
+    }
+
+    /// Called upon becoming bankrupt
+    /// </summary>
+    public void ClearOwnership()
+    {
+
+    }
 
 
     // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later

@@ -90,7 +90,15 @@ namespace Managers.PlayerControllers
             // activate Rent notification UI
 
             // call Player method for charging rent
-
+            // Flow: Check if player has money -> If yes, try spend, return proper response via event channel
+            // If no -> Check for bankrupcy - If bankrupt, notify UI, call proper method on GameManger, call ClearOwnership
+            if (!controlledPlayer.CanAfford(cofe.amount))
+            {
+                if (controlledPlayer.IsBankrupt(cofe.amount))
+                {
+                    // TODO: Call event channel for UI
+                }
+            }
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
