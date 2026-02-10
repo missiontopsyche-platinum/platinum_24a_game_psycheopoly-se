@@ -470,7 +470,6 @@ public class Player : ScriptableObject
         int payoff = (int)(p.collaborationValue * 1.10f);
         p.mortgagePayoffValue = payoff;
     }
-   
 
     /// Called upon becoming bankrupt
     /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
