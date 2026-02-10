@@ -15,6 +15,15 @@ public class PropertySpaceData : OwnableSpaceData
     [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
     
     private int currentUpgradeLevel = 0;
+    private int[] ints;
+    private int upgradeCost;
+
+    public PropertySpaceData(int[] ints, int upgradeCost)
+    {
+        this.ints = ints;
+        this.upgradeCost = upgradeCost;
+    }
+
     public int MaxUpgradeLevel =>
     researchFundingValues != null
         ? researchFundingValues.Length - 1
@@ -146,6 +155,18 @@ public class PropertySpaceData : OwnableSpaceData
     public void SetUpgradeLevel(int level)
     {
         currentUpgradeLevel = Mathf.Clamp(level, 0, MaxUpgradeLevel);
+    }
+    public void SetDataPointCost(int cost)
+    {
+        dataPointCost = cost;
+    }
+    public void SetUpgradeCostByLevel(int[] levels)
+    {
+        upgradeCostByLevel = levels;
+    }
+    public void SetResearchFundingValues(int[] values)
+    {
+        researchFundingValues = values;
     }
 
     public int GetUpgradeCostForLevel(int level)
