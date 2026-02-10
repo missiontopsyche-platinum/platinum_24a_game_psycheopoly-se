@@ -105,7 +105,6 @@ namespace Managers.PlayerControllers
                 if (controlledPlayer.IsBankrupt(cofe.amount))
                 {
                     // TODO: Call event channel for UI
-
                     controlledPlayer.ClearOwnership();
                     // Need to check with Hank to verify GameManager linkage. But currently no link, therefore we will create a "BankruptPlayer" event channel to fire.
                     // Will return an int, only providing the player ID which SHOULD be the turn order number.
