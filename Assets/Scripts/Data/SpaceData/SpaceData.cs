@@ -11,6 +11,7 @@ public abstract class SpaceData : ScriptableObject
     //Always visible wihtin the UI
     [SerializeField] public string shortDisplayName;
     [SerializeField] public Color groupColor = Color.white;
+    [SerializeField] public int numberOfPropertiesInGroup = 0;
     [SerializeField] public Sprite smallIcon;
 
     [Header("Event Channels")] 
