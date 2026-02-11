@@ -157,7 +157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 381.5, y: -121.16}
+  m_AnchoredPosition: {x: 381.5, y: -115.520004}
   m_SizeDelta: {x: 763, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3680395
@@ -488,8 +488,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 381.5, y: -96.905}
-  m_SizeDelta: {x: 223.77, y: 193.81}
+  m_AnchoredPosition: {x: 381.5, y: -86.185005}
+  m_SizeDelta: {x: 262.47, y: 172.37001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &40391385
 MonoBehaviour:
@@ -613,8 +613,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 779285570}
   m_HandleRect: {fileID: 779285569}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.7488897
+  m_Value: 0.9999997
+  m_Size: 0.7973724
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1286,8 +1286,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Example of a reusable card panel for popups
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9db56d71161d75e47b565d7c90c1f194, type: 2}
-  m_sharedMaterial: {fileID: -6561948854381839815, guid: 9db56d71161d75e47b565d7c90c1f194, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1642,8 +1642,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Property Card
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9db56d71161d75e47b565d7c90c1f194, type: 2}
-  m_sharedMaterial: {fileID: -6561948854381839815, guid: 9db56d71161d75e47b565d7c90c1f194, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1866,7 +1866,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 381.5, y: -448.55}
+  m_AnchoredPosition: {x: 381.5, y: -418.65002}
   m_SizeDelta: {x: 763, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1329012312
