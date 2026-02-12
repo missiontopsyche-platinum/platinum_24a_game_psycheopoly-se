@@ -44,18 +44,18 @@ public class SpaceRenderer : InteractableGameObject
 
         name = spaceData.spaceName;
 
-        //US577 only show indicators for Property spaces
-        bool isProperty = spaceData is PropertySpaceData;
+        //US577 only show indicators for Ownable Spaces spaces
+        bool isOwnable = spaceData is OwnableSpaceData;
 
         //ownership logic & keep mortgage hidden until logic is done for mortgaging
         bool isOwned = false;
-        if (isProperty && spaceData is OwnableSpaceData ownable)
+        if (isOwnable && spaceData is OwnableSpaceData ownable)
         {
             isOwned = ownable.GetOwner() != null;
         }
 
         if (ownedIconGO != null)
-            ownedIconGO.SetActive(isProperty && isOwned);
+            ownedIconGO.SetActive(isOwnable && isOwned);
 
         // TODO: enable when mortgage state exists ------------------------------------------------
         if (mortgagedIconGO != null)
