@@ -42,6 +42,10 @@ public abstract class OwnableSpaceData : SpaceData
         payload.AppendInformation($"Purchase Price: {buyPrice}");
         payload.AppendInformation($"Collaboration Value: ${collaborationValue}");
         payload.AppendInformation($"Owner: {(owner ? owner.GetPName() : "None")}");
+        //TODO: integrate owned/mortgaged visibility logic
+        payload.AppendInformation($"Ownership Status: [Owned/Mortgaged]");
+        //TODO: integrate upgrade level visibility logic
+        payload.AppendInformation($"Upgrade Level: [Upgrade Level]");
         
         spaceHoverEventChannel?.RaiseEvent(payload);
         
