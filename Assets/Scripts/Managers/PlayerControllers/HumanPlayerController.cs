@@ -3,6 +3,7 @@ using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
 using UnityEngine;
+using Logger = Logging.Logger;
 
 namespace Managers.PlayerControllers
 {
