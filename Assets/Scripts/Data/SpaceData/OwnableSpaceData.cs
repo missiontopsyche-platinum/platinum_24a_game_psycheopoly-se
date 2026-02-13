@@ -6,6 +6,7 @@ public abstract class OwnableSpaceData : SpaceData
     [SerializeField] public int buyPrice; // board value, price for first purchase
     [SerializeField] public int collaborationValue; // AKA Mortgage value
     protected Player owner;
+    public bool isMortaged { get; set; }
 
     [Header("Ownable Event Channels")]
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
