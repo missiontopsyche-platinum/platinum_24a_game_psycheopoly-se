@@ -58,7 +58,7 @@ public class OnHoverUI : MonoBehaviour
         {
             if (e.spaceData is PropertySpaceData)
             {
-                bodyText.gameObject.SetActive(false);
+                bodyText.gameObject.SetActive(true);
             }
             else
             {
@@ -84,7 +84,10 @@ public class OnHoverUI : MonoBehaviour
         //Property binding 
         if (e.spaceData is PropertySpaceData property)
         {
-            //cost
+            var owner = property.GetOwner();
+            bool isOwned = owner != null;
+
+            //keep cost
             if (costValueText != null)
             {
                 costValueText.text = property.buyPrice.ToString();
@@ -98,11 +101,20 @@ public class OnHoverUI : MonoBehaviour
                 SetRow(rentValueText, true);
             }
 
-            //owner
-            if (ownerValueText != null)
+            //required
+            if (bodyText != null)
             {
-                ownerValueText.text = "Unowned";
-                SetRow(ownerValueText, true);
+                string ownedByLine = $"Owned By: {(isOwned ? owner.GetPName() : "Unowned")}";
+
+                // You don't currently have a mortgaged flag in the code you posted.
+                // So for now, this can only be Owned vs Unowned.
+                string statusLine = $"Ownership Status: {(isOwned ? "Owned" : "Unowned")}";
+
+                int lvl = property.GetCurrentUpgradeLevel(); // this exists at bottom of your PropertySpaceData
+                string lvlDisplay = lvl == 5 ? "DISCOVERY" : lvl.ToString();
+                string upgradeLine = $"Upgrade Level: {lvlDisplay}";
+
+                bodyText.text =ownedByLine + "\n" + statusLine + "\n" + upgradeLine;
             }
         }
 
