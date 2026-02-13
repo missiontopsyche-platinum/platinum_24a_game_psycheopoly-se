@@ -1761,6 +1761,7 @@ GameObject:
   - component: {fileID: 6240506641771781186}
   - component: {fileID: 4660390705980771149}
   - component: {fileID: 2498289020134769151}
+  - component: {fileID: 7670226939456257675}
   m_Layer: 5
   m_Name: HoverPanelUI
   m_TagString: Untagged
@@ -1784,10 +1785,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &5640188523928308317
 Canvas:
   m_ObjectHideFlags: 0
@@ -1873,6 +1874,20 @@ MonoBehaviour:
   costValueText: {fileID: 7068955655573776476}
   rentValueText: {fileID: 3991199458944540680}
   ownerValueText: {fileID: 8423582591849449361}
+--- !u!114 &7670226939456257675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8339236084997855249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
+  m_AspectMode: 3
+  m_AspectRatio: 1
 --- !u!1 &8677735208427112339
 GameObject:
   m_ObjectHideFlags: 0
