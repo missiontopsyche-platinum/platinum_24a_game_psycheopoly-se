@@ -33,6 +33,16 @@ namespace AIBehavior
             return decision;
         }
 
+        public float TestPurchaseScore(OwnableSpaceData ownableSpace)
+        {
+            return CalculatePurchaseScore(ownableSpace);
+        }
+
+        public float TestThreshold()
+        {
+            return CalculateThreshold();
+        }
+
         private float CalculatePurchaseScore(OwnableSpaceData ownableSpace)
         {
             float score = purchaseWeights.baseValueScore;
