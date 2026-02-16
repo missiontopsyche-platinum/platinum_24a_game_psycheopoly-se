@@ -1,11 +1,20 @@
-﻿using Events.EventDataStructures;
+﻿using AIBehavior;
+using Data;
+using Events.EventDataStructures;
 using Logging;
 
 namespace Managers.PlayerControllers
 {
     public class AIPlayerController: PlayerController
     {
-        // attributes
+        // Behavior Weights (personality)
+        private readonly AIBehaviorWeights weights;
+        
+        // Behavior Classes
+        private readonly AIPurchaseBehavior purchaseBehavior;
+        // private AIMortgageBehavior
+        // private AIJailBehavior
+        // etc...
         
         // event channels ... I don't think this will need special ones
 
@@ -14,22 +23,30 @@ namespace Managers.PlayerControllers
         /// so that event channels are properly routed.
         /// </summary>
         /// <param name="player"></param>
+        /// <param name="aiBehaviorWeights"></param>
         /// <param name="turnStarted"></param>
         /// <param name="purchaseRequest"></param>
         /// <param name="chargeOwnershipFee"></param>
         /// <param name="passedGoPayment"></param>
         public AIPlayerController(
             Player player,
+            AIBehaviorWeights aiBehaviorWeights,
             TurnStartedEventChannel turnStarted,
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment) 
             : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment)
         {
-            // do AI specific set up here
-            // Might need a special event subscription but unsure. If we need to expand we can later.
-            // For instance, we might need to respond to an event that allows the AI to evaluate
-            // property management: upgrades/mortgages/etc.
+            // load in behavior / personality
+            weights = aiBehaviorWeights;
+            
+            // create the behavior classes
+            purchaseBehavior = new AIPurchaseBehavior(
+                controlledPlayer, 
+                weights.purchaseWeights, 
+                weights.purchaseThresholds);
+            // mortgageBehavior
+            // jailBehavior etc...
         }
 
         public override void Subscribe()
@@ -51,20 +68,24 @@ namespace Managers.PlayerControllers
         private void PurchaseRequestDecision(PurchaseOwnableRequestEvent pore)
         {
             if (!isMyTurn) return;
-            
-            // this is a super naiive implementation for now. We can expand on the AI complexity when we have
-            // have the framework established.
-            // if (controlledPlayer.CanAfford(pore.requestedSpace)) // replace below with this when Player methods implemented.
-            if (pore.requestedSpace.buyPrice <= controlledPlayer.GetMoney())
+
+            bool shouldPurchase = purchaseBehavior.EvaluatePurchase(pore.requestedSpace);
+
+            if (shouldPurchase)
             {
-                //controlledPlayer.ExecutePurchase(pore.requestedSpace);
+                controlledPlayer.ExecutePurchase(
+                    pore.requestedSpace, 
+                    pore.requestedSpace.buyPrice);
+                
                 Logger.Info("AIPlayerController.PurchaseRequestDecision",
                     $"Computer Player {controlledPlayer.GetPName()} has executed purchase on {pore.requestedSpace.name}",
                     LogCategory.AI);
             }
             else
             {
-                //controlledPlayer.DeclinePurchase(pore.requestedSpace);
+                // decline purchase is still not implemented...
+                // controlledPlayer.DeclinePurchase(pore.requestedSpace);
+                
                 Logger.Info("AIPlayerController.PurchaseRequestDecision",
                     $"Computer Player {controlledPlayer.GetPName()} has declined purchase on {pore.requestedSpace.name}",
                     LogCategory.AI);

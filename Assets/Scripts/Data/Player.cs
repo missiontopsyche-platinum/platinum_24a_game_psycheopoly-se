@@ -173,6 +173,22 @@ public class Player : ScriptableObject
         return count;
     }
 
+    /// <summary>
+    /// Get the number of properties owned by the group color.
+    /// </summary>
+    /// <param name="groupColor"></param>
+    /// <returns>Count of owned properties matching the group color.</returns>
+    public int GetNumberOfPropertiesOwnedByColor(Color groupColor)
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+        {
+            if (space.groupColor == groupColor)
+                count++;
+        }
+        return count;
+    }
+
     //Placeholders for future logic, I feel like these should be moved into
     //seperate files to make them easier to track but I wanted to make
     //sure to list out alo of the different methods that are being
