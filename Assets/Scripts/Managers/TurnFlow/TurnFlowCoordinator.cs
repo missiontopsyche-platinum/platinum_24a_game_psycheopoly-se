@@ -129,8 +129,12 @@ namespace Assets.Scripts.Managers.TurnFlow
             {
                 TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
                 TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution,
-                // Not sure if we want to lock this down behind AwaitingResolution phase.
-                // TurnActionType.UpgradeProperty => Phase == TurnPhase.AwaitingResolution,
+                // upgrade at any point in the player's turn
+                TurnActionType.UpgradeProperty => Phase == TurnPhase.None
+                                                || Phase == TurnPhase.AwaitingRoll
+                                                || Phase == TurnPhase.AwaitingMovement
+                                                || Phase == TurnPhase.AwaitingResolution 
+                                                || Phase == TurnPhase.Completed,
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed,
                 _ => false
             };
