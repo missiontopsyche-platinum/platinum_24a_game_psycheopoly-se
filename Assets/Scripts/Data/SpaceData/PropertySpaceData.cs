@@ -148,6 +148,7 @@ public class PropertySpaceData : OwnableSpaceData
             return false;
 
         currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel + 1, 0, MaxUpgradeLevel);
+        this.VerifyMortagableStatus();
         return true;
     }
 
@@ -210,5 +211,13 @@ public class PropertySpaceData : OwnableSpaceData
         upgradeCostByLevel = new int[max];
         for (int i = 0; i < max; i++)
             upgradeCostByLevel[i] = GetUpgradeCostForLevel(i);
+    }
+
+    private void VerifyMortagableStatus()
+    {
+        if (this.currentUpgradeLevel > 0) 
+            this.isMortageable = false;
+
+        this.isMortageable = true;
     }
 }
