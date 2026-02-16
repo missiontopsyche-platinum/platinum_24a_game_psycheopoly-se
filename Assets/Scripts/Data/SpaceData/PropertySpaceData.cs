@@ -8,7 +8,7 @@ public class PropertySpaceData : OwnableSpaceData
     [Header("Property-Specific Values")]
     [SerializeField] public int[] researchFundingValues = new int[6];
     [SerializeField] public int dataPointCost;
-    [SerializeField, Range(1.0f, 2.0f)] public float upgradeCostMultiplier = 1.5f;
+    [SerializeField, Range(1.0f, 2.0f)] public float upgradeCostMultiplier = 1.0f; // upgrade cost is defined to not change by default
     [SerializeField, HideInInspector] private int[] upgradeCostByLevel;
 
     [Header("Property Event Channels")] 
