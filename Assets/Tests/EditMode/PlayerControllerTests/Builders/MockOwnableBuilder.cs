@@ -5,6 +5,7 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
     public class MockOwnableBuilder
     {
         private int buyPrice = 100;
+        private int upgradeLevel = 0;
         private Color groupColor = Color.white;
         private int groupSize = 2;
 
@@ -26,6 +27,12 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             return this;
         }
 
+        public MockOwnableBuilder WithUpgradeLevel(int level)
+        {
+            upgradeLevel = level;
+            return this;
+        }
+
         private void BuildOwnableData(OwnableSpaceData space)
         {
             space.buyPrice = buyPrice;
@@ -38,6 +45,17 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             var prop = ScriptableObject.CreateInstance<PropertySpaceData>();
 
             BuildOwnableData(prop);
+            
+            // need to set the rents array specifically otherwise its null
+            // because SOs are not created with default values always in place
+            // like they would if they were C# objects.
+            prop.researchFundingValues = new int[6];
+
+            for (int i = 0; i < upgradeLevel; i++)
+            {
+                prop.UpgradeProperty();
+                if (prop.IsMaxed) break;
+            }
             
             return prop;
         }
