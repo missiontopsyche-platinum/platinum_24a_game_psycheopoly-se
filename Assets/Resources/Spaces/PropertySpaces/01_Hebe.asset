@@ -15,7 +15,8 @@ MonoBehaviour:
   spaceName: Hebe
   spaceColor: {r: 1, g: 1, b: 0, a: 1}
   shortDisplayName: 
-  groupColor: {r: 1, g: 1, b: 1, a: 1}
+  groupColor: {r: 1, g: 1, b: 0, a: 1}
+  numberOfPropertiesInGroup: 2
   smallIcon: {fileID: 0}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
