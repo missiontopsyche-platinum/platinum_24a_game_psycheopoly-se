@@ -45,35 +45,17 @@ namespace Tests.EditMode.PlayerTests
         [Test]
         public void FullMonopoly_AllAtLevelZero_ReturnsAllProperties()
         {
-            var prop1 = new MockOwnableBuilder()
+            player.AddOwnedProperty(new MockOwnableBuilder()
                 .WithGroupColor(Color.red)
                 .WithGroupSize(2)
-                .BuildAsProperty();
-            var prop2 = new MockOwnableBuilder()
+                .BuildAsProperty());
+            player.AddOwnedProperty(new MockOwnableBuilder()
                 .WithGroupColor(Color.red)
                 .WithGroupSize(2)
-                .BuildAsProperty();
-
-            Debug.Log($"prop1 groupSize: {prop1.numberOfPropertiesInGroup}");
-            Debug.Log($"prop2 groupSize: {prop2.numberOfPropertiesInGroup}");
-
-            player.AddOwnedProperty(prop1);
-            player.AddOwnedProperty(prop2);
-
+                .BuildAsProperty());
+            
             var result = player.GetValidUpgradableProperties();
             Assert.AreEqual(2, result.Count);
-            
-            // player.AddOwnedProperty(new MockOwnableBuilder()
-            //     .WithGroupColor(Color.red)
-            //     .WithGroupSize(2)
-            //     .BuildAsProperty());
-            // player.AddOwnedProperty(new MockOwnableBuilder()
-            //     .WithGroupColor(Color.red)
-            //     .WithGroupSize(2)
-            //     .BuildAsProperty());
-            //
-            // var result = player.GetValidUpgradableProperties();
-            // Assert.AreEqual(2, result.Count);
         }
 
         [Test]
