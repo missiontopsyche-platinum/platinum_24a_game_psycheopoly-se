@@ -476,4 +476,42 @@ public class Player : ScriptableObject
         MortageRequired,
         Bankrupt
     }
+
+
+    /// <summary>
+    /// Returns a list of all properties the player can mortage.
+    /// The isMortageable flag must be set or removed when buying or selling upgrades on the prop. 
+    /// </summary>
+    /// <returns></returns>
+    public List<OwnableSpaceData> GetMortagableProperties()
+    {
+        List<OwnableSpaceData> mortagableProps = new List<OwnableSpaceData>();
+        foreach (OwnableSpaceData p in ownedProperties)
+        {
+           if (p.isMortageable == true)
+            {
+                mortagableProps.Add(p);
+            }
+        }
+
+        return mortagableProps;
+    }
+
+    public List<OwnableSpaceData> GetMortagedProperties()
+    {
+        List<OwnableSpaceData> mortagedProps = new List<OwnableSpaceData>();
+        foreach (OwnableSpaceData p in ownedProperties)
+        {
+            if (p.isMortaged)
+            {
+                mortagedProps.Add(p);
+            }
+        }
+        return mortagedProps;
+    }
+
+    public void SetMortagePayoff(OwnableSpaceData p)
+    {
+        p.mortagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
+    }
 }
