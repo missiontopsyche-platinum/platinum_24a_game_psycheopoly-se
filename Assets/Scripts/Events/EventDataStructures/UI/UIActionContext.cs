@@ -54,7 +54,6 @@
     public class MortagePropertyContext : UIActionContext
     {
         public OwnableSpaceData tile { get; }
-        public Player player { get; }
 
         /// <summary>
         /// Contains the player and space data necessary to mortage a property.
@@ -62,8 +61,8 @@
         /// <param name="player"></param>
         /// <param name="data"></param>
         public MortagePropertyContext(Player player, OwnableSpaceData tile) {
-            this.tile = data;
-            this.player = player;
+            this.tile = tile;
+            
         }
 
     }
