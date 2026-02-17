@@ -8,6 +8,8 @@ namespace Data
     {
         [SerializeField] public PurchaseWeights purchaseWeights;
         [SerializeField] public PurchaseThresholds purchaseThresholds;
+        [SerializeField] public UpgradeWeights upgradeWeights;
+        [SerializeField] public UpgradeThresholds upgradeThresholds;
     }
 
     // this pattern of [Serializable] nested classes allows for the attributes to
@@ -44,6 +46,31 @@ namespace Data
         [Min(0)] public int randomVariance = 20;
         [Tooltip("Bonus for properties >= this price")]
         [Min(0)] public int highValuePropertyThreshold = 300;
-        
+    }
+
+    [Serializable]
+    public class UpgradeWeights
+    {
+        [Tooltip("Base score for all upgrades")]
+        [Min(0)] public int baseUpgradeScore = 20;
+        [Tooltip("Scale of base upgrade score based on upgrade level")]
+        public float[] upgradeLevelWeight = {1.2f, 1.1f, 1.0f, 0.9f, 0.8f};
+        [Tooltip("Weight for ROI, favoring highest normalized rent gain")]
+        [Min(0)] public int roiWeight = 30;
+        [Tooltip("Weight for reserve cushion, rewarding left over cash after purchase")]
+        [Min(0)] public int reserveCushionWeight = 30;
+    }
+
+    [Serializable]
+    public class UpgradeThresholds
+    {
+        [Tooltip("Minimum reserve of cash to act as a hard barrier to upgrades")]
+        [Min(0)] public int minimumReserve = 300;
+        [Tooltip("Starting cash for calculating reserves ratio")]
+        [Min(0)] public int startingCash = 1500;
+        [Tooltip("Base threshold that score must exceed")]
+        [Min(0)] public int baseThreshold = 40;
+        [Tooltip("Random variance applied to threshold (+/-)")]
+        [Min(0)] public int randomVariance = 20;
     }
 }

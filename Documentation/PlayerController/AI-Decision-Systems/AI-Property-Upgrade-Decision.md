@@ -112,16 +112,30 @@ Rewards the AI for having cash remaining after the upgrade using a sigmoid
 curve. This creates aggressive score decay as cash runs low, causing the AI
 to self-regulate its spending within a turn without any explicit per-turn
 upgrade limit.
+
+The function will be normalized by taking the minimum and maximum values
+from the Sigmoid function at instantiation time.
 ```
 Reserve Ratio = (Player Cash - dataPointCost) / Starting Cash
-Sigmoid = 1 / (1 + e^(-10 * (Reserve Ratio - 0.5)))
+Sigmoid Value = 1 / (1 + e^(-10 * (Reserve Ratio - 0.5)))
+Normalized = (Sigmoid Value - Sigmoid Min) / (Sigmoid Max - Sigmoid Min)
 
-Score += Sigmoid * Reserve Cushion Weight
+Score += Sigmoid(Normalized) * Reserve Cushion Weight
 ```
-The sigmoid function (k=10, centered at 0.5) creates an S-curve that:
+The sigmoid function (k=10, centered at c=0.5) creates an S-curve that:
 - Penalizes low reserve ratios heavily (< 0.3 produces minimal score)
 - Rewards moderate ratios substantially (0.5-0.7 range)
 - Plateaus at high ratios (> 0.8 gives diminishing returns)
+
+> Note: The K and C values will be defined as constants in the behaviors source, in case
+> modifications are desired.
+> `K` defines the steepness of the curve. Low values have a shallower curve, high values are
+> a steeper curve. `C` defines the center point of the inflection on the `x` axis. `0.5` centers
+> the inflection, and because our `x` values are mapped from 0 -> 1, `c` must be between 0.0 and 1.0
+> for the curve to be impacted at all.
+> 
+> To test K and C values over the range `[0, 1]` and see their effect on the Sigmoid curve,
+> check out [this Desmos graph](https://www.desmos.com/calculator/fwdgq0fvf5).
 
 **Example reserve scores:**
 
