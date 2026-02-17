@@ -159,8 +159,6 @@ public class Player : ScriptableObject
         {
             var groupList = group.ToList();
             
-            Debug.Log($"Group color: {group.Key}, groupList.Count: {groupList.Count}, numberOfPropertiesInGroup: {groupList[0].numberOfPropertiesInGroup}");
-            
             // only consider monopolies
             if (groupList.Count != groupList[0].numberOfPropertiesInGroup)
                 continue;
@@ -169,11 +167,7 @@ public class Player : ScriptableObject
             // for example, you can only build a second datapoint when all other props in the
             // color group have 1 data point already.
             int minLevel = groupList.Min(p => p.GetCurrentUpgradeLevel());
-            Debug.Log($"minLevel: {minLevel}");
-            foreach (var p in groupList)
-            {
-                Debug.Log($"upgradeLevel: {p.GetCurrentUpgradeLevel()}, IsMaxed: {p.IsMaxed}");
-            }
+            
             targets.AddRange(groupList.Where(
                 p => p.GetCurrentUpgradeLevel() == minLevel && !p.IsMaxed));
         }
