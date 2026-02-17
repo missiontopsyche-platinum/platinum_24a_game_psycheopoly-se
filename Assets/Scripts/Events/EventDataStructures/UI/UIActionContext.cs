@@ -37,4 +37,13 @@
             Property = property;
         }
     }
+
+
+    /// <summary>
+    /// UI Action context for getting a list of mortageable properties for a player
+    /// </summary>
+    public class MortagePropertyListContext : UIActionContext
+    {
+        public bool Player { get; }
+    }
 }

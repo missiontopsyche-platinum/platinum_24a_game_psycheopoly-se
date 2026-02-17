@@ -7,6 +7,8 @@
         RentNotification,
         JailRelease,
         DiceRoll,
+        MortagePropertyList,
+        MortagePropertySelected // This may not be necessary
         // more to be added as needed
     }
 }

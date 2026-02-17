@@ -102,6 +102,7 @@ namespace Managers.PlayerControllers
             
             switch (uiae.UIType)
             {
+
                 case UIType.PropertyPurchase:
                     if(uiae.Context is PurchaseActionContext purchaseContext)
                         ResolvePropertyPurchase(purchaseContext);
