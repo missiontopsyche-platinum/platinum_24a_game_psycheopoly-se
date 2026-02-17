@@ -488,7 +488,7 @@ public class Player : ScriptableObject
         List<OwnableSpaceData> mortagableProps = new List<OwnableSpaceData>();
         foreach (OwnableSpaceData p in ownedProperties)
         {
-           if (p.isMortageable == true)
+           if (p.isMortgageable == true)
             {
                 mortagableProps.Add(p);
             }
@@ -499,19 +499,19 @@ public class Player : ScriptableObject
 
     public List<OwnableSpaceData> GetMortagedProperties()
     {
-        List<OwnableSpaceData> mortagedProps = new List<OwnableSpaceData>();
+        List<OwnableSpaceData> mortgagedProps = new List<OwnableSpaceData>();
         foreach (OwnableSpaceData p in ownedProperties)
         {
-            if (p.isMortaged)
+            if (p.isMortgaged)
             {
-                mortagedProps.Add(p);
+                mortgagedProps.Add(p);
             }
         }
-        return mortagedProps;
+        return mortgagedProps;
     }
 
-    public void SetMortagePayoff(OwnableSpaceData p)
+    public void SetMortgagePayoff(OwnableSpaceData p)
     {
-        p.mortagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
+        p.mortgagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
     }
 }
