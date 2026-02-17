@@ -40,10 +40,31 @@
 
 
     /// <summary>
-    /// UI Action context for getting a list of mortageable properties for a player
+    /// UI Action context for getting a list of mortageable properties for a player]
+    /// Currently not used. May be implemented later if necessary
     /// </summary>
     public class MortagePropertyListContext : UIActionContext
     {
         public bool Player { get; }
+    }
+
+    /// <summary>
+    /// UI Action context for mortaging a property.
+    /// </summary>
+    public class MortagePropertyContext : UIActionContext
+    {
+        public OwnableSpaceData tile { get; }
+        public Player player { get; }
+
+        /// <summary>
+        /// Contains the player and space data necessary to mortage a property.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="data"></param>
+        public MortagePropertyContext(Player player, OwnableSpaceData tile) {
+            this.tile = data;
+            this.player = player;
+        }
+
     }
 }

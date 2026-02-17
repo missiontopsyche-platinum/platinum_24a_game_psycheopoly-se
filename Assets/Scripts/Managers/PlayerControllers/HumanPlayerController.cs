@@ -96,6 +96,14 @@ namespace Managers.PlayerControllers
             // call player method for getting paid for passing go
         }
 
+        private void ResolveMortageProperty(MortagePropertyContext context)
+        {
+            if (!isMyTurn) return;
+
+            controlledPlayer.MortgageProperty(context.tile);
+
+        }
+
         private void HandleUIAction(UIActionEvent uiae)
         {
             if (!isMyTurn) return;
@@ -109,6 +117,14 @@ namespace Managers.PlayerControllers
                     else
                         Logger.Error("HumanPlayerController.HandleUIAction",
                             $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
+                    break;
+                case UIType.MortagePropertySelected:
+                    if(uiae.Context is MortagePropertyContext mortageContext)
+                        ResolveMortageProperty(mortageContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
                     break;
                 // expand with more UITypes as they're implemented

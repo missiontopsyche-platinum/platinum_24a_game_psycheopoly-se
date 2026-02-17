@@ -206,7 +206,14 @@ public class Player : ScriptableObject
     public void PayPlayer(Player otherPlayer, int amount) { }
     public void BuyProperty(int propertyIndex, int price) { } // replaced by Execute Purchase function. 
     public void SellProperty(int propertyIndex, int price) { }
-    public void MortgageProperty(int propertyIndex) { }
+    public bool MortgageProperty(OwnableSpaceData tile) {
+        if (!tile.isMortageable) return false;
+
+        this.AddMoney(tile.collaborationValue);
+        tile.isMortaged = true;
+
+        return true;
+    }
     public void UnmortgageProperty(int propertyIndex) { }
 
 
