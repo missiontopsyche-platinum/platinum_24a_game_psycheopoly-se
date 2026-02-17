@@ -20,7 +20,7 @@ namespace Managers.PlayerControllers
         // event channel for bankruptcy
         
         [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
-
+        private MortgageFinishedEventChannel mortageFinishedEventChannel;
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
@@ -51,6 +51,7 @@ namespace Managers.PlayerControllers
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
             mortgageFinishedEventChannel = mortgageFinished;
+            mortageFinishedEventChannel = mortgageFinished;
         }
 
         ~HumanPlayerController()
@@ -128,6 +129,7 @@ namespace Managers.PlayerControllers
 
             if(controlledPlayer.MortgageProperty(context.tile))
             {
+
                 mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
                     this.controlledPlayer,
                     context.tile));
