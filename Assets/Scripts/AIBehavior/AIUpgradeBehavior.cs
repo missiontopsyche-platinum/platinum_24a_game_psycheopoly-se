@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Data;
+using Logging;
 using UnityEngine;
+using Logger = Logging.Logger;
 
 namespace AIBehavior
 {
@@ -43,9 +45,13 @@ namespace AIBehavior
             if (passingProperties.Count == 0)
                 return AIUpgradeEvaluation.DeferUpgrade();
 
-            PropertySpaceData best = FindBestProperty(passingProperties);
+            KeyValuePair<PropertySpaceData, float> best = FindBestProperty(passingProperties);
+            
+            Logger.Info("AIUpgradeBehavior.EvaluateUpgrade",
+                $"Decided to upgrade {best.Key.spaceName} with an evaluation score of {best.Value}",
+                LogCategory.AI);
 
-            return AIUpgradeEvaluation.FoundUpgradeTarget(best);
+            return AIUpgradeEvaluation.FoundUpgradeTarget(best.Key);
         }
 
         private Dictionary<PropertySpaceData, float> EvaluateEligibleProperties(List<PropertySpaceData> eligibleProperties)
@@ -120,10 +126,10 @@ namespace AIBehavior
             return thresholds.minimumReserve <= (player.GetMoney() - property.dataPointCost);
         }
 
-        private PropertySpaceData FindBestProperty(Dictionary<PropertySpaceData, float> passingProperties)
+        private KeyValuePair<PropertySpaceData, float> FindBestProperty(Dictionary<PropertySpaceData, float> passingProperties)
         {
             var best = passingProperties.OrderByDescending(kvp => kvp.Value).First();
-            return best.Key;
+            return best;
         }
     }
 
