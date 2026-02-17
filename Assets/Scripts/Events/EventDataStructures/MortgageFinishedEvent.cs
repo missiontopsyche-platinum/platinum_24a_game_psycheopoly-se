@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class MortageFinishedEvent
+public class MortgageFinishedEvent
 {
     Player player { get; }
     OwnableSpaceData tile { get; }
 
-    public MortageFinishedEvent(Player player, OwnableSpaceData tile)
+    public MortgageFinishedEvent(Player player, OwnableSpaceData tile)
     {
         this.player = player;
         this.tile = tile;

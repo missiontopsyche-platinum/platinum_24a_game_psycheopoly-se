@@ -51,7 +51,7 @@
     /// <summary>
     /// UI Action context for mortaging a property.
     /// </summary>
-    public class MortagePropertyContext : UIActionContext
+    public class MortgagePropertyContext : UIActionContext
     {
         public OwnableSpaceData tile { get; }
 
@@ -60,7 +60,7 @@
         /// </summary>
         /// <param name="player"></param>
         /// <param name="data"></param>
-        public MortagePropertyContext(Player player, OwnableSpaceData tile) {
+        public MortgagePropertyContext(Player player, OwnableSpaceData tile) {
             this.tile = tile;
             
         }

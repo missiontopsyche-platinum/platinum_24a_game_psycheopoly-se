@@ -8,10 +8,10 @@ public abstract class OwnableSpaceData : SpaceData
     protected Player owner;
 
     // used for mortage information
-    public bool isMortaged { get; set; }
-    public bool isMortageable { get; set; } = true;
+    public bool isMortgaged { get; set; }
+    public bool isMortgageable { get; set; } = true;
 
-    public int mortagePayoffValue { get; set;  }
+    public int mortgagePayoffValue { get; set;  }
 
     [Header("Ownable Event Channels")]
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
