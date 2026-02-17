@@ -48,7 +48,7 @@ public class PropertySpaceData : OwnableSpaceData
         if (owner == null) return;
 
         // If the property is mortaged, no OnLanded events should fire.
-        if (isMortaged == true) return; 
+        if (isMortaged) return; 
 
         /*if (owner.Equals(player))
         {
