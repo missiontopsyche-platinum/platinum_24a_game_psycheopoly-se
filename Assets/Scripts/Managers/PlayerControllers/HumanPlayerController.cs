@@ -12,7 +12,8 @@ namespace Managers.PlayerControllers
         // event channels
         private UIActivationEventChannel uiActivationEventChannel;
         private UIActionEventChannel uiActionEventChannel;
-        
+
+        private MortageFinishedEventChannel mortageFinishedEventChannel;
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
@@ -35,12 +36,14 @@ namespace Managers.PlayerControllers
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
             UIActivationEventChannel uiActivation,
-            UIActionEventChannel uiAction) 
+            UIActionEventChannel uiAction,
+            MortageFinishedEventChannel mortageFinished) 
             : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
+            mortageFinishedEventChannel = mortageFinished;
         }
 
         ~HumanPlayerController()
@@ -100,7 +103,12 @@ namespace Managers.PlayerControllers
         {
             if (!isMyTurn) return;
 
-            controlledPlayer.MortgageProperty(context.tile);
+            if(controlledPlayer.MortgageProperty(context.tile))
+            {
+                mortageFinishedEventChannel?.RaiseEvent(new MortageFinishedEvent(
+                    this.controlledPlayer,
+                    context.tile));
+            }
 
         }
 
