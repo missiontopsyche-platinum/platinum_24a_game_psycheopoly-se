@@ -8,6 +8,7 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
         private Color groupColor = Color.white;
         private int groupSize = 2;
         private int collabValue = 50;
+        private int mortgagePayoff = 50;
 
         public MockOwnableBuilder WithBuyPrice(int price)
         {
@@ -33,12 +34,19 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             return this;
         }
 
+        public MockOwnableBuilder WithMortgagePayoffValue(int value)
+        {
+            mortgagePayoff = value;
+            return this;
+        }
+
         private void BuildOwnableData(OwnableSpaceData space)
         {
             space.buyPrice = buyPrice;
             space.groupColor = groupColor;
             space.numberOfPropertiesInGroup = groupSize;
             space.collaborationValue = collabValue;
+            space.mortgagePayoffValue = mortgagePayoff;
         }
 
         public PropertySpaceData BuildAsProperty()

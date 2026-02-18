@@ -217,7 +217,7 @@ public class Player : ScriptableObject
         return true;
     }
     public bool UnmortgageProperty(OwnableSpaceData tile) {
-        if (tile.isMortgaged == false) return false;
+        if (!tile.isMortgaged) return false;
 
         if (this.TrySpend(tile.mortgagePayoffValue)) //this will need updating when US571 pushes to dev
         {
@@ -410,6 +410,7 @@ public class Player : ScriptableObject
         //This currently just uses an int cast, which is probably not correct.
         //However, all collab values are currently divisible by 10, so no truncation should occur for now.
         //We can refactor this to deal with rounding at a later time.
-        p.mortgagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
+        int payoff = (int)(p.collaborationValue * 1.10f);
+        p.mortgagePayoffValue = payoff;
     }
 }

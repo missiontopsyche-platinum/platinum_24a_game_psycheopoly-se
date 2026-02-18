@@ -107,17 +107,16 @@ public class MortageEditModeTests : MortgageTestBase
     {
         var property = Track(AnOwnableSpace()
             .WithCollabValue(50)
+            .WithMortgagePayoffValue(55)
             .BuildAsProperty());
 
         property.isMortgageable = false;
-        property.isMortgaged = false;
+        property.isMortgaged = true;
 
         var player = Track(APlayer()
             .WithMoney(100)
             .WithOwnedProperty(property)
             .Build());
-
-        player.MortgageProperty(property);
 
         Assert.IsTrue(player.UnmortgageProperty(property));
     }
@@ -127,9 +126,10 @@ public class MortageEditModeTests : MortgageTestBase
     {
         var property = Track(AnOwnableSpace()
             .WithCollabValue(50)
+            .WithMortgagePayoffValue(1)
             .BuildAsProperty());
 
-        property.isMortgageable = false;
+        property.isMortgageable = true;
         property.isMortgaged = false;
 
         var player = Track(APlayer()
@@ -140,5 +140,19 @@ public class MortageEditModeTests : MortgageTestBase
         player.MortgageProperty(property);
 
         Assert.AreEqual(55, property.mortgagePayoffValue);
+    }
+
+    [Test]
+    public void MortgageAction_StopsUpgrades()
+    {
+        var property = Track(AnOwnableSpace()
+            .WithCollabValue(50)
+            .WithMortgagePayoffValue(1)
+            .BuildAsProperty());
+
+        property.isMortgageable = false;
+        property.isMortgaged = true;
+
+        Assert.IsFalse(property.CanUpgrade());
     }
 }
