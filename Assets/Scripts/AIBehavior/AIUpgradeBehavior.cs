@@ -37,6 +37,8 @@ namespace AIBehavior
             sigmoidMax = Sigmoid(1f);
         }
 
+        public float TestCalculateScore(PropertySpaceData property) => CalculateScore(property);
+
         public AIUpgradeEvaluation EvaluateUpgrade()
         {
             List<PropertySpaceData> eligibleProperties = player.GetValidUpgradableProperties();

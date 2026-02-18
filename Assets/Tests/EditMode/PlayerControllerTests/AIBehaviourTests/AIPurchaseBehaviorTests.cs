@@ -33,7 +33,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(-999f, behavior.TestPurchaseScore(property), 0.01f);
+            Assert.AreEqual(-999f, behavior.TestPurchaseScore(property), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(property), 0.01f);
+            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(property), FLOAT_TOLERANCE);
         }
         
         // Reserve Cushion Tests
@@ -96,7 +96,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(29.2f, behavior.TestPurchaseScore(property), 0.01f);
+            Assert.AreEqual(29.2f, behavior.TestPurchaseScore(property), FLOAT_TOLERANCE);
         }
         
         // Wealth Adjusted Threshold Tests
@@ -111,7 +111,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(20f, behavior.TestThreshold(), 0.01f);
+            Assert.AreEqual(20f, behavior.TestThreshold(), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -124,7 +124,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(45.5f, behavior.TestThreshold(), 0.01f);
+            Assert.AreEqual(45.5f, behavior.TestThreshold(), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -159,7 +159,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(property), 0.01f);
+            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(property), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
             float expected = weights.baseValueScore + weights.colorGroupProgressScore;
-            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), 0.01f);
+            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -217,7 +217,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
             float expected = weights.baseValueScore + (weights.colorGroupProgressScore * 2);
-            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), 0.01f);
+            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), FLOAT_TOLERANCE);
         }
         
         // Monopoly Completion Tests
@@ -245,7 +245,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
             float expected = weights.baseValueScore + weights.monopolyCompletionBonus;
-            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), 0.01f);
+            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -277,7 +277,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
             float expected = weights.baseValueScore + weights.monopolyCompletionBonus;
-            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), 0.01f);
+            Assert.AreEqual(expected, behavior.TestPurchaseScore(target), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -303,7 +303,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(target), 0.01f);
+            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(target), FLOAT_TOLERANCE);
         }
         
         // High Value Property Tests
@@ -323,7 +323,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
             float expected = weights.baseValueScore + weights.highValuePropertyBonus;
-            Assert.AreEqual(expected, behavior.TestPurchaseScore(property), 0.01f);
+            Assert.AreEqual(expected, behavior.TestPurchaseScore(property), FLOAT_TOLERANCE);
         }
 
         [Test]
@@ -341,7 +341,7 @@ namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests
 
             var behavior = new AIPurchaseBehavior(player, weights, thresholds);
 
-            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(property), 0.01f);
+            Assert.AreEqual(weights.baseValueScore, behavior.TestPurchaseScore(property), FLOAT_TOLERANCE);
         }
         
         // Integration Tests
