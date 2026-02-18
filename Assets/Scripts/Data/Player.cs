@@ -210,11 +210,23 @@ public class Player : ScriptableObject
         if (!tile.isMortgageable) return false;
 
         this.AddMoney(tile.collaborationValue);
+        this.SetMortgagePayoff(tile);
         tile.isMortgaged = true;
+        tile.isMortgageable = false;
 
         return true;
     }
-    public void UnmortgageProperty(int propertyIndex) { }
+    public bool UnmortgageProperty(OwnableSpaceData tile) {
+        if (tile.isMortgaged == false) return false;
+
+        if (this.TrySpend(tile.mortgagePayoffValue)) //this will need updating when US571 pushes to dev
+        {
+            tile.isMortgageable = true;
+            tile.isMortgaged = false;
+            return true;
+        }
+        return false;
+    }
 
 
     public void SetColor(Color color)
@@ -393,6 +405,11 @@ public class Player : ScriptableObject
 
     public void SetMortgagePayoff(OwnableSpaceData p)
     {
+        //Sets the mortgage payoff value. 
+        //Per monolopy rules, it is 110% of the mortgage amount.
+        //This currently just uses an int cast, which is probably not correct.
+        //However, all collab values are currently divisible by 10, so no truncation should occur for now.
+        //We can refactor this to deal with rounding at a later time.
         p.mortgagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
     }
 }

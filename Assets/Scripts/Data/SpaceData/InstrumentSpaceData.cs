@@ -16,7 +16,7 @@ public class InstrumentSpaceData : OwnableSpaceData
         // I guess thats not ideal design, and is kind of a 'race condition' of sorts, and we could
         // modify the method signatures or something to flag stuff.
         if (owner == null) return;
-        if (isMortaged) return;
+        if (isMortgaged) return;
         if (owner.Equals(player))
         {
             // do nothing, I think based on rules
