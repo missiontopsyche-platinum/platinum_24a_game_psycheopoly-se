@@ -7,8 +7,10 @@ namespace Tests.EditMode.PlayerControllerTests
 {
     public abstract class PlayerControllerTestBase
     {
+        protected const float FLOAT_TOLERANCE = 0.01f;
+        
         private readonly List<ScriptableObject> createdInstances = new ();
-
+        
         protected MockPlayerBuilder APlayer() => new MockPlayerBuilder();
         protected MockOwnableBuilder AnOwnableSpace() => new MockOwnableBuilder();
 
