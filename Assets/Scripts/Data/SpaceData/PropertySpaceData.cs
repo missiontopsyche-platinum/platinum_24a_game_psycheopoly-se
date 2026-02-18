@@ -138,6 +138,7 @@ public class PropertySpaceData : OwnableSpaceData
     public void UpgradeProperty()
     {
         currentUpgradeLevel += 1;
+        this.VerifyMortagableStatus();
     }
 
     public int GetCurrentUpgradeLevel()
@@ -218,8 +219,12 @@ public class PropertySpaceData : OwnableSpaceData
 
     private void VerifyMortagableStatus()
     {
-        if (this.currentUpgradeLevel > 0) 
+        if (this.currentUpgradeLevel > 0)
+        {
             this.isMortgageable = false;
+            return;
+        }
+            
 
         this.isMortgageable = true;
     }

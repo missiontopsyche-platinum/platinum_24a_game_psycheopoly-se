@@ -155,4 +155,26 @@ public class MortageEditModeTests : MortgageTestBase
 
         Assert.IsFalse(property.CanUpgrade());
     }
+
+    [Test]
+    public void MortgageAction_CannotMortgageUpgradedProps()
+    {
+        var property = Track(AnOwnableSpace()
+            .WithCollabValue(50)
+            .WithMortgagePayoffValue(1)
+            .BuildAsProperty());
+
+        property.isMortgageable = true;
+        property.isMortgaged = false;
+        property.dataPointCost = 10;
+        var player = Track(APlayer()
+            .WithMoney(100)
+            .WithOwnedProperty(property)
+            .Build());
+
+        property.UpgradeProperty();
+
+        Assert.IsFalse(player.MortgageProperty(property));
+        
+    }
 }
