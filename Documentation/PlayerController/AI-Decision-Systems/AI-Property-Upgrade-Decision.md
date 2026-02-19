@@ -1,5 +1,7 @@
 ﻿# AI Property Upgrade Decision System
 
+---
+
 ## Overview
 
 The AI uses a weighted scoring system to decide whether to upgrade properties
@@ -14,6 +16,8 @@ The key design factors in determining this weighting system were:
 - Randomness prevents 'perfect' behavior and adds variation
 - Tunable weights via ScriptableObjects
 
+---
+
 ## Contents
 
 - [Decision Flow](#decision-flow)
@@ -21,6 +25,8 @@ The key design factors in determining this weighting system were:
 - [Detailed Description of Factor Checks](#detailed-description-of-factor-checks)
 - [Complete Scoring Examples](#complete-scoring-examples)
 - [AI Personality Variant Examples](#ai-personality-variants)
+
+---
 
 ## Decision Flow
 
@@ -30,6 +36,8 @@ The key design factors in determining this weighting system were:
 4. Filter to candidates whose score meets or exceeds their threshold
 5. Upgrade the highest scoring candidate
 6. Repeat from step 1 until no candidates qualify or hard veto is triggered
+
+---
 
 ## Overview of Scoring Factors and Fields
 
