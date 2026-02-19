@@ -12,8 +12,8 @@ namespace Managers.PlayerControllers
         // event channels
         private UIActivationEventChannel uiActivationEventChannel;
         private UIActionEventChannel uiActionEventChannel;
-
         private MortgageFinishedEventChannel mortgageFinishedEventChannel;
+        
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
@@ -29,6 +29,7 @@ namespace Managers.PlayerControllers
         /// <param name="passedGoPayment">PayPlayerEventChannel for passing Go</param>
         /// <param name="uiActivation">UI Activation Event Channel</param>
         /// <param name="uiAction">UI Action Event Channel</param>
+        /// <param name="mortgageFinished">Mortgage Finished Event Channel</param>
         public HumanPlayerController(
             Player player,
             TurnStartedEventChannel turnStarted,
