@@ -44,23 +44,8 @@ public class SpaceRenderer : InteractableGameObject
 
         name = spaceData.spaceName;
 
-        //US577 only show indicators for Ownable Spaces spaces
-        bool isOwnable = spaceData is OwnableSpaceData;
-
-        //ownership logic & keep mortgage hidden until logic is done for mortgaging
-        bool isOwned = false;
-        if (isOwnable && spaceData is OwnableSpaceData ownable)
-        {
-            isOwned = ownable.GetOwner() != null;
-        }
-
-        if (ownedIconGO != null)
-            ownedIconGO.SetActive(isOwnable && isOwned);
-
-        // TODO: enable when mortgage state exists ------------------------------------------------
-        if (mortgagedIconGO != null)
-            mortgagedIconGO.SetActive(false);
-        // TODO: enable when mortgage state exists ------------------------------------------------
+        //call method to identify if Owned/Mortgaged Inidactor is visible
+        RefreshIndicators();
 
         if (alwaysVisibleUI != null)
             alwaysVisibleUI.Apply(spaceData);
@@ -70,6 +55,39 @@ public class SpaceRenderer : InteractableGameObject
         if (!boxCollider)
             boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.size = new Vector3(scale, scale, 1f);
+    }
+
+    //easier to call the method rather than running it EVERY single time in SetUpSpace
+    private void RefreshIndicators()
+    {
+        //only display indicators for spaces that are ownable
+        bool isOwnable = spaceData is OwnableSpaceData;
+        bool isOwned = false;
+
+        bool isMortgaged = false;
+
+        if (isOwnable && spaceData is OwnableSpaceData ownable)
+        {
+            isOwned = ownable.GetOwner() != null;
+            isMortgaged = ownable.isMortgaged;
+
+
+        }
+
+        //mortgage replaces owned 
+        if (ownedIconGO != null)
+            ownedIconGO.SetActive(isOwnable && isOwned && !isMortgaged);
+
+        if (mortgagedIconGO != null)
+            mortgagedIconGO.SetActive(isOwnable && isMortgaged);
+    }
+
+    public void RefreshTileStateVisuals()
+    {
+        RefreshIndicators();
+
+        if (alwaysVisibleUI != null && spaceData != null)
+            alwaysVisibleUI.Apply(spaceData);
     }
 
     public override void OnLeftClick()

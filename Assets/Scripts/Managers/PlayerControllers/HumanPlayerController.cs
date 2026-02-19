@@ -149,7 +149,12 @@ namespace Managers.PlayerControllers
             // uncomment these when the methods are implemented
             if (pac.Purchased)
             {
-                controlledPlayer.ExecutePurchase(pac.Property, pac.Property.buyPrice);
+                //keep consistent w rent system
+                if (controlledPlayer.ExecutePurchase(pac.Property, pac.Property.buyPrice))
+                {
+                    pac.Property.SetOwner(controlledPlayer);
+                }
+
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
                     $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
                     LogCategory.Gameplay);
