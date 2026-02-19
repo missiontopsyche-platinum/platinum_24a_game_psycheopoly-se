@@ -15,7 +15,7 @@ public class PlanetSpaceData : OwnableSpaceData
     {
         base.OnLanded(player);
         if (owner == null) return;
-
+        if (isMortgaged) return;
         if (owner.Equals(player))
         {
             // do nothing based on rules

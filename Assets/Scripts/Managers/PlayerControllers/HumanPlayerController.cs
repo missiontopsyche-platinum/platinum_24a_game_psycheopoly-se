@@ -12,7 +12,8 @@ namespace Managers.PlayerControllers
         // event channels
         private UIActivationEventChannel uiActivationEventChannel;
         private UIActionEventChannel uiActionEventChannel;
-        
+
+        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
@@ -35,12 +36,14 @@ namespace Managers.PlayerControllers
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
             UIActivationEventChannel uiActivation,
-            UIActionEventChannel uiAction) 
+            UIActionEventChannel uiAction,
+            MortgageFinishedEventChannel mortgageFinished) 
             : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
+            mortgageFinishedEventChannel = mortgageFinished;
         }
 
         ~HumanPlayerController()
@@ -96,18 +99,40 @@ namespace Managers.PlayerControllers
             // call player method for getting paid for passing go
         }
 
+        private void ResolveMortgageProperty(MortgagePropertyContext context)
+        {
+            if (!isMyTurn) return;
+
+            if(controlledPlayer.MortgageProperty(context.tile))
+            {
+                mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
+                    this.controlledPlayer,
+                    context.tile));
+            }
+
+        }
+
         private void HandleUIAction(UIActionEvent uiae)
         {
             if (!isMyTurn) return;
             
             switch (uiae.UIType)
             {
+
                 case UIType.PropertyPurchase:
                     if(uiae.Context is PurchaseActionContext purchaseContext)
                         ResolvePropertyPurchase(purchaseContext);
                     else
                         Logger.Error("HumanPlayerController.HandleUIAction",
                             $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
+                    break;
+                case UIType.MortgagePropertySelected:
+                    if(uiae.Context is MortgagePropertyContext mortgageContext)
+                        ResolveMortgageProperty(mortgageContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
                     break;
                 // expand with more UITypes as they're implemented

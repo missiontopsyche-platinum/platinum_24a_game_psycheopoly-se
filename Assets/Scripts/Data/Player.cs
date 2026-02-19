@@ -206,8 +206,27 @@ public class Player : ScriptableObject
     public void PayPlayer(Player otherPlayer, int amount) { }
     public void BuyProperty(int propertyIndex, int price) { } // replaced by Execute Purchase function. 
     public void SellProperty(int propertyIndex, int price) { }
-    public void MortgageProperty(int propertyIndex) { }
-    public void UnmortgageProperty(int propertyIndex) { }
+    public bool MortgageProperty(OwnableSpaceData tile) {
+        if (!tile.isMortgageable) return false;
+
+        this.AddMoney(tile.collaborationValue);
+        this.SetMortgagePayoff(tile);
+        tile.isMortgaged = true;
+        tile.isMortgageable = false;
+
+        return true;
+    }
+    public bool UnmortgageProperty(OwnableSpaceData tile) {
+        if (!tile.isMortgaged) return false;
+
+        if (this.TrySpend(tile.mortgagePayoffValue)) //this will need updating when US571 pushes to dev
+        {
+            tile.isMortgageable = true;
+            tile.isMortgaged = false;
+            return true;
+        }
+        return false;
+    }
 
 
     public void SetColor(Color color)
@@ -349,5 +368,49 @@ public class Player : ScriptableObject
 
         ownedProperties.Add(tile);
         return true;
+    }
+
+
+    /// <summary>
+    /// Returns a list of all properties the player can mortage.
+    /// The isMortageable flag must be set or removed when buying or selling upgrades on the prop. 
+    /// </summary>
+    /// <returns></returns>
+    public List<OwnableSpaceData> GetMortagableProperties()
+    {
+        List<OwnableSpaceData> mortagableProps = new List<OwnableSpaceData>();
+        foreach (OwnableSpaceData p in ownedProperties)
+        {
+           if (p.isMortgageable == true)
+            {
+                mortagableProps.Add(p);
+            }
+        }
+
+        return mortagableProps;
+    }
+
+    public List<OwnableSpaceData> GetMortagedProperties()
+    {
+        List<OwnableSpaceData> mortgagedProps = new List<OwnableSpaceData>();
+        foreach (OwnableSpaceData p in ownedProperties)
+        {
+            if (p.isMortgaged)
+            {
+                mortgagedProps.Add(p);
+            }
+        }
+        return mortgagedProps;
+    }
+
+    public void SetMortgagePayoff(OwnableSpaceData p)
+    {
+        //Sets the mortgage payoff value. 
+        //Per monolopy rules, it is 110% of the mortgage amount.
+        //This currently just uses an int cast, which is probably not correct.
+        //However, all collab values are currently divisible by 10, so no truncation should occur for now.
+        //We can refactor this to deal with rounding at a later time.
+        int payoff = (int)(p.collaborationValue * 1.10f);
+        p.mortgagePayoffValue = payoff;
     }
 }

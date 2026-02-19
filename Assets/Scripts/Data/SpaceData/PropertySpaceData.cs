@@ -30,7 +30,7 @@ public class PropertySpaceData : OwnableSpaceData
         : 0;
     public bool IsMaxed => currentUpgradeLevel >= MaxUpgradeLevel;
     public int[] UpgradeCostByLevel => upgradeCostByLevel;
-    public bool CanUpgrade() => !IsMaxed && dataPointCost > 0;
+    public bool CanUpgrade() => !IsMaxed && dataPointCost > 0 && !isMortgaged;
 
     private void OnEnable()
     {
@@ -46,7 +46,10 @@ public class PropertySpaceData : OwnableSpaceData
     {
         base.OnLanded(player);
         if (owner == null) return;
-        
+
+        // If the property is mortaged, no OnLanded events should fire.
+        if (isMortgaged) return; 
+
         /*if (owner.Equals(player))
         {
             // TODO remove
@@ -135,6 +138,7 @@ public class PropertySpaceData : OwnableSpaceData
     public void UpgradeProperty()
     {
         currentUpgradeLevel += 1;
+        this.VerifyMortagableStatus();
     }
 
     public int GetCurrentUpgradeLevel()
@@ -148,6 +152,7 @@ public class PropertySpaceData : OwnableSpaceData
             return false;
 
         currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel + 1, 0, MaxUpgradeLevel);
+        this.VerifyMortagableStatus();
         return true;
     }
 
@@ -210,5 +215,17 @@ public class PropertySpaceData : OwnableSpaceData
         upgradeCostByLevel = new int[max];
         for (int i = 0; i < max; i++)
             upgradeCostByLevel[i] = GetUpgradeCostForLevel(i);
+    }
+
+    private void VerifyMortagableStatus()
+    {
+        if (this.currentUpgradeLevel > 0)
+        {
+            this.isMortgageable = false;
+            return;
+        }
+            
+
+        this.isMortgageable = true;
     }
 }
