@@ -7,6 +7,8 @@
         RentNotification,
         JailRelease,
         DiceRoll,
+        MortgagePropertyList,
+        MortgagePropertySelected
         // more to be added as needed
     }
 }
