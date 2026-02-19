@@ -82,8 +82,8 @@ class components to function as needed.
 | DangerThreshold  | The cash floor the AI targets to reach through mortgaging actions    | $75           |
 
 > Note: Unlike other AI behaviors, this system requires no weights. The scoring
-> is fully determined by the game's own economic values — purchase prices,
-> mortgage values, and rent tables — rather than tunable factors. The single
+> is fully determined by the game's own economic values: purchase prices,
+> mortgage values, and rent tables rather than tunable factors. The single
 > threshold controls when the behavior triggers and when it exits.
 
 ---
