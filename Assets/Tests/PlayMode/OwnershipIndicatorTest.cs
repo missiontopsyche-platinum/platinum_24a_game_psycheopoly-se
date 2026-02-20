@@ -17,7 +17,6 @@ public class OwnershipIndicatorTests
     private static SpaceRenderer CreateSpaceRendererGO(string name)
     {
         var go = new GameObject(name);
-
         go.AddComponent<BoxCollider>();
 
         var renderer = go.AddComponent<SpaceRenderer>();
@@ -29,7 +28,6 @@ public class OwnershipIndicatorTests
     [UnityTest]
     public IEnumerator OwnedIcon_ShowsOnlyWhenPropertyOwned()
     {
-        // Arrange
         var renderer = CreateSpaceRendererGO("SpaceRenderer_Test");
 
         var ownedIcon = new GameObject("OwnedIcon");
@@ -44,25 +42,69 @@ public class OwnershipIndicatorTests
         var property = ScriptableObject.CreateInstance<PropertySpaceData>();
         property.spaceName = "Test Property";
 
-        //originally unowned
+        // originally unowned
         renderer.SetUpSpace(property, 1f);
 
-        // Assert 1
+        //assert 1
         Assert.IsFalse(ownedIcon.activeSelf, "Owned icon should be hidden when owner is null.");
-        Assert.IsFalse(mortgagedIcon.activeSelf, "Mortgaged icon should be hidden until mortgage exists.");
+        Assert.IsFalse(mortgagedIcon.activeSelf, "Mortgaged icon should be hidden when not mortgaged.");
 
-        //now, owned
+        // now owned
         var player = ScriptableObject.CreateInstance<Player>();
         player.SetPName("Tester");
         property.SetOwner(player);
 
         renderer.SetUpSpace(property, 1f);
 
-        // Assert 2
+        // assert 2
         Assert.IsTrue(ownedIcon.activeSelf, "Owned icon should be visible when owner is set.");
-        Assert.IsFalse(mortgagedIcon.activeSelf, "Mortgaged icon should still be hidden until mortgage exists.");
+        Assert.IsFalse(mortgagedIcon.activeSelf, "Mortgaged icon should be hidden when not mortgaged.");
 
-        //cleanup
+        // cleanup
+        Object.DestroyImmediate(renderer.gameObject);
+        Object.DestroyImmediate(property);
+        Object.DestroyImmediate(player);
+
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator MortgagedIcon_ShowsOnlyWhenPropertyMortgaged()
+    {
+        // Arrange
+        var renderer = CreateSpaceRendererGO("SpaceRenderer_Mortgage_Test");
+
+        var ownedIcon = new GameObject("OwnedIcon");
+        ownedIcon.SetActive(true);
+
+        var mortgagedIcon = new GameObject("MortgagedIcon");
+        mortgagedIcon.SetActive(true);
+
+        SetPrivateField(renderer, "ownedIconGO", ownedIcon);
+        SetPrivateField(renderer, "mortgagedIconGO", mortgagedIcon);
+
+        var property = ScriptableObject.CreateInstance<PropertySpaceData>();
+        property.spaceName = "Test Property";
+
+        var player = ScriptableObject.CreateInstance<Player>();
+        player.SetPName("Tester");
+        property.SetOwner(player);
+
+        // start as owned && NOT mortgaged
+        property.isMortgaged = false;
+        renderer.SetUpSpace(property, 1f);
+
+        Assert.IsTrue(ownedIcon.activeSelf, "Owned icon should be visible when owned and not mortgaged.");
+        Assert.IsFalse(mortgagedIcon.activeSelf, "Mortgaged icon should be hidden when not mortgaged.");
+
+        // Now mortgaged
+        property.isMortgaged = true;
+        renderer.SetUpSpace(property, 1f);
+
+        Assert.IsFalse(ownedIcon.activeSelf, "Owned icon should be hidden when property is mortgaged.");
+        Assert.IsTrue(mortgagedIcon.activeSelf, "Mortgaged icon should be visible when property is mortgaged.");
+
+        // cleanup
         Object.DestroyImmediate(renderer.gameObject);
         Object.DestroyImmediate(property);
         Object.DestroyImmediate(player);
