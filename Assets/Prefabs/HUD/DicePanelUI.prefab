@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 3861050146311106283}
   - component: {fileID: 3488012086290969502}
   m_Layer: 5
-  m_Name: DicePanel
+  m_Name: DicePanelUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

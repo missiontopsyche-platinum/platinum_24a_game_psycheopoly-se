@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7962563809974199784}
   - component: {fileID: 3131775053762886348}
   m_Layer: 5
-  m_Name: TurnBanner
+  m_Name: TurnBannerUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

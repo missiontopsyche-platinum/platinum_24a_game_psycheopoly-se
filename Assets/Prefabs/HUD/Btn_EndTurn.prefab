@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 1226398863759309414}
   - component: {fileID: 9162592799625808286}
   m_Layer: 5
-  m_Name: EndTurnButton
+  m_Name: Btn_EndTurn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
