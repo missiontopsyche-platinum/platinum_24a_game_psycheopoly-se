@@ -10,6 +10,7 @@ namespace Data
         [SerializeField] public PurchaseThresholds purchaseThresholds;
         [SerializeField] public UpgradeWeights upgradeWeights;
         [SerializeField] public UpgradeThresholds upgradeThresholds;
+        [SerializeField] public MortgageThresholds mortgageThresholds;
     }
 
     // this pattern of [Serializable] nested classes allows for the attributes to
@@ -72,5 +73,13 @@ namespace Data
         [Min(0)] public int baseThreshold = 40;
         [Tooltip("Random variance applied to threshold (+/-)")]
         [Min(0)] public int randomVariance = 20;
+    }
+
+    [Serializable]
+    public class MortgageThresholds
+    {
+        [Tooltip("The amount of cash that the AI must have to not consider itself in danger, which triggers" +
+                 "the mortgage flow, or is the target to reach/exceed when resolving debt.")]
+        [Min(0)] public int dangerThreshold = 75;
     }
 }
