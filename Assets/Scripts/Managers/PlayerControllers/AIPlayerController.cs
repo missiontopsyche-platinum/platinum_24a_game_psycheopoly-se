@@ -12,6 +12,7 @@ namespace Managers.PlayerControllers
         
         // Behavior Classes
         private readonly AIPurchaseBehavior purchaseBehavior;
+        private readonly AIUpgradeBehavior upgradeBehavior;
         // private AIMortgageBehavior
         // private AIJailBehavior
         // etc...
@@ -45,6 +46,10 @@ namespace Managers.PlayerControllers
                 controlledPlayer, 
                 weights.purchaseWeights, 
                 weights.purchaseThresholds);
+            upgradeBehavior = new AIUpgradeBehavior(
+                controlledPlayer,
+                weights.upgradeWeights,
+                weights.upgradeThresholds);
             // mortgageBehavior
             // jailBehavior etc...
         }
@@ -63,6 +68,38 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Unsubscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
+        }
+        
+        protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
+        {
+            base.CatchTurnStartedEvent(tse);
+            
+            // start turn decision flows
+            // check for upgrades
+            // roll dice
+            // resolve movement (purchase, pay rent, jail, etc)
+            // check for upgrades
+            
+            // the turn flow might need to operate as a Coroutine that waits on completion flags.
+        }
+
+        private void HandleUpgradeAction()
+        {
+            AIUpgradeEvaluation evaluation;
+            do
+            {
+                evaluation = upgradeBehavior.EvaluateUpgrade();
+
+                if (evaluation.willUpgrade)
+                {
+                    // handle purchase upgrade for property on evaluation.upgradeTarget
+                    // need to figure out the upgrade flow for this more concretely...
+                    
+                    Logger.Info("AIPlayerController.HandleUpgradeAction",
+                        $"Executing upgrade on {evaluation.upgradeTarget.spaceName}",
+                        LogCategory.AI);
+                }
+            } while (evaluation.willUpgrade);
         }
 
         private void PurchaseRequestDecision(PurchaseOwnableRequestEvent pore)
@@ -83,8 +120,8 @@ namespace Managers.PlayerControllers
             }
             else
             {
-                // decline purchase is still not implemented...
-                // controlledPlayer.DeclinePurchase(pore.requestedSpace);
+                // we don't need to do much for declining a purchase, besides maybe flagging that 
+                // the Movement phase is resolved for the AI turn flow.
                 
                 Logger.Info("AIPlayerController.PurchaseRequestDecision",
                     $"Computer Player {controlledPlayer.GetPName()} has declined purchase on {pore.requestedSpace.name}",

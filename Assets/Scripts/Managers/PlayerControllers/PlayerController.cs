@@ -64,7 +64,7 @@ namespace Managers.PlayerControllers
         /// boolean state accordingly (<c>isMyTurn</c>).
         /// </summary>
         /// <param name="tse">Turn Started Event, containing payload information about the new turn.</param>
-        private void CatchTurnStartedEvent(TurnStartedEvent tse)
+        protected virtual void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
             isMyTurn = tse.playerId == controlledPlayer.GetId();
             

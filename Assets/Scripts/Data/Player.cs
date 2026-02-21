@@ -1,7 +1,7 @@
-using Assets.Scripts.Managers.Rent;
 using Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -145,6 +145,34 @@ public class Player : ScriptableObject
     public List<OwnableSpaceData> GetOwnedProperties() 
     { 
         return ownedProperties; 
+    }
+
+    public List<PropertySpaceData> GetValidUpgradableProperties()
+    {
+        var groups = ownedProperties
+            .OfType<PropertySpaceData>()
+            .GroupBy(p => p.groupColor);
+
+        var targets = new List<PropertySpaceData>();
+
+        foreach (var group in groups)
+        {
+            var groupList = group.ToList();
+            
+            // only consider monopolies
+            if (groupList.Count != groupList[0].numberOfPropertiesInGroup)
+                continue;
+            
+            // even-building rule... make sure we're upgrading evenly
+            // for example, you can only build a second datapoint when all other props in the
+            // color group have 1 data point already.
+            int minLevel = groupList.Min(p => p.GetCurrentUpgradeLevel());
+            
+            targets.AddRange(groupList.Where(
+                p => p.GetCurrentUpgradeLevel() == minLevel && !p.IsMaxed));
+        }
+
+        return targets;
     }
     
     /// <summary>
