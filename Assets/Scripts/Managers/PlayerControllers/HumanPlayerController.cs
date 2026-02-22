@@ -38,6 +38,7 @@ namespace Managers.PlayerControllers
             PayPlayerEventChannel passedGoPayment,
             UIActivationEventChannel uiActivation,
             UIActionEventChannel uiAction,
+            MortgageFinishedEventChannel mortgageFinished,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
             : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, turnActionRequest, turnActionResult)
