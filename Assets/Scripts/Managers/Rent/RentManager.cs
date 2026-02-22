@@ -109,17 +109,27 @@ namespace Assets.Scripts.Managers.Rent
     {
         public bool Transfer(Player from, Player to, int amount)
         {
-            if (amount <= 0) return true;
-
-            int have = from.GetMoney();
-            if (have < amount)
+            if (from == null || to == null)
             {
-                //placeholder trigger bankruptcy flow, for now pay what you can
-                amount = have;
+                Logging.Logger.Error("EconomyAdapter.Transfer",
+                    "Transfer failed: from/to player is null.",
+                    Logging.LogCategory.Economy,
+                    this);
+                return false;
             }
 
-            from.SetMoney(have - amount);
-            to.SetMoney(to.GetMoney() + amount);
+            if (amount <= 0) return true;
+
+            if (!from.TrySpend(amount))
+            {
+                Logging.Logger.Warn("EconomyAdapter.Transfer",
+                    $"Transfer blocked (insufficient funds). From={from.GetId()} To={to.GetId()} Amount=${amount} Have=${from.GetMoney()}",
+                    Logging.LogCategory.Economy,
+                    this);
+                return false;
+            }
+
+            to.AddMoney(amount);
             return true;
         }
     }
