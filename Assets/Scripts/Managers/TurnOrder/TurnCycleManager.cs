@@ -55,5 +55,12 @@ namespace Assets.Scripts.Managers.TurnOrder
         public void GrantExtraTurn(int playerIndex) => playerTurnState.GrantExtraTurn(playerIndex);
         public void AddSkip(int playerIndex, int count = 1) => playerTurnState.AddSkip(playerIndex, count);
         public void Eliminate(int playerIndex) => playerTurnState.Eliminate(playerIndex);
+
+        // For AI use
+        public void SyncCurrentPlayerIndex(int playerIndex)
+        {
+            EnsureDeps();
+            CurrentPlayerIndex = Mathf.Clamp(playerIndex, 0, playerCount - 1);
+        }
     }
 }
