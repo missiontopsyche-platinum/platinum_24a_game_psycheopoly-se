@@ -34,7 +34,7 @@ class components to function as needed.
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `AIMortgageBehavior`   | The behavior class itself. Constructor takes `Player` and `MortgageThresholds`. Single public method `EvaluateMortgage()` returns `AIMortgageEvaluation`. Everything else is private scoring logic. |
 | `AIMortgageEvaluation` | The result object. Public properties: `Queue<MortgageAction>`, `String Message` for testing. No behavior, just data.                                                                                |
-| `MortgageAction`       | Public properties: `PropertySpaceData`,` MortgageActionType` enum, `int ExpectedCashGain`.                                                                                                          |
+| `MortgageAction`       | Public properties: `OwnableSpaceData`,` MortgageActionType` enum, `int ExpectedCashGain`.                                                                                                           |
 | `MortgageThresholds`   | Collection of thresholds used to finalize evaluations for property actions. Contained within the `AIBehaviorWeights` `ScriptableObject`.                                                            |
 | `MortgageActionType`   | Enum: `SellDataPoint`, `SellDiscovery`, `Mortgage`, in the future `Unmortgage` when that behavior is implemented.                                                                                   |
 
