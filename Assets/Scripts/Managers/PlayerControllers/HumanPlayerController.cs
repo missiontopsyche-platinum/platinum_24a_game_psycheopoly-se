@@ -44,12 +44,13 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
+            BooleanEventChannel diceRollRequest,
             UIActivationEventChannel uiActivation,
             UIActionEventChannel uiAction,
             MortgageFinishedEventChannel mortgageFinished,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, turnActionRequest, turnActionResult)
+            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
