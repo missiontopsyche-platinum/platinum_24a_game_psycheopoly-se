@@ -13,7 +13,7 @@ namespace Managers.PlayerControllers
         // Behavior Classes
         private readonly AIPurchaseBehavior purchaseBehavior;
         private readonly AIUpgradeBehavior upgradeBehavior;
-        // private AIMortgageBehavior
+        private readonly AIMortgageBehavior mortgageBehavior;
         // private AIJailBehavior
         // etc...
         
@@ -50,7 +50,9 @@ namespace Managers.PlayerControllers
                 controlledPlayer,
                 weights.upgradeWeights,
                 weights.upgradeThresholds);
-            // mortgageBehavior
+            mortgageBehavior = new AIMortgageBehavior(
+                controlledPlayer,
+                weights.mortgageThresholds);
             // jailBehavior etc...
         }
 
@@ -72,15 +74,24 @@ namespace Managers.PlayerControllers
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
+            // TODO: This needs to be implemented and property integrated. Currently the actions don't *do* anything.
             base.CatchTurnStartedEvent(tse);
-            
-            // start turn decision flows
-            // check for upgrades
-            // roll dice
-            // resolve movement (purchase, pay rent, jail, etc)
-            // check for upgrades
+
+            if (!isMyTurn) return;
             
             // the turn flow might need to operate as a Coroutine that waits on completion flags.
+            HandleOptionalActions();
+            // roll dice
+            // wait for resolution
+            HandleOptionalActions();
+            // end turn
+        }
+
+        private void HandleOptionalActions()
+        {
+            HandleMortgageAction();
+            // handle unmortgage goes here
+            HandleUpgradeAction();
         }
 
         private void HandleUpgradeAction()
@@ -100,6 +111,30 @@ namespace Managers.PlayerControllers
                         LogCategory.AI);
                 }
             } while (evaluation.willUpgrade);
+        }
+
+        private void HandleMortgageAction()
+        {
+            AIMortgageEvaluation evaluation = mortgageBehavior.EvaluateMortgage();
+
+            foreach (var mortgageAction in evaluation.actions)
+            {
+                switch (mortgageAction.actionType)
+                {
+                    case MortgageActionType.Mortgage:
+                        // mortgage the property
+                        break;
+                    case MortgageActionType.SellDataPoint:
+                        // sell data point
+                        break;
+                    case MortgageActionType.SellDiscovery:
+                        // sell discovery (all upgrades for this property)
+                        break;
+                }
+            }
+            Logger.Info("AIPlayerController.HandleMortgageAction",
+                $"Mortgage Evaluation: {evaluation.message}.",
+                LogCategory.AI);
         }
 
         private void PurchaseRequestDecision(PurchaseOwnableRequestEvent pore)
