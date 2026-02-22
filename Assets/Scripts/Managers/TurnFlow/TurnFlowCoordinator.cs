@@ -27,6 +27,8 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         public TurnPhase Phase { get; private set; } = TurnPhase.None;
         public int ActivePlayer { get; private set; } = -1;
+        // prevents double-advance in same turn
+        private bool awaitingEndTurn = false;
 
         private void Awake()
         {
@@ -64,6 +66,18 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
+            awaitingEndTurn = false;
+
+            // This is a sanity check to make sure our TurnCycleManager is in sync with the turn
+            if (turnCycleManager != null && turnCycleManager.CurrentPlayerIndex != data.playerId)
+            {
+                Logging.Logger.Warn("TurnFlowCoordinator.OnTurnStarted",
+                    $"Mismatch: TurnStarted player={data.playerId} but TurnCycle={turnCycleManager.CurrentPlayerIndex}. Syncing.",
+                    Logging.LogCategory.Core,
+                    this);
+
+                turnCycleManager.SyncCurrentPlayerIndex(data.playerId);
+            }
         }
 
         private void OnTurnEnded(bool ended)
@@ -86,22 +100,23 @@ namespace Assets.Scripts.Managers.TurnFlow
             if (!success) return;
             if (Phase != TurnPhase.AwaitingMovement) return;
 
-
             Phase = TurnPhase.AwaitingResolution;
+            Phase = TurnPhase.Completed;
 
+            awaitingEndTurn = true;
             // OnLanded() has already run at this point.
             // No tile effect system fires a "done" event, so we emit our own.
             actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
-
-            CompleteTurnFlow();
         }
 
 
         // decide if another turn is in order or if we can move onto next plater
         private void CompleteTurnFlow()
         {
+            if (!awaitingEndTurn) return;
             if (turnCycleManager == null)
                 return;
+            awaitingEndTurn = false;
 
             Phase = TurnPhase.Completed;
 
@@ -118,6 +133,9 @@ namespace Assets.Scripts.Managers.TurnFlow
                 action = request.action,
                 allowed = allowed
             });
+            if (allowed && request.action == TurnActionType.EndTurn)
+                CompleteTurnFlow();
+            
         }
 
         private bool IsAllowed(int playerId, TurnActionType action)
@@ -130,12 +148,13 @@ namespace Assets.Scripts.Managers.TurnFlow
                 TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
                 TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution,
                 // upgrade at any point in the player's turn
-                TurnActionType.ModifyProperty => Phase == TurnPhase.None
-                                                || Phase == TurnPhase.AwaitingRoll
+                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution
+                                                || (Phase == TurnPhase.Completed && awaitingEndTurn),
+                TurnActionType.ModifyProperty => Phase == TurnPhase.AwaitingRoll
                                                 || Phase == TurnPhase.AwaitingMovement
-                                                || Phase == TurnPhase.AwaitingResolution 
-                                                || Phase == TurnPhase.Completed,
-                TurnActionType.EndTurn => Phase == TurnPhase.Completed,
+                                                || Phase == TurnPhase.AwaitingResolution
+                                                || (Phase == TurnPhase.Completed && awaitingEndTurn),
+                TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false
             };
         }
