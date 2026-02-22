@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
-    [SerializeField] public BooleanEventChannel rollDiceRequestedChannel;
     [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] public BooleanEventChannel turnEndedChannel;
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
@@ -44,12 +43,8 @@ public class GameManager : MonoBehaviour
     [Header("Space Resolution Event Channels")]
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
-    // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
-    // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
-    // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
 
     [Header("Manager References")]
-    [SerializeField] private DiceManager diceManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
@@ -161,7 +156,6 @@ public class GameManager : MonoBehaviour
         //US156T157 subscribe to DiceRolled Listener
         diceRolledChannel.Subscribe(DiceRolled);
         pieceMoveCompletedChannel?.Subscribe(PieceMoveCompleted);
-        rollDiceRequestedChannel?.Subscribe(OnRollDiceRequest);
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
@@ -190,10 +184,6 @@ public class GameManager : MonoBehaviour
 
         if (boardManager == null)
             Logging.Logger.Warn("GameManager.Start", "BoardManager reference not assigned.",
-                LogCategory.Core, this);
-
-        if (diceManager == null)
-            Logging.Logger.Warn("GameManager.Start", "DiceManager reference not assigned.", 
                 LogCategory.Core, this);
     }
 
@@ -240,7 +230,6 @@ public class GameManager : MonoBehaviour
         //Unsubscribe from event channels
         diceRolledChannel?.Unsubscribe(DiceRolled);
         pieceMoveCompletedChannel?.Unsubscribe(PieceMoveCompleted);
-        rollDiceRequestedChannel?.Unsubscribe(OnRollDiceRequest);
         cardDrawnChannel?.Unsubscribe(OnCardDrawnEvent);
         turnEndedChannel?.Unsubscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Unsubscribe(OnSpaceResolutionCompleted);
@@ -530,7 +519,7 @@ public class GameManager : MonoBehaviour
         if (!diceRollRequestedEvent || turnPhase != TurnPhase.PreRoll) return;
 
         if (TryChangeTurnPhase(TurnPhase.RollingDice))
-            diceManager?.RollDice();
+            //diceManager?.RollDice();
         Logging.Logger.Debug("GameManager.OnRollDiceRequest",
             "Dice roll requested, entering RollingDice.",
             LogCategory.Gameplay, this);
