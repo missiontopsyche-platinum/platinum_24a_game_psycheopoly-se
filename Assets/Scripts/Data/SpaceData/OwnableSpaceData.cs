@@ -9,9 +9,11 @@ public abstract class OwnableSpaceData : SpaceData
 
     // used for mortage information
     public bool isMortgaged = false;
-    public bool isMortgageable = true;
+    public bool isMortgageable { get; set; } = true;
 
-    public int mortgagePayoffValue;
+
+    public int mortgagePayoffValue { get; set;  }
+
 
     [Header("Ownable Event Channels")]
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
@@ -64,6 +66,7 @@ public abstract class OwnableSpaceData : SpaceData
 
     public bool GetIsMortageable()
     {
+
         return this.isMortgageable;
     }
 }

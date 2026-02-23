@@ -219,6 +219,7 @@ public class PropertySpaceData : OwnableSpaceData
 
     private void VerifyMortagableStatus()
     {
+
         if (this.currentUpgradeLevel > 0)
         {
             this.isMortgageable = false;
@@ -227,5 +228,7 @@ public class PropertySpaceData : OwnableSpaceData
             
 
         this.isMortgageable = true;
+
+
     }
 }

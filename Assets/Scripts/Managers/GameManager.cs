@@ -39,7 +39,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] public BooleanEventChannel turnEndedChannel;
     [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
-    
+    [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
+
     [Header("Space Resolution Event Channels")]
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
@@ -164,6 +165,7 @@ public class GameManager : MonoBehaviour
         cardDrawnChannel?.Subscribe(OnCardDrawnEvent);
         turnEndedChannel?.Subscribe(OnTurnEndedEvent);
         spaceResolutionCompletedChannel?.Subscribe(OnSpaceResolutionCompleted);
+        bankruptPlayerEventChannel?.Subscribe(OnBankruptPlayer);
         // US 555 TODO: Scaffold comment for PropertyPurchaseRequestEventChannel
         // US 555 TODO: Scaffold comment for PropertyPurchaseAcceptedEventChannel
         // US 555 TODO: Scaffold comment for PropertyPurchaseRejectedEventChannel
@@ -738,6 +740,12 @@ public class GameManager : MonoBehaviour
         turnPhase = newPhase;
 
         return true;
+    }
+
+    //Handle the bankruptPlayerEventChannel input. Need to verify that the playerID is also it's turn order. 
+    private void OnBankruptPlayer(int player)
+    {
+        turnCycleManager.Eliminate(player);
     }
 
     private bool IsPlayerTurn(Player player)
