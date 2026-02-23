@@ -41,7 +41,10 @@ public abstract class OwnableSpaceData : SpaceData
         var payload = base.OnHover();
         payload.AppendInformation($"Purchase Price: {buyPrice}");
         payload.AppendInformation($"Collaboration Value: ${collaborationValue}");
-        payload.AppendInformation($"Owner: {(owner ? owner.GetPName() : "None")}");
+        payload.AppendInformation($"Owned By: {(owner != null ? owner.GetPName() : "Unowned")}");
+        payload.AppendInformation($"Ownership Status: {(owner == null ? "Unowned" : "Owned")}");
+        //TODO: integrate upgrade level visibility logic
+        payload.AppendInformation($"Upgrade Level: [Upgrade Level]");
         
         spaceHoverEventChannel?.RaiseEvent(payload);
         

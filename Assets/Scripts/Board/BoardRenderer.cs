@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Logging;
 using UnityEngine;
+using Assets.Scripts.Events.EventChannelTypes;
 
 public class BoardRenderer : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class BoardRenderer : MonoBehaviour
 
     [Header("Event Channels")] 
     [SerializeField] public PlayerEventChannel playerAddedChannel;
+    [SerializeField] private MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
     [SerializeField] public PlayerMovedEventChannel playerMovedEventChannel;
 
@@ -22,7 +24,8 @@ public class BoardRenderer : MonoBehaviour
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
     private float increment;
-    
+    private readonly Dictionary<SpaceData, SpaceRenderer> rendererBySpaceData = new ();
+
     /// <summary>
     /// Corner targets for piece bumping on shared spaces, normalized
     /// </summary>
@@ -38,6 +41,7 @@ public class BoardRenderer : MonoBehaviour
     {
         playerAddedChannel?.Subscribe(AddPlayerPiece);
         playerMovedEventChannel?.Subscribe(MovePiece);
+        mortgageFinishedEventChannel?.Subscribe(OnMortgageFinished);
     }
 
     private void OnDestroy()
@@ -45,7 +49,19 @@ public class BoardRenderer : MonoBehaviour
         ClearBoard();
         playerAddedChannel.Unsubscribe(AddPlayerPiece);
         playerMovedEventChannel?.Unsubscribe(MovePiece);
-    } 
+        mortgageFinishedEventChannel?.Unsubscribe(OnMortgageFinished);
+    }
+
+    //when a player mortgages a property, the tile will update immediately, not sure if needed for unmortgage...
+    private void OnMortgageFinished(MortgageFinishedEvent e)
+    {
+        if (e == null || e.Tile == null) return;
+
+        if (rendererBySpaceData.TryGetValue(e.Tile, out var renderer) && renderer != null)
+        {
+            renderer.RefreshTileStateVisuals();
+        }
+    }
 
     public void GenerateBoard(SpaceData[] spaces)
     {
@@ -60,6 +76,7 @@ public class BoardRenderer : MonoBehaviour
         }
         
         ClearBoard();
+        rendererBySpaceData.Clear();
 
         if (spaces == null || spaces.Length == 0)
         {
@@ -99,6 +116,7 @@ public class BoardRenderer : MonoBehaviour
             SpaceRenderer newRenderer = InstantiateSpace(
                 position.x, position.y, spaces[i], increment);
             spaceRenderers[i] = newRenderer;
+            rendererBySpaceData[spaces[i]] = newRenderer;
         }
         
         OnBoardReady();

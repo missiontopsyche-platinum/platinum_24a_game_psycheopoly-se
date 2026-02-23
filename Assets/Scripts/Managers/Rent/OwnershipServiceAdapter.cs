@@ -12,6 +12,16 @@ namespace Assets.Scripts.Managers.Rent
         //public API
         public void SetOwner(ITileRentInfo tile, Player owner)
         {
+
+            // bridge BACK to SO since SpaceRenderer uses OwnableSpaceData.GetOwner()
+            if (tile is OwnableSpaceTileAdapter adapter && adapter.Data != null)
+            {
+                adapter.Data.SetOwner(owner);
+
+                if (owner != null)
+                    owner.AddOwnedProperty(adapter.Data);
+            }
+
             owners[tile] = owner;
 
             if (!ownedByPlayer.TryGetValue(owner, out var set))

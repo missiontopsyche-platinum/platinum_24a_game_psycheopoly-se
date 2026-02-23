@@ -8,6 +8,7 @@ using UnityEngine;
 public class OwnableSpaceTileAdapter : MonoBehaviour, ITileRentInfo, IPurchasableTileInfo, IUpgradableTileInfo
 {
     [SerializeField] private OwnableSpaceData data;
+    public OwnableSpaceData Data => data;
 
     //TODO will need to be completed within the second semster once more of the 
     //rulesets like color groups are added into the program
@@ -20,7 +21,7 @@ public class OwnableSpaceTileAdapter : MonoBehaviour, ITileRentInfo, IPurchasabl
     public ColorGroup Group => ColorGroup.None;
     //TODO map once properties have color groups in ScriptableObjects
 
-    public bool IsMortgaged => false;
+    public bool IsMortgaged => data != null && data.isMortgaged;
     //TODO map from data.collaborationValue if needed
 
     public int HouseCount => UpgradeLevel;
