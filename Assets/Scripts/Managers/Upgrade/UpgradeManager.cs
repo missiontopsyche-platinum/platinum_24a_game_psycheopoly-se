@@ -30,7 +30,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (!(tile is OwnableSpaceTileAdapter space)) return false;
 
-        if (owner.TrySpend(decision.Cost))
+        if (owner.TrySpend(decision.Cost) == Player.FinancialStatus.Success)
         {
             space.ApplyUpgrade();
             return true;

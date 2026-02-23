@@ -64,6 +64,6 @@ public abstract class OwnableSpaceData : SpaceData
     public bool GetIsMortageable()
     {
 
-        return this.isMortageable;
+        return this.isMortgageable;
     }
 }
