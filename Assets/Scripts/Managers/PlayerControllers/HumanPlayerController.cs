@@ -174,7 +174,7 @@ namespace Managers.PlayerControllers
             if (pac.Purchased)
             {
                 //keep consistent w rent system
-                if (controlledPlayer.ExecutePurchase(pac.Property, pac.Property.buyPrice))
+                if (controlledPlayer.ExecutePurchase(pac.Property, pac.Property.buyPrice) == Player.FinancialStatus.Success)
                 {
                     pac.Property.SetOwner(controlledPlayer);
                 }
