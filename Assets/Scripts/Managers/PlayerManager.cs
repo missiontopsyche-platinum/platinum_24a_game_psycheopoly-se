@@ -212,10 +212,12 @@ public class PlayerManager : MonoBehaviour
         GetPlayer(id).AddMoney(money);
     }
 
-    // Just added this for symmetry. Remove if not needed.
+    // Just added this for symmetry. Remove if not needed. 
+    // Right now, this function is probably not needed, however I am leaving it until we can discuss it. 
+    // Updated to properly check FinancialStatus return value for now.
     public void RemoveMoney(int id, int money)
     {
-        if (GetPlayer(id).TrySpend(money)) { return; }
+        if (GetPlayer(id).TrySpend(money) == Player.FinancialStatus.Success) { return; }
 
         // THis is probably not correct. It should instead probably raise an event saying if it succeeds or fails. 
         else

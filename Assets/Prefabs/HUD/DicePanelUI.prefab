@@ -165,7 +165,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 3d25604f4810c9c43930adbb86ab8066, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 0
@@ -191,7 +191,7 @@ GameObject:
   - component: {fileID: 3861050146311106283}
   - component: {fileID: 3488012086290969502}
   m_Layer: 5
-  m_Name: DicePanel
+  m_Name: DicePanelUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -270,7 +270,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
-  diceManager: {fileID: 0}
+  pieceMoveCompletedChannel: {fileID: 0}
+  rollDiceRequestedChannel: {fileID: 0}
   dieOneView: {fileID: 1939517040586240033}
   dieTwoView: {fileID: 2704001889494415945}
   totalText: {fileID: 0}

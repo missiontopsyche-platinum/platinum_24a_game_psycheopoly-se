@@ -2,6 +2,9 @@
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
+using UnityEngine;
+using Logger = Logging.Logger;
+
 
 namespace Managers.PlayerControllers
 {
@@ -13,7 +16,12 @@ namespace Managers.PlayerControllers
         private UIActivationEventChannel uiActivationEventChannel;
         private UIActionEventChannel uiActionEventChannel;
         private MortgageFinishedEventChannel mortgageFinishedEventChannel;
-        
+
+
+        // event channel for bankruptcy
+        [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
+
+
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
@@ -89,7 +97,22 @@ namespace Managers.PlayerControllers
             if (!isMyTurn) return;
             
             // activate Rent notification UI
+
             // call Player method for charging rent
+            // Flow: Check if player has money -> If yes, try spend, return proper response via event channel
+            // If no -> Check for bankrupcy - If bankrupt, notify UI, call proper method on GameManger, call ClearOwnership
+            if (!controlledPlayer.CanAfford(cofe.amount))
+            {
+                if (controlledPlayer.IsBankrupt(cofe.amount))
+                {
+                    // TODO: Call event channel for UI
+                    controlledPlayer.ClearOwnership();
+                    // Need to check with Hank to verify GameManager linkage. But currently no link, therefore we will create a "BankruptPlayer" event channel to fire.
+                    // Will return an int, only providing the player ID which SHOULD be the turn order number.
+                    // This will need to be listend to by the GameManager to remove the player from the order.
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                }
+            }
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
@@ -158,7 +181,8 @@ namespace Managers.PlayerControllers
 
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
                     $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
-                    LogCategory.Gameplay);
+                    LogCategory.Gameplay); 
+                //Fire
             }
             else
             {

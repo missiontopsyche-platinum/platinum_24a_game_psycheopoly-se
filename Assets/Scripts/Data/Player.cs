@@ -12,6 +12,7 @@ public class Player : ScriptableObject
     private int id;
     private string p_Name;
     private int money;
+    private int assets = 0;
     private int position = 0;
 
     //Added for task 120
@@ -71,6 +72,11 @@ public class Player : ScriptableObject
     public int GetMoney()
     {
         return this.money;
+    }
+
+    public int GetAssests()
+    {
+        return this.assets;
     }
 
     //Task 120 Initializing player
@@ -250,7 +256,7 @@ public class Player : ScriptableObject
     public bool UnmortgageProperty(OwnableSpaceData tile) {
         if (!tile.isMortgaged) return false;
 
-        if (this.TrySpend(tile.mortgagePayoffValue)) //this will need updating when US571 pushes to dev
+        if (this.TrySpend(tile.mortgagePayoffValue) == FinancialStatus.Success) //this will need updating when US571 pushes to dev
         {
             tile.isMortgageable = true;
             tile.isMortgaged = false;
@@ -348,14 +354,15 @@ public class Player : ScriptableObject
         if (money < amount) return false;
 
         return true;
+
     }
 
     /// <summary>
-    /// Checks if the player has money.
+    /// Task 599 - adjust method to calculate money + assets. 
     /// </summary>
     /// <returns>Bool: True if the player has less than or 0 money, false otherwise</returns>
-    public bool IsBankrupt() {
-        if (money > 0) return false;
+    public bool IsBankrupt(int price) {
+        if (money + assets > price) return false;
 
         return true;
     }
@@ -366,12 +373,17 @@ public class Player : ScriptableObject
     /// </summary>
     /// <param name="amount"></param>
     /// <returns>Returns True if the money is spent. Returns false if the player does not have money.</returns>
-    public bool TrySpend(int amount)
+    public FinancialStatus TrySpend(int amount)
     {
-        if (!CanAfford(amount)) return false;
+        if (CanAfford(amount))
+
+        {
+            SetMoney(GetMoney() - amount);
+            return FinancialStatus.Success;
+        }
+        if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
    
-        SetMoney(GetMoney() - amount);
-        return true;
+        return FinancialStatus.MortgageRequired;
     }
 
     /// <summary>
@@ -393,12 +405,29 @@ public class Player : ScriptableObject
     /// <param name="tile"></param>
     /// <param name="price"></param>
     /// <returns>Bool - True if purchase is successful. False if the purchase fails due to no money</returns>
-    public bool ExecutePurchase(OwnableSpaceData tile, int price)
+    public FinancialStatus ExecutePurchase(OwnableSpaceData tile, int price)
     {
-        if (!TrySpend(price)) return false;
+        FinancialStatus status = TrySpend(price);
+        if (status  != FinancialStatus.Success) return status;
 
+        this.AddOwnedProperty(tile);
         ownedProperties.Add(tile);
-        return true;
+
+        assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
+        return status;
+    }
+
+
+    /// <summary>
+    /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
+    /// </summary>
+    public void ClearOwnership()
+    {
+        foreach (OwnableSpaceData space in this.GetOwnedProperties())
+        {
+            space.SetOwner(null);
+            this.RemoveOwnedProperty(space);
+        }
     }
 
 
@@ -428,5 +457,15 @@ public class Player : ScriptableObject
         //We can refactor this to deal with rounding at a later time.
         int payoff = (int)(p.collaborationValue * 1.10f);
         p.mortgagePayoffValue = payoff;
+    }
+
+    // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later
+
+    public enum FinancialStatus
+    {
+        Success,
+        MortgageRequired,
+        Bankrupt
+
     }
 }

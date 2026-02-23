@@ -68,27 +68,27 @@ namespace Tests.EditMode.PlayerTests
         public void Player_IsNotBankrupt()
         {
             player.SetMoney(1000);
-            Assert.IsFalse(player.IsBankrupt());
+            Assert.IsFalse(player.IsBankrupt(1));
         }
 
         [Test]
         public void Player_IsBankrupt()
         {
             player.SetMoney(0);
-            Assert.IsTrue(player.IsBankrupt());
+            Assert.IsTrue(player.IsBankrupt(1));
         }
 
         [Test]
         public void Player_CanSpend()
         {
             player.SetMoney(1000);
-            Assert.IsTrue(player.TrySpend(500));
+            Assert.AreEqual(Player.FinancialStatus.Success, player.TrySpend(500));
         }
         [Test]
         public void Player_CanNotSpend()
         {
             player.SetMoney(1000);
-            Assert.IsFalse(player.TrySpend(1100));
+            Assert.AreNotEqual(Player.FinancialStatus.Success, player.TrySpend(1100));
         }
     }
 }
