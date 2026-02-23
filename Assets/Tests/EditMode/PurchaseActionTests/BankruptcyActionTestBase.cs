@@ -5,7 +5,7 @@ using Tests.EditMode;
 using Tests.EditMode.PlayerControllerTests.Builders;
 using UnityEngine;
 
-public class PurchaseActionTestBase
+public class BankrupctyActionTestBase
 {
     private readonly List<ScriptableObject> createdInstances = new();
 
@@ -25,5 +25,4 @@ public class PurchaseActionTestBase
             Object.DestroyImmediate(instance);
         createdInstances.Clear();
     }
-}
 }
