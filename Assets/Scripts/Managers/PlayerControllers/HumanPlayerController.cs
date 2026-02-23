@@ -122,7 +122,7 @@ namespace Managers.PlayerControllers
                 },
                 onDenied: () =>
                 {
-                    Logger.Debug("HumanPlayerController.HandlePurchaseOwnableEvent",
+                    Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
                         "Purchase UI blocked by TurnFlow.",
                         LogCategory.UI);
                 });
