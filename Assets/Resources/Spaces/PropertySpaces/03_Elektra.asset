@@ -27,4 +27,6 @@ MonoBehaviour:
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   researchFundingValues: 04000000140000003c000000b400000040010000c2010000
   dataPointCost: 50
+  upgradeCostMultiplier: 1
+  upgradeCostByLevel: 0000000000000000000000000000000000000000
   purchaseUpgradeRequestEventChannel: {fileID: 11400000, guid: f709ab2b9d2ef8f43add75ad874f0e54, type: 2}
