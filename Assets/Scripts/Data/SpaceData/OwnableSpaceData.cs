@@ -9,7 +9,7 @@ public abstract class OwnableSpaceData : SpaceData
 
     // used for mortage information
     public bool isMortgaged = false;
-    public bool isMortageable { get; set; } = true;
+    public bool isMortgageable { get; set; } = true;
 
 
     public int mortgagePayoffValue { get; set;  }

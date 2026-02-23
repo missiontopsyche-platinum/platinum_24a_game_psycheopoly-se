@@ -471,66 +471,6 @@ public class Player : ScriptableObject
         p.mortgagePayoffValue = payoff;
     }
 
-    /// Called upon becoming bankrupt
-    /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
-    /// </summary>
-    public void ClearOwnership()
-    {
-        foreach (OwnableSpaceData space in this.GetOwnedProperties())
-        {
-            space.SetOwner(null);
-            this.RemoveOwnedProperty(space);
-        }
-    }
-
-
-    // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later
-
-    public enum FinancialStatus
-    {
-        Success,
-        MortageRequired,
-        Bankrupt
-    }
-
-    /// <summary>
-    /// Returns a list of all properties the player can mortage.
-    /// The isMortageable flag must be set or removed when buying or selling upgrades on the prop. 
-    /// </summary>
-    /// <returns></returns>
-    public List<OwnableSpaceData> GetMortagableProperties()
-    {
-        List<OwnableSpaceData> mortagableProps = new List<OwnableSpaceData>();
-        foreach (OwnableSpaceData p in ownedProperties)
-        {
-           if (p.isMortgageable == true)
-            {
-                mortagableProps.Add(p);
-            }
-        }
-
-        return mortagableProps;
-    }
-
-    public List<OwnableSpaceData> GetMortagedProperties()
-    {
-        List<OwnableSpaceData> mortgagedProps = new List<OwnableSpaceData>();
-        foreach (OwnableSpaceData p in ownedProperties)
-        {
-            if (p.isMortgaged)
-            {
-                mortgagedProps.Add(p);
-            }
-        }
-        return mortgagedProps;
-    }
-
-    public void SetMortgagePayoff(OwnableSpaceData p)
-    {
-        p.mortgagePayoffValue = (p.collaborationValue + (int)(p.collaborationValue * 0.10));
-    }
-
-
     // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later
 
     public enum FinancialStatus
