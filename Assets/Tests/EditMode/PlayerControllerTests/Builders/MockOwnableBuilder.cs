@@ -12,6 +12,8 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
         private int groupSize = 2;
         private int collabValue = 50;
         private int mortgagePayoff = 50;
+        private bool isMortgaged = false;
+        private int[] diceMultipliers = new int [2];
 
         public MockOwnableBuilder WithBuyPrice(int price)
         {
@@ -61,6 +63,18 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             return this;
         }
 
+        public MockOwnableBuilder WithIsMortgaged(bool mortgaged)
+        {
+            isMortgaged = mortgaged;
+            return this;
+        }
+
+        public MockOwnableBuilder WithDiceMultipliers(int[] multipliers)
+        {
+            diceMultipliers = multipliers;
+            return this;
+        }
+
         private void BuildOwnableData(OwnableSpaceData space)
         {
             space.buyPrice = buyPrice;
@@ -68,6 +82,7 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             space.numberOfPropertiesInGroup = groupSize;
             space.collaborationValue = collabValue;
             space.mortgagePayoffValue = mortgagePayoff;
+            space.isMortgaged = isMortgaged;
         }
 
         public PropertySpaceData BuildAsProperty()
@@ -94,6 +109,8 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             
             BuildOwnableData(instrument);
 
+            instrument.researchFundingLevels = researchFundingValues;
+
             return instrument;
         }
 
@@ -102,6 +119,8 @@ namespace Tests.EditMode.PlayerControllerTests.Builders
             var planet = ScriptableObject.CreateInstance<PlanetSpaceData>();
             
             BuildOwnableData(planet);
+
+            planet.diceMultipliers = diceMultipliers;
 
             return planet;
         }

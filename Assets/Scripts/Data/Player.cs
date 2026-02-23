@@ -49,6 +49,9 @@ public class Player : ScriptableObject
 
     public void SetMoney(int money)
     {
+        // TODO figure out what we're doing here. AIMortgage is relying on the player money being accurate, even with debt.
+        // The validation for that should not be happening here- this should just be a data container, and a negative
+        // balance is useful data for other parts of the system.
         if (money < 0)
         {
             Logging.Logger.Error("Player.SetMoney", 

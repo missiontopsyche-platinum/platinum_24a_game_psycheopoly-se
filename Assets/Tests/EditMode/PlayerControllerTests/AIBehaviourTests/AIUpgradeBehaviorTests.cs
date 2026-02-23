@@ -1,7 +1,6 @@
 ﻿using AIBehavior;
 using Data;
 using NUnit.Framework;
-using Tests.EditMode.PlayerControllerTests.Builders;
 using UnityEngine;
 
 namespace Tests.EditMode.PlayerControllerTests.AIBehaviourTests

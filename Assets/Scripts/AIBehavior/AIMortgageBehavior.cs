@@ -16,6 +16,22 @@ namespace AIBehavior
             this.player = player;
             this.thresholds = thresholds;
         }
+        
+        public (List<OwnableSpaceData> mortgagePoolProperties, List<PropertySpaceData> sellPoolProperties) 
+            TestBuildCandidatePools(List<OwnableSpaceData> ownables)
+        {
+            var (mPool, sPool) = BuildCandidatePools(ownables);
+            return (
+                mPool.Keys.ToList(), 
+                sPool.Values
+                    .SelectMany(proxies => proxies
+                        .Select(p => p.property))
+                    .ToList()
+            );
+        }
+
+        public float TestCalculateScore(OwnableSpaceData ownable) =>
+            CalculateScore(ownable, GetIncomeFromOwnable(ownable));
 
         public AIMortgageEvaluation EvaluateMortgage()
         {
@@ -117,15 +133,21 @@ namespace AIBehavior
 
         private float CalculateScore(OwnableSpaceData ownable, int currentIncome)
         {
-            float cashRaised = ownable.collaborationValue;
-            float recoveryCost = ownable.collaborationValue * 1.1f;
-            float totalCost = recoveryCost + currentIncome;
+            var (cashRaised, recoveryCost) = ownable switch
+            {
+                PropertySpaceData property when property.GetCurrentUpgradeLevel() == 5
+                    => (property.dataPointCost * 5 / 2, property.dataPointCost * 5),
+                PropertySpaceData property when property.GetCurrentUpgradeLevel() > 0
+                    => (property.dataPointCost / 2, property.dataPointCost),
+                _ => (ownable.collaborationValue, ownable.collaborationValue * 1.1f)
+            };
+            var totalCost = recoveryCost + currentIncome;
             return (float)Math.Round(cashRaised / totalCost, 3);
         }
 
         private void ScoreMortgageCandidates(Dictionary<OwnableSpaceData, float> mortgagePool)
         {
-            foreach (var ownable in mortgagePool.Keys)
+            foreach (var ownable in mortgagePool.Keys.ToList())
             {
                 var income = GetIncomeFromOwnable(ownable);
                 mortgagePool[ownable] = CalculateScore(ownable, income);
@@ -136,8 +158,13 @@ namespace AIBehavior
         {
             return ownable switch
             {
-                PropertySpaceData property => 
-                    property.researchFundingValues[property.GetCurrentUpgradeLevel()],
+                PropertySpaceData property when property.GetCurrentUpgradeLevel() == 5 => 
+                    property.researchFundingValues[5] - property.researchFundingValues[0],
+                PropertySpaceData property when property.GetCurrentUpgradeLevel() > 0 => 
+                    property.researchFundingValues[property.GetCurrentUpgradeLevel()] 
+                    - property.researchFundingValues[property.GetCurrentUpgradeLevel() - 1],
+                PropertySpaceData property when property.GetCurrentUpgradeLevel() == 0 => 
+                    property.researchFundingValues[0],
                 InstrumentSpaceData instrument => 
                     instrument.researchFundingLevels[player.GetNumberInstrumentsOwned() - 1],
                 PlanetSpaceData planet => 
@@ -167,7 +194,7 @@ namespace AIBehavior
             Dictionary<OwnableSpaceData, float> mortgagePool, 
             Dictionary<Color, List<PropertyProxy>> sellPool)
         {
-            OwnableSpaceData bestMortgage = mortgagePool.Count > 0
+            var bestMortgage = mortgagePool.Count > 0
                 ? mortgagePool
                     .OrderByDescending(kvp => kvp.Value)
                     .ThenByDescending(kvp => kvp.Key.collaborationValue)
@@ -175,7 +202,7 @@ namespace AIBehavior
                     .First().Key
                 : null;
 
-            PropertyProxy bestSell = sellPool.Count > 0
+            var bestSell = sellPool.Count > 0
                 ? sellPool.Values
                     .SelectMany(proxies => proxies.Where(p => p.currentScore > 0))
                     .OrderByDescending(p => p.currentScore)
@@ -187,27 +214,27 @@ namespace AIBehavior
             // defensive, might be overkill.
             if (bestMortgage == null && bestSell == null) 
                 return null;
-            if (bestMortgage == null && bestSell != null) return BuildMortgageAction(bestSell.property);
-            if (bestSell == null) return BuildMortgageAction(bestMortgage);
+            if (bestMortgage == null && bestSell != null) 
+                return BuildMortgageAction(bestSell.property, bestSell.currentUpgradeLevel);
             
-            if (bestSell.currentScore > mortgagePool[bestMortgage])
-                return BuildMortgageAction(bestSell?.property);
-            
-            return BuildMortgageAction(bestMortgage);
+            if (bestSell == null || mortgagePool[bestMortgage] >= bestSell.currentScore)
+                return BuildMortgageAction(bestMortgage);
+
+            return BuildMortgageAction(bestSell.property, bestSell.currentUpgradeLevel);
         }
 
-        private MortgageAction BuildMortgageAction(OwnableSpaceData winner)
+        private MortgageAction BuildMortgageAction(OwnableSpaceData winner, int proxyLevel = 0)
         {
             return winner switch
             {
-                PropertySpaceData property => BuildPropertyAction(property),
+                PropertySpaceData property => BuildPropertyAction(property, proxyLevel),
                 _ => new MortgageAction(winner, MortgageActionType.Mortgage, winner.collaborationValue)
             };
         }
 
-        private MortgageAction BuildPropertyAction(PropertySpaceData property)
+        private MortgageAction BuildPropertyAction(PropertySpaceData property, int proxyLevel)
         {
-            return property.GetCurrentUpgradeLevel() switch
+            return proxyLevel switch
             {
                 5 => new MortgageAction(property, MortgageActionType.SellDiscovery, property.dataPointCost * 5 / 2),
                 > 0 => new MortgageAction(property, MortgageActionType.SellDataPoint, property.dataPointCost / 2),
@@ -226,7 +253,7 @@ namespace AIBehavior
                 mortgagePool.Remove(action.ownableSpace);
                 return;
             }
-            
+
             // sell action. we need to find the right proxy and update their 'state'
             var groupProxies = sellPool[action.ownableSpace.groupColor];
             var proxy = groupProxies.First(p => p.property == action.ownableSpace);
