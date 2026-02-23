@@ -5,7 +5,7 @@ namespace Assets.Scripts.Managers.TurnFlow
     {
         RollDice,
         BuyProperty,
-        UpgradeProperty,
+        ModifyProperty,
         EndTurn
     }
 }

@@ -82,6 +82,7 @@ namespace Managers.PlayerControllers
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
         {
+            if (!isMyTurn) return;
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
                 TurnActionType.BuyProperty,
@@ -107,7 +108,7 @@ namespace Managers.PlayerControllers
         {
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
-                TurnActionType.UpgradeProperty,
+                TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
                     uiActivationEventChannel?.RaiseEvent(
