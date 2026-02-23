@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f73030051c6add499cfa0f3abaf7e14, type: 3}
   m_Name: PsycheUITheme
   m_EditorClassIdentifier: Assembly-CSharp::UITheme
-  fallbackFont_Garamond: {fileID: 11400000, guid: 9db56d71161d75e47b565d7c90c1f194, type: 2}
-  uiFont_Garamond: {fileID: 11400000, guid: 9db56d71161d75e47b565d7c90c1f194, type: 2}
+  fallbackFont_Garamond: {fileID: 11400000, guid: d4610a1b11c706b418fa721c2e0ffd0e, type: 2}
+  uiFont_Garamond: {fileID: 11400000, guid: bde500d992ce15b4ca1a8d4896b645f7, type: 2}
   H1: 44
   H2: 30
   H3: 22
