@@ -91,13 +91,14 @@ namespace Managers.PlayerControllers
 
             myTurnActive = true;
             endTurnRequested = false;
-            // start turn decision flows
-            // check for upgrades
-            // roll dice
-            // resolve movement (purchase, pay rent, jail, etc)
-            // check for upgrades
-
-            // the turn flow might need to operate as a Coroutine that waits on completion flags.
+            
+            HandleOptionalActions();
+            
+            // TODO This might need to run as a coroutine so that we can await the completed movement
+            // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
+            // to be honest, having an AI Turn coroutine makes a lot of sense- keep it all in the same logical
+            // place.
+            
             // AI must roll dice or the game stalls at AwaitingRoll.
             RequestTurnAction(
                 TurnActionType.RollDice,
@@ -123,9 +124,8 @@ namespace Managers.PlayerControllers
                         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
                         LogCategory.AI);
                 });
-            HandleOptionalActions();
-            // roll dice
-            // wait for resolution
+            // wait for resolution of the movement phase (land on space, resolve space)
+            
             HandleOptionalActions();
             // end turn
         }
