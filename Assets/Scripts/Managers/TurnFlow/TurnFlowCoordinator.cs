@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using Assets.Scripts.Managers.TurnOrder;
-using Assets.Scripts.Managers.Movement;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
@@ -16,6 +15,8 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
         [SerializeField] private BooleanEventChannel turnEndedChannel;
+        [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
+        [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
 
         [Header("Event Channels Out")]
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
@@ -46,6 +47,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             diceRolledChannel?.Subscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
             turnEndedChannel?.Subscribe(OnTurnEnded);
+            turnActionRequestChannel?.Subscribe(OnTurnActionRequested);
         }
 
         private void OnDisable()
@@ -54,6 +56,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
             turnEndedChannel?.Unsubscribe(OnTurnEnded);
+            turnActionRequestChannel?.Unsubscribe(OnTurnActionRequested);
         }
 
         // a new turn's started, reset state, wait for new roll
@@ -105,6 +108,36 @@ namespace Assets.Scripts.Managers.TurnFlow
             int nextPlayer = turnCycleManager.Advance();
             turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
         }
-    }
 
+        public void OnTurnActionRequested(TurnActionRequest request)
+        {
+            bool allowed = IsAllowed(request.player.GetId(), request.action);
+            turnActionResultChannel.RaiseEvent(new TurnActionResult
+            {
+                playerId = request.player.GetId(),
+                action = request.action,
+                allowed = allowed
+            });
+        }
+
+        private bool IsAllowed(int playerId, TurnActionType action)
+        {
+
+            if (playerId != ActivePlayer) return false;
+
+            return action switch
+            {
+                TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
+                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution,
+                // upgrade at any point in the player's turn
+                TurnActionType.ModifyProperty => Phase == TurnPhase.None
+                                                || Phase == TurnPhase.AwaitingRoll
+                                                || Phase == TurnPhase.AwaitingMovement
+                                                || Phase == TurnPhase.AwaitingResolution 
+                                                || Phase == TurnPhase.Completed,
+                TurnActionType.EndTurn => Phase == TurnPhase.Completed,
+                _ => false
+            };
+        }
+    }
 }

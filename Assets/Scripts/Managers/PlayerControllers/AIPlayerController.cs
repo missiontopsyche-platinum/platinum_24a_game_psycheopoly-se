@@ -35,8 +35,10 @@ namespace Managers.PlayerControllers
             TurnStartedEventChannel turnStarted,
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
-            PayPlayerEventChannel passedGoPayment) 
-            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment)
+            PayPlayerEventChannel passedGoPayment,
+            TurnActionRequestEventChannel turnActionRequest,
+            TurnActionResultEventChannel turnActionResult) 
+            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, turnActionRequest, turnActionResult)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
