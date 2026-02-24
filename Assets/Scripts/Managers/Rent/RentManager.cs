@@ -120,7 +120,7 @@ namespace Assets.Scripts.Managers.Rent
 
             if (amount <= 0) return true;
 
-            if (!from.TrySpend(amount))
+            if (from.TrySpend(amount) == Player.FinancialStatus.Bankrupt)
             {
                 Logging.Logger.Warn("EconomyAdapter.Transfer",
                     $"Transfer blocked (insufficient funds). From={from.GetId()} To={to.GetId()} Amount=${amount} Have=${from.GetMoney()}",

@@ -138,6 +138,11 @@ namespace Assets.Scripts.Managers.TurnFlow
             
         }
 
+        public void SetAwaitingEndTurn(bool awaiting)
+        {
+            awaitingEndTurn = awaiting;
+        }
+
         private bool IsAllowed(int playerId, TurnActionType action)
         {
 
@@ -146,7 +151,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             return action switch
             {
                 TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
-                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution,
                 // upgrade at any point in the player's turn
                 TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution
                                                 || (Phase == TurnPhase.Completed && awaitingEndTurn),

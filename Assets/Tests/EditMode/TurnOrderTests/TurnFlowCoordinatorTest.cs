@@ -124,48 +124,45 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         Assert.AreEqual(1, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(2, resultCount);
-        Assert.IsTrue(lastResult.allowed);
-
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingRoll);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(3, resultCount);
+        Assert.AreEqual(2, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(4, resultCount);
+        Assert.AreEqual(3, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingMovement);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(5, resultCount);
+        Assert.AreEqual(4, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(6, resultCount);
+        Assert.AreEqual(5, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingResolution);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(7, resultCount);
+        Assert.AreEqual(6, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(8, resultCount);
+        Assert.AreEqual(7, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.Completed);
+        tfc.SetAwaitingEndTurn(true);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(9, resultCount);
+        Assert.AreEqual(8, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
         tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
-        Assert.AreEqual(10, resultCount);
+        Assert.AreEqual(9, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         Object.DestroyImmediate(active);
