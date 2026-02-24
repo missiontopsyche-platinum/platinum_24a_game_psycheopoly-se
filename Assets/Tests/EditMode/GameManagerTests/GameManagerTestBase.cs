@@ -56,7 +56,6 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.diceRolledChannel.Subscribe(gameManager.DiceRolled);
 
             gameManager.pieceMoveCompletedChannel = CreateChannel<BooleanEventChannel>();
-            gameManager.rollDiceRequestedChannel = CreateChannel<BooleanEventChannel>();
             gameManager.cardDrawnChannel = CreateChannel<CardDrawnEventChannel>();
             gameManager.turnEndedChannel = CreateChannel<BooleanEventChannel>();
             gameManager.spaceResolutionCompletedChannel = CreateChannel<BooleanEventChannel>();

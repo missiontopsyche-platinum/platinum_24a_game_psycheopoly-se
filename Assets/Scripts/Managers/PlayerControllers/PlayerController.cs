@@ -23,6 +23,7 @@ namespace Managers.PlayerControllers
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
+        protected BooleanEventChannel diceRollRequestChannel;
         protected CardDrawnEventChannel cardDrawnEventChannel;
         // event channels to validate turn actions against the current turn phase.
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
@@ -43,6 +44,7 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest, 
             ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
             PayPlayerEventChannel passedGoPayment,
+            BooleanEventChannel diceRollRequest,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel  turnActionResult)
         {
@@ -57,6 +59,7 @@ namespace Managers.PlayerControllers
                 throw new System.ArgumentNullException(nameof(turnActionRequest));
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
+            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
         }
         
         // general event handling
