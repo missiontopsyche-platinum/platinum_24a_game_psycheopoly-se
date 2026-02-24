@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
@@ -44,10 +45,13 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
+            BooleanEventChannel diceRollRequest,
             UIActivationEventChannel uiActivation,
             UIActionEventChannel uiAction,
-            MortgageFinishedEventChannel mortgageFinished) 
-            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment)
+            MortgageFinishedEventChannel mortgageFinished,
+            TurnActionRequestEventChannel turnActionRequest,
+            TurnActionResultEventChannel turnActionResult) 
+            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
@@ -81,15 +85,49 @@ namespace Managers.PlayerControllers
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
         {
             if (!isMyTurn) return;
+            // Note: Follow this pattern for any event that requires player input.
+            RequestTurnAction(
+                TurnActionType.BuyProperty,
+                onAllowed: () =>
+                {
+                    uiActivationEventChannel?.RaiseEvent(
+                        new UIActivationEvent(
+                            UIType.PropertyPurchase,
+                            new PurchaseActivationContext(
+                                pore.requestedSpace,
+                                pore.cost,
+                                controlledPlayer.CanAfford(pore.requestedSpace.buyPrice))));
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.HandlePurchaseOwnableEvent",
+                        "Purchase UI blocked by TurnFlow.",
+                        LogCategory.UI);
+                });
+        }
 
-            uiActivationEventChannel.RaiseEvent(
-                new UIActivationEvent(
-                    UIType.PropertyPurchase,
-                    new PurchaseActivationContext(
-                        pore.requestedSpace,
-                        pore.cost,
-                        controlledPlayer.CanAfford(pore.requestedSpace.buyPrice)))); 
-
+        private void HandleUpgradeEvent(/*TODO: add event data here*/)
+        {
+            // Note: Follow this pattern for any event that requires player input.
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                onAllowed: () =>
+                {
+                    uiActivationEventChannel?.RaiseEvent(
+                        new UIActivationEvent(
+                            UIType.PropertyPurchase,
+                            new PurchaseActivationContext(
+                                /*TODO: update input fields below*/
+                                null,
+                                0,
+                                controlledPlayer.CanAfford(0))));
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
+                        "Purchase UI blocked by TurnFlow.",
+                        LogCategory.UI);
+                });
         }
 
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)

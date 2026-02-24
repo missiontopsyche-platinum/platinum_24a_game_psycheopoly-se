@@ -1,5 +1,8 @@
-﻿using Events.EventDataStructures;
+﻿using Assets.Scripts.Managers.TurnFlow;
+using Events.EventDataStructures;
 using Logging;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Managers.PlayerControllers
@@ -20,7 +23,19 @@ namespace Managers.PlayerControllers
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
+        protected BooleanEventChannel diceRollRequestChannel;
         protected CardDrawnEventChannel cardDrawnEventChannel;
+        // event channels to validate turn actions against the current turn phase.
+        protected TurnActionRequestEventChannel turnActionRequestEventChannel;
+        protected TurnActionResultEventChannel turnActionResultEventChannel;
+
+        // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
+        private struct PendingCallbacks
+        {
+            public Action Allowed;
+            public Action Denied;
+        }
+        private readonly Dictionary<TurnActionType, PendingCallbacks> pendingActions = new();
 
         // constructor, needs to be called in future subclass constructors with `super(args)`
         public PlayerController(
@@ -28,7 +43,10 @@ namespace Managers.PlayerControllers
             TurnStartedEventChannel turnStarted, 
             PurchaseOwnableRequestEventChannel purchaseRequest, 
             ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
-            PayPlayerEventChannel passedGoPayment)
+            PayPlayerEventChannel passedGoPayment,
+            BooleanEventChannel diceRollRequest,
+            TurnActionRequestEventChannel turnActionRequest,
+            TurnActionResultEventChannel  turnActionResult)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -37,6 +55,11 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel =
                 chargeOwnershipFee ?? throw new System.ArgumentNullException(nameof(chargeOwnershipFee));
             passedGoPaymentChannel = passedGoPayment ?? throw new System.ArgumentNullException(nameof(passedGoPayment));
+            turnActionRequestEventChannel = turnActionRequest ?? 
+                throw new System.ArgumentNullException(nameof(turnActionRequest));
+            turnActionResultEventChannel = turnActionResult ?? 
+                throw new System.ArgumentNullException(nameof(turnActionResult));
+            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
         }
         
         // general event handling
@@ -48,6 +71,7 @@ namespace Managers.PlayerControllers
         public virtual void Subscribe()
         {
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
+            turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
         }
 
         /// <summary>
@@ -57,6 +81,7 @@ namespace Managers.PlayerControllers
         public virtual void Unsubscribe()
         {
             turnStartedEventChannel?.Unsubscribe(CatchTurnStartedEvent);
+            turnActionResultEventChannel?.Unsubscribe(OnTurnActionResult);
         }
         
         /// <summary>
@@ -74,6 +99,67 @@ namespace Managers.PlayerControllers
                     LogCategory.Gameplay, this);
         }
 
-       
+        /// <summary>
+        /// Sends a turn action request to TurnFlow to check if the
+        /// controlled player is allowed to perform the action.
+        ///
+        /// Only one pending request per action type is allowed at a time.
+        /// Duplicate requests are ignored.
+        ///
+        /// If approved, <paramref name="onAllowed"/> is invoked.
+        /// If denied, <paramref name="onDenied"/> is invoked (optional).
+        /// </summary>
+        /// <param name="action">The action being requested.</param>
+        /// <param name="onAllowed">Callback executed if the action is allowed.</param>
+        /// <param name="onDenied">Optional callback executed if the action is denied.</param>
+        protected void RequestTurnAction(
+            TurnActionType action,
+            Action onAllowed,
+            Action onDenied = null)
+        {
+            if (onAllowed == null) return;
+
+            if (pendingActions.ContainsKey(action))
+            {
+                Logging.Logger.Debug("HumanPlayerController.RequestTurnAction",
+                    $"Ignored duplicate pending request: {action}",
+                    LogCategory.UI);
+                return;
+            }
+
+            pendingActions[action] = new PendingCallbacks
+            {
+                Allowed = onAllowed,
+                Denied = onDenied
+            };
+
+            turnActionRequestEventChannel?.RaiseEvent(new TurnActionRequest
+            {
+                player = controlledPlayer,
+                action = action
+            });
+        }
+
+        /// <summary>
+        /// Handles the result of a turn action request from TurnFlow.
+        ///
+        /// If the result matches the controlled player and a pending
+        /// request exists, the appropriate callback (allowed or denied)
+        /// is executed. The pending request is then removed.
+        /// </summary>
+        /// <param name="result">The result of the requested turn action.</param>
+        protected void OnTurnActionResult(TurnActionResult result)
+        {
+            if (result.playerId != controlledPlayer.GetId())
+                return;
+
+            if (!pendingActions.TryGetValue(result.action, out var pending))
+                return;
+
+            pendingActions.Remove(result.action);
+
+            if (result.allowed) pending.Allowed?.Invoke();
+            else pending.Denied?.Invoke();
+        }
     }
 }
