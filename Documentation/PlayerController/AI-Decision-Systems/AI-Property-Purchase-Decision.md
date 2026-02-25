@@ -1,5 +1,7 @@
 ﻿# AI Property Purchase Decision System
 
+---
+
 ## Overview
 
 The AI uses a weighted scoring system to decide whether to purchase properties 

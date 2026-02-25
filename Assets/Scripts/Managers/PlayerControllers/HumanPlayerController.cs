@@ -38,6 +38,7 @@ namespace Managers.PlayerControllers
         /// <param name="passedGoPayment">PayPlayerEventChannel for passing Go</param>
         /// <param name="uiActivation">UI Activation Event Channel</param>
         /// <param name="uiAction">UI Action Event Channel</param>
+        /// <param name="mortgageFinished">Mortgage Finished Event Channel</param>
         public HumanPlayerController(
             Player player,
             TurnStartedEventChannel turnStarted,

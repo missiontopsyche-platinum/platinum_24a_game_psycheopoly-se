@@ -50,6 +50,9 @@ public class Player : ScriptableObject
 
     public void SetMoney(int money)
     {
+        // TODO figure out what we're doing here. AIMortgage is relying on the player money being accurate, even with debt.
+        // The validation for that should not be happening here- this should just be a data container, and a negative
+        // balance is useful data for other parts of the system.
         if (money < 0)
         {
             Logging.Logger.Error("Player.SetMoney", 
@@ -429,36 +432,21 @@ public class Player : ScriptableObject
 
 
     /// <summary>
-    /// Returns a list of all properties the player can mortage.
-    /// The isMortageable flag must be set or removed when buying or selling upgrades on the prop. 
+    /// Returns a list of all properties the player can mortgage.
+    /// The isMortgageable flag must be set or removed when buying or selling upgrades on the prop. 
     /// </summary>
     /// <returns></returns>
-    public List<OwnableSpaceData> GetMortagableProperties()
-    {
-        List<OwnableSpaceData> mortagableProps = new List<OwnableSpaceData>();
-        foreach (OwnableSpaceData p in ownedProperties)
-        {
-           if (p.isMortgageable == true)
-            {
-                mortagableProps.Add(p);
-            }
-        }
+    public List<OwnableSpaceData> GetMortgageableProperties() => 
+        ownedProperties.Where(p => p.isMortgageable).ToList();
 
-        return mortagableProps;
-    }
-
-    public List<OwnableSpaceData> GetMortagedProperties()
-    {
-        List<OwnableSpaceData> mortgagedProps = new List<OwnableSpaceData>();
-        foreach (OwnableSpaceData p in ownedProperties)
-        {
-            if (p.isMortgaged)
-            {
-                mortgagedProps.Add(p);
-            }
-        }
-        return mortgagedProps;
-    }
+    public List<OwnableSpaceData> GetMortgagedProperties() => 
+        ownedProperties.Where(p => p.isMortgaged).ToList();
+    
+    // this is used for AI behavior, and differs from GetMortgageableProperties in that
+    // the AI also needs to evaluate upgraded properties for its mortgage/debt resolve
+    // behavior- and upgraded properties by rules are *not* mortgageable.
+    public List<OwnableSpaceData> GetUnmortgagedProperties() =>
+        ownedProperties.Where(p => !p.isMortgaged).ToList();
 
     public void SetMortgagePayoff(OwnableSpaceData p)
     {

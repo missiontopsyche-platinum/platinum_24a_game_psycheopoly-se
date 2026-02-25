@@ -14,7 +14,7 @@ namespace Managers.PlayerControllers
         // Behavior Classes
         private readonly AIPurchaseBehavior purchaseBehavior;
         private readonly AIUpgradeBehavior upgradeBehavior;
-        // private AIMortgageBehavior
+        private readonly AIMortgageBehavior mortgageBehavior;
         // private AIJailBehavior
         // etc...
         private bool myTurnActive;
@@ -56,6 +56,9 @@ namespace Managers.PlayerControllers
                 controlledPlayer,
                 weights.upgradeWeights,
                 weights.upgradeThresholds);
+            mortgageBehavior = new AIMortgageBehavior(
+                controlledPlayer,
+                weights.mortgageThresholds);
             actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
             // mortgageBehavior
             // jailBehavior etc...
@@ -81,19 +84,21 @@ namespace Managers.PlayerControllers
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
+            // TODO: This needs to be implemented and property integrated. Currently the actions don't *do* anything.
             base.CatchTurnStartedEvent(tse);
 
             if (!isMyTurn) return;
 
             myTurnActive = true;
             endTurnRequested = false;
-            // start turn decision flows
-            // check for upgrades
-            // roll dice
-            // resolve movement (purchase, pay rent, jail, etc)
-            // check for upgrades
-
-            // the turn flow might need to operate as a Coroutine that waits on completion flags.
+            
+            HandleOptionalActions();
+            
+            // TODO This might need to run as a coroutine so that we can await the completed movement
+            // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
+            // to be honest, having an AI Turn coroutine makes a lot of sense- keep it all in the same logical
+            // place.
+            
             // AI must roll dice or the game stalls at AwaitingRoll.
             RequestTurnAction(
                 TurnActionType.RollDice,
@@ -119,6 +124,17 @@ namespace Managers.PlayerControllers
                         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
                         LogCategory.AI);
                 });
+            // wait for resolution of the movement phase (land on space, resolve space)
+            
+            HandleOptionalActions();
+            // end turn
+        }
+
+        private void HandleOptionalActions()
+        {
+            HandleMortgageAction();
+            // handle unmortgage goes here
+            HandleUpgradeAction();
         }
 
         private void HandleUpgradeAction()
@@ -138,6 +154,30 @@ namespace Managers.PlayerControllers
                         LogCategory.AI);
                 }
             } while (evaluation.willUpgrade);
+        }
+
+        private void HandleMortgageAction()
+        {
+            AIMortgageEvaluation evaluation = mortgageBehavior.EvaluateMortgage();
+
+            foreach (var mortgageAction in evaluation.actions)
+            {
+                switch (mortgageAction.actionType)
+                {
+                    case MortgageActionType.Mortgage:
+                        // mortgage the property
+                        break;
+                    case MortgageActionType.SellDataPoint:
+                        // sell data point
+                        break;
+                    case MortgageActionType.SellDiscovery:
+                        // sell discovery (all upgrades for this property)
+                        break;
+                }
+            }
+            Logger.Info("AIPlayerController.HandleMortgageAction",
+                $"Mortgage Evaluation: {evaluation.message}.",
+                LogCategory.AI);
         }
 
         private void PurchaseRequestDecision(PurchaseOwnableRequestEvent pore)
