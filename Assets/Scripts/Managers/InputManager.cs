@@ -1,4 +1,5 @@
 ﻿using Interactable;
+using Logging;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,19 @@ namespace Managers
         [SerializeField] private Camera mainCamera;
 
         private IHoverable currentHovered;
+
+        private void Start()
+        {
+            if (!mainCamera)
+                mainCamera = Camera.main;
+
+            if (mainCamera) return;
+            
+            Logging.Logger.Error("InputManager.Start",
+                "Unable to find camera in scene!",
+                LogCategory.UI);
+            Destroy(this);
+        }
         
         private void Update()
         {
