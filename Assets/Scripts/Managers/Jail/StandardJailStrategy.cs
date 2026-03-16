@@ -11,7 +11,7 @@ namespace Assets.Scripts.Managers.Jail
         private const int MAX_TURNS_IN_JAIL = 3;
         private const int JAIL_FEE = 100;
 
-        public void AttemptEscape(Player player, int dice1, int dice2)
+        public static void AttemptEscape(Player player, int dice1, int dice2)
         {
             int turns = player.GetJailTurns() + 1;
 
@@ -36,7 +36,7 @@ namespace Assets.Scripts.Managers.Jail
         }
 
         //first iteration is just going to charge the fee if the player can afford it
-        public void PayFee(Player player)
+        public static void PayFee(Player player)
         {
             if (player.GetMoney() >= JAIL_FEE)
             {
@@ -51,7 +51,7 @@ namespace Assets.Scripts.Managers.Jail
             }
         }
 
-        public void UseGetOutOfJailFree(Player player)
+        public static void UseGetOutOfJailFree(Player player)
         {
             if (player.GetChanceCardCount() > 0)
             {
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Managers.Jail
             }
         }
 
-        public void ForcedExit(Player player)
+        private static void ForcedExit(Player player)
         {
             int money = player.GetMoney();
             int jailFee = JAIL_FEE;
@@ -90,7 +90,7 @@ namespace Assets.Scripts.Managers.Jail
             ReleasePlayer(player);
         }
 
-        private void ReleasePlayer(Player player)
+        private static void ReleasePlayer(Player player)
         {
             player.SetInJail(false);
             player.SetJailTurns(0);
