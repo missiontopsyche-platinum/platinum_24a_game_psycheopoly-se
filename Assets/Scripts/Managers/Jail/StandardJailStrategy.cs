@@ -1,25 +1,15 @@
-﻿using Assets.Scripts.Managers.Rules;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Managers.Jail
 {
     /// <summary>
     /// this implements the standard monopoly style jail behavior; implements JailStrategy interface
     /// </summary>
-    /// 
-    //TODO: when we build out JailManager/TurnManager, we will need to implement the ability to roll after
-    //escaping jail.
-    public class StandardJailStrategy : IJailStrategy
+    public class StandardJailStrategy
     {
-        private readonly IRuleSet ruleSet;
-        private int MaxTurnsInJail;
-
-        public StandardJailStrategy(IRuleSet ruleSet)
-        {
-            this.ruleSet = ruleSet ?? throw new ArgumentNullException(nameof(ruleSet));
-            MaxTurnsInJail = ruleSet.MaxJailTurns();
-        }
+        // temporary constants until we have a configurable ruleset hook established
+        private const int MAX_TURNS_IN_JAIL = 3;
+        private const int JAIL_FEE = 100;
 
         public void AttemptEscape(Player player, int dice1, int dice2)
         {
@@ -34,7 +24,7 @@ namespace Assets.Scripts.Managers.Jail
             {
                 Debug.Log($"{player.GetPName()} rolled doubles and escaped jail!");
                 ReleasePlayer(player);
-            } else if (turns >= MaxTurnsInJail)
+            } else if (turns >= MAX_TURNS_IN_JAIL)
             {
                 Debug.Log($"{player.GetPName()} failed to roll doubles, but has served their sentence! Forced to pay & exit.");
                 ForcedExit(player);
@@ -48,11 +38,10 @@ namespace Assets.Scripts.Managers.Jail
         //first iteration is just going to charge the fee if the player can afford it
         public void PayFee(Player player)
         {
-            int jailFee = ruleSet.JailFee();
-            if (player.GetMoney() >= jailFee)
+            if (player.GetMoney() >= JAIL_FEE)
             {
-                player.SetMoney(player.GetMoney() - jailFee);
-                Debug.Log($"{player.GetPName()} paid ${jailFee} to leave jail.");
+                player.SetMoney(player.GetMoney() - JAIL_FEE);
+                Debug.Log($"{player.GetPName()} paid ${JAIL_FEE} to leave jail.");
                 ReleasePlayer(player);
             }
             else
@@ -85,7 +74,7 @@ namespace Assets.Scripts.Managers.Jail
         public void ForcedExit(Player player)
         {
             int money = player.GetMoney();
-            int jailFee = ruleSet.JailFee();
+            int jailFee = JAIL_FEE;
             if (money >= jailFee)
             {
                 player.SetMoney(money - jailFee);
