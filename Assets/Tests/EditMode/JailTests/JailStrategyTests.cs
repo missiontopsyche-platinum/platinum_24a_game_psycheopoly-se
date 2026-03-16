@@ -15,7 +15,7 @@ namespace Assets.Tests.EditMode.JailTests
     {
 
         private Player testPlayer;
-        private StandardJailStrategy jailStrategy;
+        private JailUtility jailUtility;
         private IRuleSet RuleSet;
 
         [SetUp]
@@ -29,7 +29,7 @@ namespace Assets.Tests.EditMode.JailTests
 
             RuleSet = new StandardRuleSet();
 
-            jailStrategy = new StandardJailStrategy(RuleSet);
+            jailUtility = new JailUtility(RuleSet);
         }
 
         [TearDown]
@@ -42,7 +42,7 @@ namespace Assets.Tests.EditMode.JailTests
         [Test]
         public void AttemptEscape_RollsDoubles_ReleasesPlayer()
         {
-            jailStrategy.AttemptEscape(testPlayer, 3, 3);
+            jailUtility.AttemptEscape(testPlayer, 3, 3);
 
             Assert.IsFalse(testPlayer.GetInJail(), "Player should be released after rolling doubles.");
             Assert.AreEqual(0, testPlayer.GetJailTurns(), "Jail turns should reset after release.");
@@ -52,7 +52,7 @@ namespace Assets.Tests.EditMode.JailTests
         [Test]
         public void AttemptEscape_NoDoubles_StillInJail()
         {
-            jailStrategy.AttemptEscape(testPlayer, 2, 5);
+            jailUtility.AttemptEscape(testPlayer, 2, 5);
 
             Assert.IsTrue(testPlayer.GetInJail(), "Player should still be in jail after failing to roll doubles.");
             Assert.AreEqual(1, testPlayer.GetJailTurns(), "Jail turns should increment by one.");
@@ -65,7 +65,7 @@ namespace Assets.Tests.EditMode.JailTests
             testPlayer.SetJailTurns(3);
             testPlayer.SetMoney(200);
 
-            jailStrategy.ForcedExit(testPlayer);
+            jailUtility.ForcedExit(testPlayer);
 
             Assert.IsFalse(testPlayer.GetInJail(), "Player should be released after forced exit.");
             Assert.AreEqual(100, testPlayer.GetMoney(), "Player should pay $100 to exit jail.");
@@ -75,7 +75,7 @@ namespace Assets.Tests.EditMode.JailTests
         [Test]
         public void PayFee_EnoughMoney_ReleasesPlayerAndDeductsFee()
         {
-            jailStrategy.PayFee(testPlayer);
+            jailUtility.PayFee(testPlayer);
 
             Assert.IsFalse(testPlayer.GetInJail(), "Player should be released after paying fee.");
             Assert.AreEqual(400, testPlayer.GetMoney(), "Money should decrease by $100 after paying fee.");
@@ -87,7 +87,7 @@ namespace Assets.Tests.EditMode.JailTests
         {
             testPlayer.SetMoney(50);
 
-            jailStrategy.PayFee(testPlayer);
+            jailUtility.PayFee(testPlayer);
 
             Assert.IsTrue(testPlayer.GetInJail(), "Player should remain in jail if they cannot pay the fee.");
             Assert.AreEqual(50, testPlayer.GetMoney(), "Player’s money should not change if payment fails.");
@@ -100,7 +100,7 @@ namespace Assets.Tests.EditMode.JailTests
             typeof(Player).GetField("getOutOfJailFree_Chance", BindingFlags.NonPublic | BindingFlags.Instance)
                           .SetValue(testPlayer, 1);
 
-            jailStrategy.UseGetOutOfJailFree(testPlayer);
+            jailUtility.UseGetOutOfJailFree(testPlayer);
 
             int remainingChanceCards = (int)typeof(Player).GetField("getOutOfJailFree_Chance", BindingFlags.NonPublic | BindingFlags.Instance)
                                                           .GetValue(testPlayer);
@@ -115,7 +115,7 @@ namespace Assets.Tests.EditMode.JailTests
             typeof(Player).GetField("getOutOfJailFree_Community", BindingFlags.NonPublic | BindingFlags.Instance)
                           .SetValue(testPlayer, 1);
 
-            jailStrategy.UseGetOutOfJailFree(testPlayer);
+            jailUtility.UseGetOutOfJailFree(testPlayer);
 
             int remainingCommunityCards = (int)typeof(Player).GetField("getOutOfJailFree_Community", BindingFlags.NonPublic | BindingFlags.Instance)
                                                              .GetValue(testPlayer);
@@ -127,7 +127,7 @@ namespace Assets.Tests.EditMode.JailTests
         [Test]
         public void UseGetOutOfJailFree_NoCards_PlayerStaysInJail()
         {
-            jailStrategy.UseGetOutOfJailFree(testPlayer);
+            jailUtility.UseGetOutOfJailFree(testPlayer);
 
             Assert.IsTrue(testPlayer.GetInJail(), "Player should remain in jail if they have no cards.");
         }
