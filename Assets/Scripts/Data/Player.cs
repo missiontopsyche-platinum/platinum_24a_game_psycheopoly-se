@@ -50,17 +50,9 @@ public class Player : ScriptableObject
 
     public void SetMoney(int money)
     {
-        // TODO figure out what we're doing here. AIMortgage is relying on the player money being accurate, even with debt.
-        // The validation for that should not be happening here- this should just be a data container, and a negative
-        // balance is useful data for other parts of the system.
-        if (money < 0)
-        {
-            Logging.Logger.Error("Player.SetMoney", 
-                "Money cannot be negative yet...", 
-                LogCategory.Economy,
-                this);
-            throw new ArgumentException("Money cannot be negative yet...");
-        }
+        // I've removed the negative balance check here, since we need to allow balances to
+        // be negative to resolve other behavior paths (such as figuring out now much a
+        // player needs to sell off to get out of debt).
         
         Logging.Logger.Info("Player.SetMoney",
             $"Setting {p_Name}'s money from ${this.money} to ${money}.",
@@ -287,7 +279,6 @@ public class Player : ScriptableObject
             throw new System.ArgumentException("Position values must always be positive.");
         }
         this.position = position;
-        
     }
 
     public int GetPosition()
