@@ -34,11 +34,6 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             if (!turnCycleManager)
                 turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
-
-            //fallback for editmode tests
-            var gm = FindFirstObjectByType<GameManager>();
-            if (!turnStartedInChannel && gm) turnStartedInChannel = gm.turnStartedChannel;
-            if (!turnEndedChannel && gm) turnEndedChannel = gm.turnEndedChannel;
         }
 
 
