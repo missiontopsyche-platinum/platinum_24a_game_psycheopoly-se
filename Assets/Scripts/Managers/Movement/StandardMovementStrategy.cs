@@ -10,7 +10,7 @@ namespace Assets.Scripts.Managers.Movement
     /// Default rule-driven movement strategy for Psyche-Opoly.
     /// Handles dice rolls, doubles, jail logic, and post-move resolution.
     /// </summary>
-    public class StandardMovementStrategy : MonoBehaviour, IMovementStrategy
+    public class StandardMovementStrategy : MonoBehaviour;
     {
         [Header("Dependencies")]
         [SerializeField] private BoardManager boardManager;
