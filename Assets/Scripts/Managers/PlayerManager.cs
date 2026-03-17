@@ -6,6 +6,7 @@ using Events.EventDataStructures;
 using Logging;
 using System.Collections.Generic;
 using System.Data;
+using Data;
 using UnityEngine;
 using Logger = Logging.Logger;
 
@@ -14,74 +15,32 @@ public class PlayerManager : MonoBehaviour
     [Header("Event Channels")]
     [SerializeField] public PlayerEventChannel playerAddedEventChannel;
 
-    public List<Player> players = new List<Player>();
+    public List<Player> players = new ();
 
     /// <summary>
-    /// Initializes given number of Players. For now, just assigns "Player X" to the
-    /// name, where X is the player number. Eventually, should be enhanced to allow
-    /// for assigning names and/or colors.
+    /// Bootstraps Players from data passed from GameManager
     /// </summary>
-    /// <param name="numPlayers">Number of players to initialize</param>
-    public void InitializePlayers(int numPlayers)
+    /// <param name="playerConfigs">List of PlayerConfig packages containing Player data
+    /// and if they're a human player or not</param>
+    public void InitializePlayers(List<PlayerConfig> playerConfigs)
     {
-        Logging.Logger.Info("PlayerManager.InitializePlayers",
-            $"Creating players: {numPlayers}",
-            LogCategory.Gameplay, 
-            this);
-
-        players.Clear();  //prevent duplicates when starting new game
+        Logger.Info("PlayerManager.InitializePlayers",
+            $"Creating {playerConfigs.Count} players.",
+            LogCategory.Core);
         
-        int startingMoney = 1500; // Temporary until we have configurable game settings
-        int startingPosition = 0; //GO
+        players.Clear(); // double check that players list is cleared
 
-        for (int i = 0; i < numPlayers; i++)
+        foreach (var playerConfig in playerConfigs)
         {
-            // I think making the Player a scriptable object is the wrong move,
-            // since its meant to be a data class, not an Asset in the browser.
-            // We might rethink this later, if we create a list of specific
-            // "Player" archetypes to get around naming issues, like Monopoly's
-            // pieces. In that case, we should probably do something totally
-            // different for creating players.
-            Player newPlayer = ScriptableObject.CreateInstance<Player>();
+            var player = playerConfig.playerData;
+            player.SetMoney(1500); // temporary until we have configurable game settings
+            player.SetId(players.Count);
+            players.Add(player);
             
-            newPlayer.SetId(i);
-            // doing i+1 so that the name is Player 1, 2, 3, etc.
-            newPlayer.SetPName($"Player {i+1}");
-            // setting money should be done somewhere else, I think...
-            //dzadroga - added basic setting money here, can change after we set up 
-            //System to track money, but might be easiest to set cash here to make
-            //sure it happens each time, we can definitely move it as we get futher along
-            newPlayer.SetMoney(startingMoney);
-            newPlayer.SetPosition(startingPosition);
-            newPlayer.SetColor(Random.ColorHSV());
-
-            //Defaults added for monoploy
-            newPlayer.SetInJail(false);
-            newPlayer.SetJailTurns(0);
-            newPlayer.SetDoublesInRow(0);
-
-            //The other basic card initialization as well as basic property tracking 
-            //could be set up here as we continue to develop game.
-            //Just adding these as a placeholder for the starting points the system can 
-            //build on as we develop.  
-            //examples
-            // newPlayer.SetGetOutOfJailFree_Chance(0);
-            // newPlayer.SetGetOutOfJailFree_Community(0);
-            // newPlayer.ClearOwnedProperties();
-            
-            players.Add(newPlayer);
-            
-            //notify event channel listeners of added player 
-            if (playerAddedEventChannel != null)
-            {
-                playerAddedEventChannel.RaiseEvent(newPlayer);
-            }
-
-            //Log confirmation
-            Logging.Logger.Info("PlayerManager.InitializePlayers",
-                $"Initialized {newPlayer.GetPName()} with ${newPlayer.GetMoney()}.",
-                LogCategory.Gameplay,
-                this);
+            playerAddedEventChannel?.RaiseEvent(player);
+            Logger.Info("PlayerManager.InitializePlayers",
+                $"Initialized {player.GetPName()} with ${player.GetMoney()}.",
+                LogCategory.Core);
         }
     }
 
