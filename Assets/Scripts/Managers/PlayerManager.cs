@@ -16,9 +16,6 @@ public class PlayerManager : MonoBehaviour
 
     public List<Player> players = new List<Player>();
 
-    [SerializeField] private RulesManager rulesManager;
-    private IRuleSet activeRuleset;
-
     /// <summary>
     /// Initializes given number of Players. For now, just assigns "Player X" to the
     /// name, where X is the player number. Eventually, should be enhanced to allow
@@ -33,8 +30,8 @@ public class PlayerManager : MonoBehaviour
             this);
 
         players.Clear();  //prevent duplicates when starting new game
-        EnsureDependencies();
-        int startingMoney = activeRuleset.PlayerStartingMoney();
+        
+        int startingMoney = 1500; // Temporary until we have configurable game settings
         int startingPosition = 0; //GO
 
         for (int i = 0; i < numPlayers; i++)
@@ -119,16 +116,5 @@ public class PlayerManager : MonoBehaviour
             playersCopy.Add(player);
         
         return playersCopy;
-    }
-
-    private void EnsureDependencies()
-    {
-        if (!rulesManager)
-            rulesManager = FindFirstObjectByType<RulesManager>();
-
-        if (activeRuleset == null)
-            activeRuleset = rulesManager != null
-                ? rulesManager.ActiveRules
-                : new StandardRuleSet();
     }
 }
