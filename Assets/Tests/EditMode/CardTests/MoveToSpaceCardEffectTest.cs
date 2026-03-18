@@ -2,7 +2,9 @@ using NUnit.Framework;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class MoveToSpaceCardEffectTest : CardEffectBaseTest
+namespace Tests.EditMode.CardTests
+{
+    public class MoveToSpaceCardEffectTest : CardEffectBaseTest
 {
     [Test]
     public void ApplyEffect_RaiseMoveToSpaceEvent()
@@ -70,4 +72,6 @@ public class MoveToSpaceCardEffectTest : CardEffectBaseTest
 
         Assert.AreEqual(3, callCount);
     }
+}
+
 }

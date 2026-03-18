@@ -4,31 +4,35 @@ using PsycheOpoly.Board;
 using Tests.EditMode;
 using UnityEngine;
 
-public class CardEffectBaseTest : ManagerTestBase
+namespace Tests.EditMode.CardTests
 {
-    protected Player testPlayer;
-    private CardEffect trackedEffect;
-
-    [SetUp]
-    protected void SetUp()
+    public class CardEffectBaseTest : ManagerTestBase
     {
-        InitializeTestLogger();
+        protected Player testPlayer;
+        private CardEffect trackedEffect;
 
-        testPlayer = ScriptableObject.CreateInstance<Player>();
-        testPlayer.SetPName("Test Player");
-        testPlayer.SetMoney(1500);
-    }
+        [SetUp]
+        protected void SetUp()
+        {
+            InitializeTestLogger();
 
-    protected T TrackEffect<T>(T effect) where T : CardEffect
-    {
-        trackedEffect = effect;
-        return effect;
-    }
+            testPlayer = ScriptableObject.CreateInstance<Player>();
+            testPlayer.SetPName("Test Player");
+            testPlayer.SetMoney(1500);
+        }
 
-    [TearDown]
-    public void TearDown()
-    {
-        DestroyTestObjects(testPlayer, trackedEffect);
+        protected T TrackEffect<T>(T effect) where T : CardEffect
+        {
+            trackedEffect = effect;
+            return effect;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            DestroyTestObjects(testPlayer, trackedEffect);
+        }
     }
 }
+
 

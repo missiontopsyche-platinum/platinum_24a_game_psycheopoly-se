@@ -3,8 +3,9 @@ using Events.EventDataStructures;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Refactor if we need more tests
-public class PayAndCollectPerPropertyCardEffectTest : CardEffectBaseTest
+namespace Tests.EditMode.CardTests
+{
+    public class PayAndCollectPerPropertyCardEffectTest : CardEffectBaseTest
 {
     private void CreatePropertyForTestPlayer()
     {
@@ -137,3 +138,5 @@ public class PayAndCollectPerPropertyCardEffectTest : CardEffectBaseTest
         Assert.AreEqual(0, raised.Count);
     }
 }
+}
+

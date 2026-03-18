@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Events.EventChannelTypes;
 using Data;
 using NUnit.Framework;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Tests.EditMode.PlayerManagerTests
             Player GeneratePlayer(String name)
             {
                 var p = TrackScriptableObject(ScriptableObject.CreateInstance<Player>());
-                p.SetPName("name");
+                p.SetPName(name);
                 return p;
             }
             
@@ -38,6 +39,17 @@ namespace Tests.EditMode.PlayerManagerTests
             playerManager = gameObject.AddComponent<PlayerManager>();
 
             playerManager.playerAddedEventChannel = CreateChannel<PlayerEventChannel>();
+            playerManager.turnStartedEventChannel = CreateChannel<TurnStartedEventChannel>();
+            playerManager.purchaseOwnableRequestEventChannel = CreateChannel<PurchaseOwnableRequestEventChannel>();
+            playerManager.chargeOwnershipFeeEventChannel = CreateChannel<ChargeOwnershipFeeEventChannel>();
+            playerManager.passedGoPaymentChannel = CreateChannel<PayPlayerEventChannel>();
+            playerManager.diceRollRequestChannel = CreateChannel<BooleanEventChannel>();
+            playerManager.turnActionRequestEventChannel = CreateChannel<TurnActionRequestEventChannel>();
+            playerManager.turnActionResultEventChannel = CreateChannel<TurnActionResultEventChannel>();
+            playerManager.uiActivationEventChannel = CreateChannel<UIActivationEventChannel>();
+            playerManager.uiActionEventChannel = CreateChannel<UIActionEventChannel>();
+            playerManager.mortgageFinishedEventChannel = CreateChannel<MortgageFinishedEventChannel>();
+            playerManager.actionResolvedEventChannel = CreateChannel<ActionResolvedEventChannel>();
 
             InitializeTestLogger();
         }

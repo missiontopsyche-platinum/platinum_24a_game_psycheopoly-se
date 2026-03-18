@@ -18,7 +18,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public PayPlayerEventChannel passedGoPaymentChannel;
     [SerializeField] public BooleanEventChannel diceRollRequestChannel;
-    [SerializeField] public CardDrawnEventChannel cardDrawnEventChannel;
     [SerializeField] public TurnActionRequestEventChannel turnActionRequestEventChannel;
     [SerializeField] public TurnActionResultEventChannel turnActionResultEventChannel;
     [SerializeField] public UIActivationEventChannel uiActivationEventChannel;
