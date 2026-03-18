@@ -1,5 +1,11 @@
 ﻿# Validation Layer Flow
 
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** 1.0
+
+
 ## Overview
 
 All player decisions follow a three-layer validation system to ensure that the game follows

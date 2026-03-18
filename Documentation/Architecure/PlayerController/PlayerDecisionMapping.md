@@ -1,5 +1,10 @@
 ﻿# Player Decision Mapping
 
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** 1.0
+s
 This document maps game Events to Player decision methods that Controllers must call.
 
 ### Format

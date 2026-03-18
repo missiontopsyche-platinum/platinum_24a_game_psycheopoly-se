@@ -1,3 +1,24 @@
+# Title: Ownership Indicators Explanation
+
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** x.x
+
+---
+
+## Purpose
+Initial thoughts for ownership indicators
+
+## Scope
+UI ownership indicators
+
+## Related Documents
+- Links to any other documents like README, UML, architecture explanations, etc.
+
+## Notes
+None at this time
+
 Initial thoughts for ownership indicators (rough draft):
 
 - OPT 1: Owned properties may show a colored border matching the owning player color.

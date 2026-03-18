@@ -1,7 +1,7 @@
-# Title: HoverPanelUI
+# Title: Architecture Overview
 
 **Author(s):** Name(s)
-**Date Created:** 3/16/2026
+**Date Created:** 03/16/2026
 **Last Updated:** 00/00/0000
 **Version:** x.x
 

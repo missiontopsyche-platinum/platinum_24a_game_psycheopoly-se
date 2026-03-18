@@ -1,8 +1,23 @@
-\# Task 614 
+# Title: Tile Scale and Orientation Validation 
 
-\#Tile Scale and Orientation Validation 
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** 1.0
 
+---
 
+## Purpose
+To show how the tiles within the game need to be configured and the import standards to make sure they all look the same
+
+## Scope
+The UI board assets within the game
+
+## Related Documents
+- Links to any other documents like README, UML, architecture explanations, etc.
+
+## Notes
+None at this time
 
 \## Import standards (Tile Artwork)
 

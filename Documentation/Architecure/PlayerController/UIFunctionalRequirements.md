@@ -1,5 +1,11 @@
 ﻿# UI Functional Requirements
 
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** 1.0
+
+
 This document describes the functional requirements for UI elements needed for
 player decisions.
 

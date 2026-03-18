@@ -1,7 +1,23 @@
-# Asset Import Pipeline
+# Title: Asset Import Pipeline
+
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/20269
+**Version:** 1.0
+
+---
 
 ## Purpose
 This document will define the asset import pipeline to make sure there is visual consistency, maintainability, and standard files across all art and UI assets that are added to the project.  This pipeline will apply to all new assets added to the repo and will be included in the documentation section of the repo as well. 
+
+## Scope
+The UI assets within the project
+
+## Related Documents
+- Links to any other documents like README, UML, architecture explanations, etc.
+
+## Notes
+None at this time
 
 ---
 

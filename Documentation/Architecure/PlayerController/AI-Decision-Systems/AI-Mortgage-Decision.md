@@ -2,6 +2,13 @@
 
 ---
 
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** 1.0
+
+---
+
 ## Overview
 
 The AI uses a deterministic scoring system to gather the least detrimental properties to

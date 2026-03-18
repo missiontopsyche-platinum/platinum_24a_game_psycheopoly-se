@@ -1,5 +1,23 @@
-US533 – Board Layout Options
+# Title Board Layout Options US533
 
+**Author(s):** Name(s)
+**Date Created:** 00/00/0000
+**Last Updated:** 03/18/2026
+**Version:** 1.0
+
+---
+
+## Purpose
+Explains the different ways the board can be layed out for the project along with the pros and cons for each. 
+
+## Scope
+The board layout logic/architecture
+
+## Related Documents
+- Links to any other documents like README, UML, architecture explanations, etc.
+
+## Notes
+None at this time
 
 --------------------------Option 1: ScriptableObject-driven (current implementation[US517])
 
