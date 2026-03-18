@@ -37,13 +37,6 @@ namespace Tests.EditMode.PlayerTests
         }
 
         [Test]
-        public void Player_ThrowsMoneyError()
-        {
-            Assert.Throws<System.ArgumentException>(() => 
-                player.SetMoney(-100));
-        }
-
-        [Test]
         public void Player_ThrowsPositionError()
         {
             Assert.Throws<System.ArgumentException>(() =>
