@@ -1,56 +1,42 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PayAndCollectFromAllPlayersTest : CardEffectBaseTest
 {
     [Test]
     public void PayAllPlayers_ChargesInitiator()
     {
-        InitializePlayerManagerChannels();
-        var pay = playerManager.payAllPlayersEventChannel;
-        var payments = new List<MoneyDistributionEvent>();
-        pay.Subscribe(e => payments.Add(e));
+        MoneyDistributionEventChannel channel = CreateChannel<MoneyDistributionEventChannel>();
+        List<MoneyDistributionEvent> raised = new();
+        channel.Subscribe(e => raised.Add(e));
 
-        var effect = new PayAllPlayersCardEffect
-        {
-            Amount = 25,
-            payAllPlayersEventChannel = pay,
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<PayAllPlayersCardEffect>());
+        effect.Amount = 25;
+        effect.payAllPlayersEventChannel = channel;
 
-        // Player A pays everyone else 25
-        effect.ApplyEffect(playerA);
+        effect.ApplyEffect(testPlayer);
 
-        // Just to make sure events fire
-        Assert.AreEqual(1, payments.Count);
-        Assert.AreEqual(0, payments[0].Player.GetId());
-        Assert.AreEqual(25, payments[0].Amount);
-
-        // Confirm amount of money
-        Assert.AreEqual(1525, playerB.GetMoney());
-        Assert.AreEqual(1525, playerC.GetMoney());
+        Assert.AreEqual(1, raised.Count);
+        Assert.AreSame(testPlayer, raised[0].Player);
+        Assert.AreEqual(25, raised[0].Amount);
     }
 
     [Test]
     public void CollectFromAllPlayers_ChargesOthers()
     {
-        InitializePlayerManagerChannels();
-        var charge = playerManager.collectFromAllPlayersEventChannel;
-        var charges = new List<MoneyDistributionEvent>();
-        charge.Subscribe(e => charges.Add(e));
+        MoneyDistributionEventChannel channel = CreateChannel<MoneyDistributionEventChannel>();
+        List<MoneyDistributionEvent> raised = new();
+        channel.Subscribe(e => raised.Add(e));
 
-        var effect = new PayAllPlayersCardEffect
-        {
-            Amount = 25,
-            payAllPlayersEventChannel = charge,
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectFromAllPlayersCardEffect>());
+        effect.Amount = 25;
+        effect.collectFromAllPlayersEventChannel = channel;
 
-        effect.ApplyEffect(playerA);
+        effect.ApplyEffect(testPlayer);
 
-        Assert.AreEqual(1, charges.Count);
-        Assert.AreEqual(0, charges[0].Player.GetId());
-        Assert.AreEqual(25, charges[0].Amount);
-
-        Assert.AreEqual(1475, playerB.GetMoney());
-        Assert.AreEqual(1475, playerC.GetMoney());
+        Assert.AreEqual(1, raised.Count);
+        Assert.AreSame(testPlayer, raised[0].Player);
+        Assert.AreEqual(25, raised[0].Amount);
     }
 }

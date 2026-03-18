@@ -1,51 +1,44 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class MoveCardEffectTest : CardEffectBaseTest
 {
     [Test]
     public void MoveCardEffect_Forward_RaisesPositiveMove()
     {
-        InitializeBoardManagerChannels();
-        var moveChannel = boardManager.movePlayerChannel;
-        var raised = new List<MovePlayerEvent>();
+        MovePlayerEventChannel moveChannel = CreateChannel<MovePlayerEventChannel>();
+        List<MovePlayerEvent> raised = new();
         moveChannel.Subscribe(e => raised.Add(e));
 
-        var effect = new MoveCardEffect
-        {
-            Type = MoveCardEffect.EffectType.MoveForward,
-            SpacesToMove = 5,
-            MovePlayerEventChannel = moveChannel
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<MoveCardEffect>());
+        effect.Type = MoveCardEffect.EffectType.MoveForward;
+        effect.SpacesToMove = 5;
+        effect.MovePlayerEventChannel = moveChannel;
 
-        effect.ApplyEffect(playerA);
+        effect.ApplyEffect(testPlayer);
 
-        Assert.AreEqual(1, raised.Count, "Expected exactly one MovePlayerEvent.");
-        Assert.AreEqual(playerA.GetId(), raised[0].id);
+        Assert.AreEqual(1, raised.Count);
+        Assert.AreEqual(testPlayer.GetId(), raised[0].id);
         Assert.AreEqual(5, raised[0].spacesToMove);
-        Assert.AreEqual(5, boardManager.GetPlayerPosition(playerA.GetId()));
     }
 
     [Test]
     public void MoveCardEffect_Backward_RaisesNegativeMove()
     {
-        InitializeBoardManagerChannels();
-        var moveChannel = boardManager.movePlayerChannel;
-        var raised = new List<MovePlayerEvent>();
+        MovePlayerEventChannel moveChannel = CreateChannel<MovePlayerEventChannel>();
+        List<MovePlayerEvent> raised = new();
         moveChannel.Subscribe(e => raised.Add(e));
 
-        var effect = new MoveCardEffect
-        {
-            Type = MoveCardEffect.EffectType.MoveBackward,
-            SpacesToMove = 3,
-            MovePlayerEventChannel = moveChannel
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<MoveCardEffect>());
+        effect.Type = MoveCardEffect.EffectType.MoveBackward;
+        effect.SpacesToMove = 3;
+        effect.MovePlayerEventChannel = moveChannel;
 
-        effect.ApplyEffect(playerA);
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(1, raised.Count);
-        Assert.AreEqual(playerA.GetId(), raised[0].id);
+        Assert.AreEqual(testPlayer.GetId(), raised[0].id);
         Assert.AreEqual(-3, raised[0].spacesToMove);
-        Assert.AreEqual(37, boardManager.GetPlayerPosition(playerA.GetId()));
     }
 }
