@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using PsycheOpoly.Board;
 using Logging;
 using Logger = Logging.Logger;
