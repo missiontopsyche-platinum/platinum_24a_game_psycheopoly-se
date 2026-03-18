@@ -1,21 +1,32 @@
 using Assets.Scripts.Events.EventChannelTypes;
-using Assets.Scripts.Events.EventDataStructures;
-using Assets.Scripts.Managers;
-using Assets.Scripts.Managers.Rules;
-using Events.EventDataStructures;
 using Logging;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 using Data;
+using Managers.PlayerControllers;
 using UnityEngine;
 using Logger = Logging.Logger;
 
 public class PlayerManager : MonoBehaviour
 {
-    [Header("Event Channels")]
+    [Header("Used Event Channels")]
     [SerializeField] public PlayerEventChannel playerAddedEventChannel;
+    
+    [Header("PlayerController Event Channels")]
+    [SerializeField] public TurnStartedEventChannel turnStartedEventChannel;
+    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+    [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+    [SerializeField] public PayPlayerEventChannel passedGoPaymentChannel;
+    [SerializeField] public BooleanEventChannel diceRollRequestChannel;
+    [SerializeField] public CardDrawnEventChannel cardDrawnEventChannel;
+    [SerializeField] public TurnActionRequestEventChannel turnActionRequestEventChannel;
+    [SerializeField] public TurnActionResultEventChannel turnActionResultEventChannel;
+    [SerializeField] public UIActivationEventChannel uiActivationEventChannel;
+    [SerializeField] public UIActionEventChannel uiActionEventChannel;
+    [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
+    [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
 
-    public List<Player> players = new ();
+    public List<PlayerController> playerControllers = new();
 
     /// <summary>
     /// Bootstraps Players from data passed from GameManager
@@ -28,18 +39,54 @@ public class PlayerManager : MonoBehaviour
             $"Creating {playerConfigs.Count} players.",
             LogCategory.Core);
         
-        players.Clear(); // double check that players list is cleared
+        playerControllers.Clear(); // double check that players list is cleared
 
         foreach (var playerConfig in playerConfigs)
         {
             var player = playerConfig.playerData;
             player.SetMoney(1500); // temporary until we have configurable game settings
-            player.SetId(players.Count);
-            players.Add(player);
+            player.SetId(playerControllers.Count);
+
+            PlayerController playerController;
+            
+            // this creates the PlayerControllers, but its definitely brittle and will need updating
+            // if we add more channels to the player controller subclasses.
+            if (playerConfig.isHuman)
+            {
+                playerController = new HumanPlayerController(
+                    player,
+                    turnStartedEventChannel,
+                    purchaseOwnableRequestEventChannel,
+                    chargeOwnershipFeeEventChannel,
+                    passedGoPaymentChannel,
+                    diceRollRequestChannel,
+                    uiActivationEventChannel,
+                    uiActionEventChannel,
+                    mortgageFinishedEventChannel,
+                    turnActionRequestEventChannel,
+                    turnActionResultEventChannel);
+            }
+            else
+            {
+                playerController = new AIPlayerController(
+                    player,
+                    playerConfig.behaviorWeights,
+                    turnStartedEventChannel,
+                    purchaseOwnableRequestEventChannel,
+                    chargeOwnershipFeeEventChannel,
+                    passedGoPaymentChannel,
+                    diceRollRequestChannel,
+                    actionResolvedEventChannel,
+                    turnActionRequestEventChannel,
+                    turnActionResultEventChannel);
+            }
+            
+            playerControllers.Add(playerController);
             
             playerAddedEventChannel?.RaiseEvent(player);
             Logger.Info("PlayerManager.InitializePlayers",
-                $"Initialized {player.GetPName()} with ${player.GetMoney()}.",
+                $"Initialized {player.GetPName()} with ${player.GetMoney()}, " +
+                $"and is a {(playerConfig.isHuman ? "Human" :"AI")} player.",
                 LogCategory.Core);
         }
     }
@@ -51,16 +98,16 @@ public class PlayerManager : MonoBehaviour
     /// <returns>Player ScriptableObject, or null if ID not found.</returns>
     public Player GetPlayer(int playerId)
     {
-        if (players != null && playerId >= 0 && playerId < players.Count)
-            return players[playerId];
-        else
+        if (playerControllers == null || playerId < 0 || playerId >= playerControllers.Count)
         {
-            Logging.Logger.Error("PlayerManager.GetPlayer",
+            Logger.Error("PlayerManager.GetPlayer",
                 $"Attempted access of playerID out of bounds: {playerId}",
                 LogCategory.Gameplay,
                 this);
             return null;
         }
+        
+        return playerControllers[playerId].GetControlledPlayer();
     }
 
     /// <summary>
@@ -69,11 +116,7 @@ public class PlayerManager : MonoBehaviour
     /// <returns>List of all Player ScriptableObjects</returns>
     public List<Player> GetAllPlayers()
     {
-        var playersCopy = new List<Player>();
-        
-        foreach (var player in players)
-            playersCopy.Add(player);
-        
-        return playersCopy;
+        List<Player> players = playerControllers.Select(c => c.GetControlledPlayer()).ToList();
+        return players;
     }
 }

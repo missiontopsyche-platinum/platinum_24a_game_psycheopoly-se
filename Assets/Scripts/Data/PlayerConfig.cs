@@ -9,11 +9,13 @@
     {
         public readonly Player playerData;
         public readonly bool isHuman;
+        public readonly AIBehaviorWeights behaviorWeights;
 
-        public PlayerConfig(Player playerData, bool isHuman)
+        public PlayerConfig(Player playerData, bool isHuman, AIBehaviorWeights weights)
         {
             this.playerData = playerData;
             this.isHuman = isHuman;
+            this.behaviorWeights = weights;
         }
     }
 }
