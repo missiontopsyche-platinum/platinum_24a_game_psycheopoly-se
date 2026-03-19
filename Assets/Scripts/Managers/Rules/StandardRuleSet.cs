@@ -40,6 +40,16 @@ namespace Assets.Scripts.Managers.Rules
         [Tooltip("Max turn limit for jail time.")]
         [SerializeField] private int maxJailTurns = 3;
 
+        StandardRuleSet instance;
+
+        private StandardRuleSet() { }
+        
+        public StandardRuleSet GetInstance()
+        {
+            if (instance == null) instance = new StandardRuleSet(); 
+            return instance;
+        }
+        
         public int RailroadBaseRent() => railroadBase;
         public int UtilityRentSingleMult() => utilitySingle;
         public int UtilityRentBothMult() => utilityBoth;
