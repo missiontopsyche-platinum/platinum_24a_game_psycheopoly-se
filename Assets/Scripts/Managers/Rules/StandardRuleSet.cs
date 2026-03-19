@@ -8,7 +8,7 @@ namespace Assets.Scripts.Managers.Rules
     /// Will be populated when rent rule logic is brought oever
     /// </summary>
     [System.Serializable]
-    public class StandardRuleSet : IRuleSet
+    public class StandardRuleSet
     {
         [Tooltip("Base rent for 1 owned railroad (25, 50, 100, 200 scaling).")]
         [SerializeField] private int railroadBase = 25;
