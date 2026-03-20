@@ -3,19 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Managers.TurnOrder
 {
-    //Encapsulates per-player turn flags used by the strategy
-    public interface IPlayerTurnState
-    {
-        bool IsEliminated(int playerIndex);
-        bool IsSkippedThisRound(int playerIndex);
-        void ConsumeSkip(int playerIndex);
-
-        bool GetExtraTurn(int playerIndex);
-        void SetExtraTurn(int playerIndex, bool value);
-    }
-
-    //Default in memory implementation
-    //This can be chagned once we know all game states later
+    // ledger of player turn state, tracking turn modifiers such as skips, extra turns, and elimiation.
     public class PlayerTurnState
     {
         private readonly List<bool> eliminated = new();
