@@ -6,20 +6,17 @@ using Logger = Logging.Logger;
 namespace Assets.Scripts.Managers.Movement
 {
     /// <summary>
-    /// Default rule-driven movement strategy for Psyche-Opoly.
-    /// Handles dice rolls, doubles, jail logic, and post-move resolution.
+    /// Direct movement component 
+    /// Receives movement input from its caller, translates dice results into board movement,
+    /// and handles post-move space resolution.
     /// </summary>
     public class StandardMovementStrategy : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField] private BoardManager boardManager;
-        //[SerializeField] private PlayerEventChannel currentPlayerChannel;
 
         [Header("Event Channels")]
-        // Some channels are commented out as a work around for gamemanager to invoke methods directly.
-        //[SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
-        //[SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
         [SerializeField] private IntEventChannel goToJailChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
@@ -32,18 +29,12 @@ namespace Assets.Scripts.Managers.Movement
 
         private void OnEnable()
         {
-            //diceRolledChannel?.Subscribe(OnDiceRolled);
-            //pieceMoveCompletedEventChannel?.Subscribe(OnPieceMoveCompleted);
-            //currentPlayerChannel?.Subscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Subscribe(OnTurnStarted);
         }
 
 
         private void OnDisable()
         {
-            //diceRolledChannel?.Unsubscribe(OnDiceRolled);
-            //pieceMoveCompletedEventChannel?.Unsubscribe(OnPieceMoveCompleted);
-            //currentPlayerChannel?.Unsubscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
 
         }
@@ -100,7 +91,6 @@ namespace Assets.Scripts.Managers.Movement
             }
 
             SetCurrentPlayer(p);
-            
             // this needs to get reset on every turn to ensure 'doubles count' from the last player doesn't impact the next.
             doublesCount = 0;
         }
