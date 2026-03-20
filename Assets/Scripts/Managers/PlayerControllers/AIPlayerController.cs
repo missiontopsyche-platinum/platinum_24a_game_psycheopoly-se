@@ -35,6 +35,7 @@ namespace Managers.PlayerControllers
             Player player,
             AIBehaviorWeights aiBehaviorWeights,
             TurnStartedEventChannel turnStarted,
+            BooleanEventChannel turnEnded,
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
@@ -42,7 +43,7 @@ namespace Managers.PlayerControllers
             ActionResolvedEventChannel actionResolved,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -231,7 +232,20 @@ namespace Managers.PlayerControllers
             // TODO: Any post-action logic or decision-making would go here before ending the turn.
 
 
-            // After the player moves, it will end the turn to prevent stalling.
+            // After the AI player moves, it will skip AwaitingResolution phase and request to end turn.
+            // This is with the assumption that the AI will be doing all of its decision-making and action
+            // execution above, so there won't be any need to wait for resolution before ending the turn.
+            RequestResolutionComplete(
+                onAllowed: RequestEndTurn,
+                onDenied: RequestEndTurn);
+        }
+
+        private void RequestEndTurn()
+        {
+            if (endTurnRequested) return;
+
+            endTurnRequested = true;
+
             RequestTurnAction(
                 TurnActionType.EndTurn,
                 onAllowed: () =>
@@ -240,7 +254,6 @@ namespace Managers.PlayerControllers
                 },
                 onDenied: () =>
                 {
-                    // just in case the request was denied
                     endTurnRequested = false;
                 });
         }
