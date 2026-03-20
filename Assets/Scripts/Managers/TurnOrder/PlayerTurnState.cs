@@ -16,55 +16,69 @@ namespace Assets.Scripts.Managers.TurnOrder
 
     //Default in memory implementation
     //This can be chagned once we know all game states later
-    public class PlayerTurnState : MonoBehaviour, IPlayerTurnState
+    public class PlayerTurnState
     {
-        [SerializeField] private List<bool> eliminated = new();
-        [SerializeField] private List<int>  skipCounts = new(); //number of turns to skip
-        [SerializeField] private List<bool> extraTurn  = new();
+        private readonly List<bool> eliminated = new();
+        private readonly List<int>  skipCounts = new(); //number of turns to skip
+        private readonly List<bool> extraTurn = new();
 
-        public void EnsureSize(int count)
+        public PlayerTurnState(int playerCount)
         {
-            while (eliminated.Count < count) eliminated.Add(false);
-            while (skipCounts.Count < count) skipCounts.Add(0);
-            while (extraTurn.Count  < count) extraTurn.Add(false);
+            for (int i = 0; i < playerCount; i++)
+            {
+                eliminated.Add(false);
+                skipCounts.Add(0);
+                extraTurn.Add(false);
+            }
+        }
+
+        private bool InRange(int idx)
+        {
+            return idx >= 0 && idx < eliminated.Count;
         }
 
         //Completes task 273
         //This wil have to be updated in the second semester once we add more logic
         public void Eliminate(int idx)
-        { 
-            EnsureSize(idx + 1);
+        {
+            if (!InRange(idx)) // in the future we need to alert that we're accessing out of bounds players
+                return;
             eliminated[idx] = true;
         }
 
         public void AddSkip(int idx, int n)
         {
-            EnsureSize(idx + 1);
+            if (!InRange(idx))
+                return;
             skipCounts[idx] += Mathf.Max(1, n);
         }
 
         public void GrantExtraTurn(int idx)
         { 
-            EnsureSize(idx + 1);
+            if (!InRange(idx))
+                return;
             extraTurn[idx] = true;
         }
 
         //IPlayerTurnState
         public bool IsEliminated(int playerIndex)           
         { 
-            EnsureSize(playerIndex + 1); 
+            if (!InRange(playerIndex))
+                return false; // update to log error for out of bounds
             return eliminated[playerIndex]; 
         }
 
         public bool IsSkippedThisRound(int playerIndex)     
         { 
-            EnsureSize(playerIndex + 1); 
+            if (!InRange(playerIndex))
+                return false; // update to log error for out of bounds
             return skipCounts[playerIndex] > 0; 
         }
 
         public void ConsumeSkip(int playerIndex)            
         { 
-            EnsureSize(playerIndex + 1); 
+            if (!InRange(playerIndex))
+                return;
             if (skipCounts[playerIndex] > 0) 
             {
                 skipCounts[playerIndex]--;
@@ -73,13 +87,15 @@ namespace Assets.Scripts.Managers.TurnOrder
 
         public bool GetExtraTurn(int playerIndex)           
         { 
-            EnsureSize(playerIndex + 1); 
+            if (!InRange(playerIndex))
+                return false; // update to log error for out of bounds
             return extraTurn[playerIndex]; 
         }
 
         public void SetExtraTurn(int playerIndex, bool val) 
         { 
-            EnsureSize(playerIndex + 1); 
+            if (!InRange(playerIndex))
+                return; 
             extraTurn[playerIndex] = val; 
         }
     }

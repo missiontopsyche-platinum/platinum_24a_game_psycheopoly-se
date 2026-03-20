@@ -10,40 +10,28 @@ namespace Assets.Scripts.Managers.TurnOrder
         [SerializeField] private int playerCount = 4;
         [SerializeField] private int startingPlayerIndex = 0;
 
-        [Header("Dependencies")]
-        [SerializeField] private PlayerTurnState playerTurnState;
-
-        private ITurnOrderStrategy strategy = new StandardTurnOrderStrategy();
+        private StandardTurnOrderStrategy strategy = new ();
+        private PlayerTurnState playerTurnState;
 
         public int CurrentPlayerIndex { get; private set; }
 
         private void Awake()
         {
-            EnsureDeps();
             ResetCycle(playerCount, startingPlayerIndex);
             CurrentPlayerIndex = startingPlayerIndex;
-
-        }
-
-        private void EnsureDeps()
-        {
-            if (!playerTurnState)
-                playerTurnState = GetComponent<PlayerTurnState>() ?? gameObject.AddComponent<PlayerTurnState>();
         }
 
         public void ResetCycle(int count, int startIndex = 0)
         {
-            EnsureDeps();
             playerCount = Mathf.Max(2, count);
-            playerTurnState.EnsureSize(playerCount);
             CurrentPlayerIndex = Mathf.Clamp(startIndex, 0, playerCount - 1);
+            playerTurnState = new PlayerTurnState(playerCount);
         }
 
         //Call when a turn ends
         //Moves to next player or repeats if extra turn 
         public int Advance()
         {
-            EnsureDeps();
             int next = strategy.NextPlayerIndex(CurrentPlayerIndex, playerCount, playerTurnState);
 
             CurrentPlayerIndex = next;
@@ -59,7 +47,6 @@ namespace Assets.Scripts.Managers.TurnOrder
         // For AI use
         public void SyncCurrentPlayerIndex(int playerIndex)
         {
-            EnsureDeps();
             CurrentPlayerIndex = Mathf.Clamp(playerIndex, 0, playerCount - 1);
         }
     }

@@ -5,14 +5,14 @@ namespace Assets.Scripts.Managers.TurnOrder
     //else it goes to next non eliminated player consuming one skip if present
     //Wraps around the player list.
 
-    public class StandardTurnOrderStrategy : ITurnOrderStrategy
+    public class StandardTurnOrderStrategy
     {
-        public bool HasExtraTurn(int currentIndex, IPlayerTurnState state)
+        public bool HasExtraTurn(int currentIndex, PlayerTurnState state)
         {
             return state.GetExtraTurn(currentIndex);
         }
 
-        public int NextPlayerIndex(int currentIndex, int playerCount, IPlayerTurnState state)
+        public int NextPlayerIndex(int currentIndex, int playerCount, PlayerTurnState state)
         {
             //If the current player has an extra turn then clear it and keep same index
             if (state.GetExtraTurn(currentIndex))

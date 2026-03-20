@@ -52,11 +52,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private PurchaseManager purchaseManager;
 
-
-    [Header("Turn Order System")]
-    [SerializeField] private PlayerTurnState playerTurnState;
-
-    private ITurnOrderStrategy turnOrderStrategy = new StandardTurnOrderStrategy();
+    private StandardTurnOrderStrategy turnOrderStrategy = new ();
 
     private int playerCount = 0;
 
@@ -117,9 +113,6 @@ public class GameManager : MonoBehaviour
         //turn system dependencies added for US395
         if (!turnCycleManager)
             turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
-
-        if (!playerTurnState)
-            playerTurnState = FindFirstObjectByType<PlayerTurnState>();
     }
 
     //Task 112 which is a guarded transition API
@@ -285,9 +278,6 @@ public class GameManager : MonoBehaviour
         //wire turn system for US395
         if (turnCycleManager != null)
             turnCycleManager.ResetCycle(playerCount, 0);
-
-        if (playerTurnState != null)
-            playerTurnState.EnsureSize(playerCount);
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
