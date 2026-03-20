@@ -13,11 +13,9 @@ namespace Tests.EditMode.GameManagerTests
         /// a helper used to simulate TurnFlowCoordinator:
         /// advance turn > fire TurnStartedEvent manually.
         /// </summary>
-        private void AdvanceAndFireTurn(int turnNumber)
+        private void AdvanceAndFireTurn(int turnNumber, int playerCount)
         {
-            var turnCycle = UnityEngine.Object.FindFirstObjectByType<TurnCycleManager>();
-            Assert.IsNotNull(turnCycle, "TurnCycleManager not found in scene during test.");
-
+            var turnCycle = new TurnCycleManager(playerCount);
             int next = turnCycle.Advance();
             gameManager.turnStartedChannel.RaiseEvent(new TurnStartedEvent(next, turnNumber));
         }
@@ -25,6 +23,7 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void NextTurn_LoopBackWithTwoPlayers()
         {
+            int playerCount = 2;
             int callbackCount = 0;
 
             void Listener(TurnStartedEvent tse)
@@ -36,7 +35,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel.Subscribe(Listener);
 
             gameManager.Initialize();
-            gameManager.SetUpGame(2);
+            gameManager.SetUpGame(playerCount);
 
             gameManager.CompleteGameInit(); // fires TurnStartedEvent(0,0)
 
@@ -44,11 +43,11 @@ namespace Tests.EditMode.GameManagerTests
             Assert.AreEqual(0, lastReceivedPlayer);
 
 
-            AdvanceAndFireTurn(1);
+            AdvanceAndFireTurn(1, playerCount);
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
 
-            AdvanceAndFireTurn(2);
+            AdvanceAndFireTurn(2, playerCount);
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         }
@@ -56,6 +55,7 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void NextTurn_LoopBackWithThreePlayers()
         {
+            int playerCount = 3;
             int callbackCount = 0;
 
             void Listener(TurnStartedEvent tse)
@@ -68,7 +68,7 @@ namespace Tests.EditMode.GameManagerTests
 
 
             gameManager.Initialize();
-            gameManager.SetUpGame(3);
+            gameManager.SetUpGame(playerCount);
             gameManager.CompleteGameInit(); // fires TurnStartedEvent(0,0)
 
             Assert.AreEqual(1, callbackCount);
@@ -76,17 +76,17 @@ namespace Tests.EditMode.GameManagerTests
 
 
             // player 1
-            AdvanceAndFireTurn(1);
+            AdvanceAndFireTurn(1, playerCount);
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
 
             // player 2
-            AdvanceAndFireTurn(2);
+            AdvanceAndFireTurn(2, playerCount);
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(2, lastReceivedPlayer);
 
             // back to player 0
-            AdvanceAndFireTurn(3);
+            AdvanceAndFireTurn(3, playerCount);
             Assert.AreEqual(4, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         }
@@ -94,6 +94,7 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void NextTurn_LoopBackWithFourPlayers()
         {
+            int playerCount = 4;
             int callbackCount = 0;
 
             void Listener(TurnStartedEvent tse)
@@ -105,7 +106,7 @@ namespace Tests.EditMode.GameManagerTests
             gameManager.turnStartedChannel.Subscribe(Listener);
 
             gameManager.Initialize();
-            gameManager.SetUpGame(4);
+            gameManager.SetUpGame(playerCount);
             gameManager.CompleteGameInit(); // fires TurnStartedEvent(0,0)
 
             Assert.AreEqual(1, callbackCount);
@@ -113,22 +114,22 @@ namespace Tests.EditMode.GameManagerTests
 
 
             // player 1
-            AdvanceAndFireTurn(1);
+            AdvanceAndFireTurn(1, playerCount);
             Assert.AreEqual(2, callbackCount);
             Assert.AreEqual(1, lastReceivedPlayer);
 
             // player 2
-            AdvanceAndFireTurn(2);
+            AdvanceAndFireTurn(2, playerCount);
             Assert.AreEqual(3, callbackCount);
             Assert.AreEqual(2, lastReceivedPlayer);
 
             // player 3
-            AdvanceAndFireTurn(3);
+            AdvanceAndFireTurn(3, playerCount);
             Assert.AreEqual(4, callbackCount);
             Assert.AreEqual(3, lastReceivedPlayer);
 
             // loop back > player 0
-            AdvanceAndFireTurn(4);
+            AdvanceAndFireTurn(4, playerCount);
             Assert.AreEqual(5, callbackCount);
             Assert.AreEqual(0, lastReceivedPlayer);
         }

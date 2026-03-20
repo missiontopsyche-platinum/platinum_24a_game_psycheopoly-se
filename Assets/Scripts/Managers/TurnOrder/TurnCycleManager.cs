@@ -8,11 +8,11 @@ namespace Assets.Scripts.Managers.TurnOrder
         public int CurrentPlayerIndex { get; private set; }
         
         private readonly int playerCount;
-        private PlayerTurnState playerTurnState;
+        private readonly PlayerTurnState playerTurnState;
 
         public TurnCycleManager(int playerCount)
         {
-            playerCount = Mathf.Max(2, playerCount);
+            this.playerCount = Mathf.Max(2, playerCount);
             CurrentPlayerIndex = 0;
             playerTurnState = new PlayerTurnState(playerCount);
         }
@@ -51,7 +51,7 @@ namespace Assets.Scripts.Managers.TurnOrder
             //Otherwise move forward until there is a playable player
             int attempts = 0;
             int idx = currentIndex;
-
+            
             while (attempts < playerCount)
             {
                 idx = (idx + 1) % playerCount;
@@ -72,9 +72,9 @@ namespace Assets.Scripts.Managers.TurnOrder
             return currentIndex;
         }
         
-        private bool HasExtraTurn(int currentIndex)
+        private bool HasExtraTurn(int playerIndex)
         {
-            return playerTurnState.HasExtraTurn(currentIndex);
+            return playerTurnState.HasExtraTurn(playerIndex);
         }
     }
 }
