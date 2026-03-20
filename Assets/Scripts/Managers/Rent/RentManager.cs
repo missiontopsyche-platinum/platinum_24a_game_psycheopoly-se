@@ -4,7 +4,6 @@ using Assets.Scripts.Managers.Rules;
 
 namespace Assets.Scripts.Managers.Rent
 {
-    ///Gets tile and owner, asks the strategy for the rent, and moves money.
     ///Self-wires Economy/Ownership/Rules in Awake() 
     ///so it works in EditMode tests where Awake() may not fire.
     public class RentManager : MonoBehaviour
@@ -20,7 +19,6 @@ namespace Assets.Scripts.Managers.Rent
 
 
         private IRuleSet rules;
-        private IRentStrategy strategy = new StandardRentStrategy();
         public IOwnershipService Ownership => ownership;
 
         private void Awake()
@@ -49,7 +47,7 @@ namespace Assets.Scripts.Managers.Rent
             if (owner == null || owner == tenant) return;
 
             //replacing basic rent to use modifiers
-            int baseRent = strategy.ComputeRent(tile, owner, diceTotal, ownership, rules);
+            int baseRent = RentCalculator.ComputeRent(tile, owner, diceTotal, ownership, rules);
             int rent = rentModifiers != null ? rentModifiers.ApplyAll(baseRent, tile, tenant, owner) : baseRent;
 
             Logging.Logger.Debug("RentManager.TryChargeRent",
