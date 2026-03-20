@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using Assets.Scripts.Managers.TurnOrder;
+﻿using Assets.Scripts.Managers.TurnOrder;
+using Logging;
+using UnityEngine;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
@@ -30,20 +31,43 @@ namespace Assets.Scripts.Managers.TurnFlow
         // prevents double-advance in same turn
         private bool awaitingEndTurn = false;
 
-        private void Awake()
+        public void Initialize(TurnCycleManager tcm)
         {
-            if (!turnCycleManager)
-                turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
+            if (turnCycleManager == null)
+            {
+                turnCycleManager = tcm;
+            }
         }
 
+        /// <summary>
+        /// This will be called by the GameManager after setup is complete. This will
+        /// kick off the turn loop by emitting the first TurnStartedEvent. After this,
+        /// the TurnFlowCoordinator will listen to events and manage turn progression on its own.
+        /// </summary>
+        public void StartGame()
+        {
+            if (turnCycleManager == null)
+            {
+                Logging.Logger.Error("TurnFlowCoordinator.StartFirstTurn",
+                    "TurnCycleManager is missing. Cannot start turn loop.",
+                    LogCategory.Core,
+                    this);
+                return;
+            }
 
+            int startingPlayer = turnCycleManager.CurrentPlayerIndex;
+            ActivePlayer = startingPlayer;
+            Phase = TurnPhase.AwaitingRoll;
+            awaitingEndTurn = false;
+            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
+        }
 
         private void OnEnable()
         {
             turnStartedInChannel?.Subscribe(OnTurnStarted);
             diceRolledChannel?.Subscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
-            turnEndedChannel?.Subscribe(OnTurnEnded);
+            //turnEndedChannel?.Subscribe(OnTurnEnded);
             turnActionRequestChannel?.Subscribe(OnTurnActionRequested);
         }
 
@@ -52,7 +76,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             turnStartedInChannel?.Unsubscribe(OnTurnStarted);
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
-            turnEndedChannel?.Unsubscribe(OnTurnEnded);
+            //turnEndedChannel?.Unsubscribe(OnTurnEnded);
             turnActionRequestChannel?.Unsubscribe(OnTurnActionRequested);
         }
 
@@ -96,11 +120,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             if (Phase != TurnPhase.AwaitingMovement) return;
 
             Phase = TurnPhase.AwaitingResolution;
-            Phase = TurnPhase.Completed;
 
-            awaitingEndTurn = true;
-            // OnLanded() has already run at this point.
-            // No tile effect system fires a "done" event, so we emit our own.
             actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
         }
 
@@ -110,32 +130,67 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             if (!awaitingEndTurn) return;
             if (turnCycleManager == null)
+            {
+                Logging.Logger.Error("TurnFlowCoordinator.CompleteTurnFlow",
+                    "TurnCycleManager is missing. Cannot advance turn.",
+                    LogCategory.Core,
+                    this);
                 return;
-            awaitingEndTurn = false;
+            }
 
+            awaitingEndTurn = false;
             Phase = TurnPhase.Completed;
 
             int nextPlayer = turnCycleManager.Advance();
             turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
         }
 
-        public void OnTurnActionRequested(TurnActionRequest request)
+        private void OnTurnActionRequested(TurnActionRequest request)
         {
-            bool allowed = IsAllowed(request.player.GetId(), request.action);
-            turnActionResultChannel.RaiseEvent(new TurnActionResult
+            if (request == null || request.player == null)
+                return;
+
+            int playerId = request.player.GetId();
+            bool allowed = IsAllowed(playerId, request.action);
+
+            turnActionResultChannel?.RaiseEvent(new TurnActionResult
             {
-                playerId = request.player.GetId(),
+                playerId = playerId,
                 action = request.action,
                 allowed = allowed
             });
-            if (allowed && request.action == TurnActionType.EndTurn)
-                CompleteTurnFlow();
-            
+
+            if (!allowed) return;
+
+            switch (request.action)
+            {
+                case TurnActionType.CompleteResolution:
+                    CompleteResolution();
+                    break;
+
+                case TurnActionType.EndTurn:
+                    CompleteTurnFlow();
+                    break;
+            }
+        }
+
+        private void CompleteResolution()
+        {
+            if (Phase != TurnPhase.AwaitingResolution)
+                return;
+
+            Phase = TurnPhase.Completed;
+            awaitingEndTurn = true;
         }
 
         public void SetAwaitingEndTurn(bool awaiting)
         {
             awaitingEndTurn = awaiting;
+        }
+
+        public void TurnActionRequestTest(TurnActionRequest request)
+        {
+            OnTurnActionRequested(request);
         }
 
         private bool IsAllowed(int playerId, TurnActionType action)
@@ -153,6 +208,7 @@ namespace Assets.Scripts.Managers.TurnFlow
                                                 || Phase == TurnPhase.AwaitingMovement
                                                 || Phase == TurnPhase.AwaitingResolution
                                                 || (Phase == TurnPhase.Completed && awaitingEndTurn),
+                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution,
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false
             };
