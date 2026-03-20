@@ -6,6 +6,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         RollDice,
         BuyProperty,
         ModifyProperty,
+        CompleteResolution,
         EndTurn
     }
 }
