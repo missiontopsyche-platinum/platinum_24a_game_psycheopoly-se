@@ -46,13 +46,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Manager References")]
     [SerializeField] private BoardManager boardManager;
-    [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
     [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private PurchaseManager purchaseManager;
 
     private StandardTurnOrderStrategy turnOrderStrategy = new ();
+    private TurnCycleManager turnCycleManager;
 
     private int playerCount = 0;
 
@@ -110,9 +110,7 @@ public class GameManager : MonoBehaviour
         //keeps game object
         DontDestroyOnLoad(gameObject);
 
-        //turn system dependencies added for US395
-        if (!turnCycleManager)
-            turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
+        turnCycleManager = new TurnCycleManager(playerCount); // this should be done in set up- and passed into TurnFlow when we have a player count
     }
 
     //Task 112 which is a guarded transition API

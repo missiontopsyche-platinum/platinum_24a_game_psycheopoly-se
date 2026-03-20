@@ -2,22 +2,18 @@ using UnityEngine;
 
 namespace Assets.Scripts.Managers.TurnOrder
 {
-    //Manager that controls the turn index and asks strategy for who goes next
-    //Self-wires in EditMode and Play mode testing
-    public class TurnCycleManager : MonoBehaviour
+    // Manager that controls the turn index, utilized by GameManager and TurnFlowCoordinator
+    public class TurnCycleManager
     {
-        [Header("Config")]
-        [SerializeField] private int playerCount = 4;
-        [SerializeField] private int startingPlayerIndex = 0;
+        public int CurrentPlayerIndex { get; private set; }
         
+        private int playerCount = 4;
         private PlayerTurnState playerTurnState;
 
-        public int CurrentPlayerIndex { get; private set; }
-
-        private void Awake()
+        public TurnCycleManager(int playerCount)
         {
-            ResetCycle(playerCount, startingPlayerIndex);
-            CurrentPlayerIndex = startingPlayerIndex;
+            ResetCycle(playerCount);
+            CurrentPlayerIndex = 0;
         }
 
         public void ResetCycle(int count, int startIndex = 0)
@@ -48,16 +44,11 @@ namespace Assets.Scripts.Managers.TurnOrder
         {
             CurrentPlayerIndex = Mathf.Clamp(playerIndex, 0, playerCount - 1);
         }
-        
-        private bool HasExtraTurn(int currentIndex, PlayerTurnState state)
-        {
-            return state.GetExtraTurn(currentIndex);
-        }
 
         private int NextPlayerIndex(int currentIndex)
         {
             //If the current player has an extra turn then clear it and keep same index
-            if (playerTurnState.GetExtraTurn(currentIndex))
+            if (HasExtraTurn(currentIndex))
             {
                 playerTurnState.SetExtraTurn(currentIndex, false);
                 return currentIndex;
@@ -85,6 +76,11 @@ namespace Assets.Scripts.Managers.TurnOrder
 
             //If everyone is eliminated or skipped then just return current
             return currentIndex;
+        }
+        
+        private bool HasExtraTurn(int currentIndex)
+        {
+            return playerTurnState.GetExtraTurn(currentIndex);
         }
     }
 }
