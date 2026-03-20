@@ -45,29 +45,42 @@ namespace Assets.Scripts.Managers.TurnOrder
                 return;
             eliminated[idx] = true;
         }
-
-        public void AddSkip(int idx, int n)
-        {
-            if (!InRange(idx))
-                return;
-            skipCounts[idx] += Mathf.Max(1, n);
-        }
-
-        public void GrantExtraTurn(int idx)
-        { 
-            if (!InRange(idx))
-                return;
-            extraTurn[idx] = true;
-        }
-
-        //IPlayerTurnState
+        
         public bool IsEliminated(int playerIndex)           
         { 
             if (!InRange(playerIndex))
                 return false; // update to log error for out of bounds
             return eliminated[playerIndex]; 
         }
+  
+        public void GrantExtraTurn(int idx)
+        { 
+            if (!InRange(idx))
+                return;
+            extraTurn[idx] = true;
+        }
+        
+        public bool HasExtraTurn(int playerIndex)           
+        { 
+            if (!InRange(playerIndex))
+                return false; // update to log error for out of bounds
+            return extraTurn[playerIndex]; 
+        }
 
+        public void SetExtraTurn(int playerIndex, bool val) 
+        { 
+            if (!InRange(playerIndex))
+                return; 
+            extraTurn[playerIndex] = val; 
+        }
+        
+        public void AddSkip(int idx, int n)
+        {
+            if (!InRange(idx))
+                return;
+            skipCounts[idx] += Mathf.Max(1, n);
+        }
+        
         public bool IsSkippedThisRound(int playerIndex)     
         { 
             if (!InRange(playerIndex))
@@ -83,20 +96,6 @@ namespace Assets.Scripts.Managers.TurnOrder
             {
                 skipCounts[playerIndex]--;
             }  
-        }
-
-        public bool GetExtraTurn(int playerIndex)           
-        { 
-            if (!InRange(playerIndex))
-                return false; // update to log error for out of bounds
-            return extraTurn[playerIndex]; 
-        }
-
-        public void SetExtraTurn(int playerIndex, bool val) 
-        { 
-            if (!InRange(playerIndex))
-                return; 
-            extraTurn[playerIndex] = val; 
         }
     }
 }

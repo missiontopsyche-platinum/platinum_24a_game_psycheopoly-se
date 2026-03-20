@@ -63,6 +63,9 @@ namespace Assets.Scripts.Managers.TurnFlow
         // a new turn's started, reset state, wait for new roll
         private void OnTurnStarted(TurnStartedEvent data)
         {
+            if (turnCycleManager == null) 
+                turnCycleManager = FindFirstObjectByType<GameManager>().turnCycleManager;
+            
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;

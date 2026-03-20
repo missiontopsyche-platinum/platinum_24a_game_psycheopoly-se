@@ -7,19 +7,13 @@ namespace Assets.Scripts.Managers.TurnOrder
     {
         public int CurrentPlayerIndex { get; private set; }
         
-        private int playerCount = 4;
+        private readonly int playerCount;
         private PlayerTurnState playerTurnState;
 
         public TurnCycleManager(int playerCount)
         {
-            ResetCycle(playerCount);
+            playerCount = Mathf.Max(2, playerCount);
             CurrentPlayerIndex = 0;
-        }
-
-        public void ResetCycle(int count, int startIndex = 0)
-        {
-            playerCount = Mathf.Max(2, count);
-            CurrentPlayerIndex = Mathf.Clamp(startIndex, 0, playerCount - 1);
             playerTurnState = new PlayerTurnState(playerCount);
         }
 
@@ -80,7 +74,7 @@ namespace Assets.Scripts.Managers.TurnOrder
         
         private bool HasExtraTurn(int currentIndex)
         {
-            return playerTurnState.GetExtraTurn(currentIndex);
+            return playerTurnState.HasExtraTurn(currentIndex);
         }
     }
 }

@@ -7,6 +7,7 @@ using Assets.Scripts.Managers.Movement;
 using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.Purchase;
+using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 
 public class GameManager : MonoBehaviour
@@ -52,7 +53,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PurchaseManager purchaseManager;
 
     private StandardTurnOrderStrategy turnOrderStrategy = new ();
-    private TurnCycleManager turnCycleManager;
+    public TurnCycleManager turnCycleManager; // this shouldn't be public, but needs to be for now to get it to turn flow coordinator
 
     private int playerCount = 0;
 
@@ -109,8 +110,6 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
-
-        turnCycleManager = new TurnCycleManager(playerCount); // this should be done in set up- and passed into TurnFlow when we have a player count
     }
 
     //Task 112 which is a guarded transition API
@@ -273,9 +272,8 @@ public class GameManager : MonoBehaviour
         this.playerCount = playerCount;
         initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
 
-        //wire turn system for US395
-        if (turnCycleManager != null)
-            turnCycleManager.ResetCycle(playerCount, 0);
+        turnCycleManager = new TurnCycleManager(this.playerCount);
+        
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);

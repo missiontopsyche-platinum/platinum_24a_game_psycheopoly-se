@@ -9,13 +9,13 @@ namespace Assets.Scripts.Managers.TurnOrder
     {
         public bool HasExtraTurn(int currentIndex, PlayerTurnState state)
         {
-            return state.GetExtraTurn(currentIndex);
+            return state.HasExtraTurn(currentIndex);
         }
 
         public int NextPlayerIndex(int currentIndex, int playerCount, PlayerTurnState state)
         {
             //If the current player has an extra turn then clear it and keep same index
-            if (state.GetExtraTurn(currentIndex))
+            if (state.HasExtraTurn(currentIndex))
             {
                 state.SetExtraTurn(currentIndex, false);
                 return currentIndex;
