@@ -18,6 +18,7 @@ namespace Assets.Scripts.Managers.Rent
                     if (tile == null || owner == null || ownership == null || rules == null)
                         return 0;
 
+                    //checks if property is mortgaged
                     if (tile.IsMortgaged)
                         return 0;
 
