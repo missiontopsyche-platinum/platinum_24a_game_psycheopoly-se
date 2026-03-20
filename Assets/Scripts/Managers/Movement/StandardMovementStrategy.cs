@@ -7,8 +7,10 @@ namespace Assets.Scripts.Managers.Movement
 {
     /// <summary>
     /// Direct movement component 
-    /// Receives movement input from its caller, translates dice results into board movement,
-    /// and handles post-move space resolution.
+    /// Called by owning gameplay flow after a dice roll has been made for the active player
+    /// This component interpets the roll into movement, applied movement-specific rules such
+    /// as doubles, triple doubles, raises movement request, and resolves passed/landed space
+    /// behavior after the piece finishes moving.
     /// </summary>
     public class StandardMovementStrategy : MonoBehaviour
     {
@@ -86,12 +88,11 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Error("StandardMovementStrategy.OnTurnStarted", $"Invalid playerId {turnData.playerId}",
                     LogCategory.Gameplay, this);
                 return;
-
-
             }
 
             SetCurrentPlayer(p);
-            // this needs to get reset on every turn to ensure 'doubles count' from the last player doesn't impact the next.
+
+            //reset doubles @ start of players turn so prev. players state isn't carried
             doublesCount = 0;
         }
 
@@ -122,17 +123,10 @@ namespace Assets.Scripts.Managers.Movement
 
                 doublesCount = 0;
 
-
-                //TODO:
-                // goToJailChannel, for now, is an IntEventChannel used to notify the JailManager 
-                // (or any other subscribed system) that a player should be sent to jail.
-                // since there is no JailManager logic is implemented, this call will do nothing 
-                // unless a listener subscribes. this is just a fallback  to ensure the player is still 
-                // sent to the Jail space (placheolder of index 10) so that the core behavior stil holds.
                 if (goToJailChannel != null)
                     goToJailChannel.RaiseEvent(currentPlayer.GetId());
                 else
-                    boardManager.SetPlayerPosition(currentPlayer.GetId(), 10); //TODO: change to ACTUAL jail index
+                    boardManager.SetPlayerPosition(currentPlayer.GetId(), 10);
 
                 return;
             }
@@ -161,19 +155,20 @@ namespace Assets.Scripts.Managers.Movement
             if (!success || currentPlayer == null || normalMoveCompletedThisTurn)
                 return;
 
-
-
             int playerId = currentPlayer.GetId();
             int currentPos = boardManager.GetPlayerPosition(playerId);
 
-            // loop through last path (skip current space) and run each on-passed method (catch passing GO)
-            foreach (int index in lastPath)
+            if (lastPath != null && lastPath.Length > 0)
             {
-                if (index == currentPos) continue;
-                
-                boardManager.GetSpace(index)?.OnPassed(currentPlayer);
+                foreach (int index in lastPath)
+                {
+                    if (index == currentPos)
+                        continue;
+
+                    boardManager.GetSpace(index)?.OnPassed(currentPlayer);
+                }
             }
-            
+
             SpaceData landed = boardManager.GetSpace(currentPos);
 
             Logger.Info("StandardMovementStrategy",
@@ -186,9 +181,8 @@ namespace Assets.Scripts.Managers.Movement
             //handles the doubles roll logic
             if (doublesCount > 0)
             {
-                Logger.Debug("StandardMovementStrategy", "Doubles → allow re-roll", LogCategory.Gameplay, this);
-                //this is where we can put a re-roll button...
-                //recall also, we defined 3 doubles rolls is a jail sentence!
+                Logger.Debug("StandardMovementStrategy", "Doubles → allow re-roll", 
+                    LogCategory.Gameplay, this);
             }
             else
             {
@@ -197,11 +191,8 @@ namespace Assets.Scripts.Managers.Movement
             }
 
             spaceResolutionCompletedChannel?.RaiseEvent(true);
-
             normalMoveCompletedThisTurn = true;
         }
-
-        //helprs
 
         private static int NormalizeIndex(int raw, int boardSize)
         {
