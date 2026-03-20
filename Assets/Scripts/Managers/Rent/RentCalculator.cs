@@ -79,6 +79,54 @@ namespace Assets.Scripts.Managers.Rent
                     return finalRent;
                 }
 
+                 public static int RailroadRent(
+                    Player owner,
+                    IOwnershipService ownership,
+                    IRuleSet rules)
+                {
+                    if (owner == null || ownership == null || rules == null)
+                        return 0;
+
+                    int count = Mathf.Clamp(ownership.CountRailroadsOwned(owner), 0, 4);
+                    if (count <= 0)
+                        return 0;
+
+                    int baseRent = rules.RailroadBaseRent();
+                    int rent = baseRent << (count - 1);
+
+                    Logger.Debug(
+                        "RentCalculator.Railroad",
+                        $"RailroadsOwned={count} BaseRent={baseRent} Final={rent}",
+                        LogCategory.Gameplay);
+
+                    return rent;
+                }
+
+                public static int UtilityRent(
+                    Player owner,
+                    int diceTotal,
+                    IOwnershipService ownership,
+                    IRuleSet rules)
+                {
+                    if (owner == null || ownership == null || rules == null)
+                        return 0;
+
+                    int total = Mathf.Max(0, diceTotal);
+                    bool ownsBoth = ownership.OwnsBothUtilities(owner);
+
+                    int multiplier = ownsBoth
+                        ? rules.UtilityRentBothMult()
+                        : rules.UtilityRentSingleMult();
+
+                    int rent = total * multiplier;
+
+                    Logger.Debug(
+                        "RentCalculator.Utility",
+                        $"Dice={total} OwnsBoth={ownsBoth} Mult={multiplier} Final={rent}",
+                        LogCategory.Gameplay);
+
+                    return rent;
+                }
                
         }
 }
