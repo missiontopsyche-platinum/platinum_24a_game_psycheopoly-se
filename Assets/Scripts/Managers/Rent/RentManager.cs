@@ -6,6 +6,11 @@ namespace Assets.Scripts.Managers.Rent
 {
     ///Self-wires Economy/Ownership/Rules in Awake() 
     ///so it works in EditMode tests where Awake() may not fire.
+        
+    [RequireComponent(typeof(EconomyAdapter))]
+    [RequireComponent(typeof(OwnershipServiceAdapter))]
+    [RequireComponent(typeof(RentModifierService))]
+
     public class RentManager : MonoBehaviour
     {
         [Header("Dependencies")]
@@ -23,6 +28,10 @@ namespace Assets.Scripts.Managers.Rent
 
         private void Awake()
         {
+            economy = GetComponent<EconomyAdapter>();
+            ownership = GetComponent<OwnershipServiceAdapter>();
+            rentModifiers = GetComponent<RentModifierService>();
+
             EnsureDependencies();
         }
 
@@ -64,22 +73,19 @@ namespace Assets.Scripts.Managers.Rent
         //Make sure serialized dependencies are not null
         private void EnsureDependencies()
         {
-            if (!rentModifiers)
-                rentModifiers = GetComponent<RentModifierService>() ?? gameObject.AddComponent<RentModifierService>();
+                if (!economy)
+                    economy = GetComponent<EconomyAdapter>();
 
-            if (!economy)
-                economy = GetComponent<EconomyAdapter>() ?? gameObject.AddComponent<EconomyAdapter>();
+                if (!ownership)
+                    ownership = GetComponent<OwnershipServiceAdapter>();
 
-            if (!ownership)
-                ownership = GetComponent<OwnershipServiceAdapter>() ?? gameObject.AddComponent<OwnershipServiceAdapter>();
+                if (!rentModifiers)
+                    rentModifiers = GetComponent<RentModifierService>();
 
-            if (!rulesManager)
-                rulesManager = FindFirstObjectByType<RulesManager>();
-
-            if (rules == null)
-                rules = rulesManager != null
-                    ? rulesManager.ActiveRules
-                    : new StandardRuleSet();
+                if (rules == null)
+                    rules = rulesManager != null
+                        ? rulesManager.ActiveRules
+                        : new StandardRuleSet();
         }
 
         //helpers

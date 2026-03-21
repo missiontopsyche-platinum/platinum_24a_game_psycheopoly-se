@@ -58,11 +58,6 @@ namespace Assets.Scripts.Managers.Rent
                     {
                         int rent = tile.RentByHouses[houses];
 
-                        Logger.Debug(
-                            "RentCalculator.Street",
-                            $"[{tile.Name}] HouseCount={houses} Rent={rent}",
-                            LogCategory.Gameplay);
-
                         return rent;
                     }
 
@@ -71,11 +66,6 @@ namespace Assets.Scripts.Managers.Rent
                         ownership.CountOwnedInGroup(owner, tile.Group) >= rules.StreetsInGroup(tile.Group);
 
                     int finalRent = hasMonopoly ? tile.BaseRent * 2 : tile.BaseRent;
-
-                    Logger.Debug(
-                        "RentCalculator.Street",
-                        $"[{tile.Name}] Houses=0 BaseRent={tile.BaseRent} Monopoly={hasMonopoly} Final={finalRent}",
-                        LogCategory.Gameplay);
 
                     return finalRent;
                 }
@@ -94,11 +84,6 @@ namespace Assets.Scripts.Managers.Rent
 
                     int baseRent = rules.RailroadBaseRent();
                     int rent = baseRent << (count - 1);
-
-                    Logger.Debug(
-                        "RentCalculator.Railroad",
-                        $"RailroadsOwned={count} BaseRent={baseRent} Final={rent}",
-                        LogCategory.Gameplay);
 
                     return rent;
                 }
@@ -120,11 +105,6 @@ namespace Assets.Scripts.Managers.Rent
                         : rules.UtilityRentSingleMult();
 
                     int rent = total * multiplier;
-
-                    Logger.Debug(
-                        "RentCalculator.Utility",
-                        $"Dice={total} OwnsBoth={ownsBoth} Mult={multiplier} Final={rent}",
-                        LogCategory.Gameplay);
 
                     return rent;
                 }
