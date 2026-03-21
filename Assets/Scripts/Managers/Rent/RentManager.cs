@@ -79,19 +79,18 @@ namespace Assets.Scripts.Managers.Rent
                 if (!ownership)
                     ownership = GetComponent<OwnershipServiceAdapter>();
 
-                if (!rulesManager)
-                {
-                    Debug.LogError("RentManager requires a RulesManager reference assigned in Inspector.", this);
-                }   
-
-
+               
                 if (!rentModifiers)
                     rentModifiers = GetComponent<RentModifierService>();
 
+                if (!rulesManager)
+                {
+                    rules = new StandardRuleSet();
+                    return;
+                }
+
                 if (rules == null)
-                    rules = rulesManager != null
-                        ? rulesManager.ActiveRules
-                        : new StandardRuleSet();
+                    rules = rulesManager.ActiveRules ?? new StandardRuleSet();
         }
 
         //helpers
