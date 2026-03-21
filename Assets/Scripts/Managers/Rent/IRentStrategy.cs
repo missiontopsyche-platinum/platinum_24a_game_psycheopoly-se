@@ -6,6 +6,6 @@ namespace Assets.Scripts.Managers.Rent
     public interface IRentStrategy
     {
         /// <summary>Returns rent due for landing.</summary>
-        int ComputeRent(ITileRentInfo tile, Player owner, int diceTotal, IOwnershipService own, IRuleSet rules);
+        int ComputeRent(ITileRentInfo tile, Player owner, int diceTotal, IOwnershipService own, StandardRuleSet rules);
     }
 }

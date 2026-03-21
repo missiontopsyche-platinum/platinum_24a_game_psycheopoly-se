@@ -1,5 +1,6 @@
-using UnityEngine;
 using Assets.Scripts.Managers.Rent;
+using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Managers.Rules
 {
@@ -40,14 +41,13 @@ namespace Assets.Scripts.Managers.Rules
         [Tooltip("Max turn limit for jail time.")]
         [SerializeField] private int maxJailTurns = 3;
 
-        StandardRuleSet instance;
+        private static readonly Lazy<StandardRuleSet> instance = new Lazy<StandardRuleSet>(() => new StandardRuleSet());
 
         private StandardRuleSet() { }
         
-        public StandardRuleSet GetInstance()
+        public static StandardRuleSet GetInstance()
         {
-            if (instance == null) instance = new StandardRuleSet(); 
-            return instance;
+            return instance.Value;
         }
         
         public int RailroadBaseRent() => railroadBase;
@@ -68,5 +68,12 @@ namespace Assets.Scripts.Managers.Rules
         public int TurnLimit() => turnLimit;
 
         public int MaxJailTurns() => maxJailTurns;
+
+        public enum WinConditionType
+        {
+            LastPlayerStanding,
+            TargetMoney,
+            TurnLimit
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Assets.Scripts.Managers.Rent
     /// <summary>Monopoly stype rent computation. </summary>
     public class StandardRentStrategy : IRentStrategy
     {
-        public int ComputeRent(ITileRentInfo tile, Player owner, int diceTotal, IOwnershipService own, IRuleSet rules)
+        public int ComputeRent(ITileRentInfo tile, Player owner, int diceTotal, IOwnershipService own, StandardRuleSet rules)
         {
             if (tile == null || owner == null) return 0;
             if (tile.IsMortgaged) return 0;
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Managers.Rent
             }
         }
 
-        private int StreetRent(ITileRentInfo tile, Player owner, IOwnershipService own, IRuleSet rules)
+        private int StreetRent(ITileRentInfo tile, Player owner, IOwnershipService own, StandardRuleSet rules)
         {
             int houses = Mathf.Clamp(tile.HouseCount, 0, tile.RentByHouses?.Length > 0 ? tile.RentByHouses.Length - 1 : 0);
 
@@ -59,7 +59,7 @@ namespace Assets.Scripts.Managers.Rent
 
         }
 
-        private int RailroadRent(Player owner, IOwnershipService own, IRuleSet rules)
+        private int RailroadRent(Player owner, IOwnershipService own, StandardRuleSet rules)
         {
             int count = Mathf.Clamp(own.CountRailroadsOwned(owner), 0, 4);
             if (count <= 0) return 0;
@@ -75,7 +75,7 @@ namespace Assets.Scripts.Managers.Rent
             return rent;
         }
 
-        private int UtilityRent(Player owner, int diceTotal, IOwnershipService own, IRuleSet rules)
+        private int UtilityRent(Player owner, int diceTotal, IOwnershipService own, StandardRuleSet rules)
         {
             int total = Mathf.Max(0, diceTotal);
             bool ownsBoth = own.OwnsBothUtilities(owner);

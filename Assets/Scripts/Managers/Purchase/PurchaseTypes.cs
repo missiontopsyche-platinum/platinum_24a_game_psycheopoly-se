@@ -29,6 +29,6 @@ namespace Assets.Scripts.Managers.Purchase
             ITileRentInfo tile,
             Player buyer,
             IOwnershipService own,
-            IRuleSet rules);
+            StandardRuleSet rules);
     }
 }

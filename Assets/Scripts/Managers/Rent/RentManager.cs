@@ -19,7 +19,7 @@ namespace Assets.Scripts.Managers.Rent
         [SerializeField] private IntEventChannel rentComputedChannel;
 
 
-        private IRuleSet rules;
+        private StandardRuleSet rules;
         private IRentStrategy strategy = new StandardRentStrategy();
         public IOwnershipService Ownership => ownership;
 
@@ -79,9 +79,7 @@ namespace Assets.Scripts.Managers.Rent
                 rulesManager = FindFirstObjectByType<RulesManager>();
 
             if (rules == null)
-                rules = rulesManager != null
-                    ? rulesManager.ActiveRules
-                    : new StandardRuleSet();
+                rules = StandardRuleSet.GetInstance();
         }
 
         //helpers

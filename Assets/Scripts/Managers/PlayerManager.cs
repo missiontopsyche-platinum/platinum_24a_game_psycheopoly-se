@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
     public List<Player> players = new List<Player>();
 
     [SerializeField] private RulesManager rulesManager;
-    private IRuleSet activeRuleset;
+    private StandardRuleSet activeRuleset;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -305,12 +305,7 @@ public class PlayerManager : MonoBehaviour
 
     private void EnsureDependencies()
     {
-        if (!rulesManager)
-            rulesManager = FindFirstObjectByType<RulesManager>();
-
         if (activeRuleset == null)
-            activeRuleset = rulesManager != null
-                ? rulesManager.ActiveRules
-                : new StandardRuleSet();
+            activeRuleset = StandardRuleSet.GetInstance();
     }
 }

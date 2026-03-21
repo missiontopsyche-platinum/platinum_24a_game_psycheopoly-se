@@ -13,7 +13,7 @@ namespace Assets.Scripts.Managers.Purchase
             ITileRentInfo tile,
             Player buyer,
             IOwnershipService own,
-            IRuleSet rules)
+            StandardRuleSet rules)
         {
             //Null and invalid checks
             if (tile == null || buyer == null)

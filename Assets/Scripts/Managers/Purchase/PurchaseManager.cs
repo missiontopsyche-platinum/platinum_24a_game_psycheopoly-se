@@ -13,7 +13,7 @@ namespace Assets.Scripts.Managers.Purchase
     {
         [Header("Dependencies")]
         [SerializeField] private OwnershipServiceAdapter ownership;
-        [SerializeField] private IRuleSet rules = new StandardRuleSet();
+        [SerializeField] private StandardRuleSet rules = StandardRuleSet.GetInstance();
 
         // for tests only
         private PurchaseFlow overrideFlow = PurchaseFlow.OfferToPlayer;
@@ -68,7 +68,7 @@ namespace Assets.Scripts.Managers.Purchase
                             gameObject.AddComponent<OwnershipServiceAdapter>();
 
             if (rules == null)
-                rules = new StandardRuleSet();
+                rules = StandardRuleSet.GetInstance();
         }
 
         private void HandleDecision(Player buyer, ITileRentInfo tile, PurchaseDecision decision)
