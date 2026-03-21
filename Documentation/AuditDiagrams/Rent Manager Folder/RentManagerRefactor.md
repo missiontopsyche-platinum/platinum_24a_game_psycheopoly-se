@@ -30,7 +30,7 @@ This document applies to the Rent Manager Folder
 
 \## Related Documents
 
-\- Links to any other documents like README, UML, architecture explanations, etc.
+\- https://github.com/MissionToPsyche-Platinum/platinum\_24a\_game\_psycheopoly-se/blob/US783/Documentation/AuditDiagrams/Rent%20Manager%20Folder/Rent%20Manager%20Integration%20Audit.pdf
 
 
 
