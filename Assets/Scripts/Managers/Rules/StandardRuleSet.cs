@@ -12,34 +12,34 @@ namespace Assets.Scripts.Managers.Rules
     public class StandardRuleSet
     {
         [Tooltip("Base rent for 1 owned railroad (25, 50, 100, 200 scaling).")]
-        [SerializeField] private int railroadBase = 25;
+        [SerializeField] public int railroadBase = 25;
 
         [Tooltip("Utility multiplier when owner has a single utility.")]
-        [SerializeField] private int utilitySingle = 4;
+        [SerializeField] public int utilitySingle = 4;
 
         [Tooltip("Utility multiplier when owner has both utilities.")]
-        [SerializeField] private int utilityBoth = 10;
+        [SerializeField] public int utilityBoth = 10;
 
         [Tooltip("Starting money for each player.")]
-        [SerializeField] private int playerStartingMoney = 1500;
+        [SerializeField] public int playerStartingMoney = 1500;
 
         [Tooltip("Salary received when passing GO.")]
-        [SerializeField] private int goSalary = 200;
+        [SerializeField] public int goSalary = 200;
 
         [Tooltip("Fee to pay when leaving jail.")]
-        [SerializeField] private int jailFee = 100;
+        [SerializeField] public int jailFee = 100;
 
         [Tooltip("Win condition type for the game.")]
-        [SerializeField] private WinConditionType winCondition = WinConditionType.LastPlayerStanding;
+        [SerializeField] public WinConditionType winCondition = WinConditionType.LastPlayerStanding;
 
         [Tooltip("Target money for TargetMoney win condition.")]
-        [SerializeField] private int targetMoney = 5000;
+        [SerializeField] public int targetMoney = 5000;
 
         [Tooltip("Turn limit for TurnLimit win condition.")]
-        [SerializeField] private int turnLimit = 20;
+        [SerializeField] public int turnLimit = 20;
 
         [Tooltip("Max turn limit for jail time.")]
-        [SerializeField] private int maxJailTurns = 3;
+        [SerializeField] public int maxJailTurns = 3;
 
         private static readonly Lazy<StandardRuleSet> instance = new Lazy<StandardRuleSet>(() => new StandardRuleSet());
 

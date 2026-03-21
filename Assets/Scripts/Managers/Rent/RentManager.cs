@@ -12,7 +12,6 @@ namespace Assets.Scripts.Managers.Rent
         [Header("Dependencies")]
         [SerializeField] private EconomyAdapter economy;                     //money mover (placeholder)
         [SerializeField] private OwnershipServiceAdapter ownership;          //ownership source of truth (adapter)
-        [SerializeField] private RulesManager rulesManager;
         [SerializeField] private RentModifierService rentModifiers;
 
         [Header("Events")]
@@ -74,9 +73,6 @@ namespace Assets.Scripts.Managers.Rent
 
             if (!ownership)
                 ownership = GetComponent<OwnershipServiceAdapter>() ?? gameObject.AddComponent<OwnershipServiceAdapter>();
-
-            if (!rulesManager)
-                rulesManager = FindFirstObjectByType<RulesManager>();
 
             if (rules == null)
                 rules = StandardRuleSet.GetInstance();

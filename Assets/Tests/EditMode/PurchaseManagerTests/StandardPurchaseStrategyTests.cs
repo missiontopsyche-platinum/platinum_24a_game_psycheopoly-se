@@ -9,25 +9,7 @@ namespace Tests.EditMode.PurchaseManagerTests
 {
     public class StandardPurchaseStrategyTests
     {
-        private class Rules : IRuleSet
-        {
-            public int RailroadBaseRent()      => 25;
-            public int UtilityRentSingleMult() => 4;
-            public int UtilityRentBothMult()   => 10;
-
-            public int StreetsInGroup(ColorGroup g) =>
-                (g == ColorGroup.Brown || g == ColorGroup.DarkBlue) ? 2 : 3;
-
-            public int PlayerStartingMoney() => 1500;
-
-            public int GOSalary() => 200;
-            public int JailFee() => 50;
-            public WinConditionType WinCondition() => WinConditionType.LastPlayerStanding;
-            public int TargetMoney() => 5000;
-            public int TurnLimit() => 20;
-            public int MaxJailTurns() => 3;
-        }
-
+ 
         private class Own : IOwnershipService
         {
             private readonly System.Collections.Generic.Dictionary<ITileRentInfo, Player> map =
@@ -53,7 +35,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         public void Unowned_AffordableStreet_OffersToPlayer_UsesPurchasePrice()
         {
             var strat = new StandardPurchaseStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own   = new Own();
             var buyer = P("Buyer", money: 1_000);
 
@@ -83,7 +65,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         public void TileOwnedByOtherPlayer_NoOffer()
         {
             var strat = new StandardPurchaseStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own   = new Own();
             var buyer = P("Buyer", 1_000);
             var other = P("Other", 1_000);
@@ -115,7 +97,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         public void BuyerCannotAfford_NoOffer()
         {
             var strat = new StandardPurchaseStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own   = new Own();
             var buyer = P("Poor Buyer", money: 0);
 

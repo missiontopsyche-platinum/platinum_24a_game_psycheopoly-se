@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Tests.EditMode; // adjust if your ManagerTestBase namespace differs
 using Assets.Scripts.Managers.Rent;
-
+using Assets.Scripts.Managers.Rules;
 namespace Tests.EditMode.RentTests
 {
     public class RentTestBase : ManagerTestBase
@@ -14,6 +14,8 @@ namespace Tests.EditMode.RentTests
 
         protected Player owner;
         protected Player tenant;
+
+        protected StandardRuleSet rules;
 
         [SetUp]
         public virtual void SetUp()
@@ -31,6 +33,8 @@ namespace Tests.EditMode.RentTests
 
             economy     = rentGO.AddComponent<EconomyAdapter>();
             ownership   = rentGO.AddComponent<OwnershipServiceAdapter>();
+
+            rules = StandardRuleSet.GetInstance();
         }
 
         [TearDown]

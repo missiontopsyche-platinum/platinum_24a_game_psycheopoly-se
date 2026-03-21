@@ -20,7 +20,7 @@ namespace Tests.EditMode.PurchaseTests
 
             //Use StandardPurchaseStrategy directly to get expected price
             var strat = new StandardPurchaseStrategy();
-            var rules = new StandardRuleSet();
+            var rules = StandardRuleSet.GetInstance();
             var decision = strat.GetPurchaseDecision(prop, buyer, ownership, rules);
 
             Assert.AreEqual(PurchaseFlow.OfferToPlayer, decision.Flow,

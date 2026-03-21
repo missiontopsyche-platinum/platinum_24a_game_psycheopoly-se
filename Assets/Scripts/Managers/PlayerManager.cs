@@ -24,8 +24,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
 
     public List<Player> players = new List<Player>();
-
-    [SerializeField] private RulesManager rulesManager;
     private StandardRuleSet activeRuleset;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

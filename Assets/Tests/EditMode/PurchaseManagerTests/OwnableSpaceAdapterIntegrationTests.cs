@@ -13,7 +13,7 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
     private PropertySpaceData spaceData;
     private Player buyer;
     private TestOwnership ownership;
-    private TestRules rules;
+    private StandardRuleSet rules;
     private StandardPurchaseStrategy strategy;
 
     [SetUp]
@@ -50,7 +50,7 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
         buyer.SetMoney(1000);  //enough to afford
 
         ownership = new TestOwnership();
-        rules     = new TestRules();
+        rules     = StandardRuleSet.GetInstance();
         strategy  = new StandardPurchaseStrategy();
     }
 

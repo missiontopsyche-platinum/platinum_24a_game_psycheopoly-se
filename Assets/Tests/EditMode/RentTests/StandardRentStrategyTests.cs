@@ -18,22 +18,7 @@ namespace Tests.EditMode.RentTests
             public int[] RentByHouses { get; set; }
         }
 
-        private class Rules : IRuleSet
-        {
-            public int RailroadBaseRent() => 25;
-            public int UtilityRentSingleMult() => 4;
-            public int UtilityRentBothMult() => 10;
-            public int StreetsInGroup(ColorGroup g) =>
-                (g == ColorGroup.Brown || g == ColorGroup.DarkBlue) ? 2 : 3;
-            public int PlayerStartingMoney() => 1500;
-            public int GOSalary() => 200;
-            public int JailFee() => 50;
-            public WinConditionType WinCondition() => WinConditionType.LastPlayerStanding;
-            public int TargetMoney() => 5000;
-            public int TurnLimit() => 20;
-            public int MaxJailTurns() => 3;
-        }
-
+       
         private class Own : IOwnershipService
         {
             private readonly System.Collections.Generic.Dictionary<ITileRentInfo, Player> map =
@@ -79,7 +64,7 @@ namespace Tests.EditMode.RentTests
         public void Street_NoHouses_NoMonopoly_Base()
         {
             var strat = new StandardRentStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own = new Own();
             var o = P("O");
 
@@ -97,7 +82,7 @@ namespace Tests.EditMode.RentTests
         public void Street_NoHouses_WithMonopoly_DoubleBase()
         {
             var strat = new StandardRentStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own = new Own();
             var o = P("O");
 
@@ -115,7 +100,7 @@ namespace Tests.EditMode.RentTests
         public void Street_WithHouses_UsesTable()
         {
             var strat = new StandardRentStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own = new Own();
             var o = P("O");
 
@@ -133,7 +118,7 @@ namespace Tests.EditMode.RentTests
         public void Railroad_Scales_25_50_100_200()
         {
             var strat = new StandardRentStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own = new Own();
             var o = P("O");
 
@@ -158,7 +143,7 @@ namespace Tests.EditMode.RentTests
         public void Utility_UsesDice_Multipliers_4_and_10()
         {
             var strat = new StandardRentStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own = new Own();
             var o = P("O");
 
@@ -178,7 +163,7 @@ namespace Tests.EditMode.RentTests
         public void Mortgaged_ReturnsZero()
         {
             var strat = new StandardRentStrategy();
-            var rules = new Rules();
+            var rules = StandardRuleSet.GetInstance();
             var own = new Own();
             var o = P("O");
 

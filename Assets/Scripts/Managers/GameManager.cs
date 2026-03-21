@@ -48,7 +48,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
-    [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private PurchaseManager purchaseManager;
 
