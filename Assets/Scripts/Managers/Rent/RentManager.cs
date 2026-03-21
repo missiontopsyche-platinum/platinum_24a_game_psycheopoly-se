@@ -12,7 +12,7 @@ namespace Assets.Scripts.Managers.Rent
         [Header("Dependencies")]
         [SerializeField] private EconomyAdapter economy;                     //money mover (placeholder)
         [SerializeField] private OwnershipServiceAdapter ownership;          //ownership source of truth (adapter)
-        [SerializeField] private RentModifierService rentModifiers;
+        [SerializeField] private CostModifierService rentModifiers;
 
         [Header("Events")]
         [SerializeField] private IntEventChannel rentComputedChannel;
@@ -66,7 +66,7 @@ namespace Assets.Scripts.Managers.Rent
         private void EnsureDependencies()
         {
             if (!rentModifiers)
-                rentModifiers = GetComponent<RentModifierService>() ?? gameObject.AddComponent<RentModifierService>();
+                rentModifiers = GetComponent<CostModifierService>() ?? gameObject.AddComponent<CostModifierService>();
 
             if (!economy)
                 economy = GetComponent<EconomyAdapter>() ?? gameObject.AddComponent<EconomyAdapter>();

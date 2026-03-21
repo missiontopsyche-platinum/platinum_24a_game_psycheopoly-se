@@ -5,7 +5,7 @@ using Assets.Scripts.Managers.Rent;
 namespace Assets.Scripts.Managers.Rent
 {
     /// <summary>holds and uses rent modifiers (from cards/tile effects).</summary>
-    public class RentModifierService : MonoBehaviour
+    public class CostModifierService : MonoBehaviour
     {
         private readonly List<IRentModifier> _mods = new ();
 
