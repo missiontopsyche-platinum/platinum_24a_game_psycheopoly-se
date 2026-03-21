@@ -81,23 +81,6 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
 
     //test doubles for rules and ownership
 
-    private class TestRules : IRuleSet
-    {
-        public int RailroadBaseRent()      => 25;
-        public int UtilityRentSingleMult() => 4;
-        public int UtilityRentBothMult()   => 10;
-
-        public int StreetsInGroup(ColorGroup g) =>
-            (g == ColorGroup.Brown || g == ColorGroup.DarkBlue) ? 2 : 3;
-        public int PlayerStartingMoney() => 1500;
-        public int GOSalary()             => 200;
-        public int JailFee()              => 50;
-        public WinConditionType WinCondition() => WinConditionType.LastPlayerStanding;
-        public int TargetMoney()          => 5000;
-        public int TurnLimit()            => 20;
-        public int MaxJailTurns()         => 3;
-    }
-
     private class TestOwnership : IOwnershipService
     {
         //only care that the tile is unowned
