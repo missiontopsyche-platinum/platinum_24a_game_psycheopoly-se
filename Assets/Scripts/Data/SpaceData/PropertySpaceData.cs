@@ -1,4 +1,5 @@
 using Events.EventDataStructures;
+using Assets.Scripts.Managers.Rent;
 using System;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class PropertySpaceData : OwnableSpaceData
     [SerializeField] public int dataPointCost;
     [SerializeField, Range(1.0f, 2.0f)] public float upgradeCostMultiplier = 1.0f; // upgrade cost is defined to not change by default
     [SerializeField, HideInInspector] private int[] upgradeCostByLevel;
+    [SerializeField] private ColorGroup colorGroup;
 
     [Header("Property Event Channels")] 
     [SerializeField] public PurchaseUpgradeRequestEventChannel purchaseUpgradeRequestEventChannel;
@@ -231,4 +233,18 @@ public class PropertySpaceData : OwnableSpaceData
 
 
     }
+
+    public override TileType Type => TileType.Street;
+
+    public override ColorGroup Group => colorGroup;
+
+    public override int HouseCount => currentUpgradeLevel;
+
+    public override int BaseRent =>
+        researchFundingValues != null && researchFundingValues.Length > 0
+            ? researchFundingValues[0]
+            : 0;
+
+    public override int[] RentByHouses => researchFundingValues;
+
 }
