@@ -72,30 +72,6 @@ public class GameManager : MonoBehaviour
         { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
     };
 
-    /// <summary>
-    /// Defines the legal transitions between <see cref="TurnPhase"/> values for
-    /// the turn finite state machine.
-    ///
-    /// Each key is the current phase, and its value is the set of phases that are
-    /// allowed as the next phase. All transitions must go through
-    /// <see cref="TryChangeTurnPhase"/> which validates against this map, and
-    /// also requires the overall <see cref="GameState"/> to be
-    /// <see cref="GameState.PlayerTurn"/>.
-    /// </summary>
-    private static readonly Dictionary<TurnPhase, HashSet<TurnPhase>> PhaseAllowed = new()
-    {
-        { TurnPhase.None,            new() { TurnPhase.StartTurn } },
-        { TurnPhase.StartTurn,       new() { TurnPhase.PreRoll } },
-        { TurnPhase.PreRoll,         new() { TurnPhase.RollingDice } },
-        { TurnPhase.RollingDice,     new() { TurnPhase.MovingPiece } },
-        { TurnPhase.MovingPiece,     new() { TurnPhase.ResolvingSpace, TurnPhase.MovingPiece, TurnPhase.ResolvingCards } },
-        { TurnPhase.ResolvingSpace,  new() { TurnPhase.ResolvingCards, TurnPhase.MovingPiece, TurnPhase.PostTurn } },
-        { TurnPhase.ResolvingCards,  new() { TurnPhase.PostTurn, TurnPhase.MovingPiece } },
-        { TurnPhase.PostTurn,        new() { TurnPhase.EndTurn } },
-        { TurnPhase.EndTurn,         new() { } },
-        //TurnFlowCoordinator now manually fires a new TurnStarted
-    };
-
     //us11t41 duplicate prevention with Awake() method
     private void Awake()
     {
@@ -248,7 +224,6 @@ public class GameManager : MonoBehaviour
             "Piece movement completed, advancing turn phase.",
             LogCategory.Gameplay,
             this);
-        TryChangeTurnPhase(TurnPhase.ResolvingSpace);
         movementStrategy?.OnPieceMoveCompleted(pieceMoveCompleted);
     }
 
@@ -334,20 +309,16 @@ public class GameManager : MonoBehaviour
     {
         // temporary, assume every player is a 'human' player
         SetState(GameState.PlayerTurn);
-        if (TryChangeTurnPhase(TurnPhase.StartTurn))
-        {
-            Logging.Logger.Debug("GameManager.StartTurn",
+        Logging.Logger.Debug("GameManager.StartTurn",
                     "None finished, entering StartTurn.",
                     LogCategory.Gameplay, this);
-            int active = turnCycleManager?.CurrentPlayerIndex ?? 0;
-            turnStartedChannel.RaiseEvent(new TurnStartedEvent(active, 0)); // turnNum not tracked here
-            //diceRollPanel?.gameObject.SetActive(true);
-            // This is the "waiting" for dice roll phase, replacing the busy wait.
-            Logging.Logger.Debug("GameManager.StartTurn",
-                    "StartTurn finished, entering PreRoll.",
-                    LogCategory.Gameplay, this);
-            TryChangeTurnPhase(TurnPhase.PreRoll);
-        }
+        int active = turnCycleManager?.CurrentPlayerIndex ?? 0;
+        turnStartedChannel.RaiseEvent(new TurnStartedEvent(active, 0)); // turnNum not tracked here
+                                                                        //diceRollPanel?.gameObject.SetActive(true);
+                                                                        // This is the "waiting" for dice roll phase, replacing the busy wait.
+        Logging.Logger.Debug("GameManager.StartTurn",
+                "StartTurn finished, entering PreRoll.",
+                LogCategory.Gameplay, this);
     }
 
     /// <summary>
@@ -496,7 +467,6 @@ public class GameManager : MonoBehaviour
             Logging.Logger.Debug("gameManager.DiceRolled", "Dice roll processed movement handled by " +
                 "StandardMovementStrategy.",
                 Logging.LogCategory.Gameplay, this);
-            TryChangeTurnPhase(TurnPhase.MovingPiece);
             movementStrategy?.OnDiceRolled(diceRolledEvent);
         }
 
@@ -525,8 +495,6 @@ public class GameManager : MonoBehaviour
     {
         if (!diceRollRequestedEvent || turnPhase != TurnPhase.PreRoll) return;
 
-        if (TryChangeTurnPhase(TurnPhase.RollingDice))
-            //diceManager?.RollDice();
         Logging.Logger.Debug("GameManager.OnRollDiceRequest",
             "Dice roll requested, entering RollingDice.",
             LogCategory.Gameplay, this);
@@ -607,7 +575,6 @@ public class GameManager : MonoBehaviour
         }
         
         playerDataUpdatedEventChannel.RaiseEvent(true);
-        TryChangeTurnPhase(TurnPhase.PostTurn);
     }
 
     /// <summary>
@@ -626,7 +593,6 @@ public class GameManager : MonoBehaviour
     {
         if (card == null || player == null || deck == null) return;
 
-        TryChangeTurnPhase(TurnPhase.ResolvingCards);
         Logging.Logger.Debug("GameManager.OnCardDrawnEvent",
             "Card drawn, entering ResolvingCards.",
             LogCategory.Gameplay, this);
@@ -653,16 +619,13 @@ public class GameManager : MonoBehaviour
     {
         if (!turnEndedEvent) return;
 
-        if (turnPhase == TurnPhase.PostTurn && TryChangeTurnPhase(TurnPhase.EndTurn))
-        {
-            Logging.Logger.Debug("GameManager.OnTurnEndedEvent",
+        Logging.Logger.Debug("GameManager.OnTurnEndedEvent",
                 "Turn ended, entering EndTurn.",
                 LogCategory.Gameplay, this);
-            //turnCycleManager?.Advance();
-            int nextPlayer = (turnCycleManager != null) ? turnCycleManager.Advance() : 0;
-            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
-            //NextTurn(); // TODO: kept this until we can fully delegate turn cycling to TurnCycleManager
-        }
+        //turnCycleManager?.Advance();
+        int nextPlayer = (turnCycleManager != null) ? turnCycleManager.Advance() : 0;
+        turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+        //NextTurn(); // TODO: kept this until we can fully delegate turn cycling to TurnCycleManager
     }
 
     /// <summary>
@@ -686,56 +649,9 @@ public class GameManager : MonoBehaviour
     {
         if (!completed) return;
 
-        if (turnPhase == TurnPhase.ResolvingSpace || turnPhase == TurnPhase.ResolvingCards)
-        {
-            if (TryChangeTurnPhase(TurnPhase.PostTurn))
-            {
-                Logging.Logger.Debug("GameManager.OnSpaceResolutionCompleted",
+        Logging.Logger.Debug("GameManager.OnSpaceResolutionCompleted",
                     "Resolution finished, entering PostTurn.",
                     LogCategory.Gameplay, this);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Attempts to transition the per-turn FSM to a new <see cref="TurnPhase"/>.
-    /// 
-    /// If both checks pass and <paramref name="newPhase"/> differs from the
-    /// current <see cref="turnPhase"/>, the phase is updated and the method
-    /// returns true.
-    /// </summary>
-    /// <param name="newPhase">The next turn phase.</param>
-    /// <returns>
-    /// True if the phase was changed; false if the transition was illegal or
-    /// redundant.
-    /// </returns>
-    private bool TryChangeTurnPhase(TurnPhase newPhase)
-    {
-        if (newPhase == turnPhase) return false;
-
-        if (gameState != GameState.PlayerTurn)
-        {
-            Logging.Logger.Error("GameManager.TryChangeTurnPhase",
-                $"Illegal action, game state must be {GameState.PlayerTurn} to proceed. Current state: {gameState}",
-                LogCategory.Gameplay,
-                this);
-            return false;
-        }
-
-        if (!PhaseAllowed.TryGetValue(turnPhase, out var nexts) ||
-            !nexts.Contains(newPhase))
-        {
-            Logging.Logger.Warn("GameManager.TryChangeTurnPhase",
-                $"Illegal turn phase transition: {turnPhase} -> {newPhase}",
-                LogCategory.Gameplay,
-                this);
-            return false;
-        }
-
-        var prev = turnPhase;
-        turnPhase = newPhase;
-
-        return true;
     }
 
     //Handle the bankruptPlayerEventChannel input. Need to verify that the playerID is also it's turn order. 
