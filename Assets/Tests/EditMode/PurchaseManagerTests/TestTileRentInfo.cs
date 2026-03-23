@@ -3,7 +3,7 @@ using Assets.Scripts.Managers.Purchase;
 
 namespace Tests.EditMode.PurchaseManagerTests
 {
-    internal class TestTileRentInfo : ITileRentInfo, IPurchasableTileInfo
+    internal class TestTileRentInfo : ITileRentInfo
     {
         public string Name        { get; set; }
         public TileType Type      { get; set; }
