@@ -2,9 +2,7 @@ using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
 {
-    [Header("Strategy")]
-    private IUpgradeStrategy strategy = new StandardUpgradeStrategy();
-
+    
     // TODO: Add event channels
     private void Awake()
     {
