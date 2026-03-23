@@ -15,7 +15,6 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
-        [SerializeField] private BooleanEventChannel turnEndedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
         [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
 
@@ -67,7 +66,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             turnStartedInChannel?.Subscribe(OnTurnStarted);
             diceRolledChannel?.Subscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
-            //turnEndedChannel?.Subscribe(OnTurnEnded);
             turnActionRequestChannel?.Subscribe(OnTurnActionRequested);
         }
 
@@ -76,7 +74,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             turnStartedInChannel?.Unsubscribe(OnTurnStarted);
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
             pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
-            //turnEndedChannel?.Unsubscribe(OnTurnEnded);
             turnActionRequestChannel?.Unsubscribe(OnTurnActionRequested);
         }
 
@@ -97,12 +94,6 @@ namespace Assets.Scripts.Managers.TurnFlow
 
                 turnCycleManager.SyncCurrentPlayerIndex(data.playerId);
             }
-        }
-
-        private void OnTurnEnded(bool ended)
-        {
-            if (!ended) return;
-            CompleteTurnFlow();
         }
 
         // after dice roll, wait for movement to contine
