@@ -13,7 +13,7 @@ namespace Tests.EditMode.GameManagerTests
             var seen = new List<GameStateChangedEvent>();
             gameManager.gameStateChangedChannel.Subscribe(gsc => seen.Add(gsc));
 
-            gameManager.StartGame(2);
+            gameManager.StartGame();
 
             // Final state
             Assert.AreEqual(GameState.WaitingForTurn, gameManager.gameState, "Should be waiting for turn after StartGame.");
@@ -29,7 +29,7 @@ namespace Tests.EditMode.GameManagerTests
         [Test]
         public void EndGame_is_legal_and_Initialize_restarts()
         {
-            gameManager.StartGame(2);
+            gameManager.StartGame();
             Assert.AreEqual(GameState.WaitingForTurn, gameManager.gameState);
 
             gameManager.EndGame();
@@ -46,26 +46,11 @@ namespace Tests.EditMode.GameManagerTests
             TurnStartedEvent receivedTse = null;
             gameManager.turnStartedChannel.Subscribe(p => receivedTse = p);
 
-            gameManager.StartGame(2);
+            gameManager.StartGame();
             gameManager.CompleteGameInit();
 
             Assert.IsNotNull(receivedTse, "turnStartedChannel should fire with a Player payload.");
             Assert.AreEqual(0, receivedTse.playerId);
-        }
-
-        // 4) Invalid player counts are rejected and do not change state
-        [Test]
-        public void StartGame_with_invalid_player_count_does_not_change_state()
-        { 
-            // ignore the Error Logs for this test, they are meant to happen.
-            LogAssert.ignoreFailingMessages = true;
-        
-            // start in None; invalid counts (e.g., 1 or 5) should not transition
-            gameManager.StartGame(1);
-            Assert.AreEqual(GameState.None, gameManager.gameState);
-
-            gameManager.StartGame(5);
-            Assert.AreEqual(GameState.None, gameManager.gameState);
         }
     }
 }

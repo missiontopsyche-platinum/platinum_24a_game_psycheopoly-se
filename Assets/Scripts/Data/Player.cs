@@ -13,7 +13,7 @@ public class Player : ScriptableObject
     private string p_Name;
     private int money;
     private int assets = 0;
-    private int position = 0;
+    private int position = 0; // this is never used anywhere, BoardManager owns positions.
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
