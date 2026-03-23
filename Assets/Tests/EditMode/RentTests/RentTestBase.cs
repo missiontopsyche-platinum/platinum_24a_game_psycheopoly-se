@@ -9,7 +9,6 @@ namespace Tests.EditMode.RentTests
     {
         protected GameObject rentGO;
         protected RentManager rentManager;
-        protected EconomyAdapter economy;
         protected OwnershipServiceAdapter ownership;
         protected RentModifierService rentModifiers;
 
@@ -30,7 +29,6 @@ namespace Tests.EditMode.RentTests
             rentGO = new GameObject("RentManager");
 
             //Add dependencies first so we know what is currently in project
-            economy = rentGO.AddComponent<EconomyAdapter>();
             ownership = rentGO.AddComponent<OwnershipServiceAdapter>();
             rentModifiers = rentGO.AddComponent<RentModifierService>();
 
@@ -38,7 +36,6 @@ namespace Tests.EditMode.RentTests
             rentManager = rentGO.AddComponent<RentManager>();
 
             Assert.NotNull(rentManager);
-            Assert.NotNull(economy);
             Assert.NotNull(ownership);
             Assert.NotNull(rentModifiers);
         }
