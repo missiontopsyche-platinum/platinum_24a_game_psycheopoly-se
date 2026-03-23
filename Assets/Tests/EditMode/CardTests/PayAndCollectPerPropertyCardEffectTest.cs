@@ -3,161 +3,140 @@ using Events.EventDataStructures;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Refactor if we need more tests
-public class PayAndCollectPerPropertyCardEffectTest : CardEffectBaseTest
+namespace Tests.EditMode.CardTests
 {
+    public class PayAndCollectPerPropertyCardEffectTest : CardEffectBaseTest
+{
+    private void CreatePropertyForTestPlayer()
+    {
+        PropertySpaceData property1 = TrackScriptableObject(ScriptableObject.CreateInstance<PropertySpaceData>());
+        property1.buyPrice = 100;
+        property1.SetOwner(testPlayer);
+        testPlayer.AddOwnedProperty(property1);
+        for (int i = 0; i < 5; i++) property1.UpgradeProperty();
+
+        PropertySpaceData property2 = TrackScriptableObject(ScriptableObject.CreateInstance<PropertySpaceData>());
+        property2.buyPrice = 100;
+        property2.SetOwner(testPlayer);
+        testPlayer.AddOwnedProperty(property2);
+        property2.UpgradeProperty();
+
+        PropertySpaceData property3 = TrackScriptableObject(ScriptableObject.CreateInstance<PropertySpaceData>());
+        property3.buyPrice = 100;
+        property3.SetOwner(testPlayer);
+        testPlayer.AddOwnedProperty(property3);
+        property3.UpgradeProperty();
+    }
+
     [Test]
     public void PayPerProperty_ChargesCorrectTotal()
     {
-        InitializePlayerManagerChannels();
-        ChargePlayerEventChannel charge = playerManager.chargePlayerEventChannel;
-        var raised = new List<ChargePlayerEvent>();
+        ChargePlayerEventChannel charge = CreateChannel<ChargePlayerEventChannel>();
+        List<ChargePlayerEvent> raised = new();
         charge.Subscribe(e => raised.Add(e));
 
-        var effect = new PayPerPropertyCardEffect
-        {
-            ChargeForHouse = 20,
-            ChargeForHotel = 100,
-            chargePlayerEventChannel = charge
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<PayPerPropertyCardEffect>());
+        effect.ChargeForHouse = 20;
+        effect.ChargeForHotel = 100;
+        effect.chargePlayerEventChannel = charge;
 
-        createPropertyForPlayerA();
-        effect.ApplyEffect(playerA);
+        CreatePropertyForTestPlayer();
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(1, raised.Count);
-        Assert.AreSame(playerA, raised[0].chargedPlayer);
+        Assert.AreSame(testPlayer, raised[0].chargedPlayer);
         Assert.AreEqual(140, raised[0].chargeAmount);
-        Assert.AreEqual(1360, playerA.GetMoney());
     }
 
     [Test]
     public void PayPerProperty_NoOwnedProperties()
     {
-        InitializePlayerManagerChannels();
-        ChargePlayerEventChannel charge = playerManager.chargePlayerEventChannel;
-        var raised = new List<ChargePlayerEvent>();
+        ChargePlayerEventChannel charge = CreateChannel<ChargePlayerEventChannel>();
+        List<ChargePlayerEvent> raised = new();
         charge.Subscribe(e => raised.Add(e));
 
-        var effect = new PayPerPropertyCardEffect
-        {
-            ChargeForHouse = 20,
-            ChargeForHotel = 100,
-            chargePlayerEventChannel = charge
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<PayPerPropertyCardEffect>());
+        effect.ChargeForHouse = 20;
+        effect.ChargeForHotel = 100;
+        effect.chargePlayerEventChannel = charge;
 
-        effect.ApplyEffect(playerA);
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(0, raised.Count);
-        Assert.AreEqual(1500, playerA.GetMoney());
     }
 
     [Test]
     public void PayPerProperty_NoCharge()
     {
-        InitializePlayerManagerChannels();
-        ChargePlayerEventChannel charge = playerManager.chargePlayerEventChannel;
-        var raised = new List<ChargePlayerEvent>();
+        ChargePlayerEventChannel charge = CreateChannel<ChargePlayerEventChannel>();
+        List<ChargePlayerEvent> raised = new();
         charge.Subscribe(e => raised.Add(e));
 
-        var effect = new PayPerPropertyCardEffect
-        {
-            ChargeForHouse = 0,
-            ChargeForHotel = 0,
-            chargePlayerEventChannel = charge
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<PayPerPropertyCardEffect>());
+        effect.ChargeForHouse = 0;
+        effect.ChargeForHotel = 0;
+        effect.chargePlayerEventChannel = charge;
 
-        createPropertyForPlayerA();
-        effect.ApplyEffect(playerA);
+        CreatePropertyForTestPlayer();
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(0, raised.Count);
-        Assert.AreEqual(1500, playerA.GetMoney());
     }
 
     [Test]
     public void CollectPerProperty_PaysCorrectTotal()
     {
-        InitializePlayerManagerChannels();
-        PayPlayerEventChannel pay = playerManager.payPlayerEventChannel;
-        var raised = new List<PayPlayerEvent>();
+        PayPlayerEventChannel pay = CreateChannel<PayPlayerEventChannel>();
+        List<PayPlayerEvent> raised = new();
         pay.Subscribe(e => raised.Add(e));
 
-        var effect = new CollectPerPropertyCardEffect
-        {
-            ChargeForHouse = 20,
-            ChargeForHotel = 100,
-            payPlayerEventChannel = pay
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectPerPropertyCardEffect>());
+        effect.ChargeForHouse = 20;
+        effect.ChargeForHotel = 100;
+        effect.payPlayerEventChannel = pay;
 
-        createPropertyForPlayerA();
-        effect.ApplyEffect(playerA);
+        CreatePropertyForTestPlayer();
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(1, raised.Count);
-        Assert.AreSame(playerA, raised[0].paidPlayer);
+        Assert.AreSame(testPlayer, raised[0].paidPlayer);
         Assert.AreEqual(140, raised[0].amountPaid);
-        Assert.AreEqual(1640, playerA.GetMoney());
     }
 
     [Test]
     public void CollectPerProperty_NoOwnedProperties()
     {
-        InitializePlayerManagerChannels();
-        PayPlayerEventChannel pay = playerManager.payPlayerEventChannel;
-        var raised = new List<PayPlayerEvent>();
+        PayPlayerEventChannel pay = CreateChannel<PayPlayerEventChannel>();
+        List<PayPlayerEvent> raised = new();
         pay.Subscribe(e => raised.Add(e));
 
-        var effect = new CollectPerPropertyCardEffect
-        {
-            ChargeForHouse = 20,
-            ChargeForHotel = 100,
-            payPlayerEventChannel = pay
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectPerPropertyCardEffect>());
+        effect.ChargeForHouse = 20;
+        effect.ChargeForHotel = 100;
+        effect.payPlayerEventChannel = pay;
 
-        effect.ApplyEffect(playerA);
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(0, raised.Count);
-        Assert.AreEqual(1500, playerA.GetMoney());
     }
 
     [Test]
     public void CollectPerProperty_NoCharge()
     {
-        InitializePlayerManagerChannels();
-        PayPlayerEventChannel pay = playerManager.payPlayerEventChannel;
-        var raised = new List<PayPlayerEvent>();
+        PayPlayerEventChannel pay = CreateChannel<PayPlayerEventChannel>();
+        List<PayPlayerEvent> raised = new();
         pay.Subscribe(e => raised.Add(e));
 
-        var effect = new CollectPerPropertyCardEffect
-        {
-            ChargeForHouse = 0,
-            ChargeForHotel = 0,
-            payPlayerEventChannel = pay
-        };
+        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectPerPropertyCardEffect>());
+        effect.ChargeForHouse = 0;
+        effect.ChargeForHotel = 0;
+        effect.payPlayerEventChannel = pay;
 
-        createPropertyForPlayerA();
-        effect.ApplyEffect(playerA);
+        CreatePropertyForTestPlayer();
+        effect.ApplyEffect(testPlayer);
 
         Assert.AreEqual(0, raised.Count);
-        Assert.AreEqual(1500, playerA.GetMoney());
-    }
-
-    private void createPropertyForPlayerA()
-    {
-        PropertySpaceData property1 = ScriptableObject.CreateInstance<PropertySpaceData>();
-        property1.buyPrice = 100;
-        property1.SetOwner(playerA);
-        playerA.AddOwnedProperty(property1);
-        for (int i = 0; i < 5; i++) property1.UpgradeProperty();
-
-        PropertySpaceData property2 = ScriptableObject.CreateInstance<PropertySpaceData>();
-        property2.buyPrice = 100;
-        property2.SetOwner(playerA);
-        playerA.AddOwnedProperty(property2);
-        property2.UpgradeProperty();
-
-        PropertySpaceData property3 = ScriptableObject.CreateInstance<PropertySpaceData>();
-        property3.buyPrice = 100;
-        property3.SetOwner(playerA);
-        playerA.AddOwnedProperty(property3);
-        property3.UpgradeProperty();
     }
 }
+}
+

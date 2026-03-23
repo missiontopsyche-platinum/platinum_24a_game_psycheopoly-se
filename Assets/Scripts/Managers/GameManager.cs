@@ -7,6 +7,7 @@ using Assets.Scripts.Managers.Movement;
 using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.Purchase;
+using Data;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 
@@ -33,7 +34,6 @@ public class GameManager : MonoBehaviour
     //us11-t36 allows for gamestate change action
     [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
-    [SerializeField] public IntEventChannel initializePlayerCountChannel;
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
     [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
     [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
@@ -178,7 +178,7 @@ public class GameManager : MonoBehaviour
 
     //start & end game to satisfy us11-35
     //pasing player count for now.
-    public void StartGame(int playerCount)
+    public void StartGame()
     {
         if (gameState != GameState.None && gameState != GameState.GameOver)
         {
@@ -189,9 +189,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        this.playerCount = playerCount;
+        this.playerCount = 4; // hard coding for now, until we get proper game setup configuration
         Initialize();
-        SetUpGame(this.playerCount);
+        SetUpGame();
     }
 
     public void EndGame()
@@ -208,7 +208,7 @@ public class GameManager : MonoBehaviour
         // this is *not* a good solution long term and is simply to demonstrate
         // current prototype progress.
         if (gameState == GameState.None)
-            StartGame(4);
+            StartGame();
     }
 
     /// <summary>
@@ -256,20 +256,9 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
     /// </summary>
-    /// <param name="playerCount">Number of players for the game.</param>
-    public void SetUpGame(int playerCount)
+    public void SetUpGame()
     {
-        if (playerCount < 2 || playerCount > 4)
-        {
-            Logging.Logger.Error("GameManager.SetUpGame",
-                "Invalid player count, must be between 2 and 4.",
-                LogCategory.Gameplay,
-                this);
-            gameState = GameState.None;
-            return;
-        }
-        this.playerCount = playerCount;
-        initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
+        InitializePlayers_Temporary(); // this directly creates the data needed for PlayerManager to create players now, we don't need the event channel.
 
         turnCycleManager = new TurnCycleManager(this.playerCount);
         
@@ -279,6 +268,39 @@ public class GameManager : MonoBehaviour
         
         // Wait for game to init
         StartCoroutine(WaitForGameInit());
+    }
+
+    /// <summary>
+    /// This is a demonstration/stop-gap method to handle player creation while we don't have
+    /// a proper game setup configuration solution, which involves manually creating players
+    /// for testing purposes.
+    ///
+    /// In the future, we'll either extract or construct the PlayerConfig from the configuration
+    /// and call InitializePlayers in PlayerManager in exactly the same way. The call is blocking,
+    /// so it can operate in the sequence needed by GameManager when setting up the game.
+    /// </summary>
+    private void InitializePlayers_Temporary()
+    {
+        Player MakePlayer(string name, Color color)
+        {
+            var player = ScriptableObject.CreateInstance<Player>();
+            player.SetPName(name);
+            player.SetColor(color);
+            return player;
+        }
+        
+        var configs = new List<PlayerConfig>
+        {
+            new (MakePlayer("Player 1", Color.red), true, null),
+            new (MakePlayer("Player 2", Color.blue), false, 
+                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+            new (MakePlayer("Player 3", Color.yellow), false, 
+                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+            new (MakePlayer("Player 4", Color.green), false, 
+                ScriptableObject.CreateInstance<AIBehaviorWeights>())
+        };
+        
+        playerManager.InitializePlayers(configs);
     }
 
     /// <summary>

@@ -32,7 +32,6 @@ namespace Tests.EditMode.GameManagerTests
             // create and add event channels
             gameManager.gameStateChangedChannel = CreateChannel<GameStateChangedEventChannel>();
             gameManager.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
-            gameManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
             gameManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
 
             // subscribe to event channels

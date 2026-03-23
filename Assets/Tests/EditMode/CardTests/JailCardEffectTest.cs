@@ -2,51 +2,48 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
+using UnityEngine;
 
-public class JailCardEffectTest : CardEffectBaseTest
+namespace Tests.EditMode.CardTests
 {
-    [Test]
-    public void GoToJailCardEffect_RaisesJailStateChanged_WithTurns()
+    public class JailCardEffectTest : CardEffectBaseTest
     {
-        InitializePlayerManagerChannels();
-        JailStateChangedEventChannel jailChannel = playerManager.jailStateChangedEventChannel;
-        List<JailStateChangedEvent> raised = new List<JailStateChangedEvent>();
-        jailChannel.Subscribe(e => raised.Add(e));
-
-        GoToJailCardEffect effect = new GoToJailCardEffect
+        [Test]
+        public void GoToJailCardEffect_RaisesJailStateChanged_WithTurns()
         {
-            TurnsInJail = 2,
-            JailStateChangedEventChannel = jailChannel
-        };
+            JailStateChangedEventChannel jailChannel = CreateChannel<JailStateChangedEventChannel>();
+            List<JailStateChangedEvent> raised = new();
+            jailChannel.Subscribe(e => raised.Add(e));
 
-        effect.ApplyEffect(playerA);
+            var effect = TrackEffect(ScriptableObject.CreateInstance<GoToJailCardEffect>());
+            effect.TurnsInJail = 2;
+            effect.JailStateChangedEventChannel = jailChannel;
+        
+            effect.ApplyEffect(testPlayer);
+        
+            Assert.AreEqual(1, raised.Count);
+            Assert.AreSame(testPlayer, raised[0].player);
+            Assert.IsTrue(raised[0].inJail);
+            Assert.AreEqual(2, raised[0].jailTurns);
+        }
 
-        Assert.AreEqual(1, raised.Count);
-        Assert.AreSame(playerA, raised[0].player);
-        Assert.AreEqual(2, raised[0].jailTurns);
-        Assert.True(playerA.GetInJail());
-        Assert.AreEqual(2, playerA.GetJailTurns());
+        [Test]
+        public void GetOutOfJailCardEffect_RaisesReleaseEvent()
+        {
+            JailStateChangedEventChannel jailChannel = CreateChannel<JailStateChangedEventChannel>();
+            List<JailStateChangedEvent> raised = new();
+            jailChannel.Subscribe(e => raised.Add(e));
+
+            var effect = TrackEffect(ScriptableObject.CreateInstance<GetOutOfJailCardEffect>());
+            effect.JailStateChangedEventChannel = jailChannel;
+
+            effect.ApplyEffect(testPlayer);
+
+            Assert.AreEqual(1, raised.Count);
+            Assert.AreSame(testPlayer, raised[0].player);
+            Assert.IsFalse(raised[0].inJail);
+            Assert.AreEqual(0, raised[0].jailTurns);
+        }
     }
 
-    [Test]
-    public void GetOutOfJailCardEffect_RaisesReleaseEvent()
-    {
-        InitializePlayerManagerChannels();
-        JailStateChangedEventChannel jailChannel = playerManager.jailStateChangedEventChannel;
-        List<JailStateChangedEvent> raised = new List<JailStateChangedEvent>();
-        jailChannel.Subscribe(e => raised.Add(e));
-
-        GetOutOfJailCardEffect effect = new GetOutOfJailCardEffect
-        {
-            JailStateChangedEventChannel = jailChannel
-        };
-
-        effect.ApplyEffect(playerA);
-
-        Assert.AreEqual(1, raised.Count);
-        Assert.AreSame(playerA, raised[0].player);
-        Assert.AreEqual(0, raised[0].jailTurns);
-        Assert.False(playerA.GetInJail());
-        Assert.AreEqual(0, playerA.GetJailTurns());
-    }
 }

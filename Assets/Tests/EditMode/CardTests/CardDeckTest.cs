@@ -4,7 +4,9 @@ using System.Linq;
 using Tests.EditMode;
 using UnityEngine;
 
-public class CardDeckTest : ManagerTestBase
+namespace Tests.EditMode.CardTests
+{
+    public class CardDeckTest : ManagerTestBase
 {
     private CardDeck deck;
     private Player player;
@@ -163,3 +165,5 @@ public class CardDeckTest : ManagerTestBase
         Assert.True(HasAGetOutOfJailCard(cards));
     }
 }
+}
+
