@@ -7,7 +7,7 @@ using UnityEngine.UIElements.Experimental;
 
 namespace Tests.EditMode.PurchaseManagerTests
 {
-    public class StandardPurchaseStrategyTests
+    public class PurchaseDecisionUtilityTests
     {
         private class Rules : IRuleSet
         {
@@ -52,7 +52,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         [Test]
         public void Unowned_AffordableStreet_OffersToPlayer_UsesPurchasePrice()
         {
-            var strat = new StandardPurchaseStrategy();
+            var strat = new PurchaseDecisionUtility();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Buyer", money: 1_000);
@@ -82,7 +82,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         [Test]
         public void TileOwnedByOtherPlayer_NoOffer()
         {
-            var strat = new StandardPurchaseStrategy();
+            var strat = new PurchaseDecisionUtility();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Buyer", 1_000);
@@ -114,7 +114,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         [Test]
         public void BuyerCannotAfford_NoOffer()
         {
-            var strat = new StandardPurchaseStrategy();
+            var strat = new PurchaseDecisionUtility();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Poor Buyer", money: 0);

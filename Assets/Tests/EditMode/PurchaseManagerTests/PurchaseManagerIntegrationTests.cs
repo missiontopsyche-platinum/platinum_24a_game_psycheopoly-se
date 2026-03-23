@@ -19,7 +19,7 @@ namespace Tests.EditMode.PurchaseTests
             int beforeBuyer = buyer.GetMoney();
 
             //Use StandardPurchaseStrategy directly to get expected price
-            var strat = new StandardPurchaseStrategy();
+            var strat = new PurchaseDecisionUtility();
             var rules = new StandardRuleSet();
             var decision = strat.GetPurchaseDecision(prop, buyer, ownership, rules);
 

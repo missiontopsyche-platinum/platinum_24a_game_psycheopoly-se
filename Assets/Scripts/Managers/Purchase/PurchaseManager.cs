@@ -22,32 +22,30 @@ namespace Assets.Scripts.Managers.Purchase
         public void OverrideFlow(PurchaseFlow f) => overrideFlow = f;
         public void OverrideHook(System.Action a) => hookOverride = a;
 
-        private IPurchaseStrategy strategy = new StandardPurchaseStrategy();
-
         private void Awake()
         {
             EnsureDependencies();
         }
 
         //Call when player lands on tile that might be for sale
-        public void TryHandlePurchase(Player buyer, ITileRentInfo tile)
+        public void TryHandlePurchase(Player buyer, OwnableSpaceData ownableSpace)
         {
-            if (buyer == null || tile == null)
+            if (buyer == null || ownableSpace == null)
                 return;
 
             EnsureDependencies();
 
             PurchaseDecision decision =
-                strategy.GetPurchaseDecision(tile, buyer, ownership, rules);
+                PurchaseDecisionUtility.GetPurchaseDecision(ownableSpace, buyer);
 
             if (decision.Flow == PurchaseFlow.None || decision.Price <= 0)
                 return;
 
-            HandleDecision(buyer, tile, decision);
+            HandleDecision(buyer, ownableSpace, decision);
         }
 
         //transfers money and assigns ownership
-        private void ExecutePurchase(Player buyer, ITileRentInfo tile, int price)
+        private void ExecutePurchase(Player buyer, OwnableSpaceData ownableSpace, int price)
         {
           
             if(!buyer.CanAfford(price))
@@ -57,7 +55,8 @@ namespace Assets.Scripts.Managers.Purchase
                LogCategory.Gameplay,
                this);
             }
-            ownership.SetOwner(tile, buyer);
+            // todo handle payment
+            ownableSpace.SetOwner(buyer);
         }
 
         //Make sure serialized dependencies are not null
@@ -71,19 +70,19 @@ namespace Assets.Scripts.Managers.Purchase
                 rules = new StandardRuleSet();
         }
 
-        private void HandleDecision(Player buyer, ITileRentInfo tile, PurchaseDecision decision)
+        private void HandleDecision(Player buyer, OwnableSpaceData ownableSpace, PurchaseDecision decision)
         {
             switch (decision.Flow)
             {
                 case PurchaseFlow.AutoBuy:
                     //Auto buy for now 
-                    ExecutePurchase(buyer, tile, decision.Price);
+                    ExecutePurchase(buyer, ownableSpace, decision.Price);
                     break;
 
                 case PurchaseFlow.OfferToPlayer:
                     //TO DO: Hook to a real popup.
                     //For now use auto accept to keep the flow working
-                    ExecutePurchase(buyer, tile, decision.Price);
+                    ExecutePurchase(buyer, ownableSpace, decision.Price);
                 break;
 
                 case PurchaseFlow.HookAction:

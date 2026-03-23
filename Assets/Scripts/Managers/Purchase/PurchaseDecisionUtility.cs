@@ -7,47 +7,29 @@ namespace Assets.Scripts.Managers.Purchase
     //Standard Monopoly purchase logic
     //Only unowned and purchasable tiles are offered for purchase
     //Player must be able to afford the price
-    public class StandardPurchaseStrategy : IPurchaseStrategy
+    public static class PurchaseDecisionUtility
     {
-        public PurchaseDecision GetPurchaseDecision(
-            ITileRentInfo tile,
-            Player buyer,
-            IOwnershipService own,
-            IRuleSet rules)
+        public static PurchaseDecision GetPurchaseDecision(
+            OwnableSpaceData ownableSpace,
+            Player buyer)
         {
             //Null and invalid checks
-            if (tile == null || buyer == null)
+            if (ownableSpace == null || buyer == null)
                 return new PurchaseDecision { Flow = PurchaseFlow.None };
 
-            //Only allow purchase on streets, railroads, and utilities
-            if (tile.Type != TileType.Street &&
-                tile.Type != TileType.Railroad &&
-                tile.Type != TileType.Utility)
-            {
-                return new PurchaseDecision { Flow = PurchaseFlow.None };
-            }
+            // We don't need to check 'valid types' if we're passing in Ownable Space Data because it
+            // is inherently ownable- there is no way we can pass in a space that is not purchasable.
 
-            if (tile.IsMortgaged)
+            if (ownableSpace.isMortgaged)
                 return new PurchaseDecision { Flow = PurchaseFlow.None };
 
             //Checks if already owned by someone else
             //If so then No purchase
-            var currentOwner = own.GetOwner(tile);
+            var currentOwner = ownableSpace.GetOwner();
             if (currentOwner != null && currentOwner != buyer)
                 return new PurchaseDecision { Flow = PurchaseFlow.None };
 
-            /// Prefer data-driven purchase price when available (OwnableSpaceData.buyPrice via IPurchasableTileInfo).
-            // Fallback to 4x base rent for tiles that don't have purchase data wired yet.
-            int price;
-
-            if (tile is IPurchasableTileInfo purchasable)
-            {
-                price = Mathf.Max(0, purchasable.PurchasePrice);
-            }
-            else
-            {
-                price = Mathf.Max(0, tile.BaseRent * 4);
-            }
+            int price = ownableSpace.buyPrice;
 
             int have = buyer.GetMoney();
             bool canAfford = have >= price;
