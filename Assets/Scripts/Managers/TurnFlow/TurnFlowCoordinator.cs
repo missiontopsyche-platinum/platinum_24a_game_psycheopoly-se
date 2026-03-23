@@ -22,8 +22,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
 
-        [Header("Dependencies")]
-        [SerializeField] private TurnCycleManager turnCycleManager;
+        private TurnCycleManager turnCycleManager;
 
         public TurnPhase Phase { get; private set; } = TurnPhase.None;
         public int ActivePlayer { get; private set; } = -1;
@@ -32,8 +31,8 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         private void Awake()
         {
-            if (!turnCycleManager)
-                turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
+            // in the future we should be passing this in from GameManager or something.
+            turnCycleManager = new TurnCycleManager(4);
 
             //fallback for editmode tests
             var gm = FindFirstObjectByType<GameManager>();
@@ -64,6 +63,9 @@ namespace Assets.Scripts.Managers.TurnFlow
         // a new turn's started, reset state, wait for new roll
         private void OnTurnStarted(TurnStartedEvent data)
         {
+            if (turnCycleManager == null) 
+                turnCycleManager = FindFirstObjectByType<GameManager>().turnCycleManager;
+            
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;

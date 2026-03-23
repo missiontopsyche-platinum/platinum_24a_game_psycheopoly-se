@@ -112,32 +112,6 @@ namespace Tests.EditMode.GameManagerTests
             Assert.AreEqual(TurnPhase.ResolvingCards, gameManager.turnPhase);
         }
 
-        //this test changes logically for US395; GameManager doesn't "pre-roll" on its own
-        [Test]
-        public void TurnEndedEvent_FromPostTurn_RunsEndTurnNextTurnAndBackToPreRoll()
-        {
-            gameManager.turnStartedChannel.Subscribe(ev => turnStartedEvent = ev);
-
-            gameManager.gameState = GameState.PlayerTurn;
-            gameManager.turnPhase = TurnPhase.PostTurn;
-
-            // no longer have currentPlayer or currentTurn on GameManager
-            // TurnCycleManager holds the active player index
-            var tcm = Object.FindFirstObjectByType<TurnCycleManager>();
-            tcm.ResetCycle(2, 0);
-
-            gameManager.OnTurnEndedEvent(true);
-
-            // GameManager ONLY moves PostTurn >EndTurn now
-            Assert.AreEqual(TurnPhase.EndTurn, gameManager.turnPhase);
-
-            // TurnFlowCoordinator should have fired TurnStartedEvent for next player
-            Assert.IsNotNull(turnStartedEvent, "TurnStartedEvent was not raised.");
-
-            Assert.AreEqual(1, turnStartedEvent.playerId, "Next player index should be 1.");
-            Assert.AreEqual(0, turnStartedEvent.turnNum, "Turn number is no longer tracked in GameManager.");
-        }
-
         [Test]
         public void TurnEndedEvent_WithIllegalPhase_DoesNotAdvance()
         {

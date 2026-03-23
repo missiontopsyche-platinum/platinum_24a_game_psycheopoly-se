@@ -8,8 +8,8 @@ using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.Purchase;
 using Data;
+using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
-using NUnit.Framework;
 
 public class GameManager : MonoBehaviour
 {
@@ -47,17 +47,12 @@ public class GameManager : MonoBehaviour
 
     [Header("Manager References")]
     [SerializeField] private BoardManager boardManager;
-    [SerializeField] private TurnCycleManager turnCycleManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
     [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private PurchaseManager purchaseManager;
-
-
-    [Header("Turn Order System")]
-    [SerializeField] private PlayerTurnState playerTurnState;
-
-    private ITurnOrderStrategy turnOrderStrategy = new StandardTurnOrderStrategy();
+    
+    public TurnCycleManager turnCycleManager; // this shouldn't be public, but needs to be for now to get it to turn flow coordinator
 
     private int playerCount = 0;
 
@@ -114,13 +109,6 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
-
-        //turn system dependencies added for US395
-        if (!turnCycleManager)
-            turnCycleManager = FindFirstObjectByType<TurnCycleManager>();
-
-        if (!playerTurnState)
-            playerTurnState = FindFirstObjectByType<PlayerTurnState>();
     }
 
     //Task 112 which is a guarded transition API
@@ -272,12 +260,8 @@ public class GameManager : MonoBehaviour
     {
         InitializePlayers_Temporary(); // this directly creates the data needed for PlayerManager to create players now, we don't need the event channel.
 
-        //wire turn system for US395
-        if (turnCycleManager != null)
-            turnCycleManager.ResetCycle(playerCount, 0);
-
-        if (playerTurnState != null)
-            playerTurnState.EnsureSize(playerCount);
+        turnCycleManager = new TurnCycleManager(this.playerCount);
+        
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
