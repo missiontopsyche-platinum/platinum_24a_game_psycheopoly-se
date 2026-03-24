@@ -6,11 +6,11 @@ using Logger = Logging.Logger;
 namespace Assets.Scripts.Managers.Movement
 {
     /// <summary>
-    /// Direct movement component 
-    /// Called by owning gameplay flow after a dice roll has been made for the active player
-    /// This component interpets the roll into movement, applied movement-specific rules such
-    /// as doubles, triple doubles, raises movement request, and resolves passed/landed space
-    /// behavior after the piece finishes moving.
+    /// Concrete movement component used by the game flow.
+    /// Called directly by the flow owner after an active player has been set for the turn.
+    /// Interprets dice roll payload data into movement, applies movement specific rules
+    /// such as doubles &  triple doubles, raises board movement requests, and resolves
+    /// passed and landed space behavior after movement completes.
     /// </summary>
     public class StandardMovementStrategy : MonoBehaviour
     {
@@ -19,109 +19,98 @@ namespace Assets.Scripts.Managers.Movement
 
         [Header("Event Channels")]
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
-        [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
         [SerializeField] private IntEventChannel goToJailChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
 
         private int doublesCount = 0;
         private Player currentPlayer;
-        private PlayerManager playerManager;
         private int[] lastPath;
         private bool normalMoveCompletedThisTurn = false;
-
-        private void OnEnable()
-        {
-            turnStartedEventChannel?.Subscribe(OnTurnStarted);
-        }
-
-
-        private void OnDisable()
-        {
-            turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
-
-        }
-
-        void Start()
-        {
-            if (boardManager == null)
-            {
-                boardManager = FindAnyObjectByType<BoardManager>();
-                if (boardManager == null)
-                    Logger.Error(
-                        "StandardMovementStrategy.Start",
-                        "Board Manager component not found in scene!",
-                        LogCategory.Core, this);
-            }
-        }
-
-        /// <summary>
-        /// sets/updates current active player (injected via GameManager or TurnSystem).
-        /// </summary>
-        private void SetCurrentPlayer(Player p)
-        {
-            currentPlayer = p;
-            normalMoveCompletedThisTurn = false;
-        }
+        private bool movementInProgress = false;
 
         private void Awake()
         {
-            playerManager = FindFirstObjectByType<PlayerManager>();
-            if (playerManager == null)
+            if (boardManager == null)
             {
-                Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",
-                    LogCategory.Gameplay, this);
-            }
+                boardManager = FindFirstObjectByType<BoardManager>();
 
+                if (boardManager == null)
+                {
+                    Logger.Error("StandardMovementStrategy.Awake", "BoardManager not found in scene.",
+                        LogCategory.Core, this);
+                }
+            }
         }
 
-
-        private void OnTurnStarted(TurnStartedEvent turnData)
+        //resets movement state for the active players turn, caller responsible for passing correct player
+        public void BeginTurn(Player player)
         {
-            if (playerManager == null)
-                return;
-
-
-            Player p = playerManager.GetPlayer(turnData.playerId);
-
-            if (p == null)
+            if (player == null)
             {
-                Logger.Error("StandardMovementStrategy.OnTurnStarted", $"Invalid playerId {turnData.playerId}",
+                Logger.Error("StandardMovementStrategy.BeginTurn", "Cannot begin movement turn with null player.",
                     LogCategory.Gameplay, this);
                 return;
             }
 
-            SetCurrentPlayer(p);
+            bool samePlayerContinuing = currentPlayer != null && currentPlayer.GetId() == player.GetId();
 
-            //reset doubles @ start of players turn so prev. players state isn't carried
-            doublesCount = 0;
+            currentPlayer = player;
+            lastPath = null;
+            normalMoveCompletedThisTurn = false;
+            movementInProgress = false;
+
+            if (!samePlayerContinuing)
+                doublesCount = 0;
         }
 
-
-        public void OnDiceRolled(DiceRolledEvent diceEvent)
+        //executes current players movement using the DiceRolledEvent as payload object containing die values
+        public void ExecuteRollMovement(DiceRolledEvent diceRoll)
         {
             if (currentPlayer == null)
             {
-                Logger.Warn("StandardMovementStrategy.OnDiceRolled",
-                    "No current player set.", LogCategory.Gameplay, this);
+                Logger.Warn("StandardMovementStrategy.ExecuteRollMovement", "No active player set for movement.",
+                    LogCategory.Gameplay, this);
+                return;
+
+            }
+
+            if (boardManager == null)
+            {
+                Logger.Error("StandardMovementStrategy.ExecuteRollMovement", "BoardManager is not assigned.",
+                    LogCategory.Core, this);
                 return;
             }
 
-            int die1 = diceEvent.dieOne;
-            int die2 = diceEvent.dieTwo;
-            int total = diceEvent.totalRoll;
+            if (movementInProgress)
+            {
+                Logger.Warn("StandardMovementStrategy.ExecuteRollMovement", 
+                    $"Movement already in progress for player {currentPlayer.GetId()}.",
+                    LogCategory.Gameplay, this);
+                return;
+
+
+            }
+
+            int die1 = diceRoll.dieOne;
+            int die2 = diceRoll.dieTwo;
+            int total = diceRoll.totalRoll;
 
             bool isDouble = die1 == die2;
             if (isDouble) doublesCount++;
             else doublesCount = 0;
 
-            // Triple doubles → Go To Jail
+            //triple doubles > Go To Jail
             if (doublesCount >= 3)
             {
-                Logger.Info("StandardMovementStrategy",
-                    "Triple doubles rolled → Sending player to Jail",
-                    LogCategory.Gameplay, this);
+                Logger.Info(
+                    "StandardMovementStrategy.ExecuteRollMovement",
+                    $"Player {currentPlayer.GetId()} rolled triple doubles and is sent to jail.",
+                    LogCategory.Gameplay,
+                    this);
 
                 doublesCount = 0;
+                movementInProgress = false;
+                lastPath = null;
 
                 if (goToJailChannel != null)
                     goToJailChannel.RaiseEvent(currentPlayer.GetId());
@@ -131,31 +120,53 @@ namespace Assets.Scripts.Managers.Movement
                 return;
             }
 
-            // Standard movement
-            int startIndex = boardManager.GetPlayerPosition(currentPlayer.GetId());
+            int playerId = currentPlayer.GetId();
+            int startIndex = boardManager.GetPlayerPosition(playerId);
             int endIndex = NormalizeIndex(startIndex + total, boardManager.boardSize);
-
             int[] pathIndices = BuildPathIndices(startIndex, total, boardManager.boardSize);
 
-            Logger.Debug("StandardMovementStrategy",
-                $"Player {currentPlayer.GetId()} rolled {die1}+{die2}={total} moving from {startIndex}→{endIndex}",
+            Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
+                $"Player {playerId} rolled {die1}+{die2}={total} moving from {startIndex} to {endIndex}.",
                 LogCategory.Gameplay, this);
 
-
-
-            MovePlayerEvent moveEvent = new MovePlayerEvent(currentPlayer.GetId(), total, pathIndices);
-            movePlayerChannel?.RaiseEvent(moveEvent);
-            
-            // store to run "OnPassed" on spaces
             lastPath = pathIndices;
+            movementInProgress = true;
+
+            normalMoveCompletedThisTurn = false;
+
+            MovePlayerEvent moveEvent = new MovePlayerEvent(playerId, total, pathIndices);
+            movePlayerChannel?.RaiseEvent(moveEvent);
+
+
         }
 
-        public void OnPieceMoveCompleted(bool success)
+        //resolves passed spaces and landed spaces, caller will invoke after movement completion signals
+        public void ResolveCompletedMovement(bool movementSucceeded)
         {
-            if (!success || currentPlayer == null || normalMoveCompletedThisTurn)
+            if (!movementSucceeded)
+                return;
+
+            if (currentPlayer == null)
+            {
+                Logger.Warn("StandardMovementStrategy.ResolveCompletedMovement",
+                    "No active player set when resolving movement completion.",
+                    LogCategory.Gameplay, this);
+                return;
+            }
+
+            if (!movementInProgress)
+            {
+                Logger.Warn("StandardMovementStrategy.ResolveCompletedMovement",
+                    "ResolveCompletedMovement called with no movement in progress.",
+                    LogCategory.Gameplay, this);
+                return;
+            }
+
+            if (normalMoveCompletedThisTurn)
                 return;
 
             int playerId = currentPlayer.GetId();
+
             int currentPos = boardManager.GetPlayerPosition(playerId);
 
             if (lastPath != null && lastPath.Length > 0)
@@ -171,27 +182,37 @@ namespace Assets.Scripts.Managers.Movement
 
             SpaceData landed = boardManager.GetSpace(currentPos);
 
-            Logger.Info("StandardMovementStrategy",
-                $"Player {playerId} landed on {landed?.GetType().Name ?? "Unknown"} (Index {currentPos})",
-                LogCategory.Gameplay, this);
+            Logger.Info("StandardMovementStrategy.ResolveCompletedMovement",
+                $"Player {playerId} landed on {landed?.GetType().Name ?? "Unknown"} at index {currentPos}.",
+                LogCategory.Gameplay,this);
 
-            //landing effect for the space
+
+
             landed?.OnLanded(currentPlayer);
 
-            //handles the doubles roll logic
             if (doublesCount > 0)
             {
-                Logger.Debug("StandardMovementStrategy", "Doubles → allow re-roll", 
-                    LogCategory.Gameplay, this);
+                Logger.Debug("StandardMovementStrategy.ResolveCompletedMovement",
+                    "Doubles rolled. Extra roll remains available to current flow.",
+                    LogCategory.Gameplay,this);
             }
             else
             {
-                Logger.Debug("StandardMovementStrategy", "Turn complete.", LogCategory.Gameplay, this);
-                doublesCount = 0;
+                Logger.Debug("StandardMovementStrategy.ResolveCompletedMovement",
+                    "Movement and space resolution complete.",
+                    LogCategory.Gameplay,this);
             }
 
-            spaceResolutionCompletedChannel?.RaiseEvent(true);
+            movementInProgress = false;
             normalMoveCompletedThisTurn = true;
+            spaceResolutionCompletedChannel?.RaiseEvent(true);
+        }
+
+
+        // returns true for when doubles are rolled and the player has an extra roll
+        public bool HasExtraRollAvailable()
+        {
+            return currentPlayer != null && doublesCount > 0 && !movementInProgress;
         }
 
         private static int NormalizeIndex(int raw, int boardSize)
