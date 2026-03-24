@@ -1,4 +1,5 @@
 using Events.EventDataStructures;
+using Assets.Scripts.Managers.Rent;
 using Logging;
 using UnityEngine;
 
@@ -75,4 +76,10 @@ public class InstrumentSpaceData : OwnableSpaceData
         
         return payload;
     }
+
+    public override TileType Type => TileType.Railroad;
+    public override ColorGroup Group => ColorGroup.None;
+    public override int HouseCount => 0;
+    public override int BaseRent => 0;
+    public override int[] RentByHouses => null;
 }
