@@ -5,7 +5,7 @@ using Assets.Scripts.Managers.Rules;
 
 namespace Tests.EditMode.RentTests
 {
-    public class StandardRentStrategyTests
+    public class RentCalculatorTests
     {
         private class Tile : ITileRentInfo
         {
@@ -78,7 +78,6 @@ namespace Tests.EditMode.RentTests
         [Test]
         public void Street_NoHouses_NoMonopoly_Base()
         {
-            var strat = new StandardRentStrategy();
             var rules = new Rules();
             var own = new Own();
             var o = P("O");
@@ -89,14 +88,13 @@ namespace Tests.EditMode.RentTests
             };
 
             own.SetOwner(t, o);
-            Assert.AreEqual(2, strat.ComputeRent(t, o, 0, own, rules));
+            Assert.AreEqual(2, RentCalculator.ComputeRent(t, o, 0, own, rules));
             Object.DestroyImmediate(o);
         }
 
         [Test]
         public void Street_NoHouses_WithMonopoly_DoubleBase()
         {
-            var strat = new StandardRentStrategy();
             var rules = new Rules();
             var own = new Own();
             var o = P("O");
@@ -107,14 +105,13 @@ namespace Tests.EditMode.RentTests
             own.SetOwner(t1, o);
             own.SetOwner(t2, o);
 
-            Assert.AreEqual(4, strat.ComputeRent(t1, o, 0, own, rules));
+            Assert.AreEqual(4, RentCalculator.ComputeRent(t1, o, 0, own, rules));
             Object.DestroyImmediate(o);
         }
 
         [Test]
         public void Street_WithHouses_UsesTable()
         {
-            var strat = new StandardRentStrategy();
             var rules = new Rules();
             var own = new Own();
             var o = P("O");
@@ -125,14 +122,13 @@ namespace Tests.EditMode.RentTests
             };
             own.SetOwner(t, o);
 
-            Assert.AreEqual(750, strat.ComputeRent(t, o, 0, own, rules));
+            Assert.AreEqual(750, RentCalculator.ComputeRent(t, o, 0, own, rules));
             Object.DestroyImmediate(o);
         }
 
         [Test]
         public void Railroad_Scales_25_50_100_200()
         {
-            var strat = new StandardRentStrategy();
             var rules = new Rules();
             var own = new Own();
             var o = P("O");
@@ -143,13 +139,13 @@ namespace Tests.EditMode.RentTests
             var r4 = new Tile { Name="RR4", Type=TileType.Railroad };
 
             own.SetOwner(r1, o);
-            Assert.AreEqual(25, strat.ComputeRent(r1, o, 0, own, rules));
+            Assert.AreEqual(25, RentCalculator.ComputeRent(r1, o, 0, own, rules));
             own.SetOwner(r2, o);
-            Assert.AreEqual(50, strat.ComputeRent(r1, o, 0, own, rules));
+            Assert.AreEqual(50, RentCalculator.ComputeRent(r1, o, 0, own, rules));
             own.SetOwner(r3, o);
-            Assert.AreEqual(100, strat.ComputeRent(r1, o, 0, own, rules));
+            Assert.AreEqual(100, RentCalculator.ComputeRent(r1, o, 0, own, rules));
             own.SetOwner(r4, o);
-            Assert.AreEqual(200, strat.ComputeRent(r1, o, 0, own, rules));
+            Assert.AreEqual(200, RentCalculator.ComputeRent(r1, o, 0, own, rules));
 
             Object.DestroyImmediate(o);
         }
@@ -157,7 +153,6 @@ namespace Tests.EditMode.RentTests
         [Test]
         public void Utility_UsesDice_Multipliers_4_and_10()
         {
-            var strat = new StandardRentStrategy();
             var rules = new Rules();
             var own = new Own();
             var o = P("O");
@@ -166,10 +161,10 @@ namespace Tests.EditMode.RentTests
             var u2 = new Tile { Name="Water",    Type=TileType.Utility };
 
             own.SetOwner(u1, o);
-            Assert.AreEqual(28, strat.ComputeRent(u1, o, 7, own, rules)); // 7*4
+            Assert.AreEqual(28, RentCalculator.ComputeRent(u1, o, 7, own, rules)); // 7*4
 
             own.SetOwner(u2, o);
-            Assert.AreEqual(70, strat.ComputeRent(u1, o, 7, own, rules)); // 7*10
+            Assert.AreEqual(70, RentCalculator.ComputeRent(u1, o, 7, own, rules)); // 7*10
 
             Object.DestroyImmediate(o);
         }
@@ -177,7 +172,6 @@ namespace Tests.EditMode.RentTests
         [Test]
         public void Mortgaged_ReturnsZero()
         {
-            var strat = new StandardRentStrategy();
             var rules = new Rules();
             var own = new Own();
             var o = P("O");
@@ -189,7 +183,7 @@ namespace Tests.EditMode.RentTests
             };
             own.SetOwner(t, o);
 
-            Assert.AreEqual(0, strat.ComputeRent(t, o, 0, own, rules));
+            Assert.AreEqual(0, RentCalculator.ComputeRent(t, o, 0, own, rules));
             Object.DestroyImmediate(o);
         }
     }

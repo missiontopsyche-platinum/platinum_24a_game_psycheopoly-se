@@ -1,5 +1,6 @@
 using Events.EventDataStructures;
 using UnityEngine;
+using Assets.Scripts.Managers.Rent;
 
 public abstract class OwnableSpaceData : SpaceData
 {
@@ -13,6 +14,13 @@ public abstract class OwnableSpaceData : SpaceData
 
 
     public int mortgagePayoffValue { get; set;  }
+
+    public string Name => name;
+    public abstract TileType Type { get; }
+    public abstract ColorGroup Group { get; }
+    public abstract int HouseCount { get; }
+    public abstract int BaseRent { get; }
+    public abstract int[] RentByHouses { get; }
 
 
     [Header("Ownable Event Channels")]
