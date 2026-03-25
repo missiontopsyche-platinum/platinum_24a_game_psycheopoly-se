@@ -13,7 +13,8 @@ namespace Assets.Scripts.Managers.Purchase
     {
         [Header("Dependencies")]
         [SerializeField] private OwnershipServiceAdapter ownership;
-        [SerializeField] private StandardRuleSet rules = StandardRuleSet.GetInstance();
+        
+        private StandardRuleSet rules = StandardRuleSet.GetInstance();
 
         // for tests only
         private PurchaseFlow overrideFlow = PurchaseFlow.OfferToPlayer;
