@@ -13,7 +13,7 @@ namespace Assets.Scripts.Managers.Purchase
     }
 
     //Decision returned by purchase strategy
-    public struct PurchaseDecision
+    public struct PurchaseEvaluation
     {
         public PurchaseFlow Flow;
         public int Price;

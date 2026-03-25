@@ -7,7 +7,7 @@ using UnityEngine.UIElements.Experimental;
 
 namespace Tests.EditMode.PurchaseManagerTests
 {
-    public class PurchaseDecisionUtilityTests
+    public class PurchaseUtilityTests
     {
         private class Rules : IRuleSet
         {
@@ -52,7 +52,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         [Test]
         public void Unowned_AffordableStreet_OffersToPlayer_UsesPurchasePrice()
         {
-            var strat = new PurchaseDecisionUtility();
+            var strat = new PurchaseUtility();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Buyer", money: 1_000);
@@ -69,7 +69,7 @@ namespace Tests.EditMode.PurchaseManagerTests
                 PurchasePrice = 120 //this should come from adapter in actual game
             };
 
-            var decision = strat.GetPurchaseDecision(tile, buyer, own, rules);
+            var decision = strat.EvaluatePurchase(tile, buyer, own, rules);
 
             Assert.AreEqual(PurchaseFlow.OfferToPlayer, decision.Flow);
             Assert.IsTrue(decision.CanAfford);
@@ -82,7 +82,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         [Test]
         public void TileOwnedByOtherPlayer_NoOffer()
         {
-            var strat = new PurchaseDecisionUtility();
+            var strat = new PurchaseUtility();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Buyer", 1_000);
@@ -102,7 +102,7 @@ namespace Tests.EditMode.PurchaseManagerTests
 
             own.SetOwner(tile, other);
 
-            var decision = strat.GetPurchaseDecision(tile, buyer, own, rules);
+            var decision = strat.EvaluatePurchase(tile, buyer, own, rules);
 
             Assert.AreEqual(PurchaseFlow.None, decision.Flow);
             Assert.IsFalse(decision.CanAfford);
@@ -114,7 +114,7 @@ namespace Tests.EditMode.PurchaseManagerTests
         [Test]
         public void BuyerCannotAfford_NoOffer()
         {
-            var strat = new PurchaseDecisionUtility();
+            var strat = new PurchaseUtility();
             var rules = new Rules();
             var own   = new Own();
             var buyer = P("Poor Buyer", money: 0);
@@ -131,7 +131,7 @@ namespace Tests.EditMode.PurchaseManagerTests
                 PurchasePrice = 400
             };
 
-            var decision = strat.GetPurchaseDecision(tile, buyer, own, rules);
+            var decision = strat.EvaluatePurchase(tile, buyer, own, rules);
 
             Assert.AreEqual(PurchaseFlow.None, decision.Flow);
             Assert.IsFalse(decision.CanAfford);

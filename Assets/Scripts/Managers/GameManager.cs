@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private StandardMovementStrategy movementStrategy;
     [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
-    [SerializeField] private PurchaseManager purchaseManager;
 
 
     [Header("Turn Order System")]

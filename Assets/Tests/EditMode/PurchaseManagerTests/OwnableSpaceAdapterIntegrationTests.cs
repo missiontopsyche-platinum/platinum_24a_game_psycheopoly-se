@@ -14,7 +14,7 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
     private Player buyer;
     private TestOwnership ownership;
     private TestRules rules;
-    private PurchaseDecisionUtility decisionUtility;
+    private PurchaseUtility utility;
 
     [SetUp]
     public void SetUp()
@@ -51,7 +51,7 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
 
         ownership = new TestOwnership();
         rules     = new TestRules();
-        decisionUtility  = new PurchaseDecisionUtility();
+        utility  = new PurchaseUtility();
     }
 
     [TearDown]
@@ -66,16 +66,16 @@ public class OwnableSpaceAdapterIntegrationTests : ManagerTestBase
     public void Strategy_Uses_BuyPrice_From_OwnableSpaceData_Via_Adapter()
     {
         //ask strategy for decision using adapter as the tile
-        PurchaseDecision decision = decisionUtility.GetPurchaseDecision(adapter, buyer, ownership, rules);
+        PurchaseEvaluation evaluation = utility.EvaluatePurchase(adapter, buyer, ownership, rules);
 
         //it should offer purchase and use the ScriptableObject buyPrice
-        Assert.AreEqual(PurchaseFlow.OfferToPlayer, decision.Flow,
+        Assert.AreEqual(PurchaseFlow.OfferToPlayer, evaluation.Flow,
             "Expected strategy to offer purchase for unowned affordable tile.");
 
-        Assert.IsTrue(decision.CanAfford,
+        Assert.IsTrue(evaluation.CanAfford,
             "Buyer should be able to afford the tile at the given price.");
 
-        Assert.AreEqual(spaceData.buyPrice, decision.Price,
+        Assert.AreEqual(spaceData.buyPrice, evaluation.Price,
             "Strategy should use buyPrice from OwnableSpaceData via the adapter.");
     }
 
