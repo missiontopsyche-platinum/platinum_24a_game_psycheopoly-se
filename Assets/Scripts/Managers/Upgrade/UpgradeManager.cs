@@ -11,29 +11,21 @@ public class UpgradeManager : MonoBehaviour
 
     private void EnsureDependencies()
     {
-        if (strategy == null)
-        {
-            strategy = new StandardUpgradeStrategy();
-        }
         // TODO: Any channels to be subscribe to add it here.
     }
 
     public bool TryHandleUpgrade(Player owner, IUpgradableTileInfo tile, out UpgradeDecision decision)
     {
         decision = default;
-        if (owner == null || tile == null) return false;
 
-        decision = strategy.GetUpgradeDecision(tile, owner);
-        if (!decision.Allowed) return false;
+        if (owner == null || tile == null)
+            return false;
 
-        if (!(tile is OwnableSpaceTileAdapter space)) return false;
+        decision = UpgradeUtility.Evaluate(owner, tile);
+        if (!decision.Allowed)
+            return false;
 
-        if (owner.TrySpend(decision.Cost) == Player.FinancialStatus.Success)
-        {
-            space.ApplyUpgrade();
-            return true;
-        }
-        return false;
+        return UpgradeUtility.TryExecute(owner, tile, decision);
     }
 
     // Entry point
