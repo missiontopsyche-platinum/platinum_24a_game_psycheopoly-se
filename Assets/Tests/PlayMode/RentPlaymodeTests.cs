@@ -48,7 +48,6 @@ public class RentPlaymodeTests
 
         //ownership linked to the adapters
         go.AddComponent<OwnershipServiceAdapter>();
-        go.AddComponent<EconomyAdapter>();
 
         var tile = new MockStreet("TestProp", ColorGroup.Red, baseRent: 10);
 

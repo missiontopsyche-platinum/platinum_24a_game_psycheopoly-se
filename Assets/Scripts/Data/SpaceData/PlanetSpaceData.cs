@@ -1,5 +1,6 @@
 using System;
 using Events.EventDataStructures;
+using Assets.Scripts.Managers.Rent;
 using Logging;
 using UnityEngine;
 
@@ -91,4 +92,10 @@ public class PlanetSpaceData : OwnableSpaceData
 
     public void OnEnable() => diceRolledEventChannel?.Subscribe(StoreLastDiceRoll);
     public void OnDisable() => diceRolledEventChannel?.Unsubscribe(StoreLastDiceRoll);
+
+    public override TileType Type => TileType.Utility;
+    public override ColorGroup Group => ColorGroup.None;
+    public override int HouseCount => 0;
+    public override int BaseRent => 0;
+    public override int[] RentByHouses => null;
 }
