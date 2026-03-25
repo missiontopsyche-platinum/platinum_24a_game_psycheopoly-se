@@ -1,0 +1,56 @@
+%% Turn Order & Skip Rules Diagram
+%% Last Updated: 3/18/2026
+%% Version: 1.0
+
+%% Purpose
+%% To show the basic game loop and necessary actions for a player to be skipped
+
+%% Scope
+%% The turn logic and player logic
+
+flowchart TD
+    A[Start of turn loop] --> B[Select current player]
+    B --> C{Is player eliminated}
+    C -->|Yes| D[Advance to next player] --> B
+
+    C -->|No| E{Skip count > 0}
+    E -->|Yes| F[Consume skip] --> D
+
+    E -->|No| G{Is player in Jail}
+
+    %%Jail branch
+    G -->|Yes| J1[Attempt to leave Jail]
+    J1 --> J2{Has Get Out of Jail Free card}
+    J2 -->|Yes| J3[Use card and leave Jail]
+    J3 --> H[Roll dice normally]
+
+    J2 -->|No| J4{Player chooses to pay fine}
+    J4 -->|Yes| J5[Pay fine to leave Jail]
+    J5 --> H
+
+    J4 -->|No| J6[Roll dice attempt]
+    J6 --> J7{Rolled doubles?}
+
+    J7 -->|Yes| J8[Leave Jail and move]
+    J8 --> I[Resolve landing]
+
+    J7 -->|No| J9[Remain in Jail]
+    J9 --> J10{Have 3 failed attempts?}
+    J10 -->|Yes| J11[Forced to pay fine, leave Jail]
+    J11 --> H
+    J10 -->|No| D
+
+    %%Regular branch
+    G -->|No| H[Roll dice and move player]
+    H --> I[Resolve landing, cards, rent, etc.]
+
+    I --> J{Did player earn extra turn?}
+    J -->|Yes| A
+    J -->|No| D
+
+    %%Reasons for a skip turn
+    subgraph SkipEffects [When skips occur]
+        S1[Card says skip next turn] --> S2[Increase skip count for that player]
+        S3[Player sent to jail] --> S2
+        S4[Other penalties that skip turns] --> S2
+    end

@@ -1,0 +1,36 @@
+%% Turn Logic Activity Diagram
+%% Last Updated: 3/18/2026
+%% Version: 1.0
+
+%% Purpose
+%% To show the different decisions a player could make during their turn and the possible outcomes
+
+%% Scope
+%% The turn logic
+
+stateDiagram-v2
+[*] --> StartTurn
+
+StartTurn --> RollDice : Player triggers RollDiceRequest
+RollDice --> EvaluateRoll : RollDice() / DiceRolledEvent
+
+state EvaluateRoll {
+    [*] --> CheckDoubles
+    CheckDoubles --> TripleDoubles : rolledThreeDoubles
+    CheckDoubles --> NormalRoll : !rolledThreeDoubles
+    TripleDoubles --> SendToJail
+}
+
+SendToJail --> EndTurn : SetPlayerPosition(Jail)
+
+NormalRoll --> MovePiece : CalculateMove()
+MovePiece --> CheckPassedGo : MovePlayer()
+CheckPassedGo --> ResolveTile : landedSpace != Go
+CheckPassedGo --> CollectGo : passedGoChannel
+CollectGo --> ResolveTile
+
+ResolveTile --> RollAgain? : rolledDoubles
+ResolveTile --> EndTurn : !rolledDoubles
+RollAgain? --> RollDice : doublesAllowed
+
+EndTurn --> [*]
