@@ -19,37 +19,19 @@ namespace Tests.EditMode.GameManagerTests
             gameObject = new GameObject("GameManagerTests");
             gameManager = gameObject.AddComponent<global::GameManager>();
 
-            // REQUIRED FOR US395 TURN SYSTEM ----
-            var turnCycleGO = new GameObject("TurnCycleManager");
-            var turnCycle = turnCycleGO.AddComponent<TurnCycleManager>();
-
-            var turnStateGO = new GameObject("PlayerTurnState");
-            var turnState = turnStateGO.AddComponent<PlayerTurnState>();
-
             var tflowGO = new GameObject("TurnFlowCoordinator");
             var tflow = tflowGO.AddComponent<Assets.Scripts.Managers.TurnFlow.TurnFlowCoordinator>();
             tflowGO.SetActive(true);
 
             tflowGO.transform.SetParent(gameObject.transform.parent);
 
-            // let GameManager discover these using FindFirstObjectByType in Awake()
-            turnCycleGO.transform.SetParent(gameObject.transform.parent);
-            turnStateGO.transform.SetParent(gameObject.transform.parent);
-
             //this is needed bc Awake() doesn't run in EditMode tests to GameManager can't access
             //it, so we assign a "reflection" of it to be accessible in EditMode
             var gmType = typeof(global::GameManager);
 
-            var tcmField = gmType.GetField("turnCycleManager", BindingFlags.NonPublic | BindingFlags.Instance);
-            tcmField?.SetValue(gameManager, turnCycle);
-
-            var ptsField = gmType.GetField("playerTurnState", BindingFlags.NonPublic | BindingFlags.Instance);
-            ptsField?.SetValue(gameManager, turnState);
-
             // create and add event channels
             gameManager.gameStateChangedChannel = CreateChannel<GameStateChangedEventChannel>();
             gameManager.turnStartedChannel = CreateChannel<TurnStartedEventChannel>();
-            gameManager.initializePlayerCountChannel = CreateChannel<IntEventChannel>();
             gameManager.diceRolledChannel = CreateChannel<DiceRolledEventChannel>();
 
             // subscribe to event channels
@@ -77,10 +59,6 @@ namespace Tests.EditMode.GameManagerTests
 
             tflowType.GetField("turnStartedOutChannel", BindingFlags.NonPublic | BindingFlags.Instance)
                 ?.SetValue(tflow, gameManager.turnStartedChannel);
-
-            // Dependencies
-            tflowType.GetField("turnCycleManager", BindingFlags.NonPublic | BindingFlags.Instance)
-                ?.SetValue(tflow, turnCycle);
 
             tflowType.GetField("playerManager", BindingFlags.NonPublic | BindingFlags.Instance)
                 ?.SetValue(tflow, null); // optional for test

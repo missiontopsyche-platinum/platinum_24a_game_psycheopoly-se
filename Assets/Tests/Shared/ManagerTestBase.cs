@@ -9,6 +9,7 @@ namespace Tests.EditMode
     public class ManagerTestBase
     {
         protected List<ScriptableObject> eventChannels = new();
+        protected List<ScriptableObject> scriptableObjects = new();
         protected IEventLogger logger;
 
         protected T CreateChannel<T>() where T : ScriptableObject
@@ -17,6 +18,13 @@ namespace Tests.EditMode
             eventChannels.Add(channel);
             return channel;
         }
+
+        protected T TrackScriptableObject<T>(T so) where T : ScriptableObject
+        {
+            scriptableObjects.Add(so);
+            return so;
+        }
+        
         protected T CreateAndAttachComponent<T>(string componentName, GameObject parent) where T : Component
         {
             var component = new GameObject(componentName);
@@ -34,8 +42,14 @@ namespace Tests.EditMode
             foreach (var channel in eventChannels)
                 if (channel != null)
                     Object.DestroyImmediate(channel);
+            
+            // destroy all tracked scriptable objects
+            foreach (var so in scriptableObjects)
+                if (so != null)
+                    Object.DestroyImmediate(so);
         
             eventChannels.Clear();
+            scriptableObjects.Clear();
 
             // Destroy test logger
             TestLogger.Reset();

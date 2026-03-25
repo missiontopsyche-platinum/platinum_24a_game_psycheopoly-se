@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
-using Tests.EditMode; // adjust if your ManagerTestBase namespace differs
+using Tests.EditMode;
 using Assets.Scripts.Managers.Rent;
 using Assets.Scripts.Managers.Rules;
 namespace Tests.EditMode.RentTests
@@ -9,8 +9,8 @@ namespace Tests.EditMode.RentTests
     {
         protected GameObject rentGO;
         protected RentManager rentManager;
-        protected EconomyAdapter economy;
         protected OwnershipServiceAdapter ownership;
+        protected CostModifierService rentModifiers;
 
         protected Player owner;
         protected Player tenant;
@@ -20,7 +20,7 @@ namespace Tests.EditMode.RentTests
         [SetUp]
         public virtual void SetUp()
         {
-            owner  = ScriptableObject.CreateInstance<Player>();
+            owner = ScriptableObject.CreateInstance<Player>();
             owner.SetPName("Owner");
             owner.SetMoney(10_000);
 
@@ -28,13 +28,22 @@ namespace Tests.EditMode.RentTests
             tenant.SetPName("Tenant");
             tenant.SetMoney(10_000);
 
-            rentGO      = new GameObject("RentManager");
+            rentGO = new GameObject("RentManager");
+
+            //Add dependencies first so we know what is currently in project
+            ownership = rentGO.AddComponent<OwnershipServiceAdapter>();
+            rentModifiers = rentGO.AddComponent<CostModifierService>();
+
+            //Add manager last
             rentManager = rentGO.AddComponent<RentManager>();
 
-            economy     = rentGO.AddComponent<EconomyAdapter>();
+            //economy     = rentGO.AddComponent<EconomyAdapter>(); // this might not be needed. Commented out to resolve errors until confirmation.
             ownership   = rentGO.AddComponent<OwnershipServiceAdapter>();
 
             rules = StandardRuleSet.GetInstance();
+            Assert.NotNull(rentManager);
+            Assert.NotNull(ownership);
+            Assert.NotNull(rentModifiers);
         }
 
         [TearDown]
@@ -46,7 +55,11 @@ namespace Tests.EditMode.RentTests
         }
 
         protected ITileRentInfo Street(
-            string name, ColorGroup group, int baseRent, int houses = 0, bool mortgaged = false,
+            string name,
+            ColorGroup group,
+            int baseRent,
+            int houses = 0,
+            bool mortgaged = false,
             int[] rentTable = null)
         {
             return new FakeTile
@@ -57,21 +70,45 @@ namespace Tests.EditMode.RentTests
                 BaseRent = baseRent,
                 HouseCount = houses,
                 IsMortgaged = mortgaged,
-                RentByHouses = rentTable ?? new[] { baseRent, baseRent * 5, baseRent * 15, baseRent * 37, baseRent * 46, baseRent * 55 }
+                RentByHouses = rentTable ?? new[]
+                {
+                    baseRent,
+                    baseRent * 5,
+                    baseRent * 15,
+                    baseRent * 37,
+                    baseRent * 46,
+                    baseRent * 55
+                }
             };
         }
 
-        protected ITileRentInfo Railroad(string name = "RR") => new FakeTile
+        protected ITileRentInfo Railroad(string name = "RR")
         {
-            Name = name, Type = TileType.Railroad, Group = ColorGroup.None, BaseRent = 0,
-            HouseCount = 0, IsMortgaged = false, RentByHouses = new int[0]
-        };
+            return new FakeTile
+            {
+                Name = name,
+                Type = TileType.Railroad,
+                Group = ColorGroup.None,
+                BaseRent = 0,
+                HouseCount = 0,
+                IsMortgaged = false,
+                RentByHouses = new int[0]
+            };
+        }
 
-        protected ITileRentInfo Utility(string name) => new FakeTile
+        protected ITileRentInfo Utility(string name)
         {
-            Name = name, Type = TileType.Utility, Group = ColorGroup.None, BaseRent = 0,
-            HouseCount = 0, IsMortgaged = false, RentByHouses = new int[0]
-        };
+            return new FakeTile
+            {
+                Name = name,
+                Type = TileType.Utility,
+                Group = ColorGroup.None,
+                BaseRent = 0,
+                HouseCount = 0,
+                IsMortgaged = false,
+                RentByHouses = new int[0]
+            };
+        }
 
         private class FakeTile : ITileRentInfo
         {

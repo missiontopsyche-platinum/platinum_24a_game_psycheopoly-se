@@ -1,16 +1,14 @@
 using UnityEngine;
 using Assets.Scripts.Managers.Rules;
 
-
 namespace Assets.Scripts.Managers.Rent
 {
-    ///Gets tile and owner, asks the strategy for the rent, and moves money.
-    ///Self-wires Economy/Ownership/Rules in Awake() 
-    ///so it works in EditMode tests where Awake() may not fire.
+    [RequireComponent(typeof(OwnershipServiceAdapter))]
+    [RequireComponent(typeof(CostModifierService))]
     public class RentManager : MonoBehaviour
     {
         [Header("Dependencies")]
-        [SerializeField] private EconomyAdapter economy;                     //money mover (placeholder)
+        //[SerializeField] private EconomyAdapter economy;                     //money mover (placeholder) This might no longer exist. currently commented out until confirmation.
         [SerializeField] private OwnershipServiceAdapter ownership;          //ownership source of truth (adapter)
         [SerializeField] private CostModifierService rentModifiers;
 
@@ -19,60 +17,59 @@ namespace Assets.Scripts.Managers.Rent
 
 
         private StandardRuleSet rules;
-        private IRentStrategy strategy = new StandardRentStrategy();
         public IOwnershipService Ownership => ownership;
 
         private void Awake()
         {
+            ownership = GetComponent<OwnershipServiceAdapter>();
+            rentModifiers = GetComponent<CostModifierService>();
             EnsureDependencies();
         }
 
-        //Compute and transfer rent when a tenant lands on a tile.
-        //tentant - The landing player
-        //tile - Tile adapter exposing rent-relevant data
-        //dicetotal - Needed for utilities
+        //transfer money for rent payment
         public void TryChargeRent(Player tenant, ITileRentInfo tile, int diceTotal)
         {
-            if (tenant == null || tile == null) return;
+            if (tenant == null || tile == null)
+                return;
 
             EnsureDependencies();
-            
-            //pre-check
+
             if (rules == null)
             {
-                Logging.Logger.Warn("RentManager", "Rules not initialized; using zero rent.");
+                Logging.Logger.Warn("RentManager", "Rules not initialized; rent charge skipped.");
                 return;
             }
 
-            var owner = ownership.GetOwner(tile);
-            if (owner == null || owner == tenant) return;
+            Player owner = ownership.GetOwner(tile);
+            if (owner == null || owner == tenant)
+                return;
 
-            //replacing basic rent to use modifiers
-            int baseRent = strategy.ComputeRent(tile, owner, diceTotal, ownership, rules);
-            int rent = rentModifiers != null ? rentModifiers.ApplyAll(baseRent, tile, tenant, owner) : baseRent;
+            int baseRent = RentCalculator.ComputeRent(tile, owner, diceTotal, ownership, rules);
 
-            Logging.Logger.Debug("RentManager.TryChargeRent",
+            int rent = rentModifiers != null
+                ? rentModifiers.ApplyAll(baseRent, tile, tenant, owner)
+                : baseRent;
+
+            Logging.Logger.Debug(
+                "RentManager.TryChargeRent",
                 $"BaseRent={baseRent} FinalRent={rent} Tenant={tenant?.GetId()} Owner={owner?.GetId()} Tile={tile?.Name}",
                 Logging.LogCategory.Gameplay);
+
             rentComputedChannel?.RaiseEvent(rent);
 
+            if (rent <= 0)
+                return;
 
-            if (rent <= 0) return;
-
-            bool ok = economy.Transfer(tenant, owner, rent);
+            TransferMoney(tenant, owner, rent);
         }
 
-        //Make sure serialized dependencies are not null
         private void EnsureDependencies()
         {
-            if (!rentModifiers)
-                rentModifiers = GetComponent<CostModifierService>() ?? gameObject.AddComponent<CostModifierService>();
-
-            if (!economy)
-                economy = GetComponent<EconomyAdapter>() ?? gameObject.AddComponent<EconomyAdapter>();
-
             if (!ownership)
-                ownership = GetComponent<OwnershipServiceAdapter>() ?? gameObject.AddComponent<OwnershipServiceAdapter>();
+                ownership = GetComponent<OwnershipServiceAdapter>();
+
+            if (!rentModifiers)
+                rentModifiers = GetComponent<CostModifierService>();
 
             if (rules == null)
                 rules = StandardRuleSet.GetInstance();
@@ -96,27 +93,26 @@ namespace Assets.Scripts.Managers.Rent
             EnsureDependencies();
             return ownership.CountRailroadsOwned(owner);
         }
-    }
 
-    //Money mover. Replace with your real EconomyManager later.
-    public class EconomyAdapter : MonoBehaviour
-    {
-        public bool Transfer(Player from, Player to, int amount)
+        private bool TransferMoney(Player from, Player to, int amount)
         {
             if (from == null || to == null)
             {
-                Logging.Logger.Error("EconomyAdapter.Transfer",
+                Logging.Logger.Error(
+                    "RentManager.TransferMoney",
                     "Transfer failed: from/to player is null.",
                     Logging.LogCategory.Economy,
                     this);
                 return false;
             }
 
-            if (amount <= 0) return true;
+            if (amount <= 0)
+                return true;
 
             if (from.TrySpend(amount) == Player.FinancialStatus.Bankrupt)
             {
-                Logging.Logger.Warn("EconomyAdapter.Transfer",
+                Logging.Logger.Warn(
+                    "RentManager.TransferMoney",
                     $"Transfer blocked (insufficient funds). From={from.GetId()} To={to.GetId()} Amount=${amount} Have=${from.GetMoney()}",
                     Logging.LogCategory.Economy,
                     this);
