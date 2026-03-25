@@ -77,6 +77,7 @@ namespace Assets.Scripts.Managers.Purchase
 
             buyer.TrySpend(ownableSpace.buyPrice);
             ownableSpace.SetOwner(buyer);
+            buyer.AddOwnedProperty(ownableSpace);
             
             return true;
         }
