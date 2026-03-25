@@ -8,5 +8,8 @@ public interface IUpgradableTileInfo : ITileRentInfo
     int MaxUpgradeLevel { get; }
     bool IsMaxed { get; }
     int[] UpgradeCostByLevel { get; }
+
     int GetNextUpgradeCost();
+    bool CanApplyUpgrade();
+    void ApplyUpgrade();
 }
