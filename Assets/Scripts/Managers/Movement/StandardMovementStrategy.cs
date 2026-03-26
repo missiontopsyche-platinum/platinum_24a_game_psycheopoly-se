@@ -16,11 +16,13 @@ namespace Assets.Scripts.Managers.Movement
     {
         [Header("Dependencies")]
         [SerializeField] private BoardManager boardManager;
+        [SerializeField] private PlayerManager playerManager;
 
         [Header("Event Channels")]
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
         [SerializeField] private IntEventChannel goToJailChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
+        [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
 
         private int doublesCount = 0;
         private Player currentPlayer;
@@ -39,22 +41,68 @@ namespace Assets.Scripts.Managers.Movement
                     Logger.Error("StandardMovementStrategy.Awake", "BoardManager not found in scene.",
                         LogCategory.Core, this);
                 }
+
             }
+
+            if (playerManager == null)
+            {
+                playerManager = FindFirstObjectByType<PlayerManager>();
+
+                if (playerManager == null)
+                {
+                    Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",
+                        LogCategory.Core, this);
+                }
+            }
+
         }
 
-        //resets movement state for the active players turn, caller responsible for passing correct player
-        public void BeginTurn(Player player)
+        private void OnEnable()
         {
-            if (player == null)
+            turnStartedEventChannel?.Subscribe(OnTurnStarted);
+        }
+
+        private void OnDisable()
+        {
+            turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
+        }
+
+
+        /// <summary>
+        /// Handles turn-start sync for Movement by resolving the active player from
+        ///the incoming turn data & preserving doubles state when the same player continues
+        /// </summary>
+        private void OnTurnStarted(TurnStartedEvent turnData)
+        {
+            if (turnData == null)
             {
-                Logger.Error("StandardMovementStrategy.BeginTurn", "Cannot begin movement turn with null player.",
+                Logger.Warn("StandardMovementStrategy.OnTurnStarted", "TurnStartedEvent was null.",
                     LogCategory.Gameplay, this);
                 return;
             }
 
-            bool samePlayerContinuing = currentPlayer != null && currentPlayer.GetId() == player.GetId();
+            if (playerManager == null)
+            {
+                Logger.Error("StandardMovementStrategy.OnTurnStarted", "PlayerManager reference is missing.",
+                    LogCategory.Gameplay, this);
+                return;
+            }
 
-            currentPlayer = player;
+            Player nextPlayer = playerManager.GetPlayer(turnData.playerId);
+
+            if (nextPlayer == null)
+            {
+                Logger.Error("StandardMovementStrategy.OnTurnStarted",
+                    $"Could not resolve player for id {turnData.playerId}.",
+                    LogCategory.Gameplay, this);
+                return;
+            }
+
+            bool samePlayerContinuing =
+                currentPlayer != null && currentPlayer.GetId() == turnData.playerId;
+
+
+            currentPlayer = nextPlayer;
             lastPath = null;
             normalMoveCompletedThisTurn = false;
             movementInProgress = false;
