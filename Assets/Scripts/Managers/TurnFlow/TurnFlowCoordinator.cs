@@ -55,9 +55,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             }
 
             int startingPlayer = turnCycleManager.CurrentPlayerIndex;
-            ActivePlayer = startingPlayer;
-            Phase = TurnPhase.AwaitingRoll;
-            awaitingEndTurn = false;
             turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
         }
 
