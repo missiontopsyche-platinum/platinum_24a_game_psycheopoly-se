@@ -615,10 +615,6 @@ public class GameManager : MonoBehaviour
                     LogCategory.Gameplay, this);
     }
 
-    //Handle the bankruptPlayerEventChannel input. Need to verify that the playerID is also it's turn order. 
-    private void OnBankruptPlayer(int player)
-    {
-    }
 
     private bool IsPlayerTurn(Player player)
     {
