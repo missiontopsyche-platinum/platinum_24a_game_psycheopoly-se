@@ -599,36 +599,6 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Listener for <see cref="turnEndedChannel"/> raised by the End Turn button
-    /// in the UI (e.g., <c>TurnPanelController</c>).
-    ///
-    /// When <paramref name="turnEndedEvent"/> is true, this attempts to move the
-    /// FSM from <see cref="TurnPhase.PostTurn"/> to
-    /// <see cref="TurnPhase.EndTurn"/>. If that transition is allowed, it then
-    /// calls <see cref="NextTurn"/> to advance to the next player's
-    /// <see cref="TurnPhase.StartTurn"/>/PreRoll cycle.
-    ///
-    /// If the current phase is not allowed to transition to
-    /// <see cref="TurnPhase.EndTurn"/>, or if the flag is false, no change is
-    /// made.
-    /// </summary>
-    /// <param name="turnEndedEvent">
-    /// True when the End Turn action has been confirmed; false is ignored.
-    /// </param>
-    public void OnTurnEndedEvent(bool turnEndedEvent)
-    {
-        if (!turnEndedEvent) return;
-
-        Logging.Logger.Debug("GameManager.OnTurnEndedEvent",
-                "Turn ended, entering EndTurn.",
-                LogCategory.Gameplay, this);
-        //turnCycleManager?.Advance();
-        int nextPlayer = (turnCycleManager != null) ? turnCycleManager.Advance() : 0;
-        turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
-        //NextTurn(); // TODO: kept this until we can fully delegate turn cycling to TurnCycleManager
-    }
-
-    /// <summary>
     /// Handles completion of all space-resolution logic during the player's turn.
     ///
     /// This method is invoked when the <c>spaceResolutionCompletedChannel</c>
