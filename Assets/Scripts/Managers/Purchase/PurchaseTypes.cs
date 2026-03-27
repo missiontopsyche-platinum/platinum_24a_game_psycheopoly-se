@@ -13,22 +13,10 @@ namespace Assets.Scripts.Managers.Purchase
     }
 
     //Decision returned by purchase strategy
-    public struct PurchaseDecision
+    public struct PurchaseEvaluation
     {
         public PurchaseFlow Flow;
         public int Price;
         public bool CanAfford;
-    }
-
-    //Centralized rules for deciding if and how a purchase should occur
-    public interface IPurchaseStrategy
-    {
-        //Returns how the rules say to handle this purchase scenario
-        //Uses same tile adapter interface as rent for now
-        PurchaseDecision GetPurchaseDecision(
-            ITileRentInfo tile,
-            Player buyer,
-            IOwnershipService own,
-            IRuleSet rules);
     }
 }

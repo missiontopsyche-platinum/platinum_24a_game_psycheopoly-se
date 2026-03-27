@@ -50,9 +50,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private StandardMovementStrategy movementStrategy;
     [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
-    [SerializeField] private PurchaseManager purchaseManager;
     
     public TurnCycleManager turnCycleManager; // this shouldn't be public, but needs to be for now to get it to turn flow coordinator
+
 
     private int playerCount = 0;
 
