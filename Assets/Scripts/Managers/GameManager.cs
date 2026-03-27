@@ -46,13 +46,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
 
     [Header("Manager References")]
-    [SerializeField] private BoardManager boardManager;
-    [SerializeField] private StandardMovementStrategy movementStrategy;
-    [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
-    [SerializeField] private PurchaseManager purchaseManager;
-    
-    public TurnCycleManager turnCycleManager; // this shouldn't be public, but needs to be for now to get it to turn flow coordinator
 
     private int playerCount = 0;
 
@@ -235,8 +229,6 @@ public class GameManager : MonoBehaviour
     {
         InitializePlayers_Temporary(); // this directly creates the data needed for PlayerManager to create players now, we don't need the event channel.
 
-        turnCycleManager = new TurnCycleManager(this.playerCount);
-        
 
         //edited in for us11
         SetState(GameState.WaitingForTurn);
@@ -312,7 +304,6 @@ public class GameManager : MonoBehaviour
         Logging.Logger.Debug("GameManager.StartTurn",
                     "None finished, entering StartTurn.",
                     LogCategory.Gameplay, this);
-        int active = turnCycleManager?.CurrentPlayerIndex ?? 0;
         turnStartedChannel.RaiseEvent(new TurnStartedEvent(active, 0)); // turnNum not tracked here
                                                                         //diceRollPanel?.gameObject.SetActive(true);
                                                                         // This is the "waiting" for dice roll phase, replacing the busy wait.
@@ -474,7 +465,6 @@ public class GameManager : MonoBehaviour
         //added for US395 in prep for task398; TurnFlowCoordinator will use TurnStrategy for a doubles roll
         if (dieOne == dieTwo && turnCycleManager != null)
         {
-            turnCycleManager.GrantExtraTurn(turnCycleManager.CurrentPlayerIndex);
         }
 
     }
@@ -519,6 +509,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (turnPhase != TurnPhase.ResolvingSpace)
+        if (turnCycleManager == null)
         {
             PropertyPurchaseRejectedEventChannel.RaiseEvent(Message = "Error: Illegal TurnPhase");
             return;
@@ -627,7 +618,6 @@ public class GameManager : MonoBehaviour
     //Handle the bankruptPlayerEventChannel input. Need to verify that the playerID is also it's turn order. 
     private void OnBankruptPlayer(int player)
     {
-        turnCycleManager.Eliminate(player);
     }
 
     private bool IsPlayerTurn(Player player)
@@ -636,7 +626,6 @@ public class GameManager : MonoBehaviour
 
         int requestId = player.GetId();
         // Validate current turn order
-        bool matchesTurnCycle = requestId == turnCycleManager?.CurrentPlayerIndex;
         return matchesTurnCycle;
     }
 }
