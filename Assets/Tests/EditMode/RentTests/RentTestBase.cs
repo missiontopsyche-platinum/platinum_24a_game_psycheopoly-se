@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Tests.EditMode;
 using Assets.Scripts.Managers.Rent;
-
+using Assets.Scripts.Managers.Rules;
 namespace Tests.EditMode.RentTests
 {
     public class RentTestBase : ManagerTestBase
@@ -10,10 +10,12 @@ namespace Tests.EditMode.RentTests
         protected GameObject rentGO;
         protected RentManager rentManager;
         protected OwnershipServiceAdapter ownership;
-        protected RentModifierService rentModifiers;
+        protected CostModifierService rentModifiers;
 
         protected Player owner;
         protected Player tenant;
+
+        protected StandardRuleSet rules;
 
         [SetUp]
         public virtual void SetUp()
@@ -30,11 +32,15 @@ namespace Tests.EditMode.RentTests
 
             //Add dependencies first so we know what is currently in project
             ownership = rentGO.AddComponent<OwnershipServiceAdapter>();
-            rentModifiers = rentGO.AddComponent<RentModifierService>();
+            rentModifiers = rentGO.AddComponent<CostModifierService>();
 
             //Add manager last
             rentManager = rentGO.AddComponent<RentManager>();
 
+            //economy     = rentGO.AddComponent<EconomyAdapter>(); // this might not be needed. Commented out to resolve errors until confirmation.
+            ownership   = rentGO.AddComponent<OwnershipServiceAdapter>();
+
+            rules = StandardRuleSet.GetInstance();
             Assert.NotNull(rentManager);
             Assert.NotNull(ownership);
             Assert.NotNull(rentModifiers);

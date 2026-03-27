@@ -13,7 +13,7 @@ namespace Assets.Scripts.Managers.Rent
                     Player owner,
                     int diceTotal,
                     IOwnershipService ownership,
-                    IRuleSet rules)
+                    StandardRuleSet rules)
                 {
                     if (tile == null || owner == null || ownership == null || rules == null)
                         return 0;
@@ -42,7 +42,7 @@ namespace Assets.Scripts.Managers.Rent
                     ITileRentInfo tile,
                     Player owner,
                     IOwnershipService ownership,
-                    IRuleSet rules)
+                    StandardRuleSet rules)
                 {
                     if (tile == null || owner == null || ownership == null || rules == null)
                         return 0;
@@ -73,7 +73,7 @@ namespace Assets.Scripts.Managers.Rent
                  public static int RailroadRent(
                     Player owner,
                     IOwnershipService ownership,
-                    IRuleSet rules)
+                    StandardRuleSet rules)
                 {
                     if (owner == null || ownership == null || rules == null)
                         return 0;
@@ -92,7 +92,7 @@ namespace Assets.Scripts.Managers.Rent
                     Player owner,
                     int diceTotal,
                     IOwnershipService ownership,
-                    IRuleSet rules)
+                    StandardRuleSet rules)
                 {
                     if (owner == null || ownership == null || rules == null)
                         return 0;

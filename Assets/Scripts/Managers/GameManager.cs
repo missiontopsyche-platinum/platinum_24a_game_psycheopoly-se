@@ -48,7 +48,6 @@ public class GameManager : MonoBehaviour
     [Header("Manager References")]
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private StandardMovementStrategy movementStrategy;
-    [SerializeField] private RulesManager rulesManager;
     [SerializeField] private PlayerManager playerManager;
     
     public TurnCycleManager turnCycleManager; // this shouldn't be public, but needs to be for now to get it to turn flow coordinator

@@ -5,13 +5,20 @@ using Assets.Scripts.Managers.Rent;
 namespace Assets.Scripts.Managers.Rent
 {
     /// <summary>holds and uses rent modifiers (from cards/tile effects).</summary>
-    public class RentModifierService : MonoBehaviour
+    public class CostModifierService : MonoBehaviour
     {
         private readonly List<IRentModifier> _mods = new ();
 
+        // This should only be used for things that apply to EVERYTHING. So scalars for rules.
+        private readonly List<IRentModifier> _permanent_mods = new ();
         public void Add(IRentModifier mod)
         {
             if (mod != null) _mods.Add(mod);
+        }
+
+        public void AddPermanent(IRentModifier mod)
+        {
+            if (mod != null) _permanent_mods.Add(mod);
         }
 
         //applies all active modifiers and removes expired (non-in use ones)
@@ -22,12 +29,14 @@ namespace Assets.Scripts.Managers.Rent
             for (int i = _mods.Count - 1; i >= 0; i--)
             {
                 var m = _mods[i];
+                var pm = _permanent_mods[i];
                 if (!m.IsActive())
                 {
                     _mods.RemoveAt(i);
                     continue;
                 }
 
+                rent = Mathf.Max(0, pm.Apply(rent, tile, tenant, owner));
                 rent = Mathf.Max(0, m.Apply(rent, tile, tenant, owner));
             }
 
