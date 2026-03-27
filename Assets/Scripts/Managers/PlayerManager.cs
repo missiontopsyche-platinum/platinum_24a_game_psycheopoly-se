@@ -61,7 +61,6 @@ public class PlayerManager : MonoBehaviour
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
-                    diceRollRequestChannel,
                     uiActivationEventChannel,
                     uiActionEventChannel,
                     mortgageFinishedEventChannel,

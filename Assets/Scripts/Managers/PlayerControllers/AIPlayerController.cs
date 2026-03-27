@@ -21,6 +21,8 @@ namespace Managers.PlayerControllers
         private bool endTurnRequested;
         // event channels ... I don't think this will need special ones
         private ActionResolvedEventChannel actionResolvedEventChannel;
+        private BooleanEventChannel diceRollRequestChannel;
+
         /// <summary>
         /// Creates an AI player controller. This needs to be called in conjunction with <c>.Subscribe()</c>
         /// so that event channels are properly routed.
@@ -42,7 +44,7 @@ namespace Managers.PlayerControllers
             ActionResolvedEventChannel actionResolved,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
+            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, turnActionRequest, turnActionResult)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -60,6 +62,7 @@ namespace Managers.PlayerControllers
                 controlledPlayer,
                 weights.mortgageThresholds);
             actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
+            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
             // mortgageBehavior
             // jailBehavior etc...
         }

@@ -17,14 +17,14 @@ namespace Managers.PlayerControllers
         /// Gets the Player ScriptableObject
         /// </summary>
         public Player GetControlledPlayer() => controlledPlayer;
-        
-        // event channels || may need to add more as requirements change. Potentially have all channels in all subclasses.
+
+        // Core/shared event channels used by the base controller.
+        // subclasses may use additional channels for specialized human/AI behavior.        
         private TurnStartedEventChannel turnStartedEventChannel;
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
-        protected BooleanEventChannel diceRollRequestChannel;
-        protected CardDrawnEventChannel cardDrawnEventChannel;
+
         // event channels to validate turn actions against the current turn phase.
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
         protected TurnActionResultEventChannel turnActionResultEventChannel;
@@ -44,7 +44,6 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest, 
             ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
             PayPlayerEventChannel passedGoPayment,
-            BooleanEventChannel diceRollRequest,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel  turnActionResult)
         {
@@ -59,11 +58,8 @@ namespace Managers.PlayerControllers
                 throw new System.ArgumentNullException(nameof(turnActionRequest));
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
-            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
         }
         
-        // general event handling
-
         /// <summary>
         /// Subscribe to basic game event channels. This should be extended in subclasses to capture
         /// the distinct methods and behavior events, by calling <c>base.Subscribe()</c>.
@@ -77,11 +73,14 @@ namespace Managers.PlayerControllers
         /// <summary>
         /// Unsubscribe from all game event channels. This should be extended in subclasses to account for
         /// subclass-specific event channels and called with <c>base.Unsubscribe()</c>.
+        /// clean up if not returned
         /// </summary>
         public virtual void Unsubscribe()
         {
             turnStartedEventChannel?.Unsubscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Unsubscribe(OnTurnActionResult);
+            pendingActions.Clear();
+            isMyTurn = false;
         }
         
         /// <summary>
@@ -121,7 +120,7 @@ namespace Managers.PlayerControllers
 
             if (pendingActions.ContainsKey(action))
             {
-                Logging.Logger.Debug("HumanPlayerController.RequestTurnAction",
+                Logging.Logger.Debug("PlayerController.RequestTurnAction",
                     $"Ignored duplicate pending request: {action}",
                     LogCategory.UI);
                 return;
