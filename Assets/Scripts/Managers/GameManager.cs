@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     private TurnCycleManager turnCycleManager;
     private TurnFlowCoordinator turnFlowCoordinator;
 
+
     private int playerCount = 0;
 
     // Task 111 legal state transition map

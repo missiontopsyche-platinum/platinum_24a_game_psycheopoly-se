@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 using Managers.PlayerControllers;
+using Assets.Scripts.Managers.Rules;
 using UnityEngine;
 using Logger = Logging.Logger;
 
@@ -26,6 +27,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
 
     public List<PlayerController> playerControllers = new();
+    
+    private StandardRuleSet activeRuleset;
 
     /// <summary>
     /// Bootstraps Players from data passed from GameManager

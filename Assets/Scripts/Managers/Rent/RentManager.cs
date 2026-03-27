@@ -4,24 +4,25 @@ using Assets.Scripts.Managers.Rules;
 namespace Assets.Scripts.Managers.Rent
 {
     [RequireComponent(typeof(OwnershipServiceAdapter))]
-    [RequireComponent(typeof(RentModifierService))]
+    [RequireComponent(typeof(CostModifierService))]
     public class RentManager : MonoBehaviour
     {
         [Header("Dependencies")]
-        [SerializeField] private OwnershipServiceAdapter ownership;
-        [SerializeField] private RulesManager rulesManager;
-        [SerializeField] private RentModifierService rentModifiers;
+        //[SerializeField] private EconomyAdapter economy;                     //money mover (placeholder) This might no longer exist. currently commented out until confirmation.
+        [SerializeField] private OwnershipServiceAdapter ownership;          //ownership source of truth (adapter)
+        [SerializeField] private CostModifierService rentModifiers;
 
         [Header("Events")]
         [SerializeField] private IntEventChannel rentComputedChannel;
 
-        private IRuleSet rules;
+
+        private StandardRuleSet rules;
         public IOwnershipService Ownership => ownership;
 
         private void Awake()
         {
             ownership = GetComponent<OwnershipServiceAdapter>();
-            rentModifiers = GetComponent<RentModifierService>();
+            rentModifiers = GetComponent<CostModifierService>();
             EnsureDependencies();
         }
 
@@ -68,16 +69,10 @@ namespace Assets.Scripts.Managers.Rent
                 ownership = GetComponent<OwnershipServiceAdapter>();
 
             if (!rentModifiers)
-                rentModifiers = GetComponent<RentModifierService>();
-
-            if (!rulesManager)
-            {
-                rules = new StandardRuleSet();
-                return;
-            }
+                rentModifiers = GetComponent<CostModifierService>();
 
             if (rules == null)
-                rules = rulesManager.ActiveRules ?? new StandardRuleSet();
+                rules = StandardRuleSet.GetInstance();
         }
 
         //helpers
