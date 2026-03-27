@@ -1,3 +1,4 @@
+//Explains possible reasons for upgrade failure
 public enum UpgradeFailReason
 {
     None = 0,
