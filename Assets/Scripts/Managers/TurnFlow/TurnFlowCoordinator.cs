@@ -34,10 +34,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             // in the future we should be passing this in from GameManager or something.
             turnCycleManager = new TurnCycleManager(4);
 
-            //fallback for editmode tests
-            var gm = FindFirstObjectByType<GameManager>();
-            if (!turnStartedInChannel && gm) turnStartedInChannel = gm.turnStartedChannel;
-            if (!turnEndedChannel && gm) turnEndedChannel = gm.turnEndedChannel;
         }
 
 
@@ -63,8 +59,6 @@ namespace Assets.Scripts.Managers.TurnFlow
         // a new turn's started, reset state, wait for new roll
         private void OnTurnStarted(TurnStartedEvent data)
         {
-            if (turnCycleManager == null) 
-                turnCycleManager = FindFirstObjectByType<GameManager>().turnCycleManager;
             
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
