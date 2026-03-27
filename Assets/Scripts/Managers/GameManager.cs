@@ -232,13 +232,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (!TryChangeState(GameState.PlayerTurn))
+            return;
 
-    private bool IsPlayerTurn(Player player)
-    {
-        if (player == null) return false;
+        Logging.Logger.Info("GameManager.BeginTurnSystem",
+            "Initialization complete. Handing control to TurnFlowCoordinator.",
+            LogCategory.Core,
+            this);
 
-        int requestId = player.GetId();
-        // Validate current turn order
-        return matchesTurnCycle;
+        // turnFlowCoordinator.StartGame();  TODO: uncomment when merging with US868
     }
 }
