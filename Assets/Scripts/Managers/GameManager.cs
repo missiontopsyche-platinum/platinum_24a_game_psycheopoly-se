@@ -30,21 +30,6 @@ public class GameManager : MonoBehaviour
     [Header("UI Elements")] [SerializeField]
     public DiceRollPanelController diceRollPanel;
     
-    [Header("Event Channels")]
-    //us11-t36 allows for gamestate change action
-    [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
-    [SerializeField] public TurnStartedEventChannel turnStartedChannel;
-    [SerializeField] public DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
-    [SerializeField] public CardDrawnEventChannel cardDrawnChannel;
-    [SerializeField] public BooleanEventChannel turnEndedChannel;
-    [SerializeField] public BooleanEventChannel spaceResolutionCompletedChannel;
-    [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
-
-    [Header("Space Resolution Event Channels")]
-    [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
-    [SerializeField] public BooleanEventChannel playerDataUpdatedEventChannel;
-
     [Header("Manager References")]
     [SerializeField] private PlayerManager playerManager;
 
