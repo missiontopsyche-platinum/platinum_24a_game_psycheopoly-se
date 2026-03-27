@@ -2,7 +2,26 @@ using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
 {
-    
+    [Header("Event Channels")]
+    [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
+    [SerializeField] private UpgradeResultEventChannel upgradeResultChannel;
+
+    private void OnEnable()
+    {
+        if (upgradeRequestChannel != null)
+        {
+            upgradeRequestChannel.OnEventRaised += OnUpgradeRequest;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (upgradeRequestChannel != null)
+        {
+            upgradeRequestChannel.OnEventRaised -= OnUpgradeRequest;
+        }
+    }
+
     // TODO: Add event channels
     private void Awake()
     {
@@ -29,14 +48,47 @@ public class UpgradeManager : MonoBehaviour
     }
 
     // Entry point
-    // TODO: Finish implementation of this method, add event as parameter, and raise event after upgrade is successful.
-    public void OnUpgradeRequest(/*TODO: pass in event data here*/)
+   private void OnUpgradeRequest(UpgradeRequestEvent request)
     {
-        /*if (Event == null) return;
-        if (TryHandleUpgrade(TODO: pass in event data here))
+        Player owner = ResolvePlayer(request.PlayerId);
+        IUpgradableTileInfo tile = ResolveTile(request.TileId);
+
+        UpgradeDecision decision = UpgradeUtility.Evaluate(owner, tile);
+
+        if (!decision.Allowed)
         {
-            if (decision is true)
-             TODO: Raise event for successful upgrade here.
-        }*/
+            RaiseResult(false, decision, request, tile);
+            return;
+        }
+
+        bool success = UpgradeUtility.TryExecute(owner, tile, decision);
+
+        RaiseResult(success, decision, request, tile);
+    }
+
+    private void RaiseResult(bool success, UpgradeDecision decision, UpgradeRequestEvent request, IUpgradableTileInfo tile)
+    {
+        var result = new UpgradeResultEvent(
+            success: success,
+            failReason: success ? UpgradeFailReason.None : decision.FailReason,
+            upgradeCost: decision.Cost,
+            newUpgradeLevel: tile != null ? tile.UpgradeLevel : 0,
+            playerId: request.PlayerId,
+            tileId: request.TileId
+        );
+
+        upgradeResultChannel?.RaiseEvent(result);
+    }
+
+      private Player ResolvePlayer(int playerId)
+    {
+        //TODO hook into player manager
+        return null;
+    }
+
+    private IUpgradableTileInfo ResolveTile(int tileId)
+    {
+        //TODO hook into tile 
+        return null;
     }
 }
