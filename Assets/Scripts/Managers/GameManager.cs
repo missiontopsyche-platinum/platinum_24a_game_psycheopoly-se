@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
     
     public TurnCycleManager turnCycleManager; // this shouldn't be public, but needs to be for now to get it to turn flow coordinator
 
+
     private int playerCount = 0;
 
     //The below are for testing that the event is properly registering in the class
