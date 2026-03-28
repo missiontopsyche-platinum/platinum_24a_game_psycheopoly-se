@@ -145,7 +145,6 @@ namespace Tests.PlayMode.BoardRenderer
             testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
             testMoveEventChannel = boardManager.playerMovedChannel;
             testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
-            testPieceMoveCompletedChannel = gameManager.pieceMoveCompletedChannel;
             // generate a test board
             SpaceData[] testSpaces = CreateTestSpaces(40);
             boardRenderer.GenerateBoard(testSpaces);

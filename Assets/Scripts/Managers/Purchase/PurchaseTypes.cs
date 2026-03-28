@@ -19,3 +19,4 @@ namespace Assets.Scripts.Managers.Purchase
         public int Price;
         public bool CanAfford;
     }
+}
