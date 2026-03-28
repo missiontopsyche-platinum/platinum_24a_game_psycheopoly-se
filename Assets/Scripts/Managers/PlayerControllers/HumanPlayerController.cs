@@ -12,11 +12,11 @@ namespace Managers.PlayerControllers
     public class HumanPlayerController : PlayerController
     {
         // attributes
-        
+
         // event channels
-        private UIActivationEventChannel uiActivationEventChannel;
-        private UIActionEventChannel uiActionEventChannel;
-        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
+        private readonly UIActivationEventChannel uiActivationEventChannel;
+        private readonly UIActionEventChannel uiActionEventChannel;
+        private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
 
         // event channel for bankruptcy
@@ -56,11 +56,6 @@ namespace Managers.PlayerControllers
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
             mortgageFinishedEventChannel = mortgageFinished;
-        }
-
-        ~HumanPlayerController()
-        {
-            Unsubscribe();
         }
 
         public override void Subscribe()

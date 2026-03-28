@@ -40,8 +40,8 @@ public class PlayerManager : MonoBehaviour
         Logger.Info("PlayerManager.InitializePlayers",
             $"Creating {playerConfigs.Count} players.",
             LogCategory.Core);
-        
-        playerControllers.Clear(); // double check that players list is cleared
+
+        UnsubscribeAndClearControllers();
 
         foreach (var playerConfig in playerConfigs)
         {
@@ -81,7 +81,8 @@ public class PlayerManager : MonoBehaviour
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel);
             }
-            
+
+            playerController.Subscribe();
             playerControllers.Add(playerController);
             
             playerAddedEventChannel?.RaiseEvent(player);
@@ -119,5 +120,23 @@ public class PlayerManager : MonoBehaviour
     {
         List<Player> players = playerControllers.Select(c => c.GetControlledPlayer()).ToList();
         return players;
+    }
+
+    /// <summary>
+    /// makes sure all player controllers are cleaned up before resetting them
+    /// </summary>
+    private void UnsubscribeAndClearControllers()
+    {
+        foreach (var controller in playerControllers)
+        {
+            controller?.Unsubscribe();
+        }
+
+        playerControllers.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeAndClearControllers();
     }
 }

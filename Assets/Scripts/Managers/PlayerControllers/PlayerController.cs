@@ -13,21 +13,15 @@ namespace Managers.PlayerControllers
         protected readonly Player controlledPlayer;
         protected bool isMyTurn = false;
 
-        /// <summary>
-        /// Gets the Player ScriptableObject
-        /// </summary>
+        //gets the player scriptable object
         public Player GetControlledPlayer() => controlledPlayer;
 
-        // Core/shared event channels used by the base controller.
-        // subclasses may use additional channels for specialized human/AI behavior.        
-        private TurnStartedEventChannel turnStartedEventChannel;
-        protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
-        protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
-        protected PayPlayerEventChannel passedGoPaymentChannel;
-
-        // event channels to validate turn actions against the current turn phase.
-        protected TurnActionRequestEventChannel turnActionRequestEventChannel;
-        protected TurnActionResultEventChannel turnActionResultEventChannel;
+        private readonly TurnStartedEventChannel turnStartedEventChannel;
+        protected readonly PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+        protected readonly ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+        protected readonly PayPlayerEventChannel passedGoPaymentChannel;
+        protected readonly TurnActionRequestEventChannel turnActionRequestEventChannel;
+        protected readonly TurnActionResultEventChannel turnActionResultEventChannel;
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
         private struct PendingCallbacks
@@ -160,5 +154,7 @@ namespace Managers.PlayerControllers
             if (result.allowed) pending.Allowed?.Invoke();
             else pending.Denied?.Invoke();
         }
+
+        
     }
 }
