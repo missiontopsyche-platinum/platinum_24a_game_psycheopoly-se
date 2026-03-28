@@ -1,9 +1,7 @@
 ﻿using Assets.Scripts.Managers.TurnFlow;
-using Events.EventDataStructures;
 using Logging;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Managers.PlayerControllers
 {
