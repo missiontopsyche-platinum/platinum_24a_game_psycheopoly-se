@@ -1,21 +1,23 @@
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Tests.EditMode.UpgradeManagerTests
 {
-    using NUnit.Framework;
-
     public class PropertySpaceDataTests : UpgradeManagerTestBase
     {
-        [Test]
-        public void TryUpgrade_IncrementsUntilMax_ThenFails()
+       [Test]
+        public void TryUpgradeIncrementsUntilMax_ThenFails()
         {
-            var pd = new PropertySpaceData(null, upgradeCost: 25);
-            int[] testArr = new[] { 10, 20, 30 };
+            var pd = ScriptableObject.CreateInstance<PropertySpaceData>();
+
+            pd.SetResearchFundingValues(new[] { 10, 20, 30 });
+            pd.SetUpgradeCostByLevel(new[] { 10, 20, 30 });
             pd.SetDataPointCost(10);
-            pd.SetUpgradeCostByLevel(testArr);
-            pd.SetResearchFundingValues(testArr);
+            pd.isMortgaged = false;
+            pd.SetUpgradeLevel(0);
 
             Assert.AreEqual(0, pd.GetCurrentUpgradeLevel());
+            Assert.AreEqual(2, pd.MaxUpgradeLevel);
             Assert.IsFalse(pd.IsMaxed);
 
             Assert.IsTrue(pd.TryUpgrade());
@@ -27,12 +29,17 @@ namespace Tests.EditMode.UpgradeManagerTests
 
             Assert.IsFalse(pd.TryUpgrade());
             Assert.AreEqual(2, pd.GetCurrentUpgradeLevel());
+
+            Object.DestroyImmediate(pd);
         }
 
         [Test]
         public void SetUpgradeLevel_ClampsWithinBounds()
         {
-            var pd = new PropertySpaceData(new[] { 1, 2, 3, 4 }, upgradeCost: 10);
+            var pd = ScriptableObject.CreateInstance<PropertySpaceData>();
+            pd.SetResearchFundingValues(new[] { 1, 2, 3, 4 });
+            pd.SetUpgradeCostByLevel(new[] { 1, 2, 3, 4 });
+            pd.SetDataPointCost(10);
 
             pd.SetUpgradeLevel(-999);
             Assert.AreEqual(0, pd.GetCurrentUpgradeLevel());
@@ -42,16 +49,22 @@ namespace Tests.EditMode.UpgradeManagerTests
 
             pd.SetUpgradeLevel(2);
             Assert.AreEqual(2, pd.GetCurrentUpgradeLevel());
+
+            Object.DestroyImmediate(pd);
         }
 
         [Test]
-        public void TryUpgrade_Fails_WhenDataPointCostNonPositive()
+        public void TryUpgradeFail_WhenDataPointCostNonPositive()
         {
-            var pd = new PropertySpaceData(new[] { 1, 2, 3 }, upgradeCost: 0);
+            var pd = ScriptableObject.CreateInstance<PropertySpaceData>();
+            pd.SetResearchFundingValues(new[] { 1, 2, 3 });
+            pd.SetUpgradeCostByLevel(new[] { 1, 2, 3 });
+            pd.SetDataPointCost(0);
 
             Assert.IsFalse(pd.TryUpgrade());
             Assert.AreEqual(0, pd.GetCurrentUpgradeLevel());
+
+            Object.DestroyImmediate(pd);
         }
     }
-
 }

@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PropertySpaceData", menuName = "Board Spaces/Property Space")]
-public class PropertySpaceData : OwnableSpaceData
+public class PropertySpaceData : OwnableSpaceData, IUpgradableTileInfo
 {
     [Header("Property-Specific Values")]
     [SerializeField] public int[] researchFundingValues = new int[6];
@@ -181,8 +181,7 @@ public class PropertySpaceData : OwnableSpaceData
         if (level < 1 || level > MaxUpgradeLevel)
             return 0;
 
-        int currentMultiplier = (int)Mathf.Pow(upgradeCostMultiplier, level);
-        return dataPointCost * RoundToNearestTens(currentMultiplier);
+        return dataPointCost;
     }
 
     public int GetNextUpgradeCost()
@@ -246,5 +245,23 @@ public class PropertySpaceData : OwnableSpaceData
             : 0;
 
     public override int[] RentByHouses => researchFundingValues;
+
+    //Needed for IUpgradableTileInfo
+
+    public int UpgradeLevel => GetCurrentUpgradeLevel();
+
+    public int UpgradeCost => dataPointCost;
+
+    public bool CanApplyUpgrade()
+    {
+        return CanUpgrade();
+    }
+
+    public void ApplyUpgrade()
+    {
+        TryUpgrade();
+    }
+    
+    public bool IsMortgaged => isMortgaged;
 
 }

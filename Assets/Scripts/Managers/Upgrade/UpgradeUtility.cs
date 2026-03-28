@@ -1,12 +1,14 @@
 using System;
 using Data;
 using UnityEngine;
-
+using Assets.Scripts.Managers.Rent;
 
 public static class UpgradeUtility
 {
-    
-    public static UpgradeDecision Evaluate(Player owner, IUpgradableTileInfo tile, IUpgradableTileInfo[] monoployGroup)
+    public static UpgradeDecision Evaluate(
+        Player owner,
+        IUpgradableTileInfo tile,
+        IUpgradableTileInfo[] monopolyGroup)
     {
         if (owner == null || tile == null)
         {
@@ -18,7 +20,7 @@ public static class UpgradeUtility
             return UpgradeDecision.Failed(UpgradeFailReason.NotOwner);
         }
 
-        if (tile is not PropertySpaceData)
+        if (tile.Type != TileType.Street)
         {
             return UpgradeDecision.Failed(UpgradeFailReason.NotStreet);
         }
@@ -28,16 +30,15 @@ public static class UpgradeUtility
             return UpgradeDecision.Failed(UpgradeFailReason.Mortgaged);
         }
 
-        if (!OwnsFullMonopoly(owner, monoployGroup))
+        if (!OwnsFullMonopoly(owner, monopolyGroup))
         {
             return UpgradeDecision.Failed(UpgradeFailReason.MonopolyNotOwned);
         }
 
-        if (!BuildsEvenly(tile, monoployGroup))
+        if (!BuildsEvenly(tile, monopolyGroup))
         {
             return UpgradeDecision.Failed(UpgradeFailReason.UnevenBuilding);
         }
-
 
         if (tile.IsMaxed)
         {
@@ -72,8 +73,6 @@ public static class UpgradeUtility
 
         tile.ApplyUpgrade();
         return true;
-
-        return false;
     }
 
     private static bool OwnsFullMonopoly(Player owner, IUpgradableTileInfo[] monopolyGroup)
