@@ -1,8 +1,13 @@
 using Assets.Scripts.Managers.Rent;
-using UnityEngine;
 
-public interface IUpgradableTileInfo : ITileRentInfo
+public interface IUpgradableTileInfo
 {
+    string Name { get; }
+    TileType Type { get; }
+    ColorGroup Group { get; }
+    bool IsMortgaged { get; }
+    Player GetOwner();
+
     int UpgradeLevel { get; }
     int UpgradeCost { get; }
     int MaxUpgradeLevel { get; }
