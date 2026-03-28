@@ -6,7 +6,7 @@ using UnityEngine;
 
 //Adapter that exposes data from an OwnableSpaceData asset 
 
-public class OwnableSpaceTileAdapter : MonoBehaviour, ITileRentInfo, IPurchasableTileInfo
+public class OwnableSpaceTileAdapter : MonoBehaviour, ITileRentInfo
 {
     [SerializeField] private OwnableSpaceData data;
     public OwnableSpaceData Data => data;
