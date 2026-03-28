@@ -241,7 +241,7 @@ namespace Assets.Scripts.Managers.Movement
             if (doublesCount > 0)
             {
                 Logger.Debug("StandardMovementStrategy.ResolveCompletedMovement",
-                    "Doubles rolled. Extra roll remains available to current flow.",
+                    "Doubles rolled. Current player still has an extra turn available.",
                     LogCategory.Gameplay,this);
             }
             else
