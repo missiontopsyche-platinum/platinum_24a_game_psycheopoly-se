@@ -6,7 +6,7 @@ using UnityEngine;
 public static class UpgradeUtility
 {
     
-    public static UpgradeDecision Evaluate(Player owner, IUpgradableTileInfo tile)
+    public static UpgradeDecision Evaluate(Player owner, IUpgradableTileInfo tile, IUpgradableTileInfo[] monoployGroup)
     {
         if (owner == null || tile == null)
         {
@@ -27,6 +27,17 @@ public static class UpgradeUtility
         {
             return UpgradeDecision.Failed(UpgradeFailReason.Mortgaged);
         }
+
+        if (!OwnsFullMonopoly(owner, monoployGroup))
+        {
+            return UpgradeDecision.Failed(UpgradeFailReason.MonopolyNotOwned);
+        }
+
+        if (!BuildsEvenly(tile, monoployGroup))
+        {
+            return UpgradeDecision.Failed(UpgradeFailReason.UnevenBuilding);
+        }
+
 
         if (tile.IsMaxed)
         {
@@ -63,5 +74,43 @@ public static class UpgradeUtility
         return true;
 
         return false;
+    }
+
+    private static bool OwnsFullMonopoly(Player owner, IUpgradableTileInfo[] monopolyGroup)
+    {
+        if (owner == null || monopolyGroup == null || monopolyGroup.Length == 0)
+            return false;
+
+        foreach (var property in monopolyGroup)
+        {
+            if (property == null)
+                return false;
+
+            if (property.GetOwner() != owner)
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool BuildsEvenly(IUpgradableTileInfo tile, IUpgradableTileInfo[] monopolyGroup)
+    {
+        if (tile == null || monopolyGroup == null || monopolyGroup.Length == 0)
+            return false;
+
+        int minLevel = int.MaxValue;
+
+        foreach (var property in monopolyGroup)
+        {
+            if (property == null)
+                return false;
+
+            if (property.UpgradeLevel < minLevel)
+            {
+                minLevel = property.UpgradeLevel;
+            }
+        }
+
+        return tile.UpgradeLevel == minLevel;
     }
 }

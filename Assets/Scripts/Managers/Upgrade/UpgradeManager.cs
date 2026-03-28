@@ -6,6 +6,9 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
     [SerializeField] private UpgradeResultEventChannel upgradeResultChannel;
 
+    [Header("Board Data")]
+    [SerializeField] private OwnableSpaceData[] allSpaces;
+
     private void OnEnable()
     {
         if (upgradeRequestChannel != null)
@@ -30,17 +33,19 @@ public class UpgradeManager : MonoBehaviour
 
     private void EnsureDependencies()
     {
-        // TODO: Any channels to be subscribe to add it here.
+        //TODO: Any channels to be subscribe to add it here.
     }
 
-    public bool TryHandleUpgrade(Player owner, IUpgradableTileInfo tile, out UpgradeDecision decision)
+    public bool TryHandleUpgrade(Player owner, IUpgradableTileInfo tile, OwnableSpaceData[] allSpaces, out UpgradeDecision decision)
     {
         decision = default;
 
         if (owner == null || tile == null)
             return false;
 
-        decision = UpgradeUtility.Evaluate(owner, tile);
+        var monopolyGroup = GetMonopolyGroup(tile, allSpaces);
+
+        decision = UpgradeUtility.Evaluate(owner, tile, monopolyGroup);
         if (!decision.Allowed)
             return false;
 
@@ -53,7 +58,8 @@ public class UpgradeManager : MonoBehaviour
         Player owner = ResolvePlayer(request.PlayerId);
         IUpgradableTileInfo tile = ResolveTile(request.TileId);
 
-        UpgradeDecision decision = UpgradeUtility.Evaluate(owner, tile);
+        var monopolyGroup = GetMonopolyGroup(tile, allSpaces);
+        UpgradeDecision decision = UpgradeUtility.Evaluate(owner, tile, monopolyGroup);
 
         if (!decision.Allowed)
         {
@@ -90,5 +96,26 @@ public class UpgradeManager : MonoBehaviour
     {
         //TODO hook into tile 
         return null;
+    }
+
+    private IUpgradableTileInfo[] GetMonopolyGroup(
+        IUpgradableTileInfo tile,
+        OwnableSpaceData[] allSpaces)
+    {
+        if (tile == null || allSpaces == null)
+            return null;
+
+        var result = new System.Collections.Generic.List<IUpgradableTileInfo>();
+
+        foreach (var space in allSpaces)
+        {
+            if (space is IUpgradableTileInfo upgradable &&
+                upgradable.Group == tile.Group)
+            {
+                result.Add(upgradable);
+            }
+        }
+
+        return result.ToArray();
     }
 }
