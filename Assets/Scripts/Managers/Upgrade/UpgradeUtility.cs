@@ -13,6 +13,11 @@ public static class UpgradeUtility
             return UpgradeDecision.Failed(UpgradeFailReason.InvalidRequest);
         }
 
+        if (tile.GetOwner() != owner)
+        {
+            return UpgradeDecision.Failed(UpgradeFailReason.NotOwner);
+        }
+
         if (tile is not PropertySpaceData)
         {
             return UpgradeDecision.Failed(UpgradeFailReason.NotStreet);
