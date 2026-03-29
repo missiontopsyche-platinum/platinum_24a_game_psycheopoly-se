@@ -20,6 +20,7 @@ namespace Managers.PlayerControllers
         
         // event channels || may need to add more as requirements change. Potentially have all channels in all subclasses.
         private TurnStartedEventChannel turnStartedEventChannel;
+        protected BooleanEventChannel turnEndedEventChannel;
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
@@ -28,6 +29,7 @@ namespace Managers.PlayerControllers
         // event channels to validate turn actions against the current turn phase.
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
         protected TurnActionResultEventChannel turnActionResultEventChannel;
+
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
         private struct PendingCallbacks
@@ -41,6 +43,7 @@ namespace Managers.PlayerControllers
         public PlayerController(
             Player player, 
             TurnStartedEventChannel turnStarted, 
+            BooleanEventChannel turnEnded,
             PurchaseOwnableRequestEventChannel purchaseRequest, 
             ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
             PayPlayerEventChannel passedGoPayment,
@@ -50,6 +53,7 @@ namespace Managers.PlayerControllers
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
+            turnEndedEventChannel = turnEnded ?? throw new System.ArgumentNullException(nameof(turnEnded));
             purchaseOwnableRequestEventChannel =
                 purchaseRequest ?? throw new System.ArgumentNullException(nameof(purchaseRequest));
             chargeOwnershipFeeEventChannel =
@@ -160,6 +164,22 @@ namespace Managers.PlayerControllers
 
             if (result.allowed) pending.Allowed?.Invoke();
             else pending.Denied?.Invoke();
+        }
+
+        /// <summary>
+        /// Tells the TurnFlow system that the resolution part of the 
+        /// turn is done. This is a helper method for completing resolution 
+        /// using TurnActionType.CompleteResolution.
+        /// </summary>
+        /// <param name="onAllowed">Runs if the action is allowed.</param>
+        /// <param name="onDenied">Runs if the action is denied.</param>
+        /// 
+        protected void RequestResolutionComplete(Action onAllowed = null, Action onDenied = null)
+        {
+            RequestTurnAction(
+                TurnActionType.CompleteResolution,
+                onAllowed ?? (() => { }),
+                onDenied);
         }
     }
 }
