@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PropertySpaceData", menuName = "Board Spaces/Property Space")]
-public class PropertySpaceData : OwnableSpaceData, IUpgradableTileInfo
+public class PropertySpaceData : OwnableSpaceData
 {
     [Header("Property-Specific Values")]
     [SerializeField] public int[] researchFundingValues = new int[6];

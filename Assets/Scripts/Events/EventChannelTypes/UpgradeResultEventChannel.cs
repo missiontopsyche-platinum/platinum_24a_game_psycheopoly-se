@@ -1,11 +1,5 @@
 using UnityEngine;
+using Events.EventDataStructures;
 
-public class UpgradeResultEventChannel : ScriptableObject
-{
-    public System.Action<UpgradeResultEvent> OnEventRaised;
-
-    public void RaiseEvent(UpgradeResultEvent result)
-    {
-        OnEventRaised?.Invoke(result);
-    }
-}
+[CreateAssetMenu(menuName = "Events/Upgrade Result Event Channel")]
+public class UpgradeResultEventChannel : EventChannel<UpgradeResultEvent> { }

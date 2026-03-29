@@ -67,5 +67,10 @@ namespace Tests.EditMode.UpgradeManagerTests
 
             return TestPropertyData;
         }
+
+        protected void RegisterOwnedProperty(Player player, PropertySpaceData property)
+        {
+            player.AddOwnedProperty(property);
+        }
     }
 }

@@ -1,11 +1,16 @@
-public struct UpgradeRequestEvent
-{
-    public int PlayerId;
-    public int TileId;
+using UnityEngine;
 
-    public UpgradeRequestEvent(int playerId, int tileId)
+namespace Events.EventDataStructures
+{
+    public struct UpgradeRequestEvent
     {
-        PlayerId = playerId;
-        TileId = tileId;
+        public Player Player;
+        public PropertySpaceData Tile;
+
+        public UpgradeRequestEvent(Player player, PropertySpaceData tile)
+        {
+            Player = player;
+            Tile = tile;
+        }
     }
 }

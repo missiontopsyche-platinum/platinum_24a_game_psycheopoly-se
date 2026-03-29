@@ -4,22 +4,22 @@ public struct UpgradeResultEvent
     public UpgradeFailReason FailReason;
     public int UpgradeCost;
     public int NewUpgradeLevel;
-    public int PlayerId;
-    public int TileId;
+    public Player Player;
+    public PropertySpaceData Tile;
 
     public UpgradeResultEvent(
         bool success,
         UpgradeFailReason failReason,
         int upgradeCost,
         int newUpgradeLevel,
-        int playerId,
-        int tileId)
+        Player player,
+        PropertySpaceData tile)
     {
         Success = success;
         FailReason = failReason;
         UpgradeCost = upgradeCost;
         NewUpgradeLevel = newUpgradeLevel;
-        PlayerId = playerId;
-        TileId = tileId;
+        Player = player;
+        Tile = tile;
     }
 }

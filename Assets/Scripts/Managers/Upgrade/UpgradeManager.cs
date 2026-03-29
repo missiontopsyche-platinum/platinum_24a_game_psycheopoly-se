@@ -1,4 +1,5 @@
 using UnityEngine;
+using Events.EventDataStructures;
 
 public class UpgradeManager : MonoBehaviour
 {
@@ -6,14 +7,11 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
     [SerializeField] private UpgradeResultEventChannel upgradeResultChannel;
 
-    [Header("Board Data")]
-    [SerializeField] private OwnableSpaceData[] allSpaces;
-
     private void OnEnable()
     {
         if (upgradeRequestChannel != null)
         {
-            upgradeRequestChannel.OnEventRaised += OnUpgradeRequest;
+            upgradeRequestChannel.Subscribe(OnUpgradeRequest);
         }
     }
 
@@ -21,31 +19,32 @@ public class UpgradeManager : MonoBehaviour
     {
         if (upgradeRequestChannel != null)
         {
-            upgradeRequestChannel.OnEventRaised -= OnUpgradeRequest;
+            upgradeRequestChannel.Unsubscribe(OnUpgradeRequest);
         }
     }
 
-    // TODO: Add event channels
-    private void Awake()
-    {
-        EnsureDependencies();
-    }
-
-    private void EnsureDependencies()
-    {
-        //TODO: Any channels to be subscribe to add it here.
-    }
-
-    public bool TryHandleUpgrade(Player owner, IUpgradableTileInfo tile, OwnableSpaceData[] allSpaces, out UpgradeDecision decision)
+    public bool TryHandleUpgrade(Player owner, PropertySpaceData tile, out UpgradeDecision decision)
     {
         decision = default;
 
         if (owner == null || tile == null)
             return false;
 
-        var monopolyGroup = GetMonopolyGroup(tile, allSpaces);
+        var validProperties = owner.GetValidUpgradableProperties();
+        var matchingGroup = new System.Collections.Generic.List<PropertySpaceData>();
+
+        foreach (var property in validProperties)
+        {
+            if (property != null && property.Group == tile.Group)
+            {
+                matchingGroup.Add(property);
+            }
+        }
+
+        PropertySpaceData[] monopolyGroup = matchingGroup.ToArray();
 
         decision = UpgradeUtility.Evaluate(owner, tile, monopolyGroup);
+
         if (!decision.Allowed)
             return false;
 
@@ -53,69 +52,34 @@ public class UpgradeManager : MonoBehaviour
     }
 
     // Entry point
-   private void OnUpgradeRequest(UpgradeRequestEvent request)
+    private void OnUpgradeRequest(UpgradeRequestEvent request)
     {
-        Player owner = ResolvePlayer(request.PlayerId);
-        IUpgradableTileInfo tile = ResolveTile(request.TileId);
-
-        var monopolyGroup = GetMonopolyGroup(tile, allSpaces);
-        UpgradeDecision decision = UpgradeUtility.Evaluate(owner, tile, monopolyGroup);
-
-        if (!decision.Allowed)
+        if (request.Player == null || request.Tile == null)
         {
-            RaiseResult(false, decision, request, tile);
+            RaiseResult(
+                false,
+                UpgradeDecision.Failed(UpgradeFailReason.InvalidRequest),
+                request.Player,
+                request.Tile);
             return;
         }
 
-        bool success = UpgradeUtility.TryExecute(owner, tile, decision);
-
-        RaiseResult(success, decision, request, tile);
+        bool success = TryHandleUpgrade(request.Player, request.Tile, out UpgradeDecision decision);
+        RaiseResult(success, decision, request.Player, request.Tile);
     }
 
-    private void RaiseResult(bool success, UpgradeDecision decision, UpgradeRequestEvent request, IUpgradableTileInfo tile)
+    private void RaiseResult(bool success, UpgradeDecision decision, Player player, PropertySpaceData tile)
     {
         var result = new UpgradeResultEvent(
             success: success,
             failReason: success ? UpgradeFailReason.None : decision.FailReason,
             upgradeCost: decision.Cost,
-            newUpgradeLevel: tile != null ? tile.UpgradeLevel : 0,
-            playerId: request.PlayerId,
-            tileId: request.TileId
+            newUpgradeLevel: tile != null ? tile.GetCurrentUpgradeLevel() : 0,
+            player: player,
+            tile: tile
         );
 
         upgradeResultChannel?.RaiseEvent(result);
     }
-
-      private Player ResolvePlayer(int playerId)
-    {
-        //TODO hook into player manager
-        return null;
-    }
-
-    private IUpgradableTileInfo ResolveTile(int tileId)
-    {
-        //TODO hook into tile 
-        return null;
-    }
-
-    private IUpgradableTileInfo[] GetMonopolyGroup(
-        IUpgradableTileInfo tile,
-        OwnableSpaceData[] allSpaces)
-    {
-        if (tile == null || allSpaces == null)
-            return null;
-
-        var result = new System.Collections.Generic.List<IUpgradableTileInfo>();
-
-        foreach (var space in allSpaces)
-        {
-            if (space is IUpgradableTileInfo upgradable &&
-                upgradable.Group == tile.Group)
-            {
-                result.Add(upgradable);
-            }
-        }
-
-        return result.ToArray();
-    }
+   
 }

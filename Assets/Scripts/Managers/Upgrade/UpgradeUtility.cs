@@ -7,8 +7,8 @@ public static class UpgradeUtility
 {
     public static UpgradeDecision Evaluate(
         Player owner,
-        IUpgradableTileInfo tile,
-        IUpgradableTileInfo[] monopolyGroup)
+        PropertySpaceData tile,
+        PropertySpaceData[] monopolyGroup)
     {
         if (owner == null || tile == null)
         {
@@ -59,7 +59,7 @@ public static class UpgradeUtility
         return UpgradeDecision.Success(cost);
     }
 
-    public static bool TryExecute(Player owner, IUpgradableTileInfo tile, UpgradeDecision decision)
+    public static bool TryExecute(Player owner, PropertySpaceData tile, UpgradeDecision decision)
     {
         if (!decision.Allowed || owner == null || tile == null)
         {
@@ -75,7 +75,7 @@ public static class UpgradeUtility
         return true;
     }
 
-    private static bool OwnsFullMonopoly(Player owner, IUpgradableTileInfo[] monopolyGroup)
+    private static bool OwnsFullMonopoly(Player owner, PropertySpaceData[] monopolyGroup)
     {
         if (owner == null || monopolyGroup == null || monopolyGroup.Length == 0)
             return false;
@@ -92,7 +92,7 @@ public static class UpgradeUtility
         return true;
     }
 
-    private static bool BuildsEvenly(IUpgradableTileInfo tile, IUpgradableTileInfo[] monopolyGroup)
+    private static bool BuildsEvenly(PropertySpaceData tile, PropertySpaceData[] monopolyGroup)
     {
         if (tile == null || monopolyGroup == null || monopolyGroup.Length == 0)
             return false;
