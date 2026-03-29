@@ -1,0 +1,33 @@
+%% Card Resolution Sequence Diagram 
+%% Last Updated: 3/18/2026
+%% Version: 1.0
+
+%% Purpose
+%% To explain the sequence of a card being drawn from the chance or community chest decks, 
+
+%% Scope
+%% The card chance and community chest UI and resolution logic
+
+sequenceDiagram
+    actor Player
+    participant BoardManager
+    participant CardSpace
+    participant CardDeck
+    participant Card
+    participant CardEffect
+    participant CardPopupUI
+
+    Player->>BoardManager: MoveTo(spaceIndex)
+    BoardManager->>CardSpace: ResolveLanding(player)
+
+    CardSpace->>CardDeck: DrawCard(player)
+    CardDeck-->>CardSpace: card
+
+    CardSpace->>CardPopupUI: ShowCard(card)
+    Player->>CardPopupUI: Click OK
+
+    CardPopupUI->>CardSpace: Confirm(card)
+    CardSpace->>Card: Resolve(player)
+    Card->>CardEffect: ApplyEffect(player)
+
+    CardDeck->>CardDeck: Enqueue card back
