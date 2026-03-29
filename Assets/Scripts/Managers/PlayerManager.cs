@@ -15,6 +15,7 @@ public class PlayerManager : MonoBehaviour
     
     [Header("PlayerController Event Channels")]
     [SerializeField] public TurnStartedEventChannel turnStartedEventChannel;
+    [SerializeField] public BooleanEventChannel turnEndedEventChannel;
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public PayPlayerEventChannel passedGoPaymentChannel;
@@ -58,6 +59,7 @@ public class PlayerManager : MonoBehaviour
                 playerController = new HumanPlayerController(
                     player,
                     turnStartedEventChannel,
+                    turnEndedEventChannel,
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
@@ -73,6 +75,7 @@ public class PlayerManager : MonoBehaviour
                     player,
                     playerConfig.behaviorWeights,
                     turnStartedEventChannel,
+                    turnEndedEventChannel,
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,

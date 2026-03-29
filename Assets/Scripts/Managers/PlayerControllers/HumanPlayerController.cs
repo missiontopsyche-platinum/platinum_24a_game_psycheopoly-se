@@ -42,6 +42,7 @@ namespace Managers.PlayerControllers
         public HumanPlayerController(
             Player player,
             TurnStartedEventChannel turnStarted,
+            BooleanEventChannel turnEnded,
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
@@ -50,7 +51,7 @@ namespace Managers.PlayerControllers
             MortgageFinishedEventChannel mortgageFinished,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, turnActionRequest, turnActionResult)
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
@@ -65,6 +66,7 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Subscribe(HandlePurchaseOwnableEvent);
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
+            turnEndedEventChannel?.Subscribe(OnTurnEnded);
         }
 
         public override void Unsubscribe()
@@ -74,6 +76,7 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Unsubscribe(HandlePurchaseOwnableEvent);
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
+            turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -145,14 +148,17 @@ namespace Managers.PlayerControllers
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
                 }
             }
+            RequestResolutionComplete();
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
             if (!isMyTurn) return;
-            
+
             // handle passing go
             // call player method for getting paid for passing go
+
+            RequestResolutionComplete();
         }
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
@@ -166,6 +172,7 @@ namespace Managers.PlayerControllers
                     context.tile));
             }
 
+            RequestResolutionComplete();
         }
 
         private void HandleUIAction(UIActionEvent uiae)
@@ -223,6 +230,31 @@ namespace Managers.PlayerControllers
                     $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.name}",
                     LogCategory.Gameplay);
             }
+
+            RequestResolutionComplete();
+        }
+
+        // This forces the end turn request to be validated the same way as any other player action,
+        // This makes sure that end turn can be blocked by effects that prevent the player from ending
+        // their turn. This is also a workaround to separate AwaitingResolution and Completed states.
+        private void OnTurnEnded(bool ended)
+        {
+            if (!isMyTurn) return;
+
+            RequestTurnAction(
+                TurnActionType.EndTurn,
+                onAllowed: () =>
+                {
+                    Logger.Debug("HumanPlayerController.RequestEndTurn",
+                        "End turn approved by TurnFlowCoordinator.",
+                        LogCategory.Gameplay);
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.RequestEndTurn",
+                        "End turn denied by TurnFlowCoordinator.",
+                        LogCategory.Gameplay);
+                });
         }
     }
 }
