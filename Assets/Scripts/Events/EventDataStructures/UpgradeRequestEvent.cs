@@ -1,16 +1,16 @@
-using Data;
+using UnityEngine;
 
 namespace Events.EventDataStructures
 {
-    public class UpgradeRequestEvent
+    public struct UpgradeRequestEvent
     {
-        public Player player { get; }
-        public PropertySpaceData property { get; }
+        public Player Player;
+        public PropertySpaceData Tile;
 
-        public UpgradeRequestEvent(Player player, PropertySpaceData property)
+        public UpgradeRequestEvent(Player player, PropertySpaceData tile)
         {
-            this.player = player;
-            this.property = property;
+            Player = player;
+            Tile = tile;
         }
     }
 }

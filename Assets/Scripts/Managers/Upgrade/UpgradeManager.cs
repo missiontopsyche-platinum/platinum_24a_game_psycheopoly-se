@@ -1,87 +1,86 @@
 using Events.EventDataStructures;
 using UnityEngine;
+using Events.EventDataStructures;
 
 public class UpgradeManager : MonoBehaviour
 {
-    [Header("Strategy")]
-    private IUpgradeStrategy strategy = new StandardUpgradeStrategy();
-
     [Header("Event Channels")]
-    [SerializeField] private UpgradeRequestEventChannel upgradeRequestEventChannel;
-    // TODO: Add event channels
-    private void Awake()
-    {
-        EnsureDependencies();
-    }
+    [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
+    [SerializeField] private UpgradeResultEventChannel upgradeResultChannel;
 
     private void OnEnable()
     {
-        upgradeRequestEventChannel?.Subscribe(OnUpgradeRequest);
+        if (upgradeRequestChannel != null)
+        {
+            upgradeRequestChannel.Subscribe(OnUpgradeRequest);
+        }
     }
 
     private void OnDisable()
     {
-        upgradeRequestEventChannel?.Unsubscribe(OnUpgradeRequest);
-    }
-
-    private void EnsureDependencies()
-    {
-        if (strategy == null)
+        if (upgradeRequestChannel != null)
         {
-            strategy = new StandardUpgradeStrategy();
+            upgradeRequestChannel.Unsubscribe(OnUpgradeRequest);
         }
     }
 
-    public bool TryHandleUpgrade(Player owner, IUpgradableTileInfo tile, out UpgradeDecision decision)
+    public bool TryHandleUpgrade(Player owner, PropertySpaceData tile, out UpgradeDecision decision)
     {
         decision = default;
-        if (owner == null || tile == null) return false;
 
-        decision = strategy.GetUpgradeDecision(tile, owner);
-        if (!decision.Allowed) return false;
+        if (owner == null || tile == null)
+            return false;
 
-        if (!(tile is OwnableSpaceTileAdapter space)) return false;
+        var validProperties = owner.GetValidUpgradableProperties();
+        var matchingGroup = new System.Collections.Generic.List<PropertySpaceData>();
 
-        if (owner.TrySpend(decision.Cost) == Player.FinancialStatus.Success)
+        foreach (var property in validProperties)
         {
-            space.ApplyUpgrade();
-            return true;
+            if (property != null && property.Group == tile.Group)
+            {
+                matchingGroup.Add(property);
+            }
         }
-        return false;
+
+        PropertySpaceData[] monopolyGroup = matchingGroup.ToArray();
+
+        decision = UpgradeUtility.Evaluate(owner, tile, monopolyGroup);
+
+        if (!decision.Allowed)
+            return false;
+
+        return UpgradeUtility.TryExecute(owner, tile, decision);
     }
 
     // Entry point
-    // TODO: Finish implementation of this method, add event as parameter, and raise event after upgrade is successful.
-    public void OnUpgradeRequest(UpgradeRequestEvent evt)
+    private void OnUpgradeRequest(UpgradeRequestEvent request)
     {
-        if (evt == null || evt.player == null || evt.property == null)
-            return;
-
-        // This only works if the property object itself implements IUpgradableTileInfo.
-        // If your scene uses an adapter instead, this event payload will need to carry
-        // that adapter or map from PropertySpaceData to OwnableSpaceTileAdapter.
-        if (!(evt.property is IUpgradableTileInfo upgradableTile))
+        if (request.Player == null || request.Tile == null)
         {
-            Logging.Logger.Warn("UpgradeManager.OnUpgradeRequest",
-                "Upgrade request ignored because the property does not implement IUpgradableTileInfo.",
-                Logging.LogCategory.Gameplay,
-                this);
+            RaiseResult(
+                false,
+                UpgradeDecision.Failed(UpgradeFailReason.InvalidRequest),
+                request.Player,
+                request.Tile);
             return;
         }
 
-        if (TryHandleUpgrade(evt.player, upgradableTile, out UpgradeDecision decision))
-        {
-            Logging.Logger.Info("UpgradeManager.OnUpgradeRequest",
-                $"{evt.player.GetPName()} upgraded {evt.property.spaceName} for ${decision.Cost}.",
-                Logging.LogCategory.Gameplay,
-                this);
-        }
-        else
-        {
-            Logging.Logger.Debug("UpgradeManager.OnUpgradeRequest",
-                $"{evt.player.GetPName()} could not upgrade {evt.property.spaceName}.",
-                Logging.LogCategory.Gameplay,
-                this);
-        }
+        bool success = TryHandleUpgrade(request.Player, request.Tile, out UpgradeDecision decision);
+        RaiseResult(success, decision, request.Player, request.Tile);
     }
+
+    private void RaiseResult(bool success, UpgradeDecision decision, Player player, PropertySpaceData tile)
+    {
+        var result = new UpgradeResultEvent(
+            success: success,
+            failReason: success ? UpgradeFailReason.None : decision.FailReason,
+            upgradeCost: decision.Cost,
+            newUpgradeLevel: tile != null ? tile.GetCurrentUpgradeLevel() : 0,
+            player: player,
+            tile: tile
+        );
+
+        upgradeResultChannel?.RaiseEvent(result);
+    }
+   
 }
