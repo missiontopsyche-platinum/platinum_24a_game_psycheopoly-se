@@ -26,6 +26,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public UIActionEventChannel uiActionEventChannel;
     [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
+    [SerializeField] public IntEventChannel bankruptcyEventChannel;
 
     public List<PlayerController> playerControllers = new();
     
@@ -66,6 +68,8 @@ public class PlayerManager : MonoBehaviour
                     uiActivationEventChannel,
                     uiActionEventChannel,
                     mortgageFinishedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel);
             }
@@ -81,6 +85,8 @@ public class PlayerManager : MonoBehaviour
                     passedGoPaymentChannel,
                     diceRollRequestChannel,
                     actionResolvedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel);
             }

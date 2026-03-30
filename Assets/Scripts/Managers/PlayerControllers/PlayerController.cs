@@ -20,11 +20,12 @@ namespace Managers.PlayerControllers
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
-        protected BooleanEventChannel diceRollRequestChannel;
         protected CardDrawnEventChannel cardDrawnEventChannel;
         // event channels to validate turn actions against the current turn phase.
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
         protected TurnActionResultEventChannel turnActionResultEventChannel;
+        protected UpgradeRequestEventChannel upgradeRequestEventChannel;
+        protected IntEventChannel bankruptPlayerEventChannel;
 
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
@@ -43,8 +44,10 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest, 
             ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
             PayPlayerEventChannel passedGoPayment,
+            UpgradeRequestEventChannel upgradeRequest,
             TurnActionRequestEventChannel turnActionRequest,
-            TurnActionResultEventChannel  turnActionResult)
+            TurnActionResultEventChannel  turnActionResult,
+            IntEventChannel bankruptPlayer)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -58,6 +61,8 @@ namespace Managers.PlayerControllers
                 throw new System.ArgumentNullException(nameof(turnActionRequest));
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
+            upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
+            IntEventChannel bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
         }
         
         /// <summary>
@@ -120,11 +125,14 @@ namespace Managers.PlayerControllers
 
             if (pendingActions.ContainsKey(action))
             {
-                Logging.Logger.Debug("PlayerController.RequestTurnAction",
-                    $"Ignored duplicate pending request: {action}",
-                    LogCategory.UI);
+                Logger.Debug(
+                    "PlayerController.RequestTurnAction",
+                    $"Ignored duplicate pending request for action {action}.",
+                    LogCategory.Gameplay,
+                    this);
                 return;
             }
+
 
             pendingActions[action] = new PendingCallbacks
             {
