@@ -26,6 +26,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public UIActionEventChannel uiActionEventChannel;
     [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
+    [SerializeField] public IntEventChannel bankruptcyEventChannel;
 
     public List<PlayerController> playerControllers = new();
     
@@ -41,8 +43,8 @@ public class PlayerManager : MonoBehaviour
         Logger.Info("PlayerManager.InitializePlayers",
             $"Creating {playerConfigs.Count} players.",
             LogCategory.Core);
-        
-        playerControllers.Clear(); // double check that players list is cleared
+
+        UnsubscribeAndClearControllers();
 
         foreach (var playerConfig in playerConfigs)
         {
@@ -63,10 +65,11 @@ public class PlayerManager : MonoBehaviour
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
-                    diceRollRequestChannel,
                     uiActivationEventChannel,
                     uiActionEventChannel,
                     mortgageFinishedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel);
             }
@@ -82,10 +85,13 @@ public class PlayerManager : MonoBehaviour
                     passedGoPaymentChannel,
                     diceRollRequestChannel,
                     actionResolvedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel);
             }
-            
+
+            playerController.Subscribe();
             playerControllers.Add(playerController);
             
             playerAddedEventChannel?.RaiseEvent(player);
@@ -123,5 +129,23 @@ public class PlayerManager : MonoBehaviour
     {
         List<Player> players = playerControllers.Select(c => c.GetControlledPlayer()).ToList();
         return players;
+    }
+
+    /// <summary>
+    /// makes sure all player controllers are cleaned up before resetting them
+    /// </summary>
+    private void UnsubscribeAndClearControllers()
+    {
+        foreach (var controller in playerControllers)
+        {
+            controller?.Unsubscribe();
+        }
+
+        playerControllers.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeAndClearControllers();
     }
 }

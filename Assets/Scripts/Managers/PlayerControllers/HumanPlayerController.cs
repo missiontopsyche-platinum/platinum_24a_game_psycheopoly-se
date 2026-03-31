@@ -12,15 +12,11 @@ namespace Managers.PlayerControllers
     public class HumanPlayerController : PlayerController
     {
         // attributes
-        
+
         // event channels
-        private UIActivationEventChannel uiActivationEventChannel;
-        private UIActionEventChannel uiActionEventChannel;
-        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
-
-
-        // event channel for bankruptcy
-        [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
+        private readonly UIActivationEventChannel uiActivationEventChannel;
+        private readonly UIActionEventChannel uiActionEventChannel;
+        private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
 
         // I need to figure out the architecture for UI events that the human controller will make use of
@@ -46,23 +42,20 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            BooleanEventChannel diceRollRequest,
             UIActivationEventChannel uiActivation,
             UIActionEventChannel uiAction,
             MortgageFinishedEventChannel mortgageFinished,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
             mortgageFinishedEventChannel = mortgageFinished;
-        }
-
-        ~HumanPlayerController()
-        {
-            Unsubscribe();
+            bankruptPlayerEventChannel = bankruptPlayer;
         }
 
         public override void Subscribe()
@@ -109,21 +102,20 @@ namespace Managers.PlayerControllers
                 });
         }
 
-        private void HandleUpgradeEvent(/*TODO: add event data here*/)
+        private void HandleUpgradeEvent(PropertySpaceData property)
         {
+            if (!isMyTurn || property == null) return;
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    uiActivationEventChannel?.RaiseEvent(
-                        new UIActivationEvent(
-                            UIType.PropertyPurchase,
-                            new PurchaseActivationContext(
-                                /*TODO: update input fields below*/
-                                null,
-                                0,
-                                controlledPlayer.CanAfford(0))));
+                    upgradeRequestEventChannel?.RaiseEvent(
+                        new UpgradeRequestEvent(controlledPlayer, property));
+
+                    Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
+                        $"Raised upgrade request for {property.spaceName}.",
+                        LogCategory.UI);
                 },
                 onDenied: () =>
                 {
@@ -147,7 +139,7 @@ namespace Managers.PlayerControllers
                 if (controlledPlayer.IsBankrupt(cofe.amount))
                 {
                     // TODO: Call event channel for UI
-                    controlledPlayer.ClearOwnership();
+                    //controlledPlayer.ClearOwnership();
                     // Need to check with Hank to verify GameManager linkage. But currently no link, therefore we will create a "BankruptPlayer" event channel to fire.
                     // Will return an int, only providing the player ID which SHOULD be the turn order number.
                     // This will need to be listend to by the GameManager to remove the player from the order.
@@ -204,7 +196,10 @@ namespace Managers.PlayerControllers
                             $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
                     break;
-                // expand with more UITypes as they're implemented
+                  case UIType.PropertyUpgradeSelected:
+                     if (uiae.Context is PropertyUpgradeContext upgradeContext)
+                         HandleUpgradeEvent(upgradeContext.property);
+                     break;
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",

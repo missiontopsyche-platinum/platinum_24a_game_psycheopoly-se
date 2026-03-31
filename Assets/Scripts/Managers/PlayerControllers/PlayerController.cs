@@ -1,9 +1,7 @@
 ﻿using Assets.Scripts.Managers.TurnFlow;
-using Events.EventDataStructures;
 using Logging;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Managers.PlayerControllers
 {
@@ -13,9 +11,7 @@ namespace Managers.PlayerControllers
         protected readonly Player controlledPlayer;
         protected bool isMyTurn = false;
 
-        /// <summary>
-        /// Gets the Player ScriptableObject
-        /// </summary>
+        //gets the player scriptable object
         public Player GetControlledPlayer() => controlledPlayer;
         
         // event channels || may need to add more as requirements change. Potentially have all channels in all subclasses.
@@ -24,11 +20,12 @@ namespace Managers.PlayerControllers
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
-        protected BooleanEventChannel diceRollRequestChannel;
         protected CardDrawnEventChannel cardDrawnEventChannel;
         // event channels to validate turn actions against the current turn phase.
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
         protected TurnActionResultEventChannel turnActionResultEventChannel;
+        protected UpgradeRequestEventChannel upgradeRequestEventChannel;
+        protected IntEventChannel bankruptPlayerEventChannel;
 
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
@@ -47,9 +44,10 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest, 
             ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
             PayPlayerEventChannel passedGoPayment,
-            BooleanEventChannel diceRollRequest,
+            UpgradeRequestEventChannel upgradeRequest,
             TurnActionRequestEventChannel turnActionRequest,
-            TurnActionResultEventChannel  turnActionResult)
+            TurnActionResultEventChannel  turnActionResult,
+            IntEventChannel bankruptPlayer)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -63,11 +61,10 @@ namespace Managers.PlayerControllers
                 throw new System.ArgumentNullException(nameof(turnActionRequest));
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
-            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
+            upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
+            IntEventChannel bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
         }
         
-        // general event handling
-
         /// <summary>
         /// Subscribe to basic game event channels. This should be extended in subclasses to capture
         /// the distinct methods and behavior events, by calling <c>base.Subscribe()</c>.
@@ -81,11 +78,14 @@ namespace Managers.PlayerControllers
         /// <summary>
         /// Unsubscribe from all game event channels. This should be extended in subclasses to account for
         /// subclass-specific event channels and called with <c>base.Unsubscribe()</c>.
+        /// clean up if not returned
         /// </summary>
         public virtual void Unsubscribe()
         {
             turnStartedEventChannel?.Unsubscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Unsubscribe(OnTurnActionResult);
+            pendingActions.Clear();
+            isMyTurn = false;
         }
         
         /// <summary>
@@ -125,11 +125,14 @@ namespace Managers.PlayerControllers
 
             if (pendingActions.ContainsKey(action))
             {
-                Logging.Logger.Debug("HumanPlayerController.RequestTurnAction",
-                    $"Ignored duplicate pending request: {action}",
-                    LogCategory.UI);
+                Logger.Debug(
+                    "PlayerController.RequestTurnAction",
+                    $"Ignored duplicate pending request for action {action}.",
+                    LogCategory.Gameplay,
+                    this);
                 return;
             }
+
 
             pendingActions[action] = new PendingCallbacks
             {

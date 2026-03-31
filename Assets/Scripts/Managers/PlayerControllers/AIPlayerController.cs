@@ -21,6 +21,8 @@ namespace Managers.PlayerControllers
         private bool endTurnRequested;
         // event channels ... I don't think this will need special ones
         private ActionResolvedEventChannel actionResolvedEventChannel;
+        private BooleanEventChannel diceRollRequestChannel;
+
         /// <summary>
         /// Creates an AI player controller. This needs to be called in conjunction with <c>.Subscribe()</c>
         /// so that event channels are properly routed.
@@ -41,9 +43,11 @@ namespace Managers.PlayerControllers
             PayPlayerEventChannel passedGoPayment,
             BooleanEventChannel diceRollRequest,
             ActionResolvedEventChannel actionResolved,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -61,6 +65,7 @@ namespace Managers.PlayerControllers
                 controlledPlayer,
                 weights.mortgageThresholds);
             actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
+            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
             // mortgageBehavior
             // jailBehavior etc...
         }
@@ -94,12 +99,12 @@ namespace Managers.PlayerControllers
             endTurnRequested = false;
             
             HandleOptionalActions();
-            
+
             // TODO This might need to run as a coroutine so that we can await the completed movement
             // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
             // to be honest, having an AI Turn coroutine makes a lot of sense- keep it all in the same logical
             // place.
-            
+
             // AI must roll dice or the game stalls at AwaitingRoll.
             RequestTurnAction(
                 TurnActionType.RollDice,
@@ -112,7 +117,7 @@ namespace Managers.PlayerControllers
                             LogCategory.AI);
                         return;
                     }
-                    // This is to prevent AI from stalling the game by not rolling dice.
+
                     diceRollRequestChannel.RaiseEvent(true);
 
                     Logger.Info("AIPlayerController.CatchTurnStartedEvent",
@@ -126,7 +131,7 @@ namespace Managers.PlayerControllers
                         LogCategory.AI);
                 });
             // wait for resolution of the movement phase (land on space, resolve space)
-            
+
             HandleOptionalActions();
             // end turn
         }
@@ -141,19 +146,36 @@ namespace Managers.PlayerControllers
         private void HandleUpgradeAction()
         {
             AIUpgradeEvaluation evaluation;
+
             do
             {
                 evaluation = upgradeBehavior.EvaluateUpgrade();
 
-                if (evaluation.willUpgrade)
-                {
-                    // handle purchase upgrade for property on evaluation.upgradeTarget
-                    // need to figure out the upgrade flow for this more concretely...
-                    
-                    Logger.Info("AIPlayerController.HandleUpgradeAction",
-                        $"Executing upgrade on {evaluation.upgradeTarget.spaceName}",
-                        LogCategory.AI);
-                }
+                if (!evaluation.willUpgrade || evaluation.upgradeTarget == null)
+                    break;
+
+                PropertySpaceData target = evaluation.upgradeTarget;
+
+                RequestTurnAction(
+                    TurnActionType.ModifyProperty,
+                    onAllowed: () =>
+                    {
+                        upgradeRequestEventChannel?.RaiseEvent(
+                            new UpgradeRequestEvent(controlledPlayer, target));
+
+                        Logger.Info("AIPlayerController.HandleUpgradeAction",
+                            $"Raised upgrade request for {target.spaceName}.",
+                            LogCategory.AI);
+                    },
+                    onDenied: () =>
+                    {
+                        Logger.Debug("AIPlayerController.HandleUpgradeAction",
+                            $"Upgrade request denied for {target.spaceName}.",
+                            LogCategory.AI);
+                    });
+
+                break;
+
             } while (evaluation.willUpgrade);
         }
 
@@ -166,7 +188,18 @@ namespace Managers.PlayerControllers
                 switch (mortgageAction.actionType)
                 {
                     case MortgageActionType.Mortgage:
-                        // mortgage the property
+                        if (controlledPlayer.MortgageProperty(mortgageAction.ownableSpace))
+                        {
+                            Logger.Info("AIPlayerController.HandleMortgageAction",
+                                $"AI {controlledPlayer.GetPName()} mortgaged {mortgageAction.ownableSpace.spaceName}.",
+                                LogCategory.AI);
+                        }
+                        else
+                        {
+                            Logger.Warn("AIPlayerController.HandleMortgageAction",
+                                $"AI {controlledPlayer.GetPName()} failed to mortgage {mortgageAction.ownableSpace.spaceName}.",
+                                LogCategory.AI);
+                        }
                         break;
                     case MortgageActionType.SellDataPoint:
                         // sell data point
@@ -211,23 +244,48 @@ namespace Managers.PlayerControllers
         private void HandleChargeOwnershipFee(ChargeOwnershipFeeEvent cofe)
         {
             if (!isMyTurn) return;
-            
-            // handle paying rent
+
+            Player.FinancialStatus status = controlledPlayer.TrySpend(cofe.amount);
+
+            switch (status)
+            {
+                case Player.FinancialStatus.Success:
+                    Logger.Info("AIPlayerController.HandleChargeOwnershipFee",
+                        $"AI {controlledPlayer.GetPName()} paid ownership fee of ${cofe.amount}.",
+                        LogCategory.AI);
+                    break;
+
+                case Player.FinancialStatus.Bankrupt:
+                    Logger.Warn("AIPlayerController.HandleChargeOwnershipFee",
+                        $"AI {controlledPlayer.GetPName()} cannot pay ownership fee and is bankrupt.",
+                        LogCategory.AI);
+
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                    break;
+
+                case Player.FinancialStatus.MortgageRequired:
+                    Logger.Info("AIPlayerController.HandleChargeOwnershipFee",
+                        $"AI {controlledPlayer.GetPName()} needs mortgage handling to cover ownership fee of ${cofe.amount}.",
+                        LogCategory.AI);
+                    HandleMortgageAction();
+                    break;
+            }
+
+            RequestResolutionComplete();
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
             if (!isMyTurn) return;
-            
+
             // handle passing go
+            RequestResolutionComplete();
         }
 
         private void OnActionResolved(ActionResolvedEvent evt)
         {
             if (evt.playerId != controlledPlayer.GetId()) return;
             if (!myTurnActive || endTurnRequested) return;
-
-            endTurnRequested = true;
 
             // TODO: Any post-action logic or decision-making would go here before ending the turn.
 
