@@ -1,4 +1,6 @@
-﻿using Assets.Scripts.Managers.TurnFlow;
+﻿using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
+using Assets.Scripts.Managers.TurnFlow;
 using Logging;
 using System;
 using System.Collections.Generic;
@@ -21,11 +23,12 @@ namespace Managers.PlayerControllers
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
         protected CardDrawnEventChannel cardDrawnEventChannel;
-        // event channels to validate turn actions against the current turn phase.
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
         protected TurnActionResultEventChannel turnActionResultEventChannel;
         protected UpgradeRequestEventChannel upgradeRequestEventChannel;
         protected IntEventChannel bankruptPlayerEventChannel;
+        protected JailStateChangedEventChannel jailStateChangedEventChannel;
+        protected IntEventChannel forcedTurnAdvanceEventChannel;
 
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
@@ -47,7 +50,9 @@ namespace Managers.PlayerControllers
             UpgradeRequestEventChannel upgradeRequest,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel  turnActionResult,
-            IntEventChannel bankruptPlayer)
+            IntEventChannel bankruptPlayer,
+            JailStateChangedEventChannel jailStateChanged,
+            IntEventChannel forcedTurnAdvance)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -62,7 +67,9 @@ namespace Managers.PlayerControllers
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
             upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
-            IntEventChannel bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
+            bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
+            jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
+            forcedTurnAdvanceEventChannel = forcedTurnAdvance ?? throw new System.ArgumentNullException(nameof(forcedTurnAdvance));
         }
         
         /// <summary>
@@ -73,6 +80,7 @@ namespace Managers.PlayerControllers
         {
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
+            jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
         }
 
         /// <summary>
@@ -84,6 +92,7 @@ namespace Managers.PlayerControllers
         {
             turnStartedEventChannel?.Unsubscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Unsubscribe(OnTurnActionResult);
+            jailStateChangedEventChannel?.Unsubscribe(HandleJailStateChanged);
             pendingActions.Clear();
             isMyTurn = false;
         }
@@ -183,6 +192,46 @@ namespace Managers.PlayerControllers
                 TurnActionType.CompleteResolution,
                 onAllowed ?? (() => { }),
                 onDenied);
+        }
+
+        /// <summary>
+        /// Applies jail state changes to the controlled player.
+        /// If this player is actively taking their turn and is sent to jail,
+        /// raise a forced turn advance event instead of directly
+        /// calling TurnFlowCoordinator.
+        /// </summary>
+        protected virtual void HandleJailStateChanged(JailStateChangedEvent jailEvent)
+        {
+            if (jailEvent == null || jailEvent.player == null)
+                return;
+
+            if (jailEvent.player.GetId() != controlledPlayer.GetId())
+                return;
+
+            // jail state change for the controlled player
+            controlledPlayer.SetInJail(jailEvent.inJail);
+            controlledPlayer.SetJailTurns(jailEvent.jailTurns);
+
+            Logger.Info("PlayerController.HandleJailStateChanged",
+                $"Updated jail state for {controlledPlayer.GetPName()}: inJail={jailEvent.inJail}, jailTurns={jailEvent.jailTurns}.",
+                LogCategory.Gameplay,
+                this);
+
+            // Being sent to jail during resolution should end the turn immediately.
+            // This is not a normal player action, so it should not go through TurnActionRequest.
+            if (isMyTurn && jailEvent.inJail)
+            {
+                // Clear pending callbacks because the current turn is being interrupted.
+                pendingActions.Clear();
+
+                forcedTurnAdvanceEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                Logger.Info("PlayerController.HandleJailStateChanged",
+                    $"{controlledPlayer.GetPName()} was sent to jail during their turn. Raised forced turn advance event.",
+                    LogCategory.Gameplay,
+                    this);
+
+                isMyTurn = false;
+            }
         }
     }
 }
