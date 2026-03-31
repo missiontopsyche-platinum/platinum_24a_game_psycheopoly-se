@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using NUnit.Framework.Internal.Filters;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,8 @@ public class StartMenuPrototype : MonoBehaviour
 {
     [SerializeField] private Material tmpMat;
     [SerializeField] private Button startButton;
+    [SerializeField] private Image logo;
+    [SerializeField] private Image configPanel;
 
     [Header("Animation Parameters")] 
     [SerializeField] private float animTime;
@@ -35,11 +38,6 @@ public class StartMenuPrototype : MonoBehaviour
             StartCoroutine(FadeUI(fadeIn: false));
     }
 
-    private void StartGame()
-    {
-        SceneManager.LoadScene(1);
-    }
-
     private IEnumerator FadeUI(bool fadeIn)
     {
         isRunning = true;
@@ -50,6 +48,13 @@ public class StartMenuPrototype : MonoBehaviour
         var buttonTransform = startButton.GetComponent<RectTransform>();
         float buttonStartScale = fadeIn ? 0f : buttonTransform.localScale.x;
         float buttonEndScale = fadeIn ? buttonTransform.localScale.x : 0f;
+
+        var logoColorStart = fadeIn ? Color.clear : logo.color;
+        var logoColorEnd = fadeIn ? logo.color : Color.clear;
+
+        var configPanelTransform = configPanel.rectTransform;
+        var configPanelStart = new Vector2(0, -1000);
+        var configPanelEnd = fadeIn ? new Vector2(0, -1000) : Vector2.zero;
         
         buttonTransform.localScale = buttonStartScale * Vector3.one;
         tmpMat.SetFloat(ShaderUtilities.ID_FaceDilate, dilateStart);
@@ -69,13 +74,20 @@ public class StartMenuPrototype : MonoBehaviour
             
             tmpMat.SetFloat(ShaderUtilities.ID_FaceDilate, Mathf.Lerp(dilateStart, dilateTarget, easedT));
             buttonTransform.localScale = Mathf.Lerp(buttonStartScale, buttonEndScale, easedT) * Vector3.one;
+            logo.color = Color.Lerp(logoColorStart, logoColorEnd, easedT);
+            configPanelTransform.anchoredPosition = Vector2.Lerp(configPanelStart, configPanelEnd, easedT);
 
             yield return new WaitForEndOfFrame();
         }
-    
+
         if (!fadeIn)
-            StartGame();
+            LoadGameConfig();
         
         isRunning = false;
+    }
+
+    private void LoadGameConfig()
+    {
+        
     }
 }
