@@ -57,7 +57,8 @@
 
 
     /// <summary>
-    /// Jail Options UI activation. Contains all info to render a Jail Options UI for a player
+    /// Jail Options UI activation. 
+    /// Contains all info to render a Jail Options UI for a player
     /// </summary>
     public class JailActivationContext : UIActivationContext
     {
