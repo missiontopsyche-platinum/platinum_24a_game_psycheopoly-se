@@ -12,6 +12,7 @@ public class StartMenuPrototype : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private Image logo;
     [SerializeField] private Image configPanel;
+    [SerializeField] private Image screenCover;
 
     [Header("Animation Parameters")] 
     [SerializeField] private float animTime;
@@ -52,6 +53,10 @@ public class StartMenuPrototype : MonoBehaviour
         var logoColorStart = fadeIn ? Color.clear : logo.color;
         var logoColorEnd = fadeIn ? logo.color : Color.clear;
 
+        var screenCoverStart = screenCover.color;
+        var screenCoverEnd = screenCover.color;
+        screenCoverEnd.a = 0f;
+
         var configPanelTransform = configPanel.rectTransform;
         var configPanelStart = new Vector2(0, -1000);
         var configPanelEnd = fadeIn ? new Vector2(0, -1000) : Vector2.zero;
@@ -76,6 +81,8 @@ public class StartMenuPrototype : MonoBehaviour
             buttonTransform.localScale = Mathf.Lerp(buttonStartScale, buttonEndScale, easedT) * Vector3.one;
             logo.color = Color.Lerp(logoColorStart, logoColorEnd, easedT);
             configPanelTransform.anchoredPosition = Vector2.Lerp(configPanelStart, configPanelEnd, easedT);
+
+            if (fadeIn) screenCover.color = Color.Lerp(screenCoverStart, screenCoverEnd, easedT);
 
             yield return new WaitForEndOfFrame();
         }
