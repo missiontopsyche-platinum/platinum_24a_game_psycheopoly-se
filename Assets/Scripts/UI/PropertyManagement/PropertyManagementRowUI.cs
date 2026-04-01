@@ -37,15 +37,29 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void HookButtons()
     {
-        upgradeButton.onClick.RemoveAllListeners();
-        downgradeButton.onClick.RemoveAllListeners();
-        mortgageButton.onClick.RemoveAllListeners();
-        unmortgageButton.onClick.RemoveAllListeners();
+         if (upgradeButton != null)
+        {
+            upgradeButton.onClick.RemoveAllListeners();
+            upgradeButton.onClick.AddListener(OnUpgradeClicked);
+        }
 
-        upgradeButton.onClick.AddListener(OnUpgradeClicked);
-        downgradeButton.onClick.AddListener(OnDowngradeClicked);
-        mortgageButton.onClick.AddListener(OnMortgageClicked);
-        unmortgageButton.onClick.AddListener(OnUnmortgageClicked);
+        if (downgradeButton != null)
+        {
+            downgradeButton.onClick.RemoveAllListeners();
+            downgradeButton.onClick.AddListener(OnDowngradeClicked);
+        }
+
+        if (mortgageButton != null)
+        {
+            mortgageButton.onClick.RemoveAllListeners();
+            mortgageButton.onClick.AddListener(OnMortgageClicked);
+        }
+
+        if (unmortgageButton != null)
+        {
+            unmortgageButton.onClick.RemoveAllListeners();
+            unmortgageButton.onClick.AddListener(OnUnmortgageClicked);
+        }
     }
 
     public void RefreshRow()
