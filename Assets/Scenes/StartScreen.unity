@@ -1969,7 +1969,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55da8085f3538dd4bb7f2b8d4f6890df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerSetupController
-  allPlayerSOs: []
+  allPlayerSOs:
+  - {fileID: 11400000, guid: 718d8b7d06d9a4a4fa5303d8d606bf5f, type: 2}
+  - {fileID: 11400000, guid: ec6bf0a89c806a345963636b2ebe4f9a, type: 2}
+  - {fileID: 11400000, guid: a8e05d8f57cb3ae47895cb9f8500cd28, type: 2}
+  - {fileID: 11400000, guid: 1e050e4796c0e45488fca5a2b8892af9, type: 2}
+  - {fileID: 11400000, guid: dad9aef0ee9d55643936c5b0b6875afd, type: 2}
+  - {fileID: 11400000, guid: a7c2b42486836f142b5246942c6ed5f8, type: 2}
+  - {fileID: 11400000, guid: 27bccdbf67dccde4db3575e93a7c7006, type: 2}
+  - {fileID: 11400000, guid: 95e63808bc89624468ceed3cf7b65d85, type: 2}
+  - {fileID: 11400000, guid: 0dcf3ca35f1f3c448a07fcaddfd44e2d, type: 2}
   allAIBehaviors:
   - {fileID: 11400000, guid: 5c9341306908bd54986ecae4e9777f17, type: 2}
   playerLines:
