@@ -55,4 +55,33 @@
         }
     }
 
+
+    /// <summary>
+    /// Jail Options UI activation. Contains all info to render a Jail Options UI for a player
+    /// </summary>
+    public class JailActivationContext : UIActivationContext
+    {
+        public string PlayerName { get; }
+        public int JailTurns { get; }
+        public int MaxJailTurns { get; }
+        public bool CanAffordFine { get; }
+        public bool HasGetOutOfJailCard { get; }
+        public int FineAmount { get; }
+
+        public JailActivationContext(
+            string playerName,
+            int jailTurns,
+            int maxJailTurns,
+            bool canAffordFine,
+            bool hasGetOutOfJailCard,
+            int fineAmount)
+        {
+            PlayerName = playerName;
+            JailTurns = jailTurns;
+            MaxJailTurns = maxJailTurns;
+            CanAffordFine = canAffordFine;
+            HasGetOutOfJailCard = hasGetOutOfJailCard;
+            FineAmount = fineAmount;
+        }
+    }
 }
