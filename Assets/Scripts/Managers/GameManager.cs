@@ -36,7 +36,10 @@ public class GameManager : MonoBehaviour
         { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
     };
 
-    //us11t41 duplicate prevention with Awake() method
+    // In Project Settings/Script Execution Order, this has been moved below all other
+    // scripts to ensure they have the time to set themselves up on init before we
+    // try to start a game. This solves race conditions we introduced when we
+    // decoupled the GameManager from all other systems.
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -53,15 +56,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        foreach (var config in GameConfiguration.playerConfigs)
-        {
-            Logging.Logger.Info("GameManager.Start",
-                $"Player: {config.playerData.GetPName()}, " + 
-                $"IsHuman: {config.isHuman}, " + 
-                $"Behavior: {config.behaviorWeights?.behaviorName ?? "N/A"}",
-                LogCategory.Core);
-        }
-        
         if (gameState == GameState.None)
             StartGame();
     }
@@ -147,10 +141,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void SetUpGame()
     {
-        playerCount = 4; // temporary until real setup exists
+        // if there are no game configs loaded, do the temp one.
+        // this allows us to start the game from the game screen quickly for testing.
+        if (GameConfiguration.playerConfigs == null) 
+            InitializePlayers_Temporary();
+        else 
+            playerManager.InitializePlayers(GameConfiguration.playerConfigs);
 
-        InitializePlayers_Temporary();
-
+        playerCount = playerManager.GetPlayerCount();
+        
         turnCycleManager = new TurnCycleManager(playerCount);
         InitializeTurnFlowCoordinator();
 
