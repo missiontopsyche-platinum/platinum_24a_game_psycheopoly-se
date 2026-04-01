@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Events.EventDataStructures;
 
 public class PropertyManagementRowUI : MonoBehaviour
 {
@@ -17,14 +18,34 @@ public class PropertyManagementRowUI : MonoBehaviour
     [SerializeField] private Button mortgageButton;
     [SerializeField] private Button unmortgageButton;
 
+    [Header("Event Channels")]
+    [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
+
     private Player player;
     private OwnableSpaceData property;
+    private PropertyManagementUIController parentUI;
 
-    public void Initialize(Player owningPlayer, OwnableSpaceData propertyData)
+    public void Initialize(Player owningPlayer, OwnableSpaceData propertyData, PropertyManagementUIController ui)
     {
         player = owningPlayer;
         property = propertyData;
+        parentUI = ui;
+
+        HookButtons();
         RefreshRow();
+    }
+
+    private void HookButtons()
+    {
+        upgradeButton.onClick.RemoveAllListeners();
+        downgradeButton.onClick.RemoveAllListeners();
+        mortgageButton.onClick.RemoveAllListeners();
+        unmortgageButton.onClick.RemoveAllListeners();
+
+        upgradeButton.onClick.AddListener(OnUpgradeClicked);
+        downgradeButton.onClick.AddListener(OnDowngradeClicked);
+        mortgageButton.onClick.AddListener(OnMortgageClicked);
+        unmortgageButton.onClick.AddListener(OnUnmortgageClicked);
     }
 
     public void RefreshRow()
@@ -56,6 +77,97 @@ public class PropertyManagementRowUI : MonoBehaviour
 
             if (costText != null)
                 costText.text = $"Mortgage: ${property.collaborationValue}";
+        }
+
+        RefreshButtonStates();
+    }
+
+    private void RefreshButtonStates()
+    {
+        if (upgradeButton != null)
+            upgradeButton.interactable = CanUpgrade();
+
+        if (downgradeButton != null)
+            downgradeButton.interactable = CanDowngrade();
+
+        if (mortgageButton != null)
+            mortgageButton.interactable = CanMortgage();
+
+        if (unmortgageButton != null)
+            unmortgageButton.interactable = CanUnmortgage();
+    }
+
+    private bool CanUpgrade()
+    {
+        if (player == null || property is not PropertySpaceData streetProperty)
+            return false;
+
+        return player.GetValidUpgradableProperties().Contains(streetProperty);
+    }
+
+    private bool CanDowngrade()
+    {
+        if (property is not PropertySpaceData streetProperty)
+            return false;
+
+        return streetProperty.CanDowngrade() && !streetProperty.isMortgaged;
+    }
+
+    private bool CanMortgage()
+    {
+        if (player == null || property == null)
+            return false;
+
+        return player.GetMortgageableProperties().Contains(property);
+    }
+
+    private bool CanUnmortgage()
+    {
+        if (player == null || property == null)
+            return false;
+
+        return player.GetMortgagedProperties().Contains(property)
+               && player.CanAfford(property.mortgagePayoffValue);
+    }
+
+    private void OnUpgradeClicked()
+    {
+        if (player == null || property is not PropertySpaceData streetProperty)
+            return;
+
+        upgradeRequestChannel?.RaiseEvent(new UpgradeRequestEvent(player, streetProperty));
+    }
+
+    private void OnDowngradeClicked()
+    {
+        if (property is not PropertySpaceData streetProperty)
+            return;
+
+        if (streetProperty.TryDowngrade())
+        {
+            parentUI?.RefreshUI();
+        }
+    }
+
+    private void OnMortgageClicked()
+    {
+        if (player == null || property == null)
+            return;
+
+        if (player.MortgageProperty(property))
+        {
+            parentUI?.RefreshUI();
+        }
+    }
+
+    private void OnUnmortgageClicked()
+    {
+        if (player == null || property == null)
+            return;
+
+        if (player.UnmortgageProperty(property))
+        {
+            parentUI?.RefreshUI();
         }
     }
 }
