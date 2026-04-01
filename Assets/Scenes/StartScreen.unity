@@ -1220,6 +1220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b771baf3f9c50ac49835602f604f7a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GameConfigMenu
+  playerSetupController: {fileID: 1472976873}
 --- !u!224 &650294656 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4585851583043641707, guid: 1134e4ce16bca6442aaaad86f9ffa9ef, type: 3}
@@ -1690,7 +1691,6 @@ MonoBehaviour:
   startButton: {fileID: 2106174808}
   logo: {fileID: 562522369}
   configPanel: {fileID: 238709478}
-  screenCover: {fileID: 1559538084}
   animTime: 2
   easeCurve:
     serializedVersion: 2
@@ -1998,7 +1998,7 @@ GameObject:
   - component: {fileID: 1559538085}
   - component: {fileID: 1559538084}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: ScreenCover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2432,10 +2432,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1910552050}
+  - component: {fileID: 1910552051}
   - component: {fileID: 1910552049}
   - component: {fileID: 1910552048}
   m_Layer: 5
-  m_Name: ScreenCover
+  m_Name: SceneTransitioner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2507,6 +2508,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1910552051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910552046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f58adb4a5cb40299f6b023a18321bb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::UI.SceneTransitioner
+  screenCover: {fileID: 1559538084}
+  animTime: 3
+  easeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1961596810
 PrefabInstance:
   m_ObjectHideFlags: 0

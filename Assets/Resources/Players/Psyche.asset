@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Psyche
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Player
   p_Name: Psyche
-  color: {r: 0.34901962, g: 0.14901961, b: 0.31764707, a: 1}
+  color: {r: 0.9372549, g: 0.34901962, b: 0.4, a: 1}

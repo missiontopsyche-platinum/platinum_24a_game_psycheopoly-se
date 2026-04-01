@@ -4,6 +4,8 @@ using Data;
 using Logging;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -51,6 +53,15 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        foreach (var config in GameConfiguration.playerConfigs)
+        {
+            Logging.Logger.Info("GameManager.Start",
+                $"Player: {config.playerData.GetPName()}, " + 
+                $"IsHuman: {config.isHuman}, " + 
+                $"Behavior: {config.behaviorWeights?.behaviorName ?? "N/A"}",
+                LogCategory.Core);
+        }
+        
         if (gameState == GameState.None)
             StartGame();
     }

@@ -123,7 +123,7 @@ public class PlayerLine : MonoBehaviour
         return new PlayerConfig(
             currentPlayers[namesDropdown.value], 
             !isAi.isOn,
-            currentWeights[aiBehaviorsDropdown.value]);
+            isAi.isOn ? currentWeights[aiBehaviorsDropdown.value] : null);
     }
 
     public void RefreshOptions(List<Player> available, Player currentSelection)
