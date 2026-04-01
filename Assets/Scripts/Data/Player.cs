@@ -8,25 +8,28 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
 public class Player : ScriptableObject
 {
+    // Configurable Variables
+    [SerializeField] private string p_Name = "Unnamed Player";
+    [SerializeField] private Color color = Color.white;
+    // add player model if we decide to do special models
+    
     //Private variables
     private int id;
-    private string p_Name;
     private int money;
     private int assets = 0;
     private int position = 0; // this is never used anywhere, BoardManager owns positions.
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
-    [SerializeField] private bool inJail;
-    [SerializeField] private int jailTurns;
-    [SerializeField] private int doublesInRow;
-    [SerializeField] private int getOutOfJailFree_Chance;
-    [SerializeField] private int getOutOfJailFree_Community;
+    private bool inJail;
+    private int jailTurns;
+    private int doublesInRow;
+    private int getOutOfJailFree_Chance;
+    private int getOutOfJailFree_Community;
 
     private List<OwnableSpaceData> ownedProperties = new();
     private List<Card> getOutOfJailCards = new();
 
-    private Color color;
 
     public void SetId(int id)
     {

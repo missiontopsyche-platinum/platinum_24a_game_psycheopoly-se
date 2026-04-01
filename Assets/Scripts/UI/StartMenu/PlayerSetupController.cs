@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
@@ -8,6 +9,8 @@ public class PlayerSetupController : MonoBehaviour
     [SerializeField] private List<Player> allPlayerSOs;
     [SerializeField] private List<AIBehaviorWeights> allAIBehaviors;
     [SerializeField] private List<PlayerLine> playerLines;
+
+    private bool isRefreshing;
     
     private void Awake()
     {
@@ -36,18 +39,62 @@ public class PlayerSetupController : MonoBehaviour
 
     private void RefreshAllDropdowns()
     {
-        // collect who is currently selected by each other line
+        if (isRefreshing) return;
+        isRefreshing = true;
+        
+        EnforcePlayerOrder();
+        
+        // suspend event subscriptions while updating the lists
+        foreach (var line in playerLines)
+            line.SuspendSelectionEvents();
+
+        // get everyone a valid selection from the full pool
+        DoRefresh();
+        // recompute exclusivity (no duplicate player selections allowed)
+        DoRefresh();
+        
+        // resume event subscriptions when we're done editing the lists
+        foreach (var line in playerLines)
+            line.ResumeSelectionEvents();
+        
+        isRefreshing = false;
+    }
+
+    private void DoRefresh()
+    {
+        var assignedThisPass = new HashSet<Player>();
+        
         foreach (var line in playerLines)
         {
             if (!line.isActive) continue;
 
             var takenByOthers = playerLines
                 .Where(l => l.isActive && l != line)
-                .Select(so => so != null)
+                .Select(l => l.GetSelectedPlayer())
+                .Where(p => p != null)
                 .ToHashSet();
+            
+            takenByOthers.UnionWith(assignedThisPass);
 
             var available = allPlayerSOs.Where(so => !takenByOthers.Contains(so)).ToList();
-            line.RefreshOptions(available, line.GetSelectedPlayer());
+            var currentSelection = line.GetSelectedPlayer();
+            var resolvedSelection = currentSelection ?? available.FirstOrDefault();
+            
+            line.RefreshOptions(available, resolvedSelection);
+            if (resolvedSelection != null)
+                assignedThisPass.Add(resolvedSelection);
+        }
+    }
+
+    private void EnforcePlayerOrder()
+    {
+        for (int i = 1; i < playerLines.Count; i++)
+        {
+            bool previousIsActive = playerLines[i - 1].isActive;
+            playerLines[i].SetAddButtonInteractable(previousIsActive);
+
+            if (!previousIsActive && playerLines[i].isActive)
+                playerLines[i].DeactivateSilently();
         }
     }
 }

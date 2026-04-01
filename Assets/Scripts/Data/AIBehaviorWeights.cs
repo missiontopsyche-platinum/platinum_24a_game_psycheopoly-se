@@ -1,12 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Data
 {
     [CreateAssetMenu(fileName = "AI Behavior Weights", menuName = "AI/Behavior Weights")]
     public class AIBehaviorWeights : ScriptableObject
     {
-        [SerializeField] public String name = "Standard AI";
+        [SerializeField] public String behaviorName = "Standard AI";
         [SerializeField] public PurchaseWeights purchaseWeights;
         [SerializeField] public PurchaseThresholds purchaseThresholds;
         [SerializeField] public UpgradeWeights upgradeWeights;
