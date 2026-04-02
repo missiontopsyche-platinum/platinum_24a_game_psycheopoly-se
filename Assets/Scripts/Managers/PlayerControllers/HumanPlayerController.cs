@@ -236,6 +236,9 @@ namespace Managers.PlayerControllers
 
         private void HandleDiceRollPannel(bool request)
         {
+            Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
+                       "Dice Roll Pannel Reached.",
+                       LogCategory.UI);
             RequestTurnAction(
                 TurnActionType.RollDice,
                 onAllowed: () =>

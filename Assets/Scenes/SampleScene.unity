@@ -1441,6 +1441,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+--- !u!114 &1020314815 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
+  m_PrefabInstance: {fileID: 1520450728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e73d5229aa3a7429dda88fa656ad99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerManager
 --- !u!1001 &1343799386
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2070,6 +2081,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
+      propertyPath: passedGoPaymentChannel
+      value: 
+      objectReference: {fileID: 11400000, guid: d715c49d04e652c409179a3022544eb1, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2214,6 +2229,10 @@ PrefabInstance:
       propertyPath: diceRollPanel
       value: 
       objectReference: {fileID: 1840355022}
+    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 1020314815}
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: movementStrategy
       value: 

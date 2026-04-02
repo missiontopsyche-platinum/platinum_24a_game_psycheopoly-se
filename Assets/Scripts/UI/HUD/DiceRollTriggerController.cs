@@ -42,7 +42,7 @@ public class DiceRollTriggerController : UIPanelBase
     {
         diceRollPannelChannel?.RaiseEvent(true);
 
-        Logging.Logger.Info("DiceRollTrigger.OnEndTurnClicked",
+        Logging.Logger.Info("DiceRollTrigger.OnDiceRollTriggerClicked",
             "Move button clicked.",
             LogCategory.UI,
             this);
