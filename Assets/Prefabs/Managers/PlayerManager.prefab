@@ -50,10 +50,10 @@ MonoBehaviour:
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   passedGoPaymentChannel: {fileID: 0}
   diceRollRequestChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
-  cardDrawnEventChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
   turnActionRequestEventChannel: {fileID: 0}
   turnActionResultEventChannel: {fileID: 0}
   uiActivationEventChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
   uiActionEventChannel: {fileID: 11400000, guid: 0788bc0a6333f4949ad1dfc7205b6859, type: 2}
   mortgageFinishedEventChannel: {fileID: 0}
   actionResolvedEventChannel: {fileID: 0}
+  diceRollPannelEventChannel: {fileID: 11400000, guid: ccf4e43db6f48b0418bb5de71af95589, type: 2}

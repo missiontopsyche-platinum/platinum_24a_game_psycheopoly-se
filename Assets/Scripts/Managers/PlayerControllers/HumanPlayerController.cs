@@ -234,7 +234,7 @@ namespace Managers.PlayerControllers
             }
         }
 
-        private void HandleDiceRollPannel()
+        private void HandleDiceRollPannel(bool request)
         {
             RequestTurnAction(
                 TurnActionType.RollDice,
@@ -248,6 +248,9 @@ namespace Managers.PlayerControllers
                                 null,
                                 0,
                                 controlledPlayer.CanAfford(0))));
+                    Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
+                       "Dice Roll Pannel Allowed.",
+                       LogCategory.UI);
                 },
                 onDenied: () =>
                 {

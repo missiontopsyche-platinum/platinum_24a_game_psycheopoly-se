@@ -1404,7 +1404,6 @@ MonoBehaviour:
   turnEndedChannel: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
   turnNumberText: {fileID: 8218625245189870487}
   endTurnButton: {fileID: 2927938370797607159}
-  diceRollTriggerButton: {fileID: 0}
 --- !u!1 &7331706114752802826
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,6 +1414,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1961616109564968929}
   - component: {fileID: 8859153510413946970}
+  - component: {fileID: 4250031208353991929}
   m_Layer: 0
   m_Name: DicePanelController
   m_TagString: Untagged
@@ -1455,6 +1455,20 @@ MonoBehaviour:
   dice2RolledText: {fileID: 4303413024077046694}
   diceTotalText: {fileID: 7954374623035833413}
   rollDiceButton: {fileID: 0}
+--- !u!114 &4250031208353991929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7331706114752802826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c5c97ddf53840a4eb33a571cfcee4af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::DiceRollTriggerController
+  diceRollPannelChannel: {fileID: 11400000, guid: ccf4e43db6f48b0418bb5de71af95589, type: 2}
+  diceRollTriggerButton: {fileID: 8074905822206283823}
 --- !u!1 &7809330614241671271
 GameObject:
   m_ObjectHideFlags: 0

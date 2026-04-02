@@ -2,6 +2,9 @@ using System.Collections;
 using Logging;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures;
+using Events.EventDataStructures.UI;
 using Logger = Logging.Logger;
 
 public class DiceRollPanelController : MonoBehaviour
@@ -10,6 +13,7 @@ public class DiceRollPanelController : MonoBehaviour
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
     [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
     [SerializeField] private BooleanEventChannel rollDiceRequestedChannel;
+    [SerializeField] private UIActivationEventChannel uiActivationChannel;
 
     [Header("UI")]
     [SerializeField] private DiceFaceView dieOneView;
@@ -28,6 +32,7 @@ public class DiceRollPanelController : MonoBehaviour
         if (rollButton != null) rollButton.onClick.AddListener(OnRollClicked);
         diceRolledChannel?.Subscribe(OnDiceRolled);
         pieceMoveCompletedChannel?.Subscribe(HideUI);
+        uiActivationChannel?.Subscribe(OnUIActivationEvent);
     }
 
     private void OnDestroy()
@@ -69,5 +74,10 @@ public class DiceRollPanelController : MonoBehaviour
     private void HideUI(bool pieceMoveCompleted)
     {
         gameObject.SetActive(false);
+    }
+
+    private void OnUIActivationEvent(UIActivationEvent uiae)
+    {
+        if (uiae.UIType == UIType.DiceRoll) gameObject.SetActive(true);
     }
 }
