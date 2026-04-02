@@ -11,13 +11,11 @@ public class TurnPanelController : UIPanelBase
     [Header("UI Elements")]
     [SerializeField] public Text turnNumberText;
     [SerializeField] public Button endTurnButton;
-    [SerializeField] public Button diceRollTriggerButton;
 
     private void OnEnable()
     {
         Subscribe(turnStartedChannel, DisplayCurrentTurn);
         endTurnButton?.onClick.AddListener(OnEndTurnClicked);
-        diceRollTriggerButton?.onClick.AddListener(OnDiceRollTriggerClicked);
 
         Logging.Logger.Trace("TurnPanelController.OnEnable",
             "Turn panel is now enabled.",
@@ -66,10 +64,5 @@ public class TurnPanelController : UIPanelBase
                 LogCategory.UI,
                 this);
         }
-    }
-
-    public void OnDiceRollTriggerClicked()
-    {
-
     }
 }
