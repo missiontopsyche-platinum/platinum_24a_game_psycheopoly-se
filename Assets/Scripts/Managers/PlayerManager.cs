@@ -25,6 +25,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public UIActionEventChannel uiActionEventChannel;
     [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    [SerializeField] public BooleanEventChannel diceRollPannelEventChannel;
 
     public List<PlayerController> playerControllers = new();
     
@@ -66,7 +67,8 @@ public class PlayerManager : MonoBehaviour
                     uiActionEventChannel,
                     mortgageFinishedEventChannel,
                     turnActionRequestEventChannel,
-                    turnActionResultEventChannel);
+                    turnActionResultEventChannel,
+                    diceRollPannelEventChannel);
             }
             else
             {

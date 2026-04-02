@@ -17,7 +17,7 @@ namespace Managers.PlayerControllers
         private UIActivationEventChannel uiActivationEventChannel;
         private UIActionEventChannel uiActionEventChannel;
         private MortgageFinishedEventChannel mortgageFinishedEventChannel;
-
+        private BooleanEventChannel diceRollPannelEventChannel;
 
         // event channel for bankruptcy
         [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
@@ -50,13 +50,15 @@ namespace Managers.PlayerControllers
             UIActionEventChannel uiAction,
             MortgageFinishedEventChannel mortgageFinished,
             TurnActionRequestEventChannel turnActionRequest,
-            TurnActionResultEventChannel turnActionResult) 
+            TurnActionResultEventChannel turnActionResult,
+            BooleanEventChannel diceRollPannel) 
             : base(player, turnStarted, purchaseRequest, chargeOwnershipFee, passedGoPayment, diceRollRequest, turnActionRequest, turnActionResult)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
             mortgageFinishedEventChannel = mortgageFinished;
+            diceRollPannelEventChannel = diceRollPannel;
         }
 
         ~HumanPlayerController()
@@ -71,6 +73,7 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Subscribe(HandlePurchaseOwnableEvent);
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
+            diceRollPannelEventChannel?.Subscribe(HandleDiceRollPannel);
         }
 
         public override void Unsubscribe()
@@ -229,6 +232,29 @@ namespace Managers.PlayerControllers
                     $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.name}",
                     LogCategory.Gameplay);
             }
+        }
+
+        private void HandleDiceRollPannel()
+        {
+            RequestTurnAction(
+                TurnActionType.RollDice,
+                onAllowed: () =>
+                {
+                    uiActivationEventChannel?.RaiseEvent(
+                        new UIActivationEvent(
+                            UIType.DiceRoll,
+                            new PurchaseActivationContext(
+                                /*TODO: update input fields below*/
+                                null,
+                                0,
+                                controlledPlayer.CanAfford(0))));
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
+                        "Purchase UI blocked by TurnFlow.",
+                        LogCategory.UI);
+                });
         }
     }
 }
