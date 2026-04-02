@@ -51,8 +51,7 @@ namespace Managers.PlayerControllers
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel  turnActionResult,
             IntEventChannel bankruptPlayer,
-            JailStateChangedEventChannel jailStateChanged,
-            IntEventChannel forcedTurnAdvance)
+            JailStateChangedEventChannel jailStateChanged)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -69,7 +68,6 @@ namespace Managers.PlayerControllers
             upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
             bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
             jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
-            forcedTurnAdvanceEventChannel = forcedTurnAdvance ?? throw new System.ArgumentNullException(nameof(forcedTurnAdvance));
         }
         
         /// <summary>
@@ -208,28 +206,17 @@ namespace Managers.PlayerControllers
             if (jailEvent.player.GetId() != controlledPlayer.GetId())
                 return;
 
-            // jail state change for the controlled player
             controlledPlayer.SetInJail(jailEvent.inJail);
             controlledPlayer.SetJailTurns(jailEvent.jailTurns);
 
-            Logger.Info("PlayerController.HandleJailStateChanged",
+            Logging.Logger.Info("PlayerController.HandleJailStateChanged",
                 $"Updated jail state for {controlledPlayer.GetPName()}: inJail={jailEvent.inJail}, jailTurns={jailEvent.jailTurns}.",
                 LogCategory.Gameplay,
                 this);
 
-            // Being sent to jail during resolution should end the turn immediately.
-            // This is not a normal player action, so it should not go through TurnActionRequest.
             if (isMyTurn && jailEvent.inJail)
             {
-                // Clear pending callbacks because the current turn is being interrupted.
                 pendingActions.Clear();
-
-                forcedTurnAdvanceEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                Logger.Info("PlayerController.HandleJailStateChanged",
-                    $"{controlledPlayer.GetPName()} was sent to jail during their turn. Raised forced turn advance event.",
-                    LogCategory.Gameplay,
-                    this);
-
                 isMyTurn = false;
             }
         }
