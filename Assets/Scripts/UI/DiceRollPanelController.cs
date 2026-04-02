@@ -37,6 +37,7 @@ public class DiceRollPanelController : MonoBehaviour
         pieceMoveCompletedChannel?.Unsubscribe(HideUI);
     }
 
+
     private void OnRollClicked()
     {
         Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);

@@ -18,7 +18,7 @@ namespace Assets.Scripts.Managers.Movement
 
         [Header("Event Channels")]
         // Some channels are commented out as a work around for gamemanager to invoke methods directly.
-        //[SerializeField] private DiceRolledEventChannel diceRolledChannel;
+        [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
         //[SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
@@ -33,7 +33,7 @@ namespace Assets.Scripts.Managers.Movement
 
         private void OnEnable()
         {
-            //diceRolledChannel?.Subscribe(OnDiceRolled);
+            diceRolledChannel?.Subscribe(OnDiceRolled);
             //pieceMoveCompletedEventChannel?.Subscribe(OnPieceMoveCompleted);
             //currentPlayerChannel?.Subscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Subscribe(OnTurnStarted);
@@ -159,9 +159,7 @@ namespace Assets.Scripts.Managers.Movement
                 LogCategory.Gameplay, this);
 
 
-
-            MovePlayerEvent moveEvent = new MovePlayerEvent(currentPlayer.GetId(), total, pathIndices);
-            movePlayerChannel?.RaiseEvent(moveEvent);
+            movePlayerChannel?.RaiseEvent(new MovePlayerEvent(currentPlayer.GetId(), total, pathIndices));
             
             // store to run "OnPassed" on spaces
             lastPath = pathIndices;
