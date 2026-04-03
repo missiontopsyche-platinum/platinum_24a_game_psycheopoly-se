@@ -51,7 +51,7 @@ public class JailOptionsPanelController : MonoBehaviour
 
         if (activationEvent.Context is not JailActivationContext context)
         {
-            Logger.Error("JailOptionsPanelController.OnUIActivationEvent",
+            Logging.Logger.Error("JailOptionsPanelController.OnUIActivationEvent",
                 $"Expected {nameof(JailActivationContext)} but got {activationEvent.Context?.GetType().Name}",
                 LogCategory.UI,
                 this);
