@@ -12,8 +12,8 @@ using UnityEngine.UI;
 /// - roll for escape
 /// - pay fine
 /// - use get out of jail free card
-/// This class is the initial UI-only, pre-wiring. Therefore, the built-out
-/// game logic isn't implemented yet.
+/// This class is UI-only. It displays jail state, raises UI action events,
+/// and does NOT contain the underlying jail game logic.
 /// </summary>
 public class JailOptionsPanelController : MonoBehaviour
 {
@@ -49,15 +49,14 @@ public class JailOptionsPanelController : MonoBehaviour
         if (activationEvent == null || activationEvent.UIType != UIType.JailOptions)
             return;
 
-        if (activationEvent.Context is not JailActivationContext context)
+        JailActivationContext context = activationEvent.Context as JailActivationContext;
+        if (context == null)
         {
             Logging.Logger.Error("JailOptionsPanelController.OnUIActivationEvent",
                 $"Expected {nameof(JailActivationContext)} but got {activationEvent.Context?.GetType().Name}",
                 LogCategory.UI,
                 this);
             return;
-
-
         }
 
         titleText.text = $"{context.PlayerName} is in Jail";
@@ -72,7 +71,6 @@ public class JailOptionsPanelController : MonoBehaviour
                 ? $"Pay ${context.FineAmount}"
                 : $"Cannot Afford ${context.FineAmount}";
 
-
         if (useCardButton != null)
             useCardButton.interactable = context.HasGetOutOfJailCard;
 
@@ -82,7 +80,6 @@ public class JailOptionsPanelController : MonoBehaviour
                 : "No Jail Card";
 
         Show();
-
     }
 
     public void OnRollForEscapeClicked()
