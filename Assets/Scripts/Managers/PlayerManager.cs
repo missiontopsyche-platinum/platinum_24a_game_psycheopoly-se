@@ -131,6 +131,11 @@ public class PlayerManager : MonoBehaviour
         return players;
     }
 
+    public int GetPlayerCount()
+    {
+        return playerControllers.Count;
+    }
+
     /// <summary>
     /// makes sure all player controllers are cleaned up before resetting them
     /// </summary>

@@ -46,14 +46,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerManager
   playerAddedEventChannel: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
   turnStartedEventChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
+  turnEndedEventChannel: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
-  passedGoPaymentChannel: {fileID: 0}
+  passedGoPaymentChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
   diceRollRequestChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
-  cardDrawnEventChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
-  turnActionRequestEventChannel: {fileID: 0}
-  turnActionResultEventChannel: {fileID: 0}
+  turnActionRequestEventChannel: {fileID: 11400000, guid: 6c82dba37cd33b846a8b59b0e2ad8894, type: 2}
+  turnActionResultEventChannel: {fileID: 11400000, guid: 5e3b976d0ae06ec4d995ca9a1d9a37c9, type: 2}
   uiActivationEventChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
   uiActionEventChannel: {fileID: 11400000, guid: 0788bc0a6333f4949ad1dfc7205b6859, type: 2}
-  mortgageFinishedEventChannel: {fileID: 0}
-  actionResolvedEventChannel: {fileID: 0}
+  mortgageFinishedEventChannel: {fileID: 11400000, guid: 8164590295a479b4292147ee96441fb7, type: 2}
+  actionResolvedEventChannel: {fileID: 11400000, guid: 53d4696fc061d4042a2af42aa5bf4ac1, type: 2}
+  upgradeRequestEventChannel: {fileID: 11400000, guid: f79750f692d4f7749ae74188e05b6a5c, type: 2}
+  bankruptcyEventChannel: {fileID: 11400000, guid: 299fb0abce6e2af46b026eb97d51dfa6, type: 2}

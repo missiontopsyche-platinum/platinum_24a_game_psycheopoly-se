@@ -41,6 +41,9 @@ namespace PsycheOpoly.Board
         //Task 88 subscribe and Task 89 unsubscribe 
         private bool subscribed;
 
+        // in Project Settings/Script Execution Order, this is put ahead of all other
+        // default scripts now, to ensure the board loads before anything else, since it is
+        // a massive dependency for everything else in execution order.
         private void Awake()
         {
             EnsureSubscribed();
