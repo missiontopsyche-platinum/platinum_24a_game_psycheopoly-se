@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Managers.TurnOrder;
+﻿using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Managers.TurnOrder;
 using Logging;
 using UnityEngine;
 
@@ -139,7 +140,7 @@ namespace Assets.Scripts.Managers.TurnFlow
                 return;
 
             int playerId = request.player.GetId();
-            bool allowed = IsAllowed(playerId, request.action);
+            bool allowed = IsAllowed(request.action, request.player);
 
             turnActionResultChannel?.RaiseEvent(new TurnActionResult
             {
@@ -181,21 +182,23 @@ namespace Assets.Scripts.Managers.TurnFlow
             OnTurnActionRequested(request);
         }
 
-        private bool IsAllowed(int playerId, TurnActionType action)
+        private bool IsAllowed(TurnActionType action, Player player)
         {
+            if (player.GetId() != ActivePlayer) return false;
 
-            if (playerId != ActivePlayer) return false;
+            if (player != null && player.IsInJail())
+                return action == TurnActionType.EndTurn;
+            
 
             return action switch
             {
                 TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
-                // upgrade at any point in the player's turn
                 TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution
-                                                || (Phase == TurnPhase.Completed && awaitingEndTurn),
+                                              || (Phase == TurnPhase.Completed && awaitingEndTurn),
                 TurnActionType.ModifyProperty => Phase == TurnPhase.AwaitingRoll
-                                                || Phase == TurnPhase.AwaitingMovement
-                                                || Phase == TurnPhase.AwaitingResolution
-                                                || (Phase == TurnPhase.Completed && awaitingEndTurn),
+                                                 || Phase == TurnPhase.AwaitingMovement
+                                                 || Phase == TurnPhase.AwaitingResolution
+                                                 || (Phase == TurnPhase.Completed && awaitingEndTurn),
                 TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution,
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false

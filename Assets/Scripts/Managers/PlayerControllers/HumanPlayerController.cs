@@ -3,7 +3,6 @@ using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
-using UnityEngine;
 using Logger = Logging.Logger;
 
 
@@ -48,8 +47,9 @@ namespace Managers.PlayerControllers
             UpgradeRequestEventChannel upgradeRequest,
             IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
-            TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer)
+            TurnActionResultEventChannel turnActionResult,
+            JailStateChangedEventChannel jailStateChanged) 
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;

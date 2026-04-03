@@ -41,6 +41,11 @@ public class Player : ScriptableObject
         return this.id;
     }
 
+    public bool IsInJail()
+    {
+        return inJail;
+    }
+
     public void SetPName(string name)
     {
         this.p_Name = name;
