@@ -1,4 +1,5 @@
 ﻿using AIBehavior;
+using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
 using Data;
 using Events.EventDataStructures;
@@ -46,8 +47,9 @@ namespace Managers.PlayerControllers
             UpgradeRequestEventChannel upgradeRequest,
             IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
-            TurnActionResultEventChannel turnActionResult) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer)
+            TurnActionResultEventChannel turnActionResult,
+            JailStateChangedEventChannel jailStateChanged) 
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;

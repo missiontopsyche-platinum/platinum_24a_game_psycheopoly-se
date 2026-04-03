@@ -28,7 +28,6 @@ namespace Managers.PlayerControllers
         protected UpgradeRequestEventChannel upgradeRequestEventChannel;
         protected IntEventChannel bankruptPlayerEventChannel;
         protected JailStateChangedEventChannel jailStateChangedEventChannel;
-        protected IntEventChannel forcedTurnAdvanceEventChannel;
 
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.

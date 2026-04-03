@@ -28,6 +28,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
     [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
     [SerializeField] public IntEventChannel bankruptcyEventChannel;
+    [SerializeField] public JailStateChangedEventChannel jailEventChannel;
 
     public List<PlayerController> playerControllers = new();
     
@@ -71,7 +72,8 @@ public class PlayerManager : MonoBehaviour
                     upgradeRequestEventChannel,
                     bankruptcyEventChannel,
                     turnActionRequestEventChannel,
-                    turnActionResultEventChannel);
+                    turnActionResultEventChannel,
+                    jailEventChannel);
             }
             else
             {
@@ -88,7 +90,8 @@ public class PlayerManager : MonoBehaviour
                     upgradeRequestEventChannel,
                     bankruptcyEventChannel,
                     turnActionRequestEventChannel,
-                    turnActionResultEventChannel);
+                    turnActionResultEventChannel,
+                    jailEventChannel);
             }
 
             playerController.Subscribe();
