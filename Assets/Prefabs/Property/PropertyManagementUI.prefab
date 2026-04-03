@@ -519,6 +519,7 @@ MonoBehaviour:
   playerNameText: {fileID: 81730547254878208}
   contentParent: {fileID: 7462593411413386362}
   rowPrefab: {fileID: 1884419600467953880, guid: 6f640b70c5febe548a95f87a12466727, type: 3}
+  upgradeResultChannel: {fileID: 11400000, guid: f1165c3b5efa4ab449cf21205c262f95, type: 2}
 --- !u!1 &5115482769845563471
 GameObject:
   m_ObjectHideFlags: 0

@@ -154,11 +154,12 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void OnDowngradeClicked()
     {
-        if (property is not PropertySpaceData streetProperty)
+         if (property is not PropertySpaceData streetProperty)
             return;
 
-        if (streetProperty.TryDowngrade())
+        if (streetProperty.GetCurrentUpgradeLevel() > 0)
         {
+            streetProperty.SetUpgradeLevel(streetProperty.GetCurrentUpgradeLevel() - 1);
             parentUI?.RefreshUI();
         }
     }
@@ -168,7 +169,8 @@ public class PropertyManagementRowUI : MonoBehaviour
         if (player == null || property == null)
             return;
 
-        if (player.MortgageProperty(property))
+        bool success = player.MortgageProperty(property);
+        if (success)
         {
             parentUI?.RefreshUI();
         }
@@ -179,7 +181,8 @@ public class PropertyManagementRowUI : MonoBehaviour
         if (player == null || property == null)
             return;
 
-        if (player.UnmortgageProperty(property))
+        bool success = player.UnmortgageProperty(property);
+        if (success)
         {
             parentUI?.RefreshUI();
         }
