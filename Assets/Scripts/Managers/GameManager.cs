@@ -19,8 +19,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Manager References")]
     [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private TurnFlowCoordinator turnFlowCoordinator;
     private TurnCycleManager turnCycleManager;
-    private TurnFlowCoordinator turnFlowCoordinator;
 
 
     private int playerCount = 0;
@@ -215,7 +215,7 @@ public class GameManager : MonoBehaviour
         if (turnFlowCoordinator == null)
             turnFlowCoordinator = gameObject.AddComponent<TurnFlowCoordinator>();
 
-        // turnFlowCoordinator.Initialize(turnCycleManager); TODO: uncomment when merging with US868
+        turnFlowCoordinator.Initialize(turnCycleManager, playerManager.GetAllPlayers());
 
         Logging.Logger.Info("GameManager.InitializeTurnFlowCoordinator",
             "TurnFlowCoordinator initialized by GameManager.",
@@ -251,6 +251,6 @@ public class GameManager : MonoBehaviour
             LogCategory.Core,
             this);
 
-        // turnFlowCoordinator.StartGame();  TODO: uncomment when merging with US868
+        turnFlowCoordinator.StartGame();
     }
 }
