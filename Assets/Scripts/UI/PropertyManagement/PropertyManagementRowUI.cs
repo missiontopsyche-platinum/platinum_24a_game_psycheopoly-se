@@ -1,7 +1,8 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Events.EventDataStructures;
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures.UI;
 
 public class PropertyManagementRowUI : MonoBehaviour
 {
@@ -19,17 +20,15 @@ public class PropertyManagementRowUI : MonoBehaviour
     [SerializeField] private Button unmortgageButton;
 
     [Header("Event Channels")]
-    [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
+    [SerializeField] private UIActionEventChannel uiActionEventChannel;
 
     private Player player;
     private OwnableSpaceData property;
-    private PropertyManagementUIController parentUI;
 
-    public void Initialize(Player owningPlayer, OwnableSpaceData propertyData, PropertyManagementUIController ui)
+    public void Initialize(Player owningPlayer, OwnableSpaceData propertyData)
     {
         player = owningPlayer;
         property = propertyData;
-        parentUI = ui;
 
         HookButtons();
         RefreshRow();
@@ -37,7 +36,7 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void HookButtons()
     {
-         if (upgradeButton != null)
+        if (upgradeButton != null)
         {
             upgradeButton.onClick.RemoveAllListeners();
             upgradeButton.onClick.AddListener(OnUpgradeClicked);
@@ -67,30 +66,19 @@ public class PropertyManagementRowUI : MonoBehaviour
         if (property == null)
             return;
 
-        if (propertyNameText != null)
-            propertyNameText.text = property.Name;
-
-        if (typeText != null)
-            typeText.text = property.Type.ToString();
-
-        if (mortgageStateText != null)
-            mortgageStateText.text = property.isMortgaged ? "Mortgaged" : "Active";
+        propertyNameText.text = property.Name;
+        typeText.text = property.Type.ToString();
+        mortgageStateText.text = property.isMortgaged ? "Mortgaged" : "Active";
 
         if (property is PropertySpaceData streetProperty)
         {
-            if (upgradeStateText != null)
-                upgradeStateText.text = $"Upgrade Level: {streetProperty.GetCurrentUpgradeLevel()}";
-
-            if (costText != null)
-                costText.text = $"Upgrade: ${streetProperty.GetNextUpgradeCost()}   Mortgage: ${property.collaborationValue}";
+            upgradeStateText.text = $"Upgrade Level: {streetProperty.GetCurrentUpgradeLevel()}";
+            costText.text = $"Upgrade: ${streetProperty.GetNextUpgradeCost()}   Mortgage: ${property.collaborationValue}";
         }
         else
         {
-            if (upgradeStateText != null)
-                upgradeStateText.text = "Upgrade Level: N/A";
-
-            if (costText != null)
-                costText.text = $"Mortgage: ${property.collaborationValue}";
+            upgradeStateText.text = "Upgrade Level: N/A";
+            costText.text = $"Mortgage: ${property.collaborationValue}";
         }
 
         RefreshButtonStates();
@@ -146,45 +134,41 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void OnUpgradeClicked()
     {
-        if (player == null || property is not PropertySpaceData streetProperty)
-            return;
+        if (property is not PropertySpaceData streetProperty) return;
 
-        upgradeRequestChannel?.RaiseEvent(new UpgradeRequestEvent(player, streetProperty));
+        uiActionEventChannel?.RaiseEvent(
+            new UIActionEvent(
+                UIType.PropertyUpgradeSelected,
+                new PropertyUpgradeContext(streetProperty)));
     }
 
     private void OnDowngradeClicked()
     {
-         if (property is not PropertySpaceData streetProperty)
-            return;
+        if (property is not PropertySpaceData streetProperty) return;
 
-        if (streetProperty.GetCurrentUpgradeLevel() > 0)
-        {
-            streetProperty.SetUpgradeLevel(streetProperty.GetCurrentUpgradeLevel() - 1);
-            parentUI?.RefreshUI();
-        }
+        uiActionEventChannel?.RaiseEvent(
+            new UIActionEvent(
+                UIType.PropertyManagement,
+                new PropertyDowngradeContext(streetProperty)));
     }
 
     private void OnMortgageClicked()
     {
-        if (player == null || property == null)
-            return;
+        if (property == null) return;
 
-        bool success = player.MortgageProperty(property);
-        if (success)
-        {
-            parentUI?.RefreshUI();
-        }
+        uiActionEventChannel?.RaiseEvent(
+            new UIActionEvent(
+                UIType.MortgagePropertySelected,
+                new MortgagePropertyContext(player, property)));
     }
 
     private void OnUnmortgageClicked()
     {
-        if (player == null || property == null)
-            return;
+        if (property == null) return;
 
-        bool success = player.UnmortgageProperty(property);
-        if (success)
-        {
-            parentUI?.RefreshUI();
-        }
+        uiActionEventChannel?.RaiseEvent(
+            new UIActionEvent(
+                UIType.PropertyManagement,
+                new UnmortgagePropertyContext(property)));
     }
 }

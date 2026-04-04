@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
-using Events.EventDataStructures;
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures.UI;
 
 public class PropertyManagementUIController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class PropertyManagementUIController : MonoBehaviour
     [SerializeField] private PropertyManagementRowUI rowPrefab;
 
     [Header("Event Channels")]
-    [SerializeField] private UpgradeResultEventChannel upgradeResultChannel;
+    [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
 
     private Player currentPlayer;
 
@@ -23,26 +24,29 @@ public class PropertyManagementUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (upgradeResultChannel != null)
-            upgradeResultChannel.Subscribe(OnUpgradeResult);
+        uiActivationEventChannel?.Subscribe(OnUIActivationEvent);
     }
 
     private void OnDisable()
     {
-        if (upgradeResultChannel != null)
-            upgradeResultChannel.Unsubscribe(OnUpgradeResult);
+        uiActivationEventChannel?.Unsubscribe(OnUIActivationEvent);
     }
 
-    public void Initialize(Player player)
+    private void OnUIActivationEvent(UIActivationEvent uiae)
     {
-        currentPlayer = player;
-        RefreshUI();
+        if (uiae.UIType != UIType.PropertyManagement) return;
+
+        if (uiae.Context is PropertyManagementActivationContext context)
+        {
+            currentPlayer = context.Player;
+            RefreshUI();
+            Show();
+        }
     }
 
-    public void Show(Player player)
+    private void Show()
     {
         gameObject.SetActive(true);
-        Initialize(player);
     }
 
     public void Hide()
@@ -66,7 +70,7 @@ public class PropertyManagementUIController : MonoBehaviour
         foreach (OwnableSpaceData property in currentPlayer.GetOwnedProperties())
         {
             PropertyManagementRowUI rowInstance = Instantiate(rowPrefab, contentParent);
-            rowInstance.Initialize(currentPlayer, property, this);
+            rowInstance.Initialize(currentPlayer, property);
         }
     }
 
@@ -79,13 +83,5 @@ public class PropertyManagementUIController : MonoBehaviour
         {
             Destroy(contentParent.GetChild(i).gameObject);
         }
-    }
-
-    private void OnUpgradeResult(UpgradeResultEvent result)
-    {
-        if (currentPlayer == null)
-            return;
-
-        RefreshUI();
     }
 }

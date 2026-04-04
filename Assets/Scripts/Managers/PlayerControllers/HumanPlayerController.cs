@@ -112,6 +112,8 @@ namespace Managers.PlayerControllers
                 {
                     upgradeRequestEventChannel?.RaiseEvent(
                         new UpgradeRequestEvent(controlledPlayer, property));
+                    
+                    RefreshPropertyManagementUI();
 
                     Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
                         $"Raised upgrade request for {property.spaceName}.",
@@ -170,6 +172,7 @@ namespace Managers.PlayerControllers
                     context.tile));
             }
 
+            RefreshPropertyManagementUI();
             RequestResolutionComplete();
         }
 
@@ -196,10 +199,20 @@ namespace Managers.PlayerControllers
                             $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
                     break;
-                  case UIType.PropertyUpgradeSelected:
+                case UIType.PropertyUpgradeSelected:
                      if (uiae.Context is PropertyUpgradeContext upgradeContext)
                          HandleUpgradeEvent(upgradeContext.property);
                      break;
+                case UIType.PropertyManagement:
+                    if (uiae.Context is PropertyDowngradeContext downgradeContext)
+                        ResolvePropertyDowngrade(downgradeContext);
+                    else if (uiae.Context is UnmortgagePropertyContext unmortgageContext)
+                        ResolveUnmortgageProperty(unmortgageContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected PropertyManagement action context but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
+                    break;    
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",
@@ -256,6 +269,44 @@ namespace Managers.PlayerControllers
                         "End turn denied by TurnFlowCoordinator.",
                         LogCategory.Gameplay);
                 });
+        }
+
+        private void RefreshPropertyManagementUI()
+        {
+            uiActivationEventChannel?.RaiseEvent(
+                new UIActivationEvent(
+                    UIType.PropertyManagement,
+                    new PropertyManagementActivationContext(controlledPlayer)));
+        }
+
+        private void ResolveUnmortgageProperty(UnmortgagePropertyContext context)
+        {
+            if (!isMyTurn || context == null || context.Tile == null) return;
+
+            controlledPlayer.UnmortgageProperty(context.Tile);
+            RefreshPropertyManagementUI();
+            RequestResolutionComplete();
+        }
+
+        private void ResolvePropertyDowngrade(PropertyDowngradeContext context)
+        {
+            if (!isMyTurn || context == null || context.Property == null) return;
+
+            PropertySpaceData property = context.Property;
+            int currentLevel = property.GetCurrentUpgradeLevel();
+
+            if (currentLevel <= 0)
+            {
+                RequestResolutionComplete();
+                return;
+            }
+
+            int refund = property.GetUpgradeCostForLevel(currentLevel) / 2;
+            property.SetUpgradeLevel(currentLevel - 1);
+            controlledPlayer.AddMoney(refund);
+
+            RefreshPropertyManagementUI();
+            RequestResolutionComplete();
         }
     }
 }
