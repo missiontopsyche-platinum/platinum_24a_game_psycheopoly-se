@@ -65,7 +65,7 @@ namespace Managers.PlayerControllers
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
             upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
-            bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
+            bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentNullException(nameof(bankruptPlayer));
             jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
         }
         

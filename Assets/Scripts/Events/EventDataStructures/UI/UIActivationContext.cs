@@ -48,10 +48,21 @@
     public class PropertyManagementActivationContext : UIActivationContext
     {
         public Player Player { get; }
+        public bool IsDebtResolutionMode { get; }
+        public int DebtAmount { get; }
 
         public PropertyManagementActivationContext(Player player)
         {
             Player = player;
+            IsDebtResolutionMode = false;
+            DebtAmount = 0;
+        }
+
+        public PropertyManagementActivationContext(Player player, bool isDebtResolutionMode, int debtAmount)
+        {
+            Player = player;
+            IsDebtResolutionMode = isDebtResolutionMode;
+            DebtAmount = debtAmount;
         }
     }
 
