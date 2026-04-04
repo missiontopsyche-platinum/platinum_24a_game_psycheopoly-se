@@ -18,7 +18,10 @@ public class DiceRollPanelController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private DiceFaceView dieOneView;
     [SerializeField] private DiceFaceView dieTwoView;
-    [SerializeField] private Text totalText;          
+    [SerializeField] private Text totalText;
+
+    [Header("Dice")]
+    [SerializeField] private DiceManager diceManager;
 
     [Header("Optional")]
     [SerializeField] private Button rollButton;      
@@ -27,12 +30,13 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void Awake()
     {
-        if (hideUntilFirstRoll) gameObject.SetActive(false);
         if (totalText != null) totalText.text = "Total: -";
         if (rollButton != null) rollButton.onClick.AddListener(OnRollClicked);
         diceRolledChannel?.Subscribe(OnDiceRolled);
         pieceMoveCompletedChannel?.Subscribe(HideUI);
         uiActivationChannel?.Subscribe(OnUIActivationEvent);
+        if (hideUntilFirstRoll) gameObject.SetActive(false);
+        
     }
 
     private void OnDestroy()
@@ -46,8 +50,8 @@ public class DiceRollPanelController : MonoBehaviour
     private void OnRollClicked()
     {
         Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);
-        try { rollDiceRequestedChannel.RaiseEvent(true); }
-        catch (MissingComponentException ex) { Debug.LogWarning(ex.Message, this); }
+        diceManager.RollDice();
+           
     }
 
     private void OnDiceRolled(DiceRolledEvent e)
@@ -78,6 +82,11 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
     {
-        if (uiae.UIType == UIType.DiceRoll) gameObject.SetActive(true);
+        Logger.Debug("DiceRollPanelController.OnUIActivationEvent",
+                      "Dice Roll Pannel Launching.",
+                      LogCategory.UI);
+
+        //if (uiae.UIType == UIType.DiceRoll)
+        gameObject.SetActive(true);
     }
 }

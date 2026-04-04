@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
 {
     [Header("Used Event Channels")]
     [SerializeField] public PlayerEventChannel playerAddedEventChannel;
-    
+
     [Header("PlayerController Event Channels")]
     [SerializeField] public TurnStartedEventChannel turnStartedEventChannel;
     [SerializeField] public BooleanEventChannel turnEndedEventChannel;

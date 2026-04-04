@@ -272,11 +272,12 @@ MonoBehaviour:
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
   pieceMoveCompletedChannel: {fileID: 0}
   rollDiceRequestedChannel: {fileID: 0}
+  uiActivationChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
   dieOneView: {fileID: 1939517040586240033}
   dieTwoView: {fileID: 2704001889494415945}
   totalText: {fileID: 0}
   rollButton: {fileID: 4253784929494234719}
-  hideUntilFirstRoll: 0
+  hideUntilFirstRoll: 1
   timeUntilDisableAfterRoll: 2
 --- !u!1 &3699817812424752990
 GameObject:

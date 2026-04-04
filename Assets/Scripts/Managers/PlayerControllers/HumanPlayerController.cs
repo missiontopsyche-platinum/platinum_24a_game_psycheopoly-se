@@ -81,7 +81,6 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Subscribe(HandlePurchaseOwnableEvent);
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
-            diceRollPannelEventChannel?.Subscribe(HandleDiceRollPannel);
             turnEndedEventChannel?.Subscribe(OnTurnEnded);
         }
 
@@ -213,10 +212,13 @@ namespace Managers.PlayerControllers
                             $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
                     break;
-                  case UIType.PropertyUpgradeSelected:
+                case UIType.PropertyUpgradeSelected:
                      if (uiae.Context is PropertyUpgradeContext upgradeContext)
                          HandleUpgradeEvent(upgradeContext.property);
                      break;
+                case UIType.DiceRoll:
+                      HandleDiceRollPannel();
+                      break;
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",
@@ -275,8 +277,10 @@ namespace Managers.PlayerControllers
                 });
         }
 
-        private void HandleDiceRollPannel(bool request)
+        private void HandleDiceRollPannel()
         {
+            if (!isMyTurn) return;
+
             Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
                        "Dice Roll Pannel Reached.",
                        LogCategory.UI);
@@ -292,14 +296,14 @@ namespace Managers.PlayerControllers
                                 null,
                                 0,
                                 controlledPlayer.CanAfford(0))));
-                    Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
+                    Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
                        "Dice Roll Pannel Allowed.",
                        LogCategory.UI);
                 },
                 onDenied: () =>
                 {
-                    Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
-                        "Purchase UI blocked by TurnFlow.",
+                    Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
+                        " Dice Roll Pannel UI blocked by TurnFlow.",
                         LogCategory.UI);
                 });
         }

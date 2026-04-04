@@ -1,11 +1,13 @@
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures.UI;
+using Logging;
 using UnityEngine;
 using UnityEngine.UI;
-using Logging;
 
 public class DiceRollTriggerController : UIPanelBase
 {
     [Header("Event Channels")]
-    [SerializeField] public BooleanEventChannel diceRollPannelChannel;
+    [SerializeField] UIActionEventChannel uiActionEventChannel;
 
 
     [Header("UI Elements")]
@@ -40,7 +42,7 @@ public class DiceRollTriggerController : UIPanelBase
 
     public void OnDiceRollTriggerClicked()
     {
-        diceRollPannelChannel?.RaiseEvent(true);
+        uiActionEventChannel?.RaiseEvent(new UIActionEvent(UIType.DiceRoll, null));
 
         Logging.Logger.Info("DiceRollTrigger.OnDiceRollTriggerClicked",
             "Move button clicked.",

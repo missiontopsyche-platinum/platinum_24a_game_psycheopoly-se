@@ -469,7 +469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6864830721298275113, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7543321947910008633, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: 'faceSprites.Array.data[0]'
