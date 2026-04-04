@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
+using UnityEngine;
 using PsycheOpoly.Board;
 using Logging;
 using Logger = Logging.Logger;
@@ -20,9 +22,10 @@ namespace Assets.Scripts.Managers.Movement
 
         [Header("Event Channels")]
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
-        [SerializeField] private IntEventChannel goToJailChannel;
+        [SerializeField] private JailStateChangedEventChannel goToJailChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
+        [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
 
         private int doublesCount = 0;
         private Player currentPlayer;
@@ -31,43 +34,17 @@ namespace Assets.Scripts.Managers.Movement
 
         private void OnEnable()
         {
-            //diceRolledChannel?.Subscribe(OnDiceRolled);
-            //pieceMoveCompletedEventChannel?.Subscribe(OnPieceMoveCompleted);
-            //currentPlayerChannel?.Subscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Subscribe(OnTurnStarted);
+            pieceMoveCompletedEventChannel?.Subscribe(ResolveCompletedMovement);
         }
 
 
         private void OnDisable()
         {
-            //diceRolledChannel?.Unsubscribe(OnDiceRolled);
-            //pieceMoveCompletedEventChannel?.Unsubscribe(OnPieceMoveCompleted);
-            //currentPlayerChannel?.Unsubscribe(SetCurrentPlayer);
             turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
-
+            pieceMoveCompletedEventChannel?.Unsubscribe(ResolveCompletedMovement);
         }
 
-        void Start()
-        {
-            if (boardManager == null)
-            {
-                boardManager = FindAnyObjectByType<BoardManager>();
-                if (boardManager == null)
-                    Logger.Error(
-                        "StandardMovementStrategy.Start",
-                        "Board Manager component not found in scene!",
-                        LogCategory.Core, this);
-            }
-        }
-
-        /// <summary>
-        /// sets/updates current active player (injected via GameManager or TurnSystem).
-        /// </summary>
-        private void SetCurrentPlayer(Player p)
-        {
-            currentPlayer = p;
-            normalMoveCompletedThisTurn = false;
-        }
         private bool movementInProgress = false;
 
         private void Awake()
@@ -141,7 +118,7 @@ namespace Assets.Scripts.Managers.Movement
                 doublesCount = 0;
         }
 
-        //executes current players movement using the DiceRolledEvent as payload object containing die values
+        // called by dice manager, begins movement
         public void ExecuteRollMovement(DiceRolledEvent diceRoll)
         {
             if (currentPlayer == null)
@@ -149,7 +126,6 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Warn("StandardMovementStrategy.ExecuteRollMovement", "No active player set for movement.",
                     LogCategory.Gameplay, this);
                 return;
-
             }
 
             if (boardManager == null)
@@ -165,8 +141,6 @@ namespace Assets.Scripts.Managers.Movement
                     $"Movement already in progress for player {currentPlayer.GetId()}.",
                     LogCategory.Gameplay, this);
                 return;
-
-
             }
 
             int die1 = diceRoll.dieOne;
@@ -191,7 +165,7 @@ namespace Assets.Scripts.Managers.Movement
                 lastPath = null;
 
                 if (goToJailChannel != null)
-                    goToJailChannel.RaiseEvent(currentPlayer.GetId());
+                    goToJailChannel.RaiseEvent(new JailStateChangedEvent(currentPlayer, true, 0));
                 else
                     boardManager.SetPlayerPosition(currentPlayer.GetId(), 10);
 
@@ -214,36 +188,9 @@ namespace Assets.Scripts.Managers.Movement
             // store to run "OnPassed" on spaces
             lastPath = pathIndices;
         }
-        /* Commenting this out until I can confirm if it's necessary. THe current code does  not seem to match what the name is
-        public void OnPieceMoveCompleted(bool success)
-        {
-            if (!success || currentPlayer == null || normalMoveCompletedThisTurn)
-                return;
-
-
-
-            int playerId = currentPlayer.GetId();
-            int startIndex = boardManager.GetPlayerPosition(playerId);
-            int endIndex = NormalizeIndex(startIndex + total, boardManager.boardSize);
-            int[] pathIndices = BuildPathIndices(startIndex, total, boardManager.boardSize);
-
-            Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
-                $"Player {playerId} rolled {die1}+{die2}={total} moving from {startIndex} to {endIndex}.",
-                LogCategory.Gameplay, this);
-
-            lastPath = pathIndices;
-            movementInProgress = true;
-
-            normalMoveCompletedThisTurn = false;
-
-            MovePlayerEvent moveEvent = new MovePlayerEvent(playerId, total, pathIndices);
-            movePlayerChannel?.RaiseEvent(moveEvent);
-
-
-        }
-        */
 
         //resolves passed spaces and landed spaces, caller will invoke after movement completion signals
+        // called by PieceMoveCompleted event fired by Piece at the end of the movement animation
         public void ResolveCompletedMovement(bool movementSucceeded)
         {
             if (!movementSucceeded)
@@ -289,8 +236,7 @@ namespace Assets.Scripts.Managers.Movement
                 $"Player {playerId} landed on {landed?.GetType().Name ?? "Unknown"} at index {currentPos}.",
                 LogCategory.Gameplay,this);
 
-
-
+            
             landed?.OnLanded(currentPlayer);
 
             if (doublesCount > 0)
@@ -309,13 +255,6 @@ namespace Assets.Scripts.Managers.Movement
             movementInProgress = false;
             normalMoveCompletedThisTurn = true;
             spaceResolutionCompletedChannel?.RaiseEvent(true);
-        }
-
-
-        // returns true for when doubles are rolled and the player has an extra roll
-        public bool HasExtraRollAvailable()
-        {
-            return currentPlayer != null && doublesCount > 0 && !movementInProgress;
         }
 
         private static int NormalizeIndex(int raw, int boardSize)

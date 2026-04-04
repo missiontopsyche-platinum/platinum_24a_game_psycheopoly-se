@@ -49,6 +49,7 @@ MonoBehaviour:
   spaceRendererPrefab: {fileID: 7095298248733592577, guid: 3275f65fddc4e5d4194385c6207010fa, type: 3}
   playerPiecePrefab: {fileID: 8622359238066017498, guid: 691ac768d46d63c48b8b2d5d1cd312f5, type: 3}
   playerAddedChannel: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
+  mortgageFinishedEventChannel: {fileID: 11400000, guid: 8164590295a479b4292147ee96441fb7, type: 2}
   playerMovedEventChannel: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
   spaceRenderers: []
   playerPieces: []
@@ -70,4 +71,6 @@ MonoBehaviour:
   playerMovedChannel: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
   movePlayerChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
   passedGoChannel: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
+  moveToSpaceEventChannel: {fileID: 11400000, guid: 7a9765d84a0a54b409423e8a0415aac9, type: 2}
+  jailStateChangedEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
   boardSpaceContainer: {fileID: 11400000, guid: 78b71da7dd411464c969f493a6d71e84, type: 2}

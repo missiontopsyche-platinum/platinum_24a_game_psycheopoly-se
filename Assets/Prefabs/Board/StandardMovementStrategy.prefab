@@ -45,6 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Assets.Scripts.Managers.Movement.StandardMovementStrategy
   boardManager: {fileID: 0}
-  currentPlayerChannel: {fileID: 0}
-  movePlayerChannel: {fileID: 0}
-  goToJailChannel: {fileID: 0}
+  playerManager: {fileID: 0}
+  movePlayerChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
+  goToJailChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
+  spaceResolutionCompletedChannel: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
+  turnStartedEventChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
+  pieceMoveCompletedEventChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}

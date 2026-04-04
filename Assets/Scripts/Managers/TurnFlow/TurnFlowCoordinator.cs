@@ -2,6 +2,7 @@
 using Assets.Scripts.Managers.TurnOrder;
 using Logging;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
@@ -12,16 +13,14 @@ namespace Assets.Scripts.Managers.TurnFlow
     /// </summary>
     public class TurnFlowCoordinator : MonoBehaviour
     {
-        [Header("Event Channels In")]
-        [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
+        [FormerlySerializedAs("turnStartedInChannel")]
+        [Header("Event Channel")]
+        [SerializeField] private TurnStartedEventChannel turnStartedChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
-        [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
+        [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
         [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
-
-        [Header("Event Channels Out")]
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
-        [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
 
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
@@ -56,22 +55,22 @@ namespace Assets.Scripts.Managers.TurnFlow
             }
 
             int startingPlayer = turnCycleManager.CurrentPlayerIndex;
-            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
+            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
         }
 
         private void OnEnable()
         {
-            turnStartedInChannel?.Subscribe(OnTurnStarted);
+            turnStartedChannel?.Subscribe(OnTurnStarted);
             diceRolledChannel?.Subscribe(OnDiceRolled);
-            pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
+            spaceResolutionCompletedChannel?.Subscribe(OnPieceMoveCompleted);
             turnActionRequestChannel?.Subscribe(OnTurnActionRequested);
         }
 
         private void OnDisable()
         {
-            turnStartedInChannel?.Unsubscribe(OnTurnStarted);
+            turnStartedChannel?.Unsubscribe(OnTurnStarted);
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
-            pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
+            spaceResolutionCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
             turnActionRequestChannel?.Unsubscribe(OnTurnActionRequested);
         }
 
@@ -131,7 +130,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             Phase = TurnPhase.Completed;
 
             int nextPlayer = turnCycleManager.Advance();
-            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
         }
 
         private void OnTurnActionRequested(TurnActionRequest request)

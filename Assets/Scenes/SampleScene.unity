@@ -1467,23 +1467,7 @@ PrefabInstance:
     - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
       propertyPath: playerManager
       value: 
-      objectReference: {fileID: 1520450729}
-    - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
-      propertyPath: goToJailChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 1ffd839d51a8772428ccd8ac76dfcb46, type: 2}
-    - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
-      propertyPath: movePlayerChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
-    - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
-      propertyPath: turnStartedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
-    - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
-      propertyPath: spaceResolutionCompletedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 7251822855252539597, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
       propertyPath: m_LocalPosition.x
       value: 809.77747
@@ -2085,26 +2069,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerManager
       objectReference: {fileID: 0}
-    - target: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-      propertyPath: passedGoPaymentChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: d715c49d04e652c409179a3022544eb1, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e036248c894f592408efc54ff9fff360, type: 3}
---- !u!114 &1520450729 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
-  m_PrefabInstance: {fileID: 1520450728}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93e73d5229aa3a7429dda88fa656ad99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerManager
 --- !u!1001 &1652611526
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2247,7 +2216,7 @@ PrefabInstance:
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: playerManager
       value: 
-      objectReference: {fileID: 1520450729}
+      objectReference: {fileID: 1020314815}
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: movementStrategy
       value: 
@@ -2317,30 +2286,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Board
       objectReference: {fileID: 0}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: passedGoChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: e182dafd4a4e98140909c2bb9346aef1, type: 2}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: movePlayerChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: playerAddedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: playerMovedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: moveToSpaceEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 7a9765d84a0a54b409423e8a0415aac9, type: 2}
-    - target: {fileID: 9046238878038401034, guid: f45b2757fb8db4340b5be331bfdfdff9, type: 3}
-      propertyPath: jailStateChangedEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

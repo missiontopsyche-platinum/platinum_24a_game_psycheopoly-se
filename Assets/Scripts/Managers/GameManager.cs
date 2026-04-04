@@ -4,8 +4,6 @@ using Data;
 using Logging;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -52,6 +50,18 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
+        
+        // ensure we find/have PlayerManager
+        if (playerManager == null)
+        {
+            playerManager = FindFirstObjectByType<PlayerManager>();
+
+            if (playerManager == null)
+            {
+                Logging.Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",
+                    LogCategory.Core, this);
+            }
+        }
     }
 
     private void Start()
@@ -215,7 +225,7 @@ public class GameManager : MonoBehaviour
         if (turnFlowCoordinator == null)
             turnFlowCoordinator = gameObject.AddComponent<TurnFlowCoordinator>();
 
-        // turnFlowCoordinator.Initialize(turnCycleManager); TODO: uncomment when merging with US868
+        turnFlowCoordinator.Initialize(turnCycleManager);
 
         Logging.Logger.Info("GameManager.InitializeTurnFlowCoordinator",
             "TurnFlowCoordinator initialized by GameManager.",
@@ -251,6 +261,6 @@ public class GameManager : MonoBehaviour
             LogCategory.Core,
             this);
 
-        // turnFlowCoordinator.StartGame();  TODO: uncomment when merging with US868
+        turnFlowCoordinator.StartGame();
     }
 }
