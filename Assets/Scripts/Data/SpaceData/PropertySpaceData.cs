@@ -264,4 +264,25 @@ public class PropertySpaceData : OwnableSpaceData
     
     public bool IsMortgaged => isMortgaged;
 
+    //Downgrade
+    public bool CanDowngrade()
+    {
+        return currentUpgradeLevel > 0;
+    }
+
+    public bool TryDowngrade()
+    {
+        if (!CanDowngrade())
+            return false;
+
+        currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel - 1, 0, MaxUpgradeLevel);
+        VerifyMortagableStatus();
+        return true;
+    }
+
+    public void ApplyDowngrade()
+    {
+        TryDowngrade();
+    }
+
 }
