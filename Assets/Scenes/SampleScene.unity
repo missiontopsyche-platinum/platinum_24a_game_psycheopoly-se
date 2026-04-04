@@ -1465,6 +1465,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1421495640}
     - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
+      propertyPath: playerManager
+      value: 
+      objectReference: {fileID: 1520450729}
+    - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
       propertyPath: goToJailChannel
       value: 
       objectReference: {fileID: 11400000, guid: 1ffd839d51a8772428ccd8ac76dfcb46, type: 2}
@@ -2090,6 +2094,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e036248c894f592408efc54ff9fff360, type: 3}
+--- !u!114 &1520450729 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7746301705287639455, guid: e036248c894f592408efc54ff9fff360, type: 3}
+  m_PrefabInstance: {fileID: 1520450728}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e73d5229aa3a7429dda88fa656ad99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerManager
 --- !u!1001 &1652611526
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2232,7 +2247,7 @@ PrefabInstance:
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: playerManager
       value: 
-      objectReference: {fileID: 1020314815}
+      objectReference: {fileID: 1520450729}
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: movementStrategy
       value: 

@@ -8,7 +8,8 @@
         JailRelease,
         DiceRoll,
         MortgagePropertyList,
-        MortgagePropertySelected
+        MortgagePropertySelected,
+        PropertyUpgradeSelected
         // more to be added as needed
     }
 }

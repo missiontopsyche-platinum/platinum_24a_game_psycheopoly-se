@@ -58,7 +58,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         SetProperty(tfc, "ActivePlayer", 0);
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingRoll);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = p, action = TurnActionType.RollDice });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = p, action = TurnActionType.RollDice });
 
         Assert.AreEqual(1, resultCount);
         Assert.AreEqual(0, lastResult.playerId);
@@ -66,7 +66,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingMovement);
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = p, action = TurnActionType.RollDice });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = p, action = TurnActionType.RollDice });
 
         Assert.AreEqual(2, resultCount);
         Assert.IsFalse(lastResult.allowed);
@@ -74,7 +74,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         var other = ScriptableObject.CreateInstance<Player>();
         other.SetId(1);
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingRoll);
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.RollDice });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.RollDice });
 
         Assert.AreEqual(3, resultCount);
         Assert.IsFalse(lastResult.allowed);
@@ -92,13 +92,13 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         SetProperty(tfc, "ActivePlayer", 0);
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingResolution);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = p, action = TurnActionType.BuyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = p, action = TurnActionType.BuyProperty });
 
         Assert.AreEqual(1, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.None);
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = p, action = TurnActionType.BuyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = p, action = TurnActionType.BuyProperty });
 
         Assert.AreEqual(2, resultCount);
         Assert.IsFalse(lastResult.allowed);
@@ -120,48 +120,48 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.None);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(1, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingRoll);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(2, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(3, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingMovement);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(4, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(5, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.AwaitingResolution);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(6, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(7, resultCount);
         Assert.IsTrue(lastResult.allowed);
 
         SetProperty(tfc, "Phase", Assets.Scripts.Managers.TurnFlow.TurnPhase.Completed);
         tfc.SetAwaitingEndTurn(true);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(8, resultCount);
         Assert.IsFalse(lastResult.allowed);
 
-        tfc.OnTurnActionRequested(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
+        tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(9, resultCount);
         Assert.IsTrue(lastResult.allowed);
 

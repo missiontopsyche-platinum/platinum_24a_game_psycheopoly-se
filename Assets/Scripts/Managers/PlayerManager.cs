@@ -15,6 +15,7 @@ public class PlayerManager : MonoBehaviour
     
     [Header("PlayerController Event Channels")]
     [SerializeField] public TurnStartedEventChannel turnStartedEventChannel;
+    [SerializeField] public BooleanEventChannel turnEndedEventChannel;
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public PayPlayerEventChannel passedGoPaymentChannel;
@@ -26,6 +27,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
     [SerializeField] public BooleanEventChannel diceRollPannelEventChannel;
+    [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
+    [SerializeField] public IntEventChannel bankruptcyEventChannel;
+    [SerializeField] public JailStateChangedEventChannel jailEventChannel;
 
     public List<PlayerController> playerControllers = new();
     
@@ -41,8 +45,8 @@ public class PlayerManager : MonoBehaviour
         Logger.Info("PlayerManager.InitializePlayers",
             $"Creating {playerConfigs.Count} players.",
             LogCategory.Core);
-        
-        playerControllers.Clear(); // double check that players list is cleared
+
+        UnsubscribeAndClearControllers();
 
         foreach (var playerConfig in playerConfigs)
         {
@@ -59,16 +63,20 @@ public class PlayerManager : MonoBehaviour
                 playerController = new HumanPlayerController(
                     player,
                     turnStartedEventChannel,
+                    turnEndedEventChannel,
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
-                    diceRollRequestChannel,
                     uiActivationEventChannel,
                     uiActionEventChannel,
                     mortgageFinishedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
-                    diceRollPannelEventChannel);
+                    jailEventChannel,
+                    diceRollPannelEventChannel
+                    );
             }
             else
             {
@@ -76,15 +84,20 @@ public class PlayerManager : MonoBehaviour
                     player,
                     playerConfig.behaviorWeights,
                     turnStartedEventChannel,
+                    turnEndedEventChannel,
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
                     diceRollRequestChannel,
                     actionResolvedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
-                    turnActionResultEventChannel);
+                    turnActionResultEventChannel,
+                    jailEventChannel);
             }
-            
+
+            playerController.Subscribe();
             playerControllers.Add(playerController);
             
             playerAddedEventChannel?.RaiseEvent(player);
@@ -122,5 +135,28 @@ public class PlayerManager : MonoBehaviour
     {
         List<Player> players = playerControllers.Select(c => c.GetControlledPlayer()).ToList();
         return players;
+    }
+
+    public int GetPlayerCount()
+    {
+        return playerControllers.Count;
+    }
+
+    /// <summary>
+    /// makes sure all player controllers are cleaned up before resetting them
+    /// </summary>
+    private void UnsubscribeAndClearControllers()
+    {
+        foreach (var controller in playerControllers)
+        {
+            controller?.Unsubscribe();
+        }
+
+        playerControllers.Clear();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeAndClearControllers();
     }
 }

@@ -1,52 +1,86 @@
+using Events.EventDataStructures;
 using UnityEngine;
+using Events.EventDataStructures;
 
 public class UpgradeManager : MonoBehaviour
 {
-    [Header("Strategy")]
-    private IUpgradeStrategy strategy = new StandardUpgradeStrategy();
+    [Header("Event Channels")]
+    [SerializeField] private UpgradeRequestEventChannel upgradeRequestChannel;
+    [SerializeField] private UpgradeResultEventChannel upgradeResultChannel;
 
-    // TODO: Add event channels
-    private void Awake()
+    private void OnEnable()
     {
-        EnsureDependencies();
-    }
-
-    private void EnsureDependencies()
-    {
-        if (strategy == null)
+        if (upgradeRequestChannel != null)
         {
-            strategy = new StandardUpgradeStrategy();
+            upgradeRequestChannel.Subscribe(OnUpgradeRequest);
         }
-        // TODO: Any channels to be subscribe to add it here.
     }
 
-    public bool TryHandleUpgrade(Player owner, IUpgradableTileInfo tile, out UpgradeDecision decision)
+    private void OnDisable()
+    {
+        if (upgradeRequestChannel != null)
+        {
+            upgradeRequestChannel.Unsubscribe(OnUpgradeRequest);
+        }
+    }
+
+    public bool TryHandleUpgrade(Player owner, PropertySpaceData tile, out UpgradeDecision decision)
     {
         decision = default;
-        if (owner == null || tile == null) return false;
 
-        decision = strategy.GetUpgradeDecision(tile, owner);
-        if (!decision.Allowed) return false;
+        if (owner == null || tile == null)
+            return false;
 
-        if (!(tile is OwnableSpaceTileAdapter space)) return false;
+        var validProperties = owner.GetValidUpgradableProperties();
+        var matchingGroup = new System.Collections.Generic.List<PropertySpaceData>();
 
-        if (owner.TrySpend(decision.Cost) == Player.FinancialStatus.Success)
+        foreach (var property in validProperties)
         {
-            space.ApplyUpgrade();
-            return true;
+            if (property != null && property.Group == tile.Group)
+            {
+                matchingGroup.Add(property);
+            }
         }
-        return false;
+
+        PropertySpaceData[] monopolyGroup = matchingGroup.ToArray();
+
+        decision = UpgradeUtility.Evaluate(owner, tile, monopolyGroup);
+
+        if (!decision.Allowed)
+            return false;
+
+        return UpgradeUtility.TryExecute(owner, tile, decision);
     }
 
     // Entry point
-    // TODO: Finish implementation of this method, add event as parameter, and raise event after upgrade is successful.
-    public void OnUpgradeRequest(/*TODO: pass in event data here*/)
+    private void OnUpgradeRequest(UpgradeRequestEvent request)
     {
-        /*if (Event == null) return;
-        if (TryHandleUpgrade(TODO: pass in event data here))
+        if (request.Player == null || request.Tile == null)
         {
-            if (decision is true)
-             TODO: Raise event for successful upgrade here.
-        }*/
+            RaiseResult(
+                false,
+                UpgradeDecision.Failed(UpgradeFailReason.InvalidRequest),
+                request.Player,
+                request.Tile);
+            return;
+        }
+
+        bool success = TryHandleUpgrade(request.Player, request.Tile, out UpgradeDecision decision);
+        RaiseResult(success, decision, request.Player, request.Tile);
     }
+
+    private void RaiseResult(bool success, UpgradeDecision decision, Player player, PropertySpaceData tile)
+    {
+        var result = new UpgradeResultEvent(
+            success: success,
+            failReason: success ? UpgradeFailReason.None : decision.FailReason,
+            upgradeCost: decision.Cost,
+            newUpgradeLevel: tile != null ? tile.GetCurrentUpgradeLevel() : 0,
+            player: player,
+            tile: tile
+        );
+
+        upgradeResultChannel?.RaiseEvent(result);
+    }
+   
 }

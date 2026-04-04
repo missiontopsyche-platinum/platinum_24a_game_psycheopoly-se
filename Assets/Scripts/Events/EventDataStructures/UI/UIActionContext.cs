@@ -66,4 +66,14 @@
         }
 
     }
+
+    public class PropertyUpgradeContext : UIActionContext
+    {
+        public PropertySpaceData property { get; }
+
+        public PropertyUpgradeContext(PropertySpaceData property)
+        {
+            this.property = property;
+        }
+    }
 }
