@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers.Movement;
 using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -22,6 +23,10 @@ public class DiceManager : MonoBehaviour
 
     [Header("Event Channels")]
     [SerializeField] public DiceRolledEventChannel diceRolledChannel;
+
+    [Header("Movement")]
+    [SerializeField] public StandardMovementStrategy standardMovementStrategy;
+
     // US442 Dice Roll Request Channel deleted so GameManager can call RollDice directl
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -53,13 +58,9 @@ public class DiceManager : MonoBehaviour
         DiceRolledEvent diceRolledEvent = new DiceRolledEvent(dieOne, dieTwo, totalRoll);
 
         //Tests that the diceRolledChannel isn't null, and raises an event
-        if (diceRolledChannel != null)
-        {
-            diceRolledChannel.RaiseEvent(diceRolledEvent);
-        } else
-        {
-            throw new MissingComponentException("DiceRolledEventChannel is null");
-        }
+        
+        standardMovementStrategy.ExecuteRollMovement(diceRolledEvent);
+        
         // Recator to use Logger
         Logging.Logger.Info("diceManager.RollDice",
             "Die One: " + dieOne,

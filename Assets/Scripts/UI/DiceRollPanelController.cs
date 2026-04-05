@@ -22,7 +22,6 @@ public class DiceRollPanelController : MonoBehaviour
 
     [Header("Dice")]
     [SerializeField] private DiceManager diceManager;
-
     [Header("Optional")]
     [SerializeField] private Button rollButton;      
     [SerializeField] private bool hideUntilFirstRoll = false;
