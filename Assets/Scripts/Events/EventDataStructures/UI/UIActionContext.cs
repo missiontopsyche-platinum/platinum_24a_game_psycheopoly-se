@@ -76,4 +76,24 @@
             this.property = property;
         }
     }
+
+    public class PropertyDowngradeContext : UIActionContext
+    {
+        public PropertySpaceData Property { get; }
+
+        public PropertyDowngradeContext(PropertySpaceData property)
+        {
+            Property = property;
+        }
+    }
+
+    public class UnmortgagePropertyContext : UIActionContext
+    {
+        public OwnableSpaceData Tile { get; }
+
+        public UnmortgagePropertyContext(OwnableSpaceData tile)
+        {
+            Tile = tile;
+        }
+    }
 }

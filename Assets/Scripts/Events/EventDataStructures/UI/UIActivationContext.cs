@@ -44,4 +44,15 @@
             CanAfford = canAfford;
         }
     }
+
+    public class PropertyManagementActivationContext : UIActivationContext
+    {
+        public Player Player { get; }
+
+        public PropertyManagementActivationContext(Player player)
+        {
+            Player = player;
+        }
+    }
+
 }
