@@ -15,12 +15,10 @@ namespace Assets.Scripts.Managers.TurnFlow
         [Header("Event Channels In")]
         [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
-        [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
         [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
 
         [Header("Event Channels Out")]
-        [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
 
         [Header("Dependencies")]
@@ -63,7 +61,6 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             turnStartedInChannel?.Subscribe(OnTurnStarted);
             diceRolledChannel?.Subscribe(OnDiceRolled);
-            pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
             turnActionRequestChannel?.Subscribe(OnTurnActionRequested);
         }
 
@@ -71,7 +68,6 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             turnStartedInChannel?.Unsubscribe(OnTurnStarted);
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
-            pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
             turnActionRequestChannel?.Unsubscribe(OnTurnActionRequested);
         }
 
@@ -100,19 +96,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             if (Phase != TurnPhase.AwaitingRoll) return;
             Phase = TurnPhase.AwaitingMovement;
         }
-
-
-        // essenitally "complete resolution" part
-        private void OnPieceMoveCompleted(bool success)
-        {
-            if (!success) return;
-            if (Phase != TurnPhase.AwaitingMovement) return;
-
-            Phase = TurnPhase.AwaitingResolution;
-
-            actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
-        }
-
 
         // decide if another turn is in order or if we can move onto next plater
         private void CompleteTurnFlow()
