@@ -226,6 +226,14 @@ public class Player : ScriptableObject
         return count;
     }
 
+    public List<PropertySpaceData> GetOwnedPropertiesByColor(Color groupColor)
+    {
+        return ownedProperties
+            .OfType<PropertySpaceData>()
+            .Where(p => p.groupColor == groupColor)
+            .ToList();
+    }
+
     //Placeholders for future logic, I feel like these should be moved into
     //seperate files to make them easier to track but I wanted to make
     //sure to list out alo of the different methods that are being

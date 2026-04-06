@@ -62,15 +62,9 @@ public class DiceManager : MonoBehaviour
         }
         // Recator to use Logger
         Logging.Logger.Info("diceManager.RollDice",
-            "Die One: " + dieOne,
+            $"Die One: {dieOne} || Die Two: {dieTwo} || Total: {totalRoll}",
             Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("diceManager.RollDice",
-            "Die Two: " + dieTwo,
-            Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("diceManager.RollDice",
-            "Total: " + totalRoll,
-            Logging.LogCategory.Gameplay);
-
+        
         return diceRolledEvent;
     }
 

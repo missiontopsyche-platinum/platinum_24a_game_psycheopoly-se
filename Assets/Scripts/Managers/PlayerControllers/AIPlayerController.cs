@@ -18,9 +18,7 @@ namespace Managers.PlayerControllers
         private readonly AIMortgageBehavior mortgageBehavior;
         // private AIJailBehavior
         // etc...
-        private bool myTurnActive;
-        private bool endTurnRequested;
-        // event channels ... I don't think this will need special ones
+        
         private ActionResolvedEventChannel actionResolvedEventChannel;
         private BooleanEventChannel diceRollRequestChannel;
 
@@ -92,20 +90,11 @@ namespace Managers.PlayerControllers
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
-            // TODO: This needs to be implemented and property integrated. Currently the actions don't *do* anything.
             base.CatchTurnStartedEvent(tse);
 
             if (!isMyTurn) return;
-
-            myTurnActive = true;
-            endTurnRequested = false;
             
             HandleOptionalActions();
-
-            // TODO This might need to run as a coroutine so that we can await the completed movement
-            // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
-            // to be honest, having an AI Turn coroutine makes a lot of sense- keep it all in the same logical
-            // place.
 
             // AI must roll dice or the game stalls at AwaitingRoll.
             RequestTurnAction(
@@ -120,6 +109,7 @@ namespace Managers.PlayerControllers
                         return;
                     }
 
+                    // TODO: ensure this ACTUALLY WORKS.... because right now it 100% does not.
                     diceRollRequestChannel.RaiseEvent(true);
 
                     Logger.Info("AIPlayerController.CatchTurnStartedEvent",
@@ -132,10 +122,8 @@ namespace Managers.PlayerControllers
                         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
                         LogCategory.AI);
                 });
-            // wait for resolution of the movement phase (land on space, resolve space)
-
-            HandleOptionalActions();
-            // end turn
+            
+            // dice roll resolution is handled by catching other events to continue turn flow.
         }
 
         private void HandleOptionalActions()
@@ -145,46 +133,80 @@ namespace Managers.PlayerControllers
             HandleUpgradeAction();
         }
 
+        // turning this into a recursive method so that it works with our TFC validation scheme
         private void HandleUpgradeAction()
         {
-            AIUpgradeEvaluation evaluation;
+            AIUpgradeEvaluation evaluation = upgradeBehavior.EvaluateUpgrade();
 
-            do
-            {
-                evaluation = upgradeBehavior.EvaluateUpgrade();
+            // early exit if no valid upgrade
+            if (!evaluation.willUpgrade || evaluation.upgradeTarget == null) return;
 
-                if (!evaluation.willUpgrade || evaluation.upgradeTarget == null)
-                    break;
+            PropertySpaceData target = evaluation.upgradeTarget;
+            var monopolyGroup = controlledPlayer.GetOwnedPropertiesByColor(target.groupColor);
+            var decision = UpgradeUtility.Evaluate(controlledPlayer, target, monopolyGroup.ToArray());
 
-                PropertySpaceData target = evaluation.upgradeTarget;
-
-                RequestTurnAction(
-                    TurnActionType.ModifyProperty,
-                    onAllowed: () =>
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                onAllowed: () =>
+                {
+                    if (UpgradeUtility.TryExecute(controlledPlayer, target, decision))
                     {
-                        upgradeRequestEventChannel?.RaiseEvent(
-                            new UpgradeRequestEvent(controlledPlayer, target));
-
                         Logger.Info("AIPlayerController.HandleUpgradeAction",
-                            $"Raised upgrade request for {target.spaceName}.",
+                            $"Executed upgrade on {target.spaceName}.",
                             LogCategory.AI);
-                    },
-                    onDenied: () =>
+                        
+                        HandleUpgradeAction(); // recurse until no more upgrades to complete
+                    }
+                    else
                     {
-                        Logger.Debug("AIPlayerController.HandleUpgradeAction",
-                            $"Upgrade request denied for {target.spaceName}.",
+                        Logger.Warn("AIPlayerController.HandleUpgradeAction",
+                            $"Upgrade failed to execute on {target.spaceName}, validation error.",
                             LogCategory.AI);
-                    });
-
-                break;
-
-            } while (evaluation.willUpgrade);
+                    }
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("AIPlayerController.HandleUpgradeAction",
+                        $"Upgrade request denied for {target.spaceName}.",
+                        LogCategory.AI);
+                }
+            );
         }
 
         private void HandleMortgageAction()
         {
             AIMortgageEvaluation evaluation = mortgageBehavior.EvaluateMortgage();
 
+            if (evaluation.actions.Count > 0)
+            {
+                RequestTurnAction(
+                    TurnActionType.ModifyProperty,
+                    onAllowed: () =>
+                    {
+                        ExecuteMortgageActions(evaluation);
+                    },
+                    onDenied: () =>
+                    {
+                        Logger.Warn("AIPlayerController.HandleMortgageAction",
+                            $"AI Mortgage actions not allowed at this phase in the game!",
+                            LogCategory.AI);
+                    }
+                );
+            }
+        }
+
+        private void HandleForcedMortgage()
+        {
+            AIMortgageEvaluation evaluation = mortgageBehavior.EvaluateMortgage();
+            
+            // this happens outside normal turn phase because we are reconciling debt,
+            // and we know there are mortgage actions to take, because otherwise we'd
+            // be bankrupt and the turn would end immediately.
+            ExecuteMortgageActions(evaluation);
+        }
+
+        private void ExecuteMortgageActions(AIMortgageEvaluation evaluation)
+        {
             foreach (var mortgageAction in evaluation.actions)
             {
                 switch (mortgageAction.actionType)
@@ -192,26 +214,32 @@ namespace Managers.PlayerControllers
                     case MortgageActionType.Mortgage:
                         if (controlledPlayer.MortgageProperty(mortgageAction.ownableSpace))
                         {
-                            Logger.Info("AIPlayerController.HandleMortgageAction",
+                            Logger.Info("AIPlayerController.ExecuteMortgageActions",
                                 $"AI {controlledPlayer.GetPName()} mortgaged {mortgageAction.ownableSpace.spaceName}.",
                                 LogCategory.AI);
                         }
                         else
                         {
-                            Logger.Warn("AIPlayerController.HandleMortgageAction",
+                            Logger.Warn("AIPlayerController.ExecuteMortgageActions",
                                 $"AI {controlledPlayer.GetPName()} failed to mortgage {mortgageAction.ownableSpace.spaceName}.",
                                 LogCategory.AI);
                         }
                         break;
                     case MortgageActionType.SellDataPoint:
-                        // sell data point
+                        // TODO: sell data point
+                        Logger.Warn("AIPlayerController.ExecuteMortgageActions",
+                            $"Sell Data Point Not Implemented!",
+                            LogCategory.AI);
                         break;
                     case MortgageActionType.SellDiscovery:
-                        // sell discovery (all upgrades for this property)
+                        // TODO: sell discovery (all upgrades for this property)
+                        Logger.Warn("AIPlayerController.ExecuteMortgageActions",
+                            $"Sell Discovery Not Implemented!",
+                            LogCategory.AI);
                         break;
                 }
             }
-            Logger.Info("AIPlayerController.HandleMortgageAction",
+            Logger.Info("AIPlayerController.ExecuteMortgageActions",
                 $"Mortgage Evaluation: {evaluation.message}.",
                 LogCategory.AI);
         }
@@ -269,7 +297,7 @@ namespace Managers.PlayerControllers
                     Logger.Info("AIPlayerController.HandleChargeOwnershipFee",
                         $"AI {controlledPlayer.GetPName()} needs mortgage handling to cover ownership fee of ${cofe.amount}.",
                         LogCategory.AI);
-                    HandleMortgageAction();
+                    HandleForcedMortgage();
                     break;
             }
 
@@ -287,7 +315,6 @@ namespace Managers.PlayerControllers
         private void OnActionResolved(ActionResolvedEvent evt)
         {
             if (evt.playerId != controlledPlayer.GetId()) return;
-            if (!myTurnActive || endTurnRequested) return;
 
             // TODO: Any post-action logic or decision-making would go here before ending the turn.
 
@@ -302,19 +329,15 @@ namespace Managers.PlayerControllers
 
         private void RequestEndTurn()
         {
-            if (endTurnRequested) return;
-
-            endTurnRequested = true;
-
             RequestTurnAction(
                 TurnActionType.EndTurn,
-                onAllowed: () =>
-                {
-                    myTurnActive = false;
-                },
+                onAllowed: () => { /* nothing needs to happen here, since isMyTurn bool will be flipped on new turn start. */ },
                 onDenied: () =>
                 {
-                    endTurnRequested = false;
+                    Logger.Warn("AIPlayerController.RequestEndTurn",
+                        $"AI {controlledPlayer.GetPName()} EndTurn request denied. " +
+                        $"End of turn reached out of sync with Turn Flow Coordinator.",
+                        LogCategory.AI);
                 });
         }
     }
