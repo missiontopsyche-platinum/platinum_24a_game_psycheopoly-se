@@ -1,5 +1,6 @@
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
+using Assets.Scripts.Managers.Jail;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
@@ -76,6 +77,21 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
+        }
+
+        //PlayerController already established turn ownership, HumanPlayerController handles human-player
+        //specific decisions/flow
+        protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
+        {
+            base.CatchTurnStartedEvent(tse);
+
+            if (!isMyTurn)
+                return;
+
+            if (!controlledPlayer.IsInJail())
+                return;
+
+            ShowJailOptionsUI();
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -307,6 +323,29 @@ namespace Managers.PlayerControllers
 
             RefreshPropertyManagementUI();
             RequestResolutionComplete();
+        }
+
+        //display jail options to log
+        private void ShowJailOptionsUI()
+        {
+            bool hasGetOutOfJailCard =
+                controlledPlayer.GetChanceCardCount() > 0 ||
+                controlledPlayer.GetCommunityCardCount() > 0;
+
+            uiActivationEventChannel?.RaiseEvent(
+                new UIActivationEvent(
+                    UIType.JailOptions,
+                    new JailActivationContext(
+                        controlledPlayer.GetPName(),
+                        controlledPlayer.GetJailTurns(),
+                        JailUtility.MAX_TURNS_IN_JAIL,
+                        controlledPlayer.CanAfford(JailUtility.JAIL_FEE),
+                        hasGetOutOfJailCard,
+                        JailUtility.JAIL_FEE)));
+
+            Logger.Info("HumanPlayerController.ShowJailOptionsUI",
+                $"{controlledPlayer.GetPName()} is in jail. Showing jail options UI.",
+                LogCategory.UI);
         }
     }
 }
