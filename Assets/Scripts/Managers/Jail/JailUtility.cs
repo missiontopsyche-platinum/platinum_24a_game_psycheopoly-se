@@ -44,14 +44,15 @@ namespace Assets.Scripts.Managers.Jail
                 LogCategory.Gameplay);
             return EscapeAttemptResult.Failed;
         }
-        
+
         public static FeePaymentResult PayFee(Player player)
         {
             FeePaymentResult result = ChargeJailFee(player);
-            ReleasePlayer(player);
-            
+
             if (result == FeePaymentResult.Paid)
             {
+                ReleasePlayer(player);
+
                 Logger.Info("JailUtility.PayFee",
                     $"{player.GetPName()} paid ${JAIL_FEE} to leave jail.",
                     LogCategory.Gameplay);
@@ -100,30 +101,34 @@ namespace Assets.Scripts.Managers.Jail
         private static EscapeAttemptResult ForcedExit(Player player)
         {
             FeePaymentResult result = ChargeJailFee(player);
-            ReleasePlayer(player);
+
             if (result == FeePaymentResult.Paid)
             {
+                ReleasePlayer(player);
+
                 Logger.Info("JailUtility.ForcedExit",
                     $"{player.GetPName()} was forced to pay ${JAIL_FEE} after 3 turns.",
                     LogCategory.Gameplay);
+
                 return EscapeAttemptResult.ForcedExitPaid;
             }
-            
+
             Logger.Warn("JailUtility.ForcedExit",
                 $"{player.GetPName()} cannot afford the forced jail fee!",
                 LogCategory.Gameplay);
+
             return EscapeAttemptResult.ForcedExitBankrupt;
         }
 
         private static FeePaymentResult ChargeJailFee(Player player)
         {
-            FeePaymentResult result = player.GetMoney() >= JAIL_FEE 
-                ? FeePaymentResult.Paid 
-                : FeePaymentResult.Bankrupt;
+            if (player.GetMoney() >= JAIL_FEE)
+            {
+                player.SetMoney(player.GetMoney() - JAIL_FEE);
+                return FeePaymentResult.Paid;
+            }
 
-            player.SetMoney(player.GetMoney() - JAIL_FEE);
-            
-            return result;
+            return FeePaymentResult.Bankrupt;
         }
 
         private static void ReleasePlayer(Player player)
