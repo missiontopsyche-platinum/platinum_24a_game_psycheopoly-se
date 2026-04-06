@@ -10,11 +10,15 @@ public class PropertyManagementUIController : MonoBehaviour
     [SerializeField] private TMP_Text playerNameText;
     [SerializeField] private Transform contentParent;
     [SerializeField] private PropertyManagementRowUI rowPrefab;
+    [SerializeField] private TMP_Text debtText;
+    [SerializeField] private GameObject debtBannerObject;
 
     [Header("Event Channels")]
     [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
 
     private Player currentPlayer;
+    private bool isDebtResolutionMode;
+    private int currentDebtAmount;
 
     private void Awake()
     {
@@ -41,7 +45,7 @@ public class PropertyManagementUIController : MonoBehaviour
             currentPlayer = context.Player;
             RefreshUI();
             Show();
-        }
+    }
     }
 
     private void Show()
@@ -51,6 +55,9 @@ public class PropertyManagementUIController : MonoBehaviour
 
     public void Hide()
     {
+        if (isDebtResolutionMode && currentDebtAmount > 0)
+            return;
+
         gameObject.SetActive(false);
     }
 
@@ -64,13 +71,22 @@ public class PropertyManagementUIController : MonoBehaviour
         if (playerNameText != null)
             playerNameText.text = currentPlayer.GetPName() + "'s Properties";
 
+        if (titleText != null)
+            titleText.text = isDebtResolutionMode ? "Debt Resolution" : "Property Management";
+
+        if (debtBannerObject != null)
+            debtBannerObject.SetActive(isDebtResolutionMode);
+
+        if (debtText != null)
+            debtText.text = isDebtResolutionMode ? $"Debt to Resolve: ${currentDebtAmount}" : string.Empty;
+
         if (contentParent == null || rowPrefab == null)
             return;
 
         foreach (OwnableSpaceData property in currentPlayer.GetOwnedProperties())
         {
             PropertyManagementRowUI rowInstance = Instantiate(rowPrefab, contentParent);
-            rowInstance.Initialize(currentPlayer, property);
+            rowInstance.Initialize(currentPlayer, property, isDebtResolutionMode);
         }
     }
 
