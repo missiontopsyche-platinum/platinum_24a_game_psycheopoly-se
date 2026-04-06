@@ -302,6 +302,12 @@ namespace Managers.PlayerControllers
             if (!isMyTurn || context == null || context.Property == null) return;
 
             PropertySpaceData property = context.Property;
+            if (!controlledPlayer.GetValidDowngradableProperties().Contains(property))
+            {
+                RequestResolutionComplete();
+                return;
+            }
+
             int currentLevel = property.GetCurrentUpgradeLevel();
 
             if (currentLevel <= 0)

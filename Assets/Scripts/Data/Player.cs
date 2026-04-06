@@ -467,4 +467,32 @@ public class Player : ScriptableObject
         Bankrupt
 
     }
+
+    public List<PropertySpaceData> GetValidDowngradableProperties()
+{
+    var groups = ownedProperties
+        .OfType<PropertySpaceData>()
+        .GroupBy(p => p.groupColor);
+
+    var targets = new List<PropertySpaceData>();
+
+    foreach (var group in groups)
+    {
+        var groupList = group.ToList();
+
+        //only consider full monopolies
+        if (groupList.Count != groupList[0].numberOfPropertiesInGroup)
+            continue;
+
+        //even selling
+        int maxLevel = groupList.Max(p => p.GetCurrentUpgradeLevel());
+
+        targets.AddRange(groupList.Where(
+            p => p.GetCurrentUpgradeLevel() == maxLevel &&
+                 p.CanDowngrade() &&
+                 !p.isMortgaged));
+    }
+
+    return targets;
+}
 }

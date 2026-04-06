@@ -128,10 +128,10 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private bool CanDowngrade()
     {
-        if (property is not PropertySpaceData streetProperty)
+        if (player == null || property is not PropertySpaceData streetProperty)
             return false;
 
-        return streetProperty.CanDowngrade() && !streetProperty.isMortgaged;
+        return player.GetValidDowngradableProperties().Contains(streetProperty);
     }
 
     private bool CanMortgage()
