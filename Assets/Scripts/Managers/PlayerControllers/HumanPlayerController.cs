@@ -170,16 +170,18 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || context == null || context.tile == null) return;
 
-            if(controlledPlayer.MortgageProperty(context.tile))
+            if (controlledPlayer.MortgageProperty(context.tile))
             {
                 mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    this.controlledPlayer,
+                    controlledPlayer,
                     context.tile));
             }
 
-            RefreshPropertyManagementUI();
+            int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
+            RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
+
             RequestResolutionComplete();
         }
 
@@ -278,12 +280,12 @@ namespace Managers.PlayerControllers
                 });
         }
 
-        private void RefreshPropertyManagementUI()
+        private void RefreshPropertyManagementUI(bool debtMode = false, int debtAmount = 0)
         {
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.PropertyManagement,
-                    new PropertyManagementActivationContext(controlledPlayer)));
+                    new PropertyManagementActivationContext(controlledPlayer, debtMode, debtAmount)));
         }
 
         private void ResolveUnmortgageProperty(UnmortgagePropertyContext context)
@@ -312,7 +314,9 @@ namespace Managers.PlayerControllers
             property.SetUpgradeLevel(currentLevel - 1);
             controlledPlayer.AddMoney(refund);
 
-            RefreshPropertyManagementUI();
+            int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
+            RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
+
             RequestResolutionComplete();
         }
     }

@@ -100,4 +100,11 @@ public class PropertyManagementUIController : MonoBehaviour
             Destroy(contentParent.GetChild(i).gameObject);
         }
     }
+
+    public void SetDebtAmount(int amount)
+    {
+        currentDebtAmount = Mathf.Max(0, amount);
+        isDebtResolutionMode = currentDebtAmount > 0;
+        RefreshUI();
+    }
 }
