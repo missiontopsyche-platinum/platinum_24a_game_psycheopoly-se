@@ -228,7 +228,15 @@ namespace Managers.PlayerControllers
                         Logger.Error("HumanPlayerController.HandleUIAction",
                             $"Expected PropertyManagement action context but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
-                    break;    
+                    break;
+                case UIType.JailOptions:
+                    if (uiae.Context is JailActionContext jailContext)
+                        ResolveJailAction(jailContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
+                    break;
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",
@@ -262,6 +270,54 @@ namespace Managers.PlayerControllers
             }
 
             RequestResolutionComplete();
+        }
+
+        private void ResolveJailAction(JailActionContext context)
+        {
+            if (!isMyTurn || context == null)
+                return;
+
+            switch (context.Choice)
+            {
+                case JailChoice.PayFine:
+                    ResolveJailFinePayment();
+                    break;
+
+                case JailChoice.UseCard:
+                    ResolveJailCardUse();
+                    break;
+
+                case JailChoice.RollForEscape:
+                    Logger.Info("HumanPlayerController.ResolveJailAction",
+                        "RollForEscape selected. Full roll handling is deferred to turn-flow integration.",
+                        LogCategory.Gameplay);
+                    break;
+            }
+        }
+
+        private void ResolveJailFinePayment()
+        {
+            JailUtility.FeePaymentResult result = JailUtility.PayFee(controlledPlayer);
+
+            Logger.Info("HumanPlayerController.ResolveJailFinePayment",
+                $"{controlledPlayer.GetPName()} jail fine result: {result}.",
+                LogCategory.Gameplay);
+
+            if (result == JailUtility.FeePaymentResult.Bankrupt)
+            {
+                bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+            }
+        }
+
+        private void ResolveJailCardUse()
+        {
+            JailUtility.CardUseResult result = JailUtility.UseGetOutOfJailFree(controlledPlayer);
+
+            Logger.Info("HumanPlayerController.ResolveJailCardUse",
+                $"{controlledPlayer.GetPName()} jail card result: {result}.",
+                LogCategory.Gameplay);
+
+            
         }
 
         // This forces the end turn request to be validated the same way as any other player action,
@@ -325,12 +381,13 @@ namespace Managers.PlayerControllers
             RequestResolutionComplete();
         }
 
-        //display jail options to log
+        //display jail options for the current human player
         private void ShowJailOptionsUI()
         {
             bool hasGetOutOfJailCard =
                 controlledPlayer.GetChanceCardCount() > 0 ||
                 controlledPlayer.GetCommunityCardCount() > 0;
+
 
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
