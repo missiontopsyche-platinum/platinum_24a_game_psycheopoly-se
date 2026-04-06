@@ -6,10 +6,12 @@ using UnityEngine;
 public class GravityAssistSpaceData : SpaceData
 {
     [SerializeField] public String flavorText = "Gravity Assist!";
+    [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
     
     public override void OnLanded(Player player)
     {
         // nothing happens
+        actionResolvedEventChannel.RaiseEvent(new ActionResolvedEvent(player.GetId()));
     }
 
     public override void OnPassed(Player player)

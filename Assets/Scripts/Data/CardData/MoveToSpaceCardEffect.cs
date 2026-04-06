@@ -7,7 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MoveToSpaceCardEffect", menuName = "Card Data/Effects/MoveToSpaceCardEffect")]
 public class MoveToSpaceCardEffect : CardEffect
 {
-    // TODO: Not sure what spaces we need atm, will be expanded on Sprint 4
     // to take into account all space data.
     public enum TargetSpaceType
     {
@@ -24,6 +23,7 @@ public class MoveToSpaceCardEffect : CardEffect
 
     public TargetSpaceType targetType;
     public MoveToSpaceEventChannel moveToSpaceEventChannel;
+    public ActionResolvedEventChannel actionResolvedEventChannel;
 
     public override void ApplyEffect(Player player)
     {
@@ -32,5 +32,6 @@ public class MoveToSpaceCardEffect : CardEffect
 
         var evt = new MoveToSpaceEvent(player, targetType);
         moveToSpaceEventChannel.RaiseEvent(evt);
+        actionResolvedEventChannel.RaiseEvent(new ActionResolvedEvent(player.GetId()));
     }
 }

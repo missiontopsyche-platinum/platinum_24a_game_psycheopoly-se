@@ -14,6 +14,8 @@ public class MoveCardEffect : CardEffect
     [SerializeField] public EffectType Type;
     [SerializeField] public int SpacesToMove = 1;
     [SerializeField] public MovePlayerEventChannel MovePlayerEventChannel;
+    [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    
 
     public override void ApplyEffect(Player player)
     {
@@ -43,5 +45,7 @@ public class MoveCardEffect : CardEffect
                     this);
                 break;
         }
+        
+        actionResolvedEventChannel.RaiseEvent(new ActionResolvedEvent(player.GetId()));
     }
 }

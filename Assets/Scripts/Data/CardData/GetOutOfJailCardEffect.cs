@@ -8,21 +8,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GetOutOfJailCardEffect", menuName = "Card Data/Effects/GetOutOfJailCardEffect")]
 public class GetOutOfJailCardEffect : CardEffect
 {
-    [SerializeField] public JailStateChangedEventChannel JailStateChangedEventChannel;
-
+    [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    
     public override void ApplyEffect(Player player)
     {
         if (!isValidPlayer(player)) return;
 
-        if (JailStateChangedEventChannel == null)
-        {
-            Logging.Logger.Error("GetOutOfJailCardEffect.ApplyEffect",
-                "JailStateChangedEventChannel is not assigned in GetOutOfJailCardEffect.",
-                Logging.LogCategory.Gameplay,
-                this);
-            return;
-        }
-
-        JailStateChangedEventChannel.RaiseEvent(new JailStateChangedEvent(player, false, 0));
+        // TODO: Add this card to player inventory, remove from card deck.
+        
+        actionResolvedEventChannel.RaiseEvent(new ActionResolvedEvent(player.GetId()));
     }
 }

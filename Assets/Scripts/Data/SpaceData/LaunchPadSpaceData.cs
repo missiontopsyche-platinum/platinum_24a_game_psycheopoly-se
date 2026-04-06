@@ -9,16 +9,18 @@ public class LaunchPadSpaceData : SpaceData
     [SerializeField] public String flavorText = "WAITING FOR LAUNCH.";
     [SerializeField] public PlayerEventChannel playerGoesToJailEventChannel;
     [SerializeField] public PlayerEventChannel playerLeavesJailEventChannel;
+    [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
 
     public List<Player> playersInJail = new ();
     
     public override void OnLanded(Player player)
     {
         // do nothing
+        actionResolvedEventChannel.RaiseEvent(new ActionResolvedEvent(player.GetId()));
         
         // right now, this whole thing is basically a data container to be used by the UI to
-        // tell a user who is in jail right now... Maybe we add some other logic, but for 
-        // now this seems satisfactory.
+        // tell a user who is in jail right now. The actionResolvedEvent just signals
+        // to AI players that they have completed movement resolution.
     }
 
     public override void OnPassed(Player player)
