@@ -33,7 +33,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         private bool awaitingEndTurn = false;
 
         // fields to keep track of player states
-        private readonly List<Player> players;
+        private readonly List<Player> players = new();
         public bool IsGameOver { get; private set; }
         public static int LastWinningPlayerId { get; private set; } = -1;
         public static string LastWinningPlayerName { get; private set; } = string.Empty;
@@ -278,6 +278,19 @@ namespace Assets.Scripts.Managers.TurnFlow
                 $"Game over. Winner: {LastWinningPlayerName}",
                 LogCategory.Gameplay,
                 this);
+
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.SetWinner(winner);
+                GameManager.instance.EndGame();
+            }
+            else
+            {
+                Logging.Logger.Warn("TurnFlowCoordinator.TriggerGameEnd",
+                    "GameManager instance was null. Could not end game through GameManager.",
+                    LogCategory.Core,
+                    this);
+            }
         }
 
         private Player GetPlayerById(int playerId)
