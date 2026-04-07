@@ -305,7 +305,7 @@ namespace Managers.PlayerControllers
             {
                 RequestResolutionComplete();
                 return;
-            }dev
+            }
             int currentLevel = property.GetCurrentUpgradeLevel();
 
             if (currentLevel <= 0)
