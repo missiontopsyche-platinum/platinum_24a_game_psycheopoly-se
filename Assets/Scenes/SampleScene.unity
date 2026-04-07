@@ -2214,6 +2214,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1520450729}
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+      propertyPath: winSceneIndex
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: movementStrategy
       value: 
       objectReference: {fileID: 1420659637}
