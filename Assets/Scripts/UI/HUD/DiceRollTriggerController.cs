@@ -30,7 +30,7 @@ public class DiceRollTriggerController : UIPanelBase
         
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         diceRollTriggerButton?.onClick.RemoveListener(OnDiceRollTriggerClicked);
         ClearSubscriptions();

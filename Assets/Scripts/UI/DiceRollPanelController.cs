@@ -34,7 +34,7 @@ public class DiceRollPanelController : MonoBehaviour
         diceRolledChannel?.Subscribe(OnDiceRolled);
         pieceMoveCompletedChannel?.Subscribe(HideUI);
         uiActivationChannel?.Subscribe(OnUIActivationEvent);
-        if (hideUntilFirstRoll) gameObject.SetActive(false);
+        if (hideUntilFirstRoll) HideUI(true);
         
     }
 
@@ -76,7 +76,8 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void HideUI(bool pieceMoveCompleted)
     {
-        gameObject.SetActive(false);
+        gameObject.GetComponent<CanvasGroup>().alpha = 0;
+        gameObject.GetComponent<CanvasGroup>().interactable = false;
     }
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
@@ -86,6 +87,7 @@ public class DiceRollPanelController : MonoBehaviour
                       LogCategory.UI);
 
         //if (uiae.UIType == UIType.DiceRoll)
-        gameObject.SetActive(true);
+        gameObject.GetComponent<CanvasGroup>().alpha = 1;
+        gameObject.GetComponent<CanvasGroup>().interactable = true;
     }
 }

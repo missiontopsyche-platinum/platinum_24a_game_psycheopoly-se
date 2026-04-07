@@ -26,6 +26,7 @@ namespace Assets.Scripts.Managers.Movement
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
+        [SerializeField] private DiceRolledEventChannel diceRolledEventChannel;
 
         private int doublesCount = 0;
         private Player currentPlayer;
@@ -36,6 +37,7 @@ namespace Assets.Scripts.Managers.Movement
         {
             turnStartedEventChannel?.Subscribe(OnTurnStarted);
             pieceMoveCompletedEventChannel?.Subscribe(ResolveCompletedMovement);
+            diceRolledEventChannel?.Subscribe(ExecuteRollMovement);
         }
 
 
@@ -209,7 +211,7 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Warn("StandardMovementStrategy.ResolveCompletedMovement",
                     "ResolveCompletedMovement called with no movement in progress.",
                     LogCategory.Gameplay, this);
-                return;
+                //return;
             }
 
             if (normalMoveCompletedThisTurn)

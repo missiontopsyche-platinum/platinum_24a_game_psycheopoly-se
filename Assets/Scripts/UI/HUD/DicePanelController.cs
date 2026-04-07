@@ -15,6 +15,7 @@ public class DicePanelController : UIPanelBase
 
     [Header("UI Controls")]
     [SerializeField] public Button rollDiceButton;
+
     private void OnEnable()
     {
         if (!rollDiceButton)
@@ -36,8 +37,8 @@ public class DicePanelController : UIPanelBase
                 LogCategory.UI,
                 this);
     }
-
-    private void OnDisable()
+    
+    private void OnDestroy()
     {
         ClearSubscriptions();
 

@@ -105,9 +105,15 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void OnPieceMoveCompleted(bool success)
         {
             if (!success) return;
-            if (Phase != TurnPhase.AwaitingMovement) return;
+            //if (Phase != TurnPhase.AwaitingMovement) return;
 
-            Phase = TurnPhase.AwaitingResolution;
+            Phase = TurnPhase.Completed;
+            awaitingEndTurn = true;
+
+            Logging.Logger.Info("TurnFlowCoordinator.OnPieceMoveCompleted",
+                    "Move completed. Can end turn",
+                    LogCategory.Core,
+                    this);
 
             actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
         }

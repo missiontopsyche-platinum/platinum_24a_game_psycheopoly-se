@@ -58,9 +58,9 @@ public class DiceManager : MonoBehaviour
         DiceRolledEvent diceRolledEvent = new DiceRolledEvent(dieOne, dieTwo, totalRoll);
 
         //Tests that the diceRolledChannel isn't null, and raises an event
-        
-        standardMovementStrategy.ExecuteRollMovement(diceRolledEvent);
-        
+        diceRolledChannel?.RaiseEvent(diceRolledEvent);
+        //standardMovementStrategy.ExecuteRollMovement(diceRolledEvent);
+
         // Recator to use Logger
         Logging.Logger.Info("diceManager.RollDice",
             "Die One: " + dieOne,
