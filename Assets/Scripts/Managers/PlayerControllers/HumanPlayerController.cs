@@ -288,9 +288,20 @@ namespace Managers.PlayerControllers
                     break;
 
                 case JailChoice.RollForEscape:
-                    Logger.Info("HumanPlayerController.ResolveJailAction",
-                        "RollForEscape selected. Full roll handling is deferred to turn-flow integration.",
-                        LogCategory.Gameplay);
+                    RequestTurnAction(
+                        TurnActionType.RollForJailEscape,
+                        onAllowed: () =>
+                        {
+                            Logger.Info("HumanPlayerController.ResolveJailAction",
+                                $"{controlledPlayer.GetPName()} requested a jail escape roll.",
+                                LogCategory.Gameplay);
+                        },
+                        onDenied: () =>
+                        {
+                            Logger.Info("HumanPlayerController.ResolveJailAction",
+                                $"{controlledPlayer.GetPName()} was denied a jail escape roll.",
+                                LogCategory.Gameplay);
+                        });
                     break;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnOrder;
+using Assets.Scripts.Managers.Jail;
 using Logging;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         [Header("Event Channels In")]
         [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
+        [SerializeField] private BooleanEventChannel diceRollRequestChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
         [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
@@ -29,6 +31,10 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         public TurnPhase Phase { get; private set; } = TurnPhase.None;
         public int ActivePlayer { get; private set; } = -1;
+
+        //these are needed for TFC to know if we are rolling for a jail escape
+        private bool nextRollIsJailEscape = false;
+        private Player jailEscapePlayer = null;
         // prevents double-advance in same turn
         private bool awaitingEndTurn = false;
 
@@ -102,6 +108,8 @@ namespace Assets.Scripts.Managers.TurnFlow
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;
+            nextRollIsJailEscape = false;
+            jailEscapePlayer = null;
 
             // This is a sanity check to make sure our TurnCycleManager is in sync with the turn
             if (turnCycleManager != null && turnCycleManager.CurrentPlayerIndex != data.playerId)
@@ -119,7 +127,45 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void OnDiceRolled(DiceRolledEvent diceEvent)
         {
             if (IsGameOver) return;
-            if (Phase != TurnPhase.AwaitingRoll) return;
+            if (Phase != TurnPhase.AwaitingRoll || diceEvent == null)
+                return;
+
+            //this is necessary to capture a proper jail-escape roll attempt
+            if (nextRollIsJailEscape && jailEscapePlayer != null)
+            {
+                JailUtility.EscapeAttemptResult result =
+                    JailUtility.AttemptEscape(jailEscapePlayer, diceEvent.dieOne, diceEvent.dieTwo);
+
+                Logging.Logger.Info("TurnFlowCoordinator.OnDiceRolled",
+                    $"{jailEscapePlayer.GetPName()} jail escape result: {result}.",
+                    LogCategory.Gameplay,
+                    this);
+
+                nextRollIsJailEscape = false;
+                jailEscapePlayer = null;
+
+
+                switch (result)
+                {
+                    case JailUtility.EscapeAttemptResult.Escaped:
+                    case JailUtility.EscapeAttemptResult.ForcedExitPaid:
+                        Phase = TurnPhase.AwaitingMovement;
+                        return;
+
+                    case JailUtility.EscapeAttemptResult.Failed:
+                        Phase = TurnPhase.Completed;
+                        awaitingEndTurn = true;
+                        CompleteTurnFlow();
+                        return;
+
+                    case JailUtility.EscapeAttemptResult.ForcedExitBankrupt:
+                        Phase = TurnPhase.Completed;
+                        awaitingEndTurn = true;
+                        CompleteTurnFlow();
+                        return;
+
+                }
+            }
             Phase = TurnPhase.AwaitingMovement;
         }
 
@@ -178,6 +224,10 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             switch (request.action)
             {
+                case TurnActionType.RollForJailEscape:
+                    BeginJailEscapeRoll(request.player);
+                    break;
+
                 case TurnActionType.CompleteResolution:
                     CompleteResolution();
                     break;
@@ -198,6 +248,23 @@ namespace Assets.Scripts.Managers.TurnFlow
             awaitingEndTurn = true;
         }
 
+        //unique roll for jail escape
+        private void BeginJailEscapeRoll(Player player)
+        {
+            if (player == null)
+                return;
+
+            nextRollIsJailEscape = true;
+            jailEscapePlayer = player;
+
+            diceRollRequestChannel?.RaiseEvent(true);
+
+            Logging.Logger.Info("TurnFlowCoordinator.BeginJailEscapeRoll",
+                $"{player.GetPName()} is attempting to escape jail.",
+                LogCategory.Gameplay,
+                this);
+        }
+
         public void SetAwaitingEndTurn(bool awaiting)
         {
             awaitingEndTurn = awaiting;
@@ -213,9 +280,16 @@ namespace Assets.Scripts.Managers.TurnFlow
             if (IsGameOver) return false;
             if (player.GetId() != ActivePlayer) return false;
 
+            //sends to the roll for escape turn action (since it's a unique dice roll)
             if (player != null && player.IsInJail())
-                return action == TurnActionType.EndTurn;
-            
+            {
+                return action switch
+                {
+                    TurnActionType.RollForJailEscape => Phase == TurnPhase.AwaitingRoll,
+                    TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
+                    _ => false
+                };
+            }
 
             return action switch
             {
