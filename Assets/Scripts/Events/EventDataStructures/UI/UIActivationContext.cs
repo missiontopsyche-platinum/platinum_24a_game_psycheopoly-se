@@ -51,7 +51,6 @@
         public bool IsDebtResolutionMode { get; }
         public int DebtAmount { get; }
 
-
         public PropertyManagementActivationContext(Player player)
         {
             Player = player;

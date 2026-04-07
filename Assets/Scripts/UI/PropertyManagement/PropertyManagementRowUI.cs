@@ -32,6 +32,7 @@ public class PropertyManagementRowUI : MonoBehaviour
         property = propertyData;
         isDebtResolutionMode = debtMode;
 
+
         HookButtons();
         RefreshRow();
     }
@@ -132,6 +133,7 @@ public class PropertyManagementRowUI : MonoBehaviour
             return false;
 
         return player.GetValidDowngradableProperties().Contains(streetProperty);
+
     }
 
     private bool CanMortgage()

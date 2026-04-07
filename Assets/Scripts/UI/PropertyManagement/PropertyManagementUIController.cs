@@ -45,7 +45,7 @@ public class PropertyManagementUIController : MonoBehaviour
             currentPlayer = context.Player;
             RefreshUI();
             Show();
-    }
+        }
     }
 
     private void Show()
@@ -86,6 +86,7 @@ public class PropertyManagementUIController : MonoBehaviour
         foreach (OwnableSpaceData property in currentPlayer.GetOwnedProperties())
         {
             PropertyManagementRowUI rowInstance = Instantiate(rowPrefab, contentParent);
+
             rowInstance.Initialize(currentPlayer, property, isDebtResolutionMode);
         }
     }
@@ -107,4 +108,5 @@ public class PropertyManagementUIController : MonoBehaviour
         isDebtResolutionMode = currentDebtAmount > 0;
         RefreshUI();
     }
+
 }

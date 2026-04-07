@@ -181,7 +181,6 @@ namespace Managers.PlayerControllers
 
             int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
             RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
-
             RequestResolutionComplete();
         }
 
@@ -280,7 +279,7 @@ namespace Managers.PlayerControllers
                 });
         }
 
-        private void RefreshPropertyManagementUI(bool debtMode = false, int debtAmount = 0)
+       private void RefreshPropertyManagementUI(bool debtMode = false, int debtAmount = 0)
         {
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
@@ -306,8 +305,7 @@ namespace Managers.PlayerControllers
             {
                 RequestResolutionComplete();
                 return;
-            }
-
+            }dev
             int currentLevel = property.GetCurrentUpgradeLevel();
 
             if (currentLevel <= 0)
@@ -322,7 +320,6 @@ namespace Managers.PlayerControllers
 
             int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
             RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
-
             RequestResolutionComplete();
         }
     }
