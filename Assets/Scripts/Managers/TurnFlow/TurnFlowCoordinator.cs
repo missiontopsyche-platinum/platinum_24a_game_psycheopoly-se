@@ -148,6 +148,10 @@ namespace Assets.Scripts.Managers.TurnFlow
                 switch (result)
                 {
                     case JailUtility.EscapeAttemptResult.Escaped:
+                        jailEscapePlayer.SetSuppressNextDoublesBonus(true);
+                        Phase = TurnPhase.AwaitingMovement;
+                        return;
+
                     case JailUtility.EscapeAttemptResult.ForcedExitPaid:
                         Phase = TurnPhase.AwaitingMovement;
                         return;

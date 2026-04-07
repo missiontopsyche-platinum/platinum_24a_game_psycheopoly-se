@@ -26,6 +26,7 @@ public class Player : ScriptableObject
     private int doublesInRow;
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
+    private bool suppressNextDoublesBonus;
 
     private bool isBankrupt;
 
@@ -129,6 +130,16 @@ public class Player : ScriptableObject
     public int GetJailTurns() 
     { 
         return jailTurns; 
+    }
+
+    public void SetSuppressNextDoublesBonus(bool suppress)
+    {
+        suppressNextDoublesBonus = suppress;
+    }
+
+    public bool ShouldSuppressNextDoublesBonus()
+    {
+        return suppressNextDoublesBonus;
     }
 
     public int GetChanceCardCount()
