@@ -5,20 +5,18 @@ using UI;
 public class WinScreenController : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private TMP_Text winnerText;
+    [SerializeField] private TMP_Text winnerNameText;
 
     [Header("Scene Flow")]
     [SerializeField] private int mainMenuSceneIndex = 0;
 
     private void Start()
     {
-        if (winnerText != null)
+        if (winnerNameText != null)
         {
-            string winnerName = string.IsNullOrWhiteSpace(GameManager.LastWinningPlayerName)
+            winnerNameText.text = string.IsNullOrWhiteSpace(GameManager.LastWinningPlayerName)
                 ? "No Winner"
                 : GameManager.LastWinningPlayerName;
-
-            winnerText.text = $"Winner: {winnerName}";
         }
     }
 
