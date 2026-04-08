@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers.TurnOrder
@@ -75,6 +76,66 @@ namespace Assets.Scripts.Managers.TurnOrder
         private bool HasExtraTurn(int playerIndex)
         {
             return playerTurnState.HasExtraTurn(playerIndex);
+        }
+
+        public void PruneBankruptPlayers(IReadOnlyList<Player> players)
+        {
+            if (players == null) return;
+
+            int count = Mathf.Min(playerCount, players.Count);
+
+            for (int i = 0; i < count; i++)
+            {
+                Player player = players[i];
+
+                if (player == null)
+                    continue;
+
+                if (player.IsMarkedBankrupt() && !playerTurnState.IsEliminated(i))
+                {
+                    playerTurnState.Eliminate(i);
+                }
+            }
+        }
+
+        public bool IsPlayerEliminated(int playerIndex)
+        {
+            return playerTurnState.IsEliminated(playerIndex);
+        }
+
+        public int GetActivePlayerCount()
+        {
+            int activeCount = 0;
+
+            for (int i = 0; i < playerCount; i++)
+            {
+                if (!playerTurnState.IsEliminated(i))
+                {
+                    activeCount++;
+                }
+            }
+
+            return activeCount;
+        }
+
+        public int GetLastRemainingPlayerIndex()
+        {
+            int remainingPlayer = -1;
+            int activeCount = 0;
+
+            for (int i = 0; i < playerCount; i++)
+            {
+                if (playerTurnState.IsEliminated(i))
+                    continue;
+
+                remainingPlayer = i;
+                activeCount++;
+
+                if (activeCount > 1)
+                    return -1;
+            }
+
+            return activeCount == 1 ? remainingPlayer : -1;
         }
     }
 }

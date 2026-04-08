@@ -27,9 +27,28 @@ public class Player : ScriptableObject
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
 
+    private bool isBankrupt;
+
     private List<OwnableSpaceData> ownedProperties = new();
     private List<Card> getOutOfJailCards = new();
 
+    public void SetBankrupt(bool bankrupt)
+    {
+        isBankrupt = bankrupt;
+
+        if (bankrupt)
+        {
+            Logging.Logger.Warn("Player.SetBankrupt",
+                $"{p_Name} has been marked bankrupt.",
+                LogCategory.Gameplay,
+                this);
+        }
+    }
+
+    public bool IsMarkedBankrupt()
+    {
+        return isBankrupt;
+    }
 
     public void SetId(int id)
     {
@@ -361,9 +380,14 @@ public class Player : ScriptableObject
     /// </summary>
     /// <returns>Bool: True if the player has less than or 0 money, false otherwise</returns>
     public bool IsBankrupt(int price) {
-        if (money + assets > price) return false;
+        bool bankruptNow = money + assets <= price;
 
-        return true;
+        if (bankruptNow)
+        {
+            SetBankrupt(true);
+        }
+
+        return bankruptNow;
     }
 
     /// <summary>

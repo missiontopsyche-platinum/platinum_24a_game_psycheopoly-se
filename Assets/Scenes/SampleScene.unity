@@ -600,6 +600,8 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585549}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -624,7 +626,7 @@ Camera:
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.1509434, g: 0.1509434, b: 0.1509434, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -725,6 +727,28 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!45 &330585548
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 2100000, guid: 6dfb7ff17f56e704ebc0fff31eebbeb8, type: 2}
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 014d98be2dcae094baf224b83cac3662, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRotator
+  rotationSpeed: 0.001
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -2213,6 +2237,10 @@ PrefabInstance:
       propertyPath: playerManager
       value: 
       objectReference: {fileID: 1520450729}
+    - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+      propertyPath: winSceneIndex
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1622680094369037947, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
       propertyPath: movementStrategy
       value: 
