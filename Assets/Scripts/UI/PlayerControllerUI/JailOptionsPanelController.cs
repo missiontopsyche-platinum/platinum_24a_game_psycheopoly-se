@@ -29,10 +29,28 @@ public class JailOptionsPanelController : MonoBehaviour
 
     [SerializeField] private TMP_Text payFineButtonText;
     [SerializeField] private TMP_Text useCardButtonText;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Event Channels")]
     [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
     [SerializeField] private UIActionEventChannel uiActionEventChannel;
+
+    private void Awake()
+    {
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null)
+        {
+            Logging.Logger.Error("JailOptionsPanelController.Awake",
+                "CanvasGroup is missing from JailOptionsPanelController.",
+                LogCategory.UI,
+                this);
+            return;
+        }
+
+        Hide();
+    }
 
     private void OnEnable()
     {
@@ -115,12 +133,21 @@ public class JailOptionsPanelController : MonoBehaviour
 
     private void Show()
     {
-        gameObject.SetActive(true);
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
     }
 
     private void Hide()
     {
-        gameObject.SetActive(false);
+        if (canvasGroup == null)
+            return;
 
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 }
