@@ -272,6 +272,8 @@ namespace Managers.PlayerControllers
             RequestResolutionComplete();
         }
 
+        //handles player-selected jail actions by routing to JailUtility OR requesting a TFC-controlled escape roll 
+        // done to keep dice ownership out of PlayerController
         private void ResolveJailAction(JailActionContext context)
         {
             if (!isMyTurn || context == null)

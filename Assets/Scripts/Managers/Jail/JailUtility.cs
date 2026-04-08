@@ -10,7 +10,6 @@ namespace Assets.Scripts.Managers.Jail
         public enum FeePaymentResult { Paid, Bankrupt }
         public enum CardUseResult { Success, NoCardAvailable }
         
-        // temporary constants until we have a configurable ruleset hook established
         public const int MAX_TURNS_IN_JAIL = 3;
         public const int JAIL_FEE = 100;
 
