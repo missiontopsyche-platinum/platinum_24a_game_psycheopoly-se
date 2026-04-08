@@ -15,9 +15,19 @@ namespace Assets.Scripts.Managers.Rent
         [Header("Events")]
         [SerializeField] private IntEventChannel rentComputedChannel;
 
-
+        public static RentManager Instance { get; private set; } // call .Instance."SomeMethod" to run
         private StandardRuleSet rules;
         public IOwnershipService Ownership => ownership;
+
+        public void Start()
+        {
+            if (Instance != null && Instance != this) {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
 
         private void Awake()
         {

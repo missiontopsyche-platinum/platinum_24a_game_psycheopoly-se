@@ -403,18 +403,6 @@ PrefabInstance:
       propertyPath: diceManager
       value: 
       objectReference: {fileID: 1655155235}
-    - target: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
-      propertyPath: diceRolledChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
-    - target: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
-      propertyPath: rollDiceRequestedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
-    - target: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
-      propertyPath: pieceMoveCompletedChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
     - target: {fileID: 6165721797124852322, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
       propertyPath: m_SizeDelta.x
       value: 300
@@ -586,10 +574,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6864830721298275113, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1949892878}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
 --- !u!1 &330585543
 GameObject:
@@ -2158,29 +2143,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4765414939357916294, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
   m_PrefabInstance: {fileID: 294795782}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1949892874}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f0bbac2e74d66d418d595efa78d0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
---- !u!1 &1949892874 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6864830721298275113, guid: a1fe2d87101194244b2f16e624c87664, type: 3}
-  m_PrefabInstance: {fileID: 294795782}
-  m_PrefabAsset: {fileID: 0}
---- !u!225 &1949892878
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1949892874}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1001 &4739859537058119910
 PrefabInstance:
   m_ObjectHideFlags: 0

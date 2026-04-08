@@ -26,7 +26,6 @@ namespace Managers.PlayerControllers
         private readonly BooleanEventChannel diceRollPannelEventChannel;
 
 
-
         // I need to figure out the architecture for UI events that the human controller will make use of
         // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
         // the UI team.
@@ -154,14 +153,16 @@ namespace Managers.PlayerControllers
             {
                 if (controlledPlayer.IsBankrupt(cofe.amount))
                 {
-                    // TODO: Call event channel for UI
-                    //controlledPlayer.ClearOwnership();
-                    // Need to check with Hank to verify GameManager linkage. But currently no link, therefore we will create a "BankruptPlayer" event channel to fire.
-                    // Will return an int, only providing the player ID which SHOULD be the turn order number.
-                    // This will need to be listend to by the GameManager to remove the player from the order.
+                    // TODO: Call event channel for UI to notify of bankruptcy
+                    
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
                 }
+
+                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
             }
+
+            controlledPlayer.TrySpend(cofe.amount);
+            cofe.toPlayer.AddMoney(cofe.amount);
             RequestResolutionComplete();
         }
 
@@ -307,5 +308,7 @@ namespace Managers.PlayerControllers
                         LogCategory.UI);
                 });
         }
+
+       
     }
 }

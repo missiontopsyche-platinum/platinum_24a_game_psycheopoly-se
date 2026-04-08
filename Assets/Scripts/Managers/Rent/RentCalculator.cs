@@ -9,7 +9,7 @@ namespace Assets.Scripts.Managers.Rent
     public static class RentCalculator
     {
         public static int ComputeRent(
-                    ITileRentInfo tile,
+                    OwnableSpaceData tile,
                     Player owner,
                     int diceTotal,
                     IOwnershipService ownership,
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Managers.Rent
                         return 0;
 
                     //checks if property is mortgaged
-                    if (tile.IsMortgaged)
+                    if (tile.isMortgaged)
                         return 0;
 
                     switch (tile.Type)
