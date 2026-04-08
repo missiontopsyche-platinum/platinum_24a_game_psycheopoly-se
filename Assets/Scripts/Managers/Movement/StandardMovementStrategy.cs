@@ -114,6 +114,16 @@ namespace Assets.Scripts.Managers.Movement
         //executes current players movement using the DiceRolledEvent as payload object containing die values
         public void ExecuteRollMovement(DiceRolledEvent diceRoll)
         {
+            if (currentPlayer != null && currentPlayer.IsInJail())
+            {
+                Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
+                    $"Player {currentPlayer.GetId()} is in jail. Movement skipped.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
             if (currentPlayer == null)
             {
                 Logger.Warn("StandardMovementStrategy.ExecuteRollMovement", "No active player set for movement.",
