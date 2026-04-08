@@ -91,7 +91,8 @@ public class PlayerManager : MonoBehaviour
                     bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
-                    jailEventChannel);
+                    jailEventChannel,
+                    mortgageFinishedEventChannel);
             }
 
             playerController.Subscribe();
