@@ -5,7 +5,7 @@
         PropertyPurchase,
         PropertyManagement,
         RentNotification,
-        JailRelease,
+        JailOptions,
         DiceRoll,
         MortgagePropertyList,
         MortgagePropertySelected,

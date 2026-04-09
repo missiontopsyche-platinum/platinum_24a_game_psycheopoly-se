@@ -1,5 +1,6 @@
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
+using Assets.Scripts.Managers.Jail;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
@@ -77,6 +78,21 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
+        }
+
+        //PlayerController already established turn ownership, HumanPlayerController handles human-player
+        //specific decisions/flow
+        protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
+        {
+            base.CatchTurnStartedEvent(tse);
+
+            if (!isMyTurn)
+                return;
+
+            if (!controlledPlayer.IsInJail())
+                return;
+
+            ShowJailOptionsUI();
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -220,7 +236,15 @@ namespace Managers.PlayerControllers
                         Logger.Error("HumanPlayerController.HandleUIAction",
                             $"Expected PropertyManagement action context but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
-                    break;    
+                    break;
+                case UIType.JailOptions:
+                    if (uiae.Context is JailActionContext jailContext)
+                        ResolveJailAction(jailContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
+                    break;
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",
@@ -254,6 +278,69 @@ namespace Managers.PlayerControllers
             }
 
             RequestResolutionComplete();
+        }
+
+        //handles player-selected jail actions by routing to JailUtility OR requesting a TFC-controlled escape roll 
+        // done to keep dice ownership out of PlayerController
+        private void ResolveJailAction(JailActionContext context)
+        {
+            if (!isMyTurn || context == null)
+                return;
+
+            switch (context.Choice)
+            {
+                case JailChoice.PayFine:
+                    ResolveJailFinePayment();
+                    break;
+
+                case JailChoice.UseCard:
+                    ResolveJailCardUse();
+                    break;
+
+                case JailChoice.RollForEscape:
+                    RequestTurnAction(
+                        TurnActionType.RollForJailEscape,
+                        onAllowed: () =>
+                        {
+                            Logger.Info("HumanPlayerController.ResolveJailAction",
+                                $"{controlledPlayer.GetPName()} requested a jail escape roll.",
+                                LogCategory.Gameplay);
+                        },
+                        onDenied: () =>
+                        {
+                            Logger.Info("HumanPlayerController.ResolveJailAction",
+                                $"{controlledPlayer.GetPName()} was denied a jail escape roll.",
+                                LogCategory.Gameplay);
+                        });
+                    break;
+            }
+        }
+
+        //attempts to pay jail fine and raise bakruptcy is player can't pay
+        private void ResolveJailFinePayment()
+        {
+            JailUtility.FeePaymentResult result = JailUtility.PayFee(controlledPlayer);
+
+            Logger.Info("HumanPlayerController.ResolveJailFinePayment",
+                $"{controlledPlayer.GetPName()} jail fine result: {result}.",
+                LogCategory.Gameplay);
+
+            if (result == JailUtility.FeePaymentResult.Bankrupt)
+            {
+                bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+            }
+        }
+
+        //uses the GOOJFCard if the player has it, logs the result.
+        private void ResolveJailCardUse()
+        {
+            JailUtility.CardUseResult result = JailUtility.UseGetOutOfJailFree(controlledPlayer);
+
+            Logger.Info("HumanPlayerController.ResolveJailCardUse",
+                $"{controlledPlayer.GetPName()} jail card result: {result}.",
+                LogCategory.Gameplay);
+
+            
         }
 
         // This forces the end turn request to be validated the same way as any other player action,
@@ -321,6 +408,30 @@ namespace Managers.PlayerControllers
             int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
             RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
             RequestResolutionComplete();
+        }
+
+        //display jail options for the current human player
+        private void ShowJailOptionsUI()
+        {
+            bool hasGetOutOfJailCard =
+                controlledPlayer.GetChanceCardCount() > 0 ||
+                controlledPlayer.GetCommunityCardCount() > 0;
+
+
+            uiActivationEventChannel?.RaiseEvent(
+                new UIActivationEvent(
+                    UIType.JailOptions,
+                    new JailActivationContext(
+                        controlledPlayer.GetPName(),
+                        controlledPlayer.GetJailTurns(),
+                        JailUtility.MAX_TURNS_IN_JAIL,
+                        controlledPlayer.CanAfford(JailUtility.JAIL_FEE),
+                        hasGetOutOfJailCard,
+                        JailUtility.JAIL_FEE)));
+
+            Logger.Info("HumanPlayerController.ShowJailOptionsUI",
+                $"{controlledPlayer.GetPName()} is in jail. Showing jail options UI.",
+                LogCategory.UI);
         }
     }
 }
