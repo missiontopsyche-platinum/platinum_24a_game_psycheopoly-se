@@ -1262,11 +1262,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4731011133718650417, guid: 8ce0f3ad00c5365498925f5fd2378034, type: 3}
       propertyPath: MAX
-      value: 3
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4731011133718650417, guid: 8ce0f3ad00c5365498925f5fd2378034, type: 3}
       propertyPath: MIN
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4731011133718650417, guid: 8ce0f3ad00c5365498925f5fd2378034, type: 3}
       propertyPath: standardMovementStrategy
@@ -1347,6 +1347,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 785809588688004066, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2611089586777197970, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1359,6 +1363,18 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2914210936368304164, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 2914210936368304164, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 175
+      objectReference: {fileID: 0}
+    - target: {fileID: 2914210936368304164, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 3525788724680572907, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
       propertyPath: m_Name
       value: CardPopupCanvas
@@ -1367,9 +1383,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5983330354882020956, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7161903755086477776, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_Alpha
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7161903755086477776, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
       propertyPath: m_BlocksRaycasts
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9177798914744513283, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
+      propertyPath: m_Color.a
+      value: 0.007843138
       objectReference: {fileID: 0}
     - target: {fileID: 9191158525027134400, guid: 9e0a7367bf7b6c140a3f29631495c6d6, type: 3}
       propertyPath: m_Pivot.x
@@ -2386,6 +2414,10 @@ PrefabInstance:
     - target: {fileID: 1608953565433417261, guid: bd28d829a5b225243adf016fd8ea067e, type: 3}
       propertyPath: m_Name
       value: GeneralNotification
+      objectReference: {fileID: 0}
+    - target: {fileID: 1608953565433417261, guid: bd28d829a5b225243adf016fd8ea067e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3243004961253737216, guid: bd28d829a5b225243adf016fd8ea067e, type: 3}
       propertyPath: m_Pivot.x

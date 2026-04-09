@@ -30,6 +30,7 @@ namespace Managers.PlayerControllers
         protected IntEventChannel bankruptPlayerEventChannel;
         protected JailStateChangedEventChannel jailStateChangedEventChannel;
         protected ChargePlayerEventChannel chargePlayerEventChannel;
+        protected NoActionLandingEventChannel noLandingActionEventChannel;
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
         private struct PendingCallbacks
@@ -52,7 +53,8 @@ namespace Managers.PlayerControllers
             TurnActionResultEventChannel  turnActionResult,
             IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
-            ChargePlayerEventChannel chargePlayer)
+            ChargePlayerEventChannel chargePlayer,
+            NoActionLandingEventChannel noLandingAction)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -70,6 +72,7 @@ namespace Managers.PlayerControllers
             bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
             jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
             chargePlayerEventChannel = chargePlayer ?? throw new System.ArgumentNullException(nameof(chargePlayer));
+            noLandingActionEventChannel = noLandingAction ?? throw new System.ArgumentNullException(nameof(noLandingAction));
         }
         
         /// <summary>

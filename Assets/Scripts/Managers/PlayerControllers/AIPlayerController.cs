@@ -49,8 +49,9 @@ namespace Managers.PlayerControllers
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
             JailStateChangedEventChannel jailStateChanged,
-            ChargePlayerEventChannel chargePlayer)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer)
+            ChargePlayerEventChannel chargePlayer,
+            NoActionLandingEventChannel noLandingAction)
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;

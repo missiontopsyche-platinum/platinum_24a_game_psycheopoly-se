@@ -18,7 +18,7 @@ namespace Managers.PlayerControllers
         
 
         // event channel for bankruptcy
-        [SerializeField] public IntEventChannel bankruptPlayerEventChannel;
+        public IntEventChannel bankruptPlayerEventChannel;
 
         private readonly UIActivationEventChannel uiActivationEventChannel;
         private readonly UIActionEventChannel uiActionEventChannel;
@@ -58,8 +58,9 @@ namespace Managers.PlayerControllers
             TurnActionResultEventChannel turnActionResult,
             JailStateChangedEventChannel jailStateChanged,
             BooleanEventChannel diceRollPannel,
-            ChargePlayerEventChannel chargePlayer) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer)
+            ChargePlayerEventChannel chargePlayer,
+            NoActionLandingEventChannel noLandingAction) 
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
@@ -83,6 +84,7 @@ namespace Managers.PlayerControllers
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
             turnEndedEventChannel?.Subscribe(OnTurnEnded);
             chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
+            noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
         }
 
         public override void Unsubscribe()
@@ -94,6 +96,7 @@ namespace Managers.PlayerControllers
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
             chargePlayerEventChannel?.Unsubscribe(HandleChargePlayer);
+            noLandingActionEventChannel?.Unsubscribe(HandleNoLandingActionEvent);
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -338,6 +341,16 @@ namespace Managers.PlayerControllers
                 new GeneralNotificationContext(controlledPlayer,
                     "Charged Fee!",
                     $"You have been charged ${cpe.chargeAmount}.",
+                    () => RequestResolutionComplete())));
+        }
+
+        private void HandleNoLandingActionEvent(NoActionLandingEvent noActionLanding)
+        {
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, 
+                new GeneralNotificationContext(controlledPlayer,
+                    noActionLanding.spaceName,
+                    noActionLanding.flavorText,
                     () => RequestResolutionComplete())));
         }
 

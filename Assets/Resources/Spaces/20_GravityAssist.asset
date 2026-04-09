@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GravityAssistSpaceData
   spaceName: Gravity Assist
   spaceColor: {r: 0.94509804, g: 0.8862745, b: 0.8862745, a: 1}
+  shortDisplayName: 
+  groupColor: {r: 1, g: 1, b: 1, a: 1}
+  numberOfPropertiesInGroup: 0
+  smallIcon: {fileID: 0}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   artwork: {fileID: 21300000, guid: 0be85dcfdbe5543408c94a150769fb40, type: 3}
   flavorText: Gravity Assist! (Free Space)
+  noLandingActionEventChannel: {fileID: 11400000, guid: 5056b9ff8a3f66940af4d562f52cbad1, type: 2}
