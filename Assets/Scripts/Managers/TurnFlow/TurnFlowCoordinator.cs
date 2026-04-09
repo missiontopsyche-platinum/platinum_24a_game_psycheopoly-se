@@ -124,6 +124,8 @@ namespace Assets.Scripts.Managers.TurnFlow
         }
 
         // after dice roll, wait for movement to contine
+        // normal rolls advance movement, however, while flagged a jail roll, resolved through Jail
+        // Utility before deciding whether the turn continues or ends
         private void OnDiceRolled(DiceRolledEvent diceEvent)
         {
             if (IsGameOver) return;

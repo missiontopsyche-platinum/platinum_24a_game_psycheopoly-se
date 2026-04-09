@@ -7,13 +7,10 @@ using UnityEngine.UI;
 
 
 /// <summary>
-/// Controls UI Panel for the Jail Options for HUMAN players
-/// Renders jail decisions for
-/// - roll for escape
-/// - pay fine
-/// - use get out of jail free card
-/// This class is UI-only. It displays jail state, raises UI action events,
-/// and does NOT contain the underlying jail game logic.
+/// Controls Jail Options Panel for HUMAN players
+/// Renders current jail state, updates buttons avail. raises jail related UI actions,
+/// manages panel visbility through CanvasGroup.
+/// This class is UI-only; does not contain jail logic
 /// </summary>
 public class JailOptionsPanelController : MonoBehaviour
 {

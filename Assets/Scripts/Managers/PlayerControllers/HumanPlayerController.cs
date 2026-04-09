@@ -308,6 +308,7 @@ namespace Managers.PlayerControllers
             }
         }
 
+        //attempts to pay jail fine and raise bakruptcy is player can't pay
         private void ResolveJailFinePayment()
         {
             JailUtility.FeePaymentResult result = JailUtility.PayFee(controlledPlayer);
@@ -322,6 +323,7 @@ namespace Managers.PlayerControllers
             }
         }
 
+        //uses the GOOJFCard if the player has it, logs the result.
         private void ResolveJailCardUse()
         {
             JailUtility.CardUseResult result = JailUtility.UseGetOutOfJailFree(controlledPlayer);
