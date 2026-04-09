@@ -112,7 +112,7 @@ public class PropertyPurchaseUI : MonoBehaviour
     {
         canvasGroup.alpha = 1.0f;
         canvasGroup.interactable = true;
-        //canvasGroup.blocksRaycasts = false;
+        canvasGroup.blocksRaycasts = true;
 
         Logging.Logger.Error("PropertyPurchaseUI.Show",
                 "Showing the UI",
@@ -128,7 +128,7 @@ public class PropertyPurchaseUI : MonoBehaviour
         
         canvasGroup.alpha = 0.0f;
         canvasGroup.interactable = false;
-        //canvasGroup.blocksRaycasts = true;
+        canvasGroup.blocksRaycasts = false;
     }
 
     private void SetPropertyText(PropertySpaceData property)

@@ -52,6 +52,7 @@ public class PlayerManager : MonoBehaviour
         foreach (var playerConfig in playerConfigs)
         {
             var player = playerConfig.playerData;
+            player.ResetData();
             player.SetMoney(1500); // temporary until we have configurable game settings
             player.SetId(playerControllers.Count);
 

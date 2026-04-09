@@ -196,15 +196,19 @@ namespace Managers.PlayerControllers
                 TurnActionType.CompleteResolution,
                 onAllowed ?? (() =>
                 {
-                    Logger.Info("PlayerController.RequestResolutionComplete.OnAllowed",
-                        "Resolution Complete allowed!",
-                        LogCategory.Core);
+                    Logger.Debug(
+                    "PlayerController.RequestResolutionComplete",
+                    $"Resolution Complete.",
+                    LogCategory.Gameplay,
+                    this);
                 }),
                 onDenied ?? (() =>
                 {
-                    Logger.Warn("PlayerController.RequestResolutionComplete.OnDenied",
-                        "Resolution Complete DENIED!",
-                        LogCategory.Core);
+                    Logger.Debug(
+                    "PlayerController.RequestResolutionComplete",
+                    $"Resolution Denied.",
+                    LogCategory.Gameplay,
+                    this);
                 }));
         }
 

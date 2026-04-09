@@ -47,12 +47,14 @@ public class BankruptcyNotificationUI : MonoBehaviour
         playerNameText.text = playerName;
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
     }
 
     public void Hide()
     {
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
         actionEventChannel.RaiseEvent(new UIActionEvent(
             UIType.BankruptcyNotification, 
             new BankruptcyAcknowledgement(currentOnAcknowledged)));

@@ -467,4 +467,9 @@ public class Player : ScriptableObject
         Bankrupt
 
     }
+
+    public void ResetData()
+    {
+        ownedProperties.Clear();
+    }
 }
