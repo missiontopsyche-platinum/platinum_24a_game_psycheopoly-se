@@ -1,6 +1,8 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnOrder;
+using Assets.Scripts.Managers.Jail;
 using Logging;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -18,23 +20,46 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private TurnStartedEventChannel turnStartedChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
+        [SerializeField] private BooleanEventChannel diceRollRequestChannel;
+        [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
         [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
-        [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
 
+        [Header("Event Channels Out")]
+        [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
+        [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
+
+        
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
 
         public TurnPhase Phase { get; private set; } = TurnPhase.None;
         public int ActivePlayer { get; private set; } = -1;
+
+        //these are needed for TFC to know if we are rolling for a jail escape
+        private bool nextRollIsJailEscape = false;
+        private Player jailEscapePlayer = null;
         // prevents double-advance in same turn
         private bool awaitingEndTurn = false;
 
-        public void Initialize(TurnCycleManager tcm)
+        // fields to keep track of player states
+        private readonly List<Player> players = new();
+        public bool IsGameOver { get; private set; }
+        public static int LastWinningPlayerId { get; private set; } = -1;
+        public static string LastWinningPlayerName { get; private set; } = string.Empty;
+
+        public void Initialize(TurnCycleManager tcm, List<Player> gamePlayers)
         {
             if (turnCycleManager == null)
             {
                 turnCycleManager = tcm;
+            }
+
+            players.Clear();
+
+            if (gamePlayers != null)
+            {
+                players.AddRange(gamePlayers);
             }
         }
 
@@ -54,6 +79,9 @@ namespace Assets.Scripts.Managers.TurnFlow
                 return;
             }
 
+            IsGameOver = false;
+            LastWinningPlayerId = -1;
+            LastWinningPlayerName = string.Empty;
             int startingPlayer = turnCycleManager.CurrentPlayerIndex;
             turnStartedChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
         }
@@ -77,9 +105,15 @@ namespace Assets.Scripts.Managers.TurnFlow
         // a new turn's started, reset state, wait for new roll
         private void OnTurnStarted(TurnStartedEvent data)
         {
+            HandleBankruptcyPruningAtTurnStart();
+            if (IsGameOver)
+                return;
+
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;
+            nextRollIsJailEscape = false;
+            jailEscapePlayer = null;
 
             // This is a sanity check to make sure our TurnCycleManager is in sync with the turn
             if (turnCycleManager != null && turnCycleManager.CurrentPlayerIndex != data.playerId)
@@ -94,9 +128,54 @@ namespace Assets.Scripts.Managers.TurnFlow
         }
 
         // after dice roll, wait for movement to contine
+        // normal rolls advance movement, however, while flagged a jail roll, resolved through Jail
+        // Utility before deciding whether the turn continues or ends
         private void OnDiceRolled(DiceRolledEvent diceEvent)
         {
-            if (Phase != TurnPhase.AwaitingRoll) return;
+            if (IsGameOver) return;
+            if (Phase != TurnPhase.AwaitingRoll || diceEvent == null)
+                return;
+
+            //this is necessary to capture a proper jail-escape roll attempt
+            if (nextRollIsJailEscape && jailEscapePlayer != null)
+            {
+                JailUtility.EscapeAttemptResult result =
+                    JailUtility.AttemptEscape(jailEscapePlayer, diceEvent.dieOne, diceEvent.dieTwo);
+
+                Logging.Logger.Info("TurnFlowCoordinator.OnDiceRolled",
+                    $"{jailEscapePlayer.GetPName()} jail escape result: {result}.",
+                    LogCategory.Gameplay,
+                    this);
+
+                nextRollIsJailEscape = false;
+                jailEscapePlayer = null;
+
+
+                switch (result)
+                {
+                    case JailUtility.EscapeAttemptResult.Escaped:
+                        jailEscapePlayer.SetSuppressNextDoublesBonus(true);
+                        Phase = TurnPhase.AwaitingMovement;
+                        return;
+
+                    case JailUtility.EscapeAttemptResult.ForcedExitPaid:
+                        Phase = TurnPhase.AwaitingMovement;
+                        return;
+
+                    case JailUtility.EscapeAttemptResult.Failed:
+                        Phase = TurnPhase.Completed;
+                        awaitingEndTurn = true;
+                        CompleteTurnFlow();
+                        return;
+
+                    case JailUtility.EscapeAttemptResult.ForcedExitBankrupt:
+                        Phase = TurnPhase.Completed;
+                        awaitingEndTurn = true;
+                        CompleteTurnFlow();
+                        return;
+
+                }
+            }
             Phase = TurnPhase.AwaitingMovement;
         }
 
@@ -104,6 +183,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         // essenitally "complete resolution" part
         private void OnPieceMoveCompleted(bool success)
         {
+            if (IsGameOver) return;
             if (!success) return;
             //if (Phase != TurnPhase.AwaitingMovement) return;
 
@@ -121,6 +201,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         // decide if another turn is in order or if we can move onto next plater
         private void CompleteTurnFlow()
         {
+            if (IsGameOver) return;
             if (!awaitingEndTurn) return;
             if (turnCycleManager == null)
             {
@@ -140,6 +221,7 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         private void OnTurnActionRequested(TurnActionRequest request)
         {
+            if (IsGameOver) return;
             if (request == null || request.player == null)
                 return;
 
@@ -157,6 +239,10 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             switch (request.action)
             {
+                case TurnActionType.RollForJailEscape:
+                    BeginJailEscapeRoll(request.player);
+                    break;
+
                 case TurnActionType.CompleteResolution:
                     CompleteResolution();
                     break;
@@ -169,11 +255,29 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         private void CompleteResolution()
         {
+            if (IsGameOver) return;
             if (Phase != TurnPhase.AwaitingResolution)
                 return;
 
             Phase = TurnPhase.Completed;
             awaitingEndTurn = true;
+        }
+
+        //unique roll for jail escape
+        private void BeginJailEscapeRoll(Player player)
+        {
+            if (player == null)
+                return;
+
+            nextRollIsJailEscape = true;
+            jailEscapePlayer = player;
+
+            diceRollRequestChannel?.RaiseEvent(true);
+
+            Logging.Logger.Info("TurnFlowCoordinator.BeginJailEscapeRoll",
+                $"{player.GetPName()} is attempting to escape jail.",
+                LogCategory.Gameplay,
+                this);
         }
 
         public void SetAwaitingEndTurn(bool awaiting)
@@ -188,11 +292,19 @@ namespace Assets.Scripts.Managers.TurnFlow
 
         private bool IsAllowed(TurnActionType action, Player player)
         {
+            if (IsGameOver) return false;
             if (player.GetId() != ActivePlayer) return false;
 
+            //sends to the roll for escape turn action (since it's a unique dice roll)
             if (player != null && player.IsInJail())
-                return action == TurnActionType.EndTurn;
-            
+            {
+                return action switch
+                {
+                    TurnActionType.RollForJailEscape => Phase == TurnPhase.AwaitingRoll,
+                    TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
+                    _ => false
+                };
+            }
 
             return action switch
             {
@@ -208,6 +320,75 @@ namespace Assets.Scripts.Managers.TurnFlow
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false
             };
+        }
+
+        private void HandleBankruptcyPruningAtTurnStart()
+        {
+            if (turnCycleManager == null || players.Count == 0)
+                return;
+
+            turnCycleManager.PruneBankruptPlayers(players);
+
+            int activePlayers = turnCycleManager.GetActivePlayerCount();
+
+            if (activePlayers <= 1)
+            {
+                int winnerIndex = turnCycleManager.GetLastRemainingPlayerIndex();
+                Player winner = GetPlayerById(winnerIndex);
+                TriggerGameEnd(winner);
+                return;
+            }
+
+            if (turnCycleManager.IsPlayerEliminated(ActivePlayer))
+            {
+                Logging.Logger.Info("TurnFlowCoordinator.HandleBankruptcyPruningAtTurnStart",
+                    $"Player {ActivePlayer} was pruned before taking their turn. Advancing to next player.",
+                    LogCategory.Gameplay,
+                    this);
+
+                int nextPlayer = turnCycleManager.Advance();
+                turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+            }
+        }
+
+        private void TriggerGameEnd(Player winner)
+        {
+            if (IsGameOver)
+                return;
+
+            IsGameOver = true;
+            Phase = TurnPhase.None;
+            awaitingEndTurn = false;
+            ActivePlayer = -1;
+
+            LastWinningPlayerId = winner != null ? winner.GetId() : -1;
+            LastWinningPlayerName = winner != null ? winner.GetPName() : "No Winner";
+
+            Logging.Logger.Info("TurnFlowCoordinator.TriggerGameEnd",
+                $"Game over. Winner: {LastWinningPlayerName}",
+                LogCategory.Gameplay,
+                this);
+
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.SetWinner(winner);
+                GameManager.instance.EndGame();
+            }
+            else
+            {
+                Logging.Logger.Warn("TurnFlowCoordinator.TriggerGameEnd",
+                    "GameManager instance was null. Could not end game through GameManager.",
+                    LogCategory.Core,
+                    this);
+            }
+        }
+
+        private Player GetPlayerById(int playerId)
+        {
+            if (playerId < 0 || playerId >= players.Count)
+                return null;
+
+            return players[playerId];
         }
     }
 }

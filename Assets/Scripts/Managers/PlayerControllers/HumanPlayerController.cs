@@ -170,7 +170,7 @@ namespace Managers.PlayerControllers
             controlledPlayer.TrySpend(cofe.amount);
             cofe.toPlayer.AddMoney(cofe.amount);
 
-            HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name}"));
+            HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name} in rent!"));
                 
                 
             RequestResolutionComplete();

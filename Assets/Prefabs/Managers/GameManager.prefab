@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1454738168082213176}
   - component: {fileID: 1622680094369037947}
-  - component: {fileID: 6571623146043440598}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -46,21 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GameManager
   playerManager: {fileID: 0}
---- !u!114 &6571623146043440598
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6717631317294787115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73cfd04a5ac740a4ab42aea1ffc6a3a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::Assets.Scripts.Managers.TurnFlow.TurnFlowCoordinator
-  turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
-  diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
-  spaceResolutionCompletedChannel: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
-  turnActionRequestChannel: {fileID: 11400000, guid: 6c82dba37cd33b846a8b59b0e2ad8894, type: 2}
-  turnActionResultChannel: {fileID: 11400000, guid: 5e3b976d0ae06ec4d995ca9a1d9a37c9, type: 2}
-  actionResolvedEventChannel: {fileID: 11400000, guid: 53d4696fc061d4042a2af42aa5bf4ac1, type: 2}
+  winSceneIndex: 2

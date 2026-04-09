@@ -99,4 +99,43 @@ namespace Events.EventDataStructures.UI
             this.onAcknowledged = onAcknowledged;
         }
     }
+    public class PropertyDowngradeContext : UIActionContext
+    {
+        public PropertySpaceData Property { get; }
+
+        public PropertyDowngradeContext(PropertySpaceData property)
+        {
+            Property = property;
+        }
+    }
+
+    public class UnmortgagePropertyContext : UIActionContext
+    {
+        public OwnableSpaceData Tile { get; }
+
+        public UnmortgagePropertyContext(OwnableSpaceData tile)
+        {
+            Tile = tile;
+        }
+    }
+
+    /// <summary>
+    /// Jail UI event types & context for jail options flow
+    /// </summary>
+    public class JailActionContext : UIActionContext
+    {
+        public JailChoice Choice { get; }
+
+        public JailActionContext(JailChoice choice)
+        {
+            Choice = choice;
+        }
+    }
+
+    public enum JailChoice
+    {
+        RollForEscape,
+        PayFine,
+        UseCard
+    }
 }

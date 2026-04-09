@@ -4,14 +4,11 @@ using Data;
 using Logging;
 using System.Collections;
 using System.Collections.Generic;
+using UI;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    //adding in reference to Enum created in the Data folder - nnastase us11-t33
-    //default setter
-    public GameState gameState { get; private set; } = GameState.None;
-
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
 
@@ -20,19 +17,13 @@ public class GameManager : MonoBehaviour
     public TurnCycleManager turnCycleManager { get; private set; }
     public TurnFlowCoordinator turnFlowCoordinator { get; private set; }
 
+    [Header("Scene Flow")]
+    [SerializeField] private int winSceneIndex = 2;
 
     private int playerCount = 0;
 
-    // Task 111 legal state transition map
-    private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
-    {
-        { GameState.None,            new HashSet<GameState>{ GameState.Initializing } },
-        { GameState.Initializing,    new HashSet<GameState>{ GameState.WaitingForTurn } },
-        { GameState.WaitingForTurn,  new HashSet<GameState>{ GameState.PlayerTurn, GameState.GameOver } },
-        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.PlayerTurn, GameState.BotTurn, GameState.GameOver } },
-        { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
-        { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
-    };
+    public static int LastWinningPlayerId { get; private set; } = -1;
+    public static string LastWinningPlayerName { get; private set; } = string.Empty;
 
     // In Project Settings/Script Execution Order, this has been moved below all other
     // scripts to ensure they have the time to set themselves up on init before we
@@ -66,47 +57,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if (gameState == GameState.None)
-            StartGame();
-    }
-
-    //Task 112 which is a guarded transition API
-    public bool TryChangeState(GameState newState)
-    {
-        if (newState == gameState) return false;
-
-        if (!Allowed.TryGetValue(gameState, out var nexts) || !nexts.Contains(newState))
-        {
-            Logging.Logger.Warn("GameManager.TryChangeState",
-                $"[GameManager] Illegal transition: {gameState} -> {newState}",
-                LogCategory.Gameplay,
-                this);
-            return false;
-        }
-
-        var old = gameState;
-        gameState = newState;
-
-        Logging.Logger.Info("GameManager.TryChangeState",
-            $"[GameManager] State changed: {old} -> {newState}",
-            LogCategory.Gameplay,
-            this);
-        return true;
+        StartGame();
     }
 
     //start & end game to satisfy us11-35
     //pasing player count for now.
     public void StartGame()
     {
-        if (gameState != GameState.None && gameState != GameState.GameOver)
-        {
-            Logging.Logger.Warn("GameManager.StartGame",
-                $"Cannot start game from state: {gameState}",
-                LogCategory.Gameplay,
-                this);
-            return;
-        }
-
         if (playerManager == null)
         {
             Logging.Logger.Warn("GameManager.StartGame",
@@ -116,7 +73,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Initialize();
         SetUpGame();
     }
 
@@ -124,24 +80,20 @@ public class GameManager : MonoBehaviour
     {
         StopAllCoroutines();
 
-        if (!TryChangeState(GameState.GameOver))
-            return;
-
         Logging.Logger.Info("GameManager.EndGame",
             "Game ended.",
             LogCategory.Core,
             this);
-    }
 
-    public void Initialize()
-    {
-        if (!TryChangeState(GameState.Initializing))
-            return;
-
-        Logging.Logger.Debug("GameManager.Initialize",
-            "Game initialization started.",
-            LogCategory.Core,
-            this);
+        if (SceneTransitioner.instance != null)
+        {
+            SceneTransitioner.instance.TransitionScene(winSceneIndex);
+        }
+        else
+        {
+            // fallback if no scene transitioner exists in scene
+            UnityEngine.SceneManagement.SceneManager.LoadScene(winSceneIndex);
+        }
     }
 
 
@@ -151,6 +103,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void SetUpGame()
     {
+        LastWinningPlayerId = -1;
+        LastWinningPlayerName = string.Empty;
+
         // if there are no game configs loaded, do the temp one.
         // this allows us to start the game from the game screen quickly for testing.
         if (GameConfiguration.playerConfigs == null) 
@@ -162,9 +117,6 @@ public class GameManager : MonoBehaviour
         
         turnCycleManager = new TurnCycleManager(playerCount);
         InitializeTurnFlowCoordinator();
-
-        if (!TryChangeState(GameState.WaitingForTurn))
-            return;
 
         StartCoroutine(WaitForGameInit());
     }
@@ -225,7 +177,7 @@ public class GameManager : MonoBehaviour
         if (turnFlowCoordinator == null)
             turnFlowCoordinator = gameObject.AddComponent<TurnFlowCoordinator>();
 
-        turnFlowCoordinator.Initialize(turnCycleManager);
+        turnFlowCoordinator.Initialize(turnCycleManager, playerManager.GetAllPlayers());
 
         Logging.Logger.Info("GameManager.InitializeTurnFlowCoordinator",
             "TurnFlowCoordinator initialized by GameManager.",
@@ -253,14 +205,22 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (!TryChangeState(GameState.PlayerTurn))
-            return;
-
         Logging.Logger.Info("GameManager.BeginTurnSystem",
             "Initialization complete. Handing control to TurnFlowCoordinator.",
             LogCategory.Core,
             this);
 
         turnFlowCoordinator.StartGame();
+    }
+
+    public void SetWinner(Player winner)
+    {
+        LastWinningPlayerId = winner != null ? winner.GetId() : -1;
+        LastWinningPlayerName = winner != null ? winner.GetPName() : "No Winner";
+
+        Logging.Logger.Info("GameManager.SetWinner",
+            $"Winner set to: {LastWinningPlayerName}",
+            LogCategory.Core,
+            this);
     }
 }

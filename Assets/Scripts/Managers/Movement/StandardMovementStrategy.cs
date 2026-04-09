@@ -123,6 +123,16 @@ namespace Assets.Scripts.Managers.Movement
         // called by dice manager, begins movement
         public void ExecuteRollMovement(DiceRolledEvent diceRoll)
         {
+            if (currentPlayer != null && currentPlayer.IsInJail())
+            {
+                Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
+                    $"Player {currentPlayer.GetId()} is in jail. Movement skipped.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
             if (currentPlayer == null)
             {
                 Logger.Warn("StandardMovementStrategy.ExecuteRollMovement", "No active player set for movement.",
@@ -150,9 +160,30 @@ namespace Assets.Scripts.Managers.Movement
             int die2 = diceRoll.dieTwo;
             int total = diceRoll.totalRoll;
 
+            //make sure we account for jail-escape doubles roll
             bool isDouble = die1 == die2;
-            if (isDouble) doublesCount++;
-            else doublesCount = 0;
+
+            if (isDouble)
+            {
+                if (currentPlayer.ShouldSuppressNextDoublesBonus())
+                {
+                    currentPlayer.SetSuppressNextDoublesBonus(false);
+                    doublesCount = 0;
+
+                    Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
+                        $"Player {currentPlayer.GetId()} rolled doubles for a jail escape. No extra roll granted.",
+                        LogCategory.Gameplay,
+                        this);
+                }
+                else
+                {
+                    doublesCount++;
+                }
+            }
+            else
+            {
+                doublesCount = 0;
+            }
 
             //triple doubles > Go To Jail
             if (doublesCount >= 3)

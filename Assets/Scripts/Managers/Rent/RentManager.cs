@@ -1,5 +1,7 @@
 using UnityEngine;
 using Assets.Scripts.Managers.Rules;
+using Events.EventDataStructures.UI;
+using Assets.Scripts.Events.EventChannelTypes;
 
 namespace Assets.Scripts.Managers.Rent
 {
@@ -15,7 +17,13 @@ namespace Assets.Scripts.Managers.Rent
         [Header("Events")]
         [SerializeField] private IntEventChannel rentComputedChannel;
 
+        
+        [Header("Debt Resolution Events")]
+        [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
+        [SerializeField] private IntEventChannel bankruptPlayerEventChannel;
+
         public static RentManager Instance { get; private set; } // call .Instance."SomeMethod" to run
+
         private StandardRuleSet rules;
         public IOwnershipService Ownership => ownership;
 
@@ -119,18 +127,42 @@ namespace Assets.Scripts.Managers.Rent
             if (amount <= 0)
                 return true;
 
-            if (from.TrySpend(amount) == Player.FinancialStatus.Bankrupt)
+            Player.FinancialStatus spendStatus = from.TrySpend(amount);
+
+            switch (spendStatus)
             {
-                Logging.Logger.Warn(
-                    "RentManager.TransferMoney",
-                    $"Transfer blocked (insufficient funds). From={from.GetId()} To={to.GetId()} Amount=${amount} Have=${from.GetMoney()}",
-                    Logging.LogCategory.Economy,
-                    this);
-                return false;
+                case Player.FinancialStatus.Success:
+                    to.AddMoney(amount);
+                    return true;
+
+                case Player.FinancialStatus.Bankrupt:
+                    Logging.Logger.Warn(
+                        "RentManager.TransferMoney",
+                        $"Player {from.GetId()} is bankrupt and cannot cover rent of ${amount}.",
+                        Logging.LogCategory.Economy,
+                        this);
+
+                    bankruptPlayerEventChannel?.RaiseEvent(from.GetId());
+                    return false;
+
+                case Player.FinancialStatus.MortgageRequired:
+                    int debtAmount = Mathf.Max(0, amount - from.GetMoney());
+
+                    Logging.Logger.Info(
+                        "RentManager.TransferMoney",
+                        $"Player {from.GetId()} entered debt resolution for ${debtAmount}.",
+                        Logging.LogCategory.Economy,
+                        this);
+
+                    uiActivationEventChannel?.RaiseEvent(
+                        new UIActivationEvent(
+                            UIType.PropertyManagement,
+                            new PropertyManagementActivationContext(from, true, debtAmount)));
+
+                    return false;
             }
 
-            to.AddMoney(amount);
-            return true;
+            return false;
         }
     }
 }

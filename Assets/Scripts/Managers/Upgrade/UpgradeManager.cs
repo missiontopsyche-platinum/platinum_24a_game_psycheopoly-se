@@ -1,6 +1,5 @@
 using Events.EventDataStructures;
 using UnityEngine;
-using Events.EventDataStructures;
 
 public class UpgradeManager : MonoBehaviour
 {
