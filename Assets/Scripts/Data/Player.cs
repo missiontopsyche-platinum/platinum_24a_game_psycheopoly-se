@@ -254,15 +254,19 @@ public class Player : ScriptableObject
         return true;
     }
     public bool UnmortgageProperty(OwnableSpaceData tile) {
+        if (tile == null) return false;
         if (!tile.isMortgaged) return false;
 
-        if (this.TrySpend(tile.mortgagePayoffValue) == FinancialStatus.Success) //this will need updating when US571 pushes to dev
-        {
-            tile.isMortgageable = true;
-            tile.isMortgaged = false;
-            return true;
-        }
-        return false;
+        if (tile.mortgagePayoffValue <= 0)
+            SetMortgagePayoff(tile);
+
+        if (TrySpend(tile.mortgagePayoffValue) != FinancialStatus.Success)
+            return false;
+
+        tile.isMortgaged = false;
+        tile.isMortgageable = true;
+
+        return true;
     }
 
 
