@@ -5,6 +5,7 @@ using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
 using Logger = Logging.Logger;
+using UnityEngine;
 
 
 namespace Managers.PlayerControllers
@@ -146,24 +147,30 @@ namespace Managers.PlayerControllers
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
         {
             if (!isMyTurn) return;
-            
-            // activate Rent notification UI
 
-            // call Player method for charging rent
-            // Flow: Check if player has money -> If yes, try spend, return proper response via event channel
-            // If no -> Check for bankrupcy - If bankrupt, notify UI, call proper method on GameManger, call ClearOwnership
-            if (!controlledPlayer.CanAfford(cofe.amount))
+            Player.FinancialStatus status = controlledPlayer.TrySpend(cofe.amount);
+
+            switch (status)
             {
-                if (controlledPlayer.IsBankrupt(cofe.amount))
-                {
-                    // TODO: Call event channel for UI
-                    //controlledPlayer.ClearOwnership();
-                    // Need to check with Hank to verify GameManager linkage. But currently no link, therefore we will create a "BankruptPlayer" event channel to fire.
-                    // Will return an int, only providing the player ID which SHOULD be the turn order number.
-                    // This will need to be listend to by the GameManager to remove the player from the order.
+                case Player.FinancialStatus.Success:
+                    break;
+
+                case Player.FinancialStatus.Bankrupt:
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                }
+                    break;
+
+                case Player.FinancialStatus.MortgageRequired:
+                    uiActivationEventChannel?.RaiseEvent(
+                        new UIActivationEvent(
+                            UIType.PropertyManagement,
+                            new PropertyManagementActivationContext(
+                                controlledPlayer,
+                                true,
+                                Mathf.Max(0, cofe.amount - controlledPlayer.GetMoney())
+                            )));
+                    break;
             }
+
             RequestResolutionComplete();
         }
 
@@ -179,16 +186,17 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || context == null || context.tile == null) return;
 
-            if(controlledPlayer.MortgageProperty(context.tile))
+            if (controlledPlayer.MortgageProperty(context.tile))
             {
                 mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    this.controlledPlayer,
+                    controlledPlayer,
                     context.tile));
             }
 
-            RefreshPropertyManagementUI();
+            int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
+            RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
             RequestResolutionComplete();
         }
 
@@ -358,12 +366,12 @@ namespace Managers.PlayerControllers
                 });
         }
 
-        private void RefreshPropertyManagementUI()
+       private void RefreshPropertyManagementUI(bool debtMode = false, int debtAmount = 0)
         {
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.PropertyManagement,
-                    new PropertyManagementActivationContext(controlledPlayer)));
+                    new PropertyManagementActivationContext(controlledPlayer, debtMode, debtAmount)));
         }
 
         private void ResolveUnmortgageProperty(UnmortgagePropertyContext context)
@@ -380,6 +388,11 @@ namespace Managers.PlayerControllers
             if (!isMyTurn || context == null || context.Property == null) return;
 
             PropertySpaceData property = context.Property;
+            if (!controlledPlayer.GetValidDowngradableProperties().Contains(property))
+            {
+                RequestResolutionComplete();
+                return;
+            }
             int currentLevel = property.GetCurrentUpgradeLevel();
 
             if (currentLevel <= 0)
@@ -392,7 +405,8 @@ namespace Managers.PlayerControllers
             property.SetUpgradeLevel(currentLevel - 1);
             controlledPlayer.AddMoney(refund);
 
-            RefreshPropertyManagementUI();
+            int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
+            RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
             RequestResolutionComplete();
         }
 

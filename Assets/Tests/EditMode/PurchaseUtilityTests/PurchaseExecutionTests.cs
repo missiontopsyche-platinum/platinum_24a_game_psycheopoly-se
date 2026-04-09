@@ -8,7 +8,7 @@ namespace Tests.EditMode.PurchaseUtilityTests
     public class PurchaseExecutionTests
     {
         [Test]
-        public void PlayerCanAfford_ReturnsTrue_OwnershipChanged()
+        public void PlayerCanAffordOwnershipChanged()
         {
             var player = new MockPlayerBuilder().WithMoney(1500).Build();
             var prop = new MockOwnableBuilder().WithBuyPrice(100).BuildAsProperty();
@@ -24,7 +24,7 @@ namespace Tests.EditMode.PurchaseUtilityTests
         }
 
         [Test]
-        public void PlayerCantAfford_ReturnsFalse_OwnershipDoesntChange()
+        public void PlayerCantAffordOwnershipDoesntChange()
         {
             var player = new MockPlayerBuilder().WithMoney(50).Build();
             var prop = new MockOwnableBuilder().WithBuyPrice(100).BuildAsProperty();

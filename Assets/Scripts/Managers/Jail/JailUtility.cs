@@ -121,13 +121,12 @@ namespace Assets.Scripts.Managers.Jail
 
         private static FeePaymentResult ChargeJailFee(Player player)
         {
-            if (player.GetMoney() >= JAIL_FEE)
-            {
-                player.SetMoney(player.GetMoney() - JAIL_FEE);
-                return FeePaymentResult.Paid;
-            }
+            Player.FinancialStatus status = player.TrySpend(JAIL_FEE);
 
-            return FeePaymentResult.Bankrupt;
+            return status == Player.FinancialStatus.Success
+                ? FeePaymentResult.Paid
+                : FeePaymentResult.Bankrupt;
+            
         }
 
         private static void ReleasePlayer(Player player)
