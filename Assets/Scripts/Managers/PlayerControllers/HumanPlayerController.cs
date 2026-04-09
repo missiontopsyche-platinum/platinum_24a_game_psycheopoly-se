@@ -82,6 +82,7 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
             turnEndedEventChannel?.Subscribe(OnTurnEnded);
+            chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
         }
 
         public override void Unsubscribe()
@@ -92,6 +93,7 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
+            chargePlayerEventChannel?.Unsubscribe(HandleChargePlayer);
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -221,6 +223,9 @@ namespace Managers.PlayerControllers
                 case UIType.DiceRoll:
                       HandleDiceRollPannel();
                       break;
+                case UIType.GeneralNotification:
+                      HandleGeneralNotificationAcknowledgement((GeneralAcknowledgement)uiae.Context);
+                      break;
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",
@@ -310,6 +315,35 @@ namespace Managers.PlayerControllers
                 });
         }
 
-       
+        private void HandleChargePlayer(ChargePlayerEvent cpe)
+        {
+            if (!isMyTurn) return;
+
+            if (!controlledPlayer.CanAfford(cpe.chargeAmount))
+            {
+                if (controlledPlayer.IsBankrupt(cpe.chargeAmount))
+                {
+                    // TODO: Call event channel for UI to notify of bankruptcy
+
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                }
+
+                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
+            }
+
+            controlledPlayer.TrySpend(cpe.chargeAmount);
+           
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, 
+                new GeneralNotificationContext(controlledPlayer,
+                    "Charged Fee!",
+                    $"You have been charged ${cpe.chargeAmount}.",
+                    () => RequestResolutionComplete())));
+        }
+
+        private void HandleGeneralNotificationAcknowledgement(GeneralAcknowledgement ga)
+        {
+            ga.onAcknowledged.Invoke();
+        }
     }
 }

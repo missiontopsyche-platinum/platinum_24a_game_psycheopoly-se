@@ -10,7 +10,8 @@
         MortgagePropertyList,
         MortgagePropertySelected,
         PropertyUpgradeSelected,
-        BankruptcyNotification
+        BankruptcyNotification,
+        GeneralNotification
         // more to be added as needed
     }
 }

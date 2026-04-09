@@ -4,10 +4,12 @@ using Events.EventDataStructures.UI;
 using TMPro;
 using UnityEngine;
 
-public class BankruptcyNotificationUI : MonoBehaviour
+public class GeneralNotificationUI : MonoBehaviour
 {
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text playerNameText;
+    [SerializeField] private TMP_Text notificationTitle;
+    [SerializeField] private TMP_Text notificationText;
 
     [Header("Event Channels")] 
     [SerializeField] private UIActivationEventChannel activationEventChannel;
@@ -32,19 +34,21 @@ public class BankruptcyNotificationUI : MonoBehaviour
 
     private void OnActivation(UIActivationEvent uiae)
     {
-        if (uiae.UIType == UIType.BankruptcyNotification)
+        if (uiae.UIType == UIType.GeneralNotification)
         {
-            if (uiae.Context is BankruptcyNotificationContext bnc)
+            if (uiae.Context is GeneralNotificationContext gnc)
             {
-                currentOnAcknowledged = bnc.onAcknowledged;
-                Show(bnc.player.GetPName());
+                currentOnAcknowledged = gnc.onAcknowledged;
+                Show(gnc);
             }
         }
     }
 
-    private void Show(String playerName)
+    private void Show(GeneralNotificationContext gnc)
     {
-        playerNameText.text = playerName;
+        playerNameText.text = gnc.player.GetPName();
+        notificationTitle.text = gnc.notificationTitle;
+        notificationText.text = gnc.notificationText;
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
     }
@@ -54,8 +58,8 @@ public class BankruptcyNotificationUI : MonoBehaviour
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
         actionEventChannel.RaiseEvent(new UIActionEvent(
-            UIType.BankruptcyNotification, 
-            new BankruptcyAcknowledgement(currentOnAcknowledged)));
+            UIType.GeneralNotification, 
+            new GeneralAcknowledgement(currentOnAcknowledged)));
         currentOnAcknowledged = null;
     }
 }

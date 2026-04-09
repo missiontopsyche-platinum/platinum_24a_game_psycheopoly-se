@@ -81,7 +81,7 @@ namespace Managers.PlayerControllers
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
             jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
-            chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
+            
         }
 
         /// <summary>
@@ -191,8 +191,18 @@ namespace Managers.PlayerControllers
         {
             RequestTurnAction(
                 TurnActionType.CompleteResolution,
-                onAllowed ?? (() => { }),
-                onDenied);
+                onAllowed ?? (() =>
+                {
+                    Logger.Info("PlayerController.RequestResolutionComplete.OnAllowed",
+                        "Resolution Complete allowed!",
+                        LogCategory.Core);
+                }),
+                onDenied ?? (() =>
+                {
+                    Logger.Warn("PlayerController.RequestResolutionComplete.OnDenied",
+                        "Resolution Complete DENIED!",
+                        LogCategory.Core);
+                }));
         }
 
         /// <summary>
@@ -222,26 +232,6 @@ namespace Managers.PlayerControllers
                 pendingActions.Clear();
                 isMyTurn = false;
             }
-        }
-
-        protected void HandleChargePlayer(ChargePlayerEvent cpe)
-        {
-            if (!isMyTurn) return;
-
-            if (!controlledPlayer.CanAfford(cpe.chargeAmount))
-            {
-                if (controlledPlayer.IsBankrupt(cpe.chargeAmount))
-                {
-                    // TODO: Call event channel for UI to notify of bankruptcy
-
-                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                }
-
-                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
-            }
-
-            controlledPlayer.TrySpend(cpe.chargeAmount);
-            RequestResolutionComplete();
         }
     }
 }

@@ -145,6 +145,7 @@ namespace Assets.Scripts.Managers.Movement
                 return;
             }
 
+            movementInProgress = true;
             int die1 = diceRoll.dieOne;
             int die2 = diceRoll.dieTwo;
             int total = diceRoll.totalRoll;

@@ -1,4 +1,6 @@
-﻿namespace Events.EventDataStructures.UI
+﻿using System;
+
+namespace Events.EventDataStructures.UI
 {
     /// <summary>
     /// Generic class descriptor for UIActionContexts.
@@ -79,11 +81,22 @@
 
     public class BankruptcyAcknowledgement : UIActionContext
     {
-        public bool acknowledged { get; }
+        public Action onAcknowledged { get; }
+        
 
-        public BankruptcyAcknowledgement(bool acknowledged)
+        public BankruptcyAcknowledgement(Action onAcknowledged)
         {
-            this.acknowledged = acknowledged;
+            this.onAcknowledged = onAcknowledged;
+        }
+    }
+
+    public class GeneralAcknowledgement : UIActionContext
+    {
+        public Action onAcknowledged { get; }
+
+        public GeneralAcknowledgement(Action onAcknowledged)
+        {
+            this.onAcknowledged = onAcknowledged;
         }
     }
 }
