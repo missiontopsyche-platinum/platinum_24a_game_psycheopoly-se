@@ -44,4 +44,14 @@
             CanAfford = canAfford;
         }
     }
+
+    public class BankruptcyNotificationContext : UIActivationContext
+    {
+        public Player player { get; }
+
+        public BankruptcyNotificationContext(Player player)
+        {
+            this.player = player;
+        }
+    }
 }

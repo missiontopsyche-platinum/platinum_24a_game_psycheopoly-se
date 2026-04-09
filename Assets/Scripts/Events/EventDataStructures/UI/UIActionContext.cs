@@ -76,4 +76,14 @@
             this.property = property;
         }
     }
+
+    public class BankruptcyAcknowledgement : UIActionContext
+    {
+        public bool acknowledged { get; }
+
+        public BankruptcyAcknowledgement(bool acknowledged)
+        {
+            this.acknowledged = acknowledged;
+        }
+    }
 }
