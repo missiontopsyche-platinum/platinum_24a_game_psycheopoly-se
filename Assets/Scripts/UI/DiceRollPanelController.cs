@@ -78,6 +78,7 @@ public class DiceRollPanelController : MonoBehaviour
     {
         gameObject.GetComponent<CanvasGroup>().alpha = 0;
         gameObject.GetComponent<CanvasGroup>().interactable = false;
+        gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
@@ -89,5 +90,6 @@ public class DiceRollPanelController : MonoBehaviour
         //if (uiae.UIType == UIType.DiceRoll)
         gameObject.GetComponent<CanvasGroup>().alpha = 1;
         gameObject.GetComponent<CanvasGroup>().interactable = true;
+        gameObject.GetComponent<CanvasGroup>().blocksRaycasts = true;
     }
 }
