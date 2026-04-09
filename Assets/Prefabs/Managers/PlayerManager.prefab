@@ -61,3 +61,4 @@ MonoBehaviour:
   upgradeRequestEventChannel: {fileID: 11400000, guid: f79750f692d4f7749ae74188e05b6a5c, type: 2}
   bankruptcyEventChannel: {fileID: 11400000, guid: 299fb0abce6e2af46b026eb97d51dfa6, type: 2}
   jailEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}

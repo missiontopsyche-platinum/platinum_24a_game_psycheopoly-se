@@ -57,8 +57,9 @@ namespace Managers.PlayerControllers
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
             JailStateChangedEventChannel jailStateChanged,
-            BooleanEventChannel diceRollPannel) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged)
+            BooleanEventChannel diceRollPannel,
+            ChargePlayerEventChannel chargePlayer) 
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;

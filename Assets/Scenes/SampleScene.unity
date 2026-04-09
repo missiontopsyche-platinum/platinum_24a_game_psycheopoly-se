@@ -2149,6 +2149,103 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f0bbac2e74d66d418d595efa78d0cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
+--- !u!1001 &1876250183
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 134728973184637995, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336814160989551130, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
+      propertyPath: m_Name
+      value: PropertyPurchaseUICanvas
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0a694e87d9bbcd0459f50c365cdcfbda, type: 3}
 --- !u!1001 &4739859537058119910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2224,8 +2321,61 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6717631317294787115, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4739859537058119914}
+    - targetCorrespondingSourceObject: {fileID: 6717631317294787115, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4739859537058119913}
+    - targetCorrespondingSourceObject: {fileID: 6717631317294787115, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4739859537058119912}
   m_SourcePrefab: {fileID: 100100000, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+--- !u!1 &4739859537058119911 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6717631317294787115, guid: 95ed6393e19a42f4bb3a621a605eb111, type: 3}
+  m_PrefabInstance: {fileID: 4739859537058119910}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4739859537058119912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4739859537058119911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ccd3f32730a5704892a611a7645db3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Assets.Scripts.Managers.Rent.RentManager
+  ownership: {fileID: 0}
+  rentModifiers: {fileID: 0}
+  rentComputedChannel: {fileID: 0}
+--- !u!114 &4739859537058119913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4739859537058119911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d434661098192d48b87ce99073529c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Assets.Scripts.Managers.Rent.CostModifierService
+--- !u!114 &4739859537058119914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4739859537058119911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb615b7991d0d764ba31a6ab73e382ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Assets.Scripts.Managers.Rent.OwnershipServiceAdapter
 --- !u!1001 &4859880532935631089
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2366,3 +2516,4 @@ SceneRoots:
   - {fileID: 148462919}
   - {fileID: 1343799386}
   - {fileID: 889628983}
+  - {fileID: 1876250183}

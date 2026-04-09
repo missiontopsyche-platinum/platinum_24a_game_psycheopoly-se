@@ -107,8 +107,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             if (!success) return;
             //if (Phase != TurnPhase.AwaitingMovement) return;
 
-            Phase = TurnPhase.Completed;
-            awaitingEndTurn = true;
+            Phase = TurnPhase.AwaitingResolution;
 
             Logging.Logger.Info("TurnFlowCoordinator.OnPieceMoveCompleted",
                     "Move completed. Can end turn",
@@ -198,7 +197,8 @@ namespace Assets.Scripts.Managers.TurnFlow
             return action switch
             {
                 TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
-                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution
+                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingMovement
+                                              || Phase == TurnPhase.AwaitingResolution
                                               || (Phase == TurnPhase.Completed && awaitingEndTurn),
                 TurnActionType.ModifyProperty => Phase == TurnPhase.AwaitingRoll
                                                  || Phase == TurnPhase.AwaitingMovement

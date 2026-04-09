@@ -30,7 +30,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
     [SerializeField] public IntEventChannel bankruptcyEventChannel;
     [SerializeField] public JailStateChangedEventChannel jailEventChannel;
-
+    [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
     public List<PlayerController> playerControllers = new();
     
     private StandardRuleSet activeRuleset;
@@ -75,7 +75,8 @@ public class PlayerManager : MonoBehaviour
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
                     jailEventChannel,
-                    diceRollPannelEventChannel
+                    diceRollPannelEventChannel,
+                    chargePlayerEventChannel
                     );
             }
             else
@@ -94,7 +95,8 @@ public class PlayerManager : MonoBehaviour
                     bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
-                    jailEventChannel);
+                    jailEventChannel,
+                    chargePlayerEventChannel);
             }
 
             playerController.Subscribe();

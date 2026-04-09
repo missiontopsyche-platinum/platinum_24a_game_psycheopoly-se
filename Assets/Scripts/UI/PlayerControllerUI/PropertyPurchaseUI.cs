@@ -14,11 +14,12 @@ public class PropertyPurchaseUI : MonoBehaviour
     [SerializeField] private TMP_Text ownableNameText;
     [SerializeField] private TMP_Text ownableByBuyPriceText;
     [SerializeField] private Button acceptButton;
+    [SerializeField] private Button declineButton;
     [SerializeField] private TMP_Text buttonText;
     [SerializeField] private RectTransform propertyTextCanvas;
     [SerializeField] private RectTransform instrumentTextCanvas;
     [SerializeField] private RectTransform planetTextCanvas;
-    
+
     [Header("UI Elements/Property Text Elements")]
     [SerializeField] private TMP_Text propertyRentsText;
     [SerializeField] private TMP_Text propertyUpgradesText;
@@ -26,12 +27,20 @@ public class PropertyPurchaseUI : MonoBehaviour
     [Header("UI Elements/Instrument Text Elements")]
     [SerializeField] private TMP_Text instrumentPricesText;
 
-    [Header("Event Channels")] 
+    [Header("Event Channels")]
     [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
     [SerializeField] private UIActionEventChannel uiActionEventChannel;
 
-    private PropertySpaceData currentProperty;
+    private OwnableSpaceData currentProperty;
 
+    private CanvasGroup canvasGroup;
+
+    public void Start()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+
+        Hide();
+    }
     public void OnEnable()
     {
         uiActivationEventChannel.Subscribe(OnUIActivationEvent);
@@ -44,10 +53,13 @@ public class PropertyPurchaseUI : MonoBehaviour
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
     {
+        
         if (uiae.UIType != UIType.PropertyPurchase) return;
 
         if (uiae.Context is PurchaseActivationContext context)
         {
+            currentProperty = context.Property;
+
             // check the type of ownable to set the UI text panels
             if (context.Property is PropertySpaceData property)
             {
@@ -98,15 +110,25 @@ public class PropertyPurchaseUI : MonoBehaviour
 
     private void Show()
     {
-        this.gameObject.SetActive(true);
+        canvasGroup.alpha = 1.0f;
+        canvasGroup.interactable = true;
+        //canvasGroup.blocksRaycasts = false;
+
+        Logging.Logger.Error("PropertyPurchaseUI.Show",
+                "Showing the UI",
+                LogCategory.UI);
     }
 
     private void Hide()
     {
+        
         planetTextCanvas.gameObject.SetActive(false);
         instrumentTextCanvas.gameObject.SetActive(false);
         propertyTextCanvas.gameObject.SetActive(false);
-        this.gameObject.SetActive(false);
+        
+        canvasGroup.alpha = 0.0f;
+        canvasGroup.interactable = false;
+        //canvasGroup.blocksRaycasts = true;
     }
 
     private void SetPropertyText(PropertySpaceData property)
@@ -139,6 +161,8 @@ public class PropertyPurchaseUI : MonoBehaviour
 
     private void FirePurchaseAction(bool isPurchasing)
     {
+        Hide();
+
         if (!currentProperty) return;
         
         uiActionEventChannel?.RaiseEvent(
@@ -148,6 +172,6 @@ public class PropertyPurchaseUI : MonoBehaviour
                     isPurchasing,
                     currentProperty)));
 
-        Hide();
+        
     }
 }

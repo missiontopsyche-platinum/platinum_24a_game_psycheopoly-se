@@ -1,7 +1,9 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.TurnFlow;
+using Events.EventDataStructures;
 using Logging;
+using Mono.Cecil.Cil;
 using System;
 using System.Collections.Generic;
 
@@ -28,7 +30,7 @@ namespace Managers.PlayerControllers
         protected UpgradeRequestEventChannel upgradeRequestEventChannel;
         protected IntEventChannel bankruptPlayerEventChannel;
         protected JailStateChangedEventChannel jailStateChangedEventChannel;
-
+        protected ChargePlayerEventChannel chargePlayerEventChannel;
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
         private struct PendingCallbacks
@@ -50,7 +52,8 @@ namespace Managers.PlayerControllers
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel  turnActionResult,
             IntEventChannel bankruptPlayer,
-            JailStateChangedEventChannel jailStateChanged)
+            JailStateChangedEventChannel jailStateChanged,
+            ChargePlayerEventChannel chargePlayer)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -67,6 +70,7 @@ namespace Managers.PlayerControllers
             upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
             bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
             jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
+            chargePlayerEventChannel = chargePlayer ?? throw new System.ArgumentNullException(nameof(chargePlayer));
         }
         
         /// <summary>
@@ -78,6 +82,7 @@ namespace Managers.PlayerControllers
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
             jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
+            chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
         }
 
         /// <summary>
@@ -218,6 +223,26 @@ namespace Managers.PlayerControllers
                 pendingActions.Clear();
                 isMyTurn = false;
             }
+        }
+
+        protected void HandleChargePlayer(ChargePlayerEvent cpe)
+        {
+            if (!isMyTurn) return;
+
+            if (!controlledPlayer.CanAfford(cpe.chargeAmount))
+            {
+                if (controlledPlayer.IsBankrupt(cpe.chargeAmount))
+                {
+                    // TODO: Call event channel for UI to notify of bankruptcy
+
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                }
+
+                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
+            }
+
+            controlledPlayer.TrySpend(cpe.chargeAmount);
+            RequestResolutionComplete();
         }
     }
 }

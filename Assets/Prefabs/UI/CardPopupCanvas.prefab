@@ -725,7 +725,7 @@ MonoBehaviour:
   okButton: {fileID: 3811950362388187880}
   canvasGroup: {fileID: 7161903755086477776}
   artworkImage: {fileID: 4666790704326918140}
-  cardView: {fileID: 0}
+  cardView: {fileID: 2603740799952338372}
   cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
   fadeDuration: 0.25
 --- !u!1 &5635903033199217837
