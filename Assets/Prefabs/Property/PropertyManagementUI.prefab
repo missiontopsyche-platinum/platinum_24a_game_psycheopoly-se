@@ -438,6 +438,7 @@ GameObject:
   - component: {fileID: 6552906820639852885}
   - component: {fileID: 6964382946130541890}
   - component: {fileID: 2384893961920138939}
+  - component: {fileID: 4567426238329834402}
   m_Layer: 5
   m_Name: PropertyManagementUI
   m_TagString: Untagged
@@ -519,7 +520,22 @@ MonoBehaviour:
   playerNameText: {fileID: 81730547254878208}
   contentParent: {fileID: 7462593411413386362}
   rowPrefab: {fileID: 1884419600467953880, guid: 6f640b70c5febe548a95f87a12466727, type: 3}
-  upgradeResultChannel: {fileID: 11400000, guid: f1165c3b5efa4ab449cf21205c262f95, type: 2}
+  debtText: {fileID: 0}
+  debtBannerObject: {fileID: 0}
+  canvasGroup: {fileID: 4567426238329834402}
+  uiActivationEventChannel: {fileID: 0}
+--- !u!225 &4567426238329834402
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4649491929703448978}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &5115482769845563471
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ public class PropertyManagementUIController : MonoBehaviour
     [SerializeField] private PropertyManagementRowUI rowPrefab;
     [SerializeField] private TMP_Text debtText;
     [SerializeField] private GameObject debtBannerObject;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Event Channels")]
     [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
@@ -50,7 +51,12 @@ public class PropertyManagementUIController : MonoBehaviour
 
     private void Show()
     {
-        gameObject.SetActive(true);
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
     }
 
     public void Hide()
@@ -58,7 +64,22 @@ public class PropertyManagementUIController : MonoBehaviour
         if (isDebtResolutionMode && currentDebtAmount > 0)
             return;
 
-        gameObject.SetActive(false);
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    private void HideInstant()
+    {
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 
     public void RefreshUI()
