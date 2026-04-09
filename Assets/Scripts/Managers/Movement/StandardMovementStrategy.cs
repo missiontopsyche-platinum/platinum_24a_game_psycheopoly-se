@@ -246,6 +246,7 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Debug("StandardMovementStrategy.ResolveCompletedMovement",
                     "Doubles rolled. Current player still has an extra turn available.",
                     LogCategory.Gameplay,this);
+                GameManager.instance.turnCycleManager.GrantExtraTurn(playerId);
             }
             else
             {

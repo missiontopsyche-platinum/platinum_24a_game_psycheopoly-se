@@ -17,8 +17,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Manager References")]
     [SerializeField] private PlayerManager playerManager;
-    private TurnCycleManager turnCycleManager;
-    private TurnFlowCoordinator turnFlowCoordinator;
+    public TurnCycleManager turnCycleManager { get; private set; }
+    public TurnFlowCoordinator turnFlowCoordinator { get; private set; }
 
 
     private int playerCount = 0;

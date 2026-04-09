@@ -114,6 +114,12 @@ namespace PsycheOpoly.Board
             if (!VerifyBoard())
                 return;
             
+            foreach (SpaceData data in  boardSpaces)
+            {
+                if (data is PropertySpaceData pProp) pProp.ResetData();
+                else if (data is OwnableSpaceData oProp) oProp.ResetData();
+            }
+            
             boardRenderer?.GenerateBoard(boardSpaces);
             
             EnsureSubscribed();

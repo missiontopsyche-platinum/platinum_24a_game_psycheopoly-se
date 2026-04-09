@@ -27,6 +27,13 @@ public abstract class OwnableSpaceData : SpaceData
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
 
+    public void ResetData()
+    {
+        owner = null;
+        isMortgaged = false;
+        isMortgageable = true;
+    }
+
     public override void OnLanded(Player player)
     {
         // moved into OwnableSpaceData because every ownable should offer to buy if no owner
