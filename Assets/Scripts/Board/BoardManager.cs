@@ -293,6 +293,13 @@ namespace PsycheOpoly.Board
                 return;
             }
 
+            // move to exact board space
+            if (moveToSpaceEvent.targetMode == MoveToSpaceCardEffect.TargetMode.SpecificSpace)
+            {
+                MovePlayerToSpecificSpace(player, (int)moveToSpaceEvent.specificBoardSpace);
+                return;
+            }
+
             switch (moveToSpaceEvent.targetKind)
             {
                 case MoveToSpaceCardEffect.TargetSpaceType.CardSpace:
@@ -367,6 +374,35 @@ namespace PsycheOpoly.Board
                     this);
                 return;
             }
+
+            MovePlayer(new MovePlayerEvent(playerId, stepsForward));
+        }
+
+        private void MovePlayerToSpecificSpace(Player player, int targetIndex)
+        {
+            EnsureBoard();
+
+            int playerId = player.GetId();
+            int currentIdx = GetPlayerPosition(playerId);
+            int boardLength = boardSpaces.Length;
+
+            if (targetIndex < 0 || targetIndex >= boardLength)
+            {
+                Logger.Warn("BoardManager.MovePlayerToSpecificSpace",
+                    $"Invalid target index {targetIndex}.",
+                    LogCategory.Gameplay,
+                    this);
+                return;
+            }
+
+            int stepsForward = targetIndex >= currentIdx
+                ? targetIndex - currentIdx
+                : (boardLength - currentIdx) + targetIndex;
+
+            Logger.Debug("BoardManager.MovePlayerToSpecificSpace",
+                $"Moving player {playerId} from {currentIdx} to exact target {targetIndex} by {stepsForward} spaces.",
+                LogCategory.Gameplay,
+                this);
 
             MovePlayer(new MovePlayerEvent(playerId, stepsForward));
         }

@@ -8,6 +8,12 @@ using UnityEngine;
 public class MoveToSpaceCardEffect : CardEffect
 {
     // TODO: Not sure what spaces we need atm, will be expanded on Sprint 4
+    public enum TargetMode
+    {
+        NearestByType,
+        SpecificSpace
+    }
+
     // to take into account all space data.
     public enum TargetSpaceType
     {
@@ -22,15 +28,30 @@ public class MoveToSpaceCardEffect : CardEffect
         PropertySpace
     }
 
+    //exact card destinations
+    public enum SpecificBoardSpace
+    {
+        None = -1,
+        Go = 0,
+        MultispectralImager = 5,
+        Themis = 11,
+        Eunomia = 24,
+        Ceres = 39
+    }
+
+    public TargetMode targetMode = TargetMode.NearestByType;
     public TargetSpaceType targetType;
+    public SpecificBoardSpace specificBoardSpace = SpecificBoardSpace.None;
+
     public MoveToSpaceEventChannel moveToSpaceEventChannel;
+    
 
     public override void ApplyEffect(Player player)
     {
-        if (player == null || moveToSpaceEventChannel == null)
+        if (!isValidPlayer(player) || moveToSpaceEventChannel == null)
             return;
 
-        var evt = new MoveToSpaceEvent(player, targetType);
+        var evt = new MoveToSpaceEvent(player, targetMode, targetType, specificBoardSpace);
         moveToSpaceEventChannel.RaiseEvent(evt);
     }
 }
