@@ -1304,6 +1304,7 @@ GameObject:
   - component: {fileID: 1939232906291676040}
   - component: {fileID: 2996419351781963045}
   - component: {fileID: 287848196463999068}
+  - component: {fileID: 8420502218482347795}
   m_Layer: 5
   m_Name: JailUI
   m_TagString: Untagged
@@ -1352,6 +1353,7 @@ MonoBehaviour:
   closeButton: {fileID: 187833344318119340}
   payFineButtonText: {fileID: 3445015852950209371}
   useCardButtonText: {fileID: 1479704892388937685}
+  canvasGroup: {fileID: 8420502218482347795}
   uiActivationEventChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
   uiActionEventChannel: {fileID: 11400000, guid: 0788bc0a6333f4949ad1dfc7205b6859, type: 2}
 --- !u!223 &1939232906291676040
@@ -1417,6 +1419,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &8420502218482347795
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6352612772939643282}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6463424051054432032
 GameObject:
   m_ObjectHideFlags: 0

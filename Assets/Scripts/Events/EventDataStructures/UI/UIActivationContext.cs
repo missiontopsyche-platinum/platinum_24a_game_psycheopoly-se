@@ -1,4 +1,6 @@
-﻿namespace Events.EventDataStructures.UI
+﻿using System;
+
+namespace Events.EventDataStructures.UI
 {
     /// <summary>
     /// Generic class descriptor for UIActivationContexts.
@@ -42,6 +44,34 @@
             Property = property;
             Cost = cost;
             CanAfford = canAfford;
+        }
+    }
+
+    public class BankruptcyNotificationContext : UIActivationContext
+    {
+        public Player player { get; }
+        public Action onAcknowledged { get; }
+
+        public BankruptcyNotificationContext(Player player, Action onAcknowledged)
+        {
+            this.player = player;
+            this.onAcknowledged = onAcknowledged;
+        }
+    }
+
+    public class GeneralNotificationContext : UIActivationContext
+    {
+        public Player player { get; }
+        public String notificationTitle { get; }
+        public String notificationText { get; }
+        public Action onAcknowledged { get; }
+
+        public GeneralNotificationContext(Player player, String notificationTitle, String notificationText, Action onAcknowledged)
+        {
+            this.player = player;
+            this.notificationTitle = notificationTitle;
+            this.notificationText = notificationText;
+            this.onAcknowledged = onAcknowledged;
         }
     }
 

@@ -132,7 +132,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!1 &2923867060156675803
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +523,7 @@ MonoBehaviour:
   debtText: {fileID: 0}
   debtBannerObject: {fileID: 0}
   canvasGroup: {fileID: 4567426238329834402}
-  uiActivationEventChannel: {fileID: 0}
+  uiActivationEventChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
 --- !u!225 &4567426238329834402
 CanvasGroup:
   m_ObjectHideFlags: 0

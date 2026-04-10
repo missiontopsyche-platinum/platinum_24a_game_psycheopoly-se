@@ -190,6 +190,7 @@ GameObject:
   - component: {fileID: 4361251482060939760}
   - component: {fileID: 3861050146311106283}
   - component: {fileID: 3488012086290969502}
+  - component: {fileID: 2008437437307877673}
   m_Layer: 5
   m_Name: DicePanelUI
   m_TagString: Untagged
@@ -270,14 +271,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DicePanelController
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
-  pieceMoveCompletedChannel: {fileID: 0}
-  rollDiceRequestedChannel: {fileID: 0}
+  pieceMoveCompletedChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
+  rollDiceRequestedChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
+  uiActivationChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
   dieOneView: {fileID: 1939517040586240033}
   dieTwoView: {fileID: 2704001889494415945}
   totalText: {fileID: 0}
+  diceManager: {fileID: 0}
   rollButton: {fileID: 4253784929494234719}
-  hideUntilFirstRoll: 0
+  hideUntilFirstRoll: 1
   timeUntilDisableAfterRoll: 2
+--- !u!225 &2008437437307877673
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3242882054019138609}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3699817812424752990
 GameObject:
   m_ObjectHideFlags: 0

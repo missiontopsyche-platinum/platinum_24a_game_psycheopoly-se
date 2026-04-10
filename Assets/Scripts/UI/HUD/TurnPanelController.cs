@@ -16,6 +16,7 @@ public class TurnPanelController : UIPanelBase
     {
         Subscribe(turnStartedChannel, DisplayCurrentTurn);
         endTurnButton?.onClick.AddListener(OnEndTurnClicked);
+
         Logging.Logger.Trace("TurnPanelController.OnEnable",
             "Turn panel is now enabled.",
             LogCategory.UI,

@@ -44,6 +44,12 @@ public class PropertySpaceData : OwnableSpaceData
         BuildUpgradeCostTable();
     }
 
+    public void ResetData()
+    {
+        base.ResetData();
+        currentUpgradeLevel = 0;
+    }
+
     public override void OnLanded(Player player)
     {
         base.OnLanded(player);

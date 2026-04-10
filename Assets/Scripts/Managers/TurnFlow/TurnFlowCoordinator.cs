@@ -4,6 +4,7 @@ using Assets.Scripts.Managers.Jail;
 using Logging;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
@@ -14,9 +15,11 @@ namespace Assets.Scripts.Managers.TurnFlow
     /// </summary>
     public class TurnFlowCoordinator : MonoBehaviour
     {
-        [Header("Event Channels In")]
-        [SerializeField] private TurnStartedEventChannel turnStartedInChannel;
+        [FormerlySerializedAs("turnStartedInChannel")]
+        [Header("Event Channel")]
+        [SerializeField] private TurnStartedEventChannel turnStartedChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
+        [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
         [SerializeField] private BooleanEventChannel diceRollRequestChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
@@ -26,6 +29,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
 
+        
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
 
@@ -79,22 +83,22 @@ namespace Assets.Scripts.Managers.TurnFlow
             LastWinningPlayerId = -1;
             LastWinningPlayerName = string.Empty;
             int startingPlayer = turnCycleManager.CurrentPlayerIndex;
-            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
+            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(startingPlayer, 0));
         }
 
         private void OnEnable()
         {
-            turnStartedInChannel?.Subscribe(OnTurnStarted);
+            turnStartedChannel?.Subscribe(OnTurnStarted);
             diceRolledChannel?.Subscribe(OnDiceRolled);
-            pieceMoveCompletedChannel?.Subscribe(OnPieceMoveCompleted);
+            spaceResolutionCompletedChannel?.Subscribe(OnPieceMoveCompleted);
             turnActionRequestChannel?.Subscribe(OnTurnActionRequested);
         }
 
         private void OnDisable()
         {
-            turnStartedInChannel?.Unsubscribe(OnTurnStarted);
+            turnStartedChannel?.Unsubscribe(OnTurnStarted);
             diceRolledChannel?.Unsubscribe(OnDiceRolled);
-            pieceMoveCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
+            spaceResolutionCompletedChannel?.Unsubscribe(OnPieceMoveCompleted);
             turnActionRequestChannel?.Unsubscribe(OnTurnActionRequested);
         }
 
@@ -181,9 +185,14 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             if (IsGameOver) return;
             if (!success) return;
-            if (Phase != TurnPhase.AwaitingMovement) return;
+            //if (Phase != TurnPhase.AwaitingMovement) return;
 
             Phase = TurnPhase.AwaitingResolution;
+
+            Logging.Logger.Info("TurnFlowCoordinator.OnPieceMoveCompleted",
+                    "Move completed. Can end turn",
+                    LogCategory.Core,
+                    this);
 
             actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
         }
@@ -207,7 +216,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             Phase = TurnPhase.Completed;
 
             int nextPlayer = turnCycleManager.Advance();
-            turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+            turnStartedChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
         }
 
         private void OnTurnActionRequested(TurnActionRequest request)
@@ -300,7 +309,8 @@ namespace Assets.Scripts.Managers.TurnFlow
             return action switch
             {
                 TurnActionType.RollDice => Phase == TurnPhase.AwaitingRoll,
-                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingResolution
+                TurnActionType.BuyProperty => Phase == TurnPhase.AwaitingMovement
+                                              || Phase == TurnPhase.AwaitingResolution
                                               || (Phase == TurnPhase.Completed && awaitingEndTurn),
                 TurnActionType.ModifyProperty => Phase == TurnPhase.AwaitingRoll
                                                  || Phase == TurnPhase.AwaitingMovement

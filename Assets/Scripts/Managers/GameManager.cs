@@ -14,8 +14,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Manager References")]
     [SerializeField] private PlayerManager playerManager;
-    private TurnFlowCoordinator turnFlowCoordinator;
-    private TurnCycleManager turnCycleManager;
+    public TurnCycleManager turnCycleManager { get; private set; }
+    public TurnFlowCoordinator turnFlowCoordinator { get; private set; }
 
     [Header("Scene Flow")]
     [SerializeField] private int winSceneIndex = 2;
@@ -41,6 +41,18 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
+        
+        // ensure we find/have PlayerManager
+        if (playerManager == null)
+        {
+            playerManager = FindFirstObjectByType<PlayerManager>();
+
+            if (playerManager == null)
+            {
+                Logging.Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",
+                    LogCategory.Core, this);
+            }
+        }
     }
 
     private void Start()

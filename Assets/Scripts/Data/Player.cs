@@ -503,6 +503,10 @@ public class Player : ScriptableObject
 
     }
 
+    public void ResetData()
+    {
+        ownedProperties.Clear();
+    }
     public List<PropertySpaceData> GetValidDowngradableProperties()
 {
     var groups = ownedProperties

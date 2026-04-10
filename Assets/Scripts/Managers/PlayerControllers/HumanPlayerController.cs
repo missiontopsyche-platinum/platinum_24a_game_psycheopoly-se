@@ -1,11 +1,10 @@
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
-using Assets.Scripts.Managers.Jail;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
+using UnityEngine;
 using Logging;
 using Logger = Logging.Logger;
-using UnityEngine;
 
 
 namespace Managers.PlayerControllers
@@ -15,9 +14,16 @@ namespace Managers.PlayerControllers
         // attributes
 
         // event channels
+
+        
+
+        // event channel for bankruptcy
+        public IntEventChannel bankruptPlayerEventChannel;
+
         private readonly UIActivationEventChannel uiActivationEventChannel;
         private readonly UIActionEventChannel uiActionEventChannel;
         private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
+        private readonly BooleanEventChannel diceRollPannelEventChannel;
 
 
         // I need to figure out the architecture for UI events that the human controller will make use of
@@ -50,14 +56,23 @@ namespace Managers.PlayerControllers
             IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
-            JailStateChangedEventChannel jailStateChanged) 
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged)
+            JailStateChangedEventChannel jailStateChanged,
+            BooleanEventChannel diceRollPannel,
+            ChargePlayerEventChannel chargePlayer,
+            NoActionLandingEventChannel noLandingAction) 
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // human controller specific setup goes here
             uiActivationEventChannel = uiActivation;
             uiActionEventChannel = uiAction;
             mortgageFinishedEventChannel = mortgageFinished;
+            diceRollPannelEventChannel = diceRollPannel;
             bankruptPlayerEventChannel = bankruptPlayer;
+        }
+
+        ~HumanPlayerController()
+        {
+            Unsubscribe();
         }
 
         public override void Subscribe()
@@ -68,6 +83,8 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
             turnEndedEventChannel?.Subscribe(OnTurnEnded);
+            chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
+            noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
         }
 
         public override void Unsubscribe()
@@ -78,21 +95,8 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnership);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
-        }
-
-        //PlayerController already established turn ownership, HumanPlayerController handles human-player
-        //specific decisions/flow
-        protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
-        {
-            base.CatchTurnStartedEvent(tse);
-
-            if (!isMyTurn)
-                return;
-
-            if (!controlledPlayer.IsInJail())
-                return;
-
-            ShowJailOptionsUI();
+            chargePlayerEventChannel?.Unsubscribe(HandleChargePlayer);
+            noLandingActionEventChannel?.Unsubscribe(HandleNoLandingActionEvent);
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -129,8 +133,6 @@ namespace Managers.PlayerControllers
                 {
                     upgradeRequestEventChannel?.RaiseEvent(
                         new UpgradeRequestEvent(controlledPlayer, property));
-                    
-                    RefreshPropertyManagementUI();
 
                     Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
                         $"Raised upgrade request for {property.spaceName}.",
@@ -147,30 +149,30 @@ namespace Managers.PlayerControllers
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
         {
             if (!isMyTurn) return;
+            
+            // activate Rent notification UI
 
-            Player.FinancialStatus status = controlledPlayer.TrySpend(cofe.amount);
-
-            switch (status)
+            // call Player method for charging rent
+            // Flow: Check if player has money -> If yes, try spend, return proper response via event channel
+            // If no -> Check for bankrupcy - If bankrupt, notify UI, call proper method on GameManger, call ClearOwnership
+            if (!controlledPlayer.CanAfford(cofe.amount))
             {
-                case Player.FinancialStatus.Success:
-                    break;
-
-                case Player.FinancialStatus.Bankrupt:
+                if (controlledPlayer.IsBankrupt(cofe.amount))
+                {
+                    // TODO: Call event channel for UI to notify of bankruptcy
+                    
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                    break;
+                }
 
-                case Player.FinancialStatus.MortgageRequired:
-                    uiActivationEventChannel?.RaiseEvent(
-                        new UIActivationEvent(
-                            UIType.PropertyManagement,
-                            new PropertyManagementActivationContext(
-                                controlledPlayer,
-                                true,
-                                Mathf.Max(0, cofe.amount - controlledPlayer.GetMoney())
-                            )));
-                    break;
+                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
             }
 
+            controlledPlayer.TrySpend(cofe.amount);
+            cofe.toPlayer.AddMoney(cofe.amount);
+
+            HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name} in rent!"));
+                
+                
             RequestResolutionComplete();
         }
 
@@ -186,17 +188,15 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn || context == null || context.tile == null) return;
+            if (!isMyTurn) return;
 
-            if (controlledPlayer.MortgageProperty(context.tile))
+            if(controlledPlayer.MortgageProperty(context.tile))
             {
                 mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    controlledPlayer,
+                    this.controlledPlayer,
                     context.tile));
             }
 
-            int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
-            RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
             RequestResolutionComplete();
         }
 
@@ -227,24 +227,12 @@ namespace Managers.PlayerControllers
                      if (uiae.Context is PropertyUpgradeContext upgradeContext)
                          HandleUpgradeEvent(upgradeContext.property);
                      break;
-                case UIType.PropertyManagement:
-                    if (uiae.Context is PropertyDowngradeContext downgradeContext)
-                        ResolvePropertyDowngrade(downgradeContext);
-                    else if (uiae.Context is UnmortgagePropertyContext unmortgageContext)
-                        ResolveUnmortgageProperty(unmortgageContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected PropertyManagement action context but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.JailOptions:
-                    if (uiae.Context is JailActionContext jailContext)
-                        ResolveJailAction(jailContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
+                case UIType.DiceRoll:
+                      HandleDiceRollPannel();
+                      break;
+                case UIType.GeneralNotification:
+                      HandleGeneralNotificationAcknowledgement((GeneralAcknowledgement)uiae.Context);
+                      break;
                 default:
                     Logger.Debug("HumanPlayerController.HandleUIAction",
                         $"Unhandled UI Type: ${uiae.UIType}",
@@ -280,69 +268,6 @@ namespace Managers.PlayerControllers
             RequestResolutionComplete();
         }
 
-        //handles player-selected jail actions by routing to JailUtility OR requesting a TFC-controlled escape roll 
-        // done to keep dice ownership out of PlayerController
-        private void ResolveJailAction(JailActionContext context)
-        {
-            if (!isMyTurn || context == null)
-                return;
-
-            switch (context.Choice)
-            {
-                case JailChoice.PayFine:
-                    ResolveJailFinePayment();
-                    break;
-
-                case JailChoice.UseCard:
-                    ResolveJailCardUse();
-                    break;
-
-                case JailChoice.RollForEscape:
-                    RequestTurnAction(
-                        TurnActionType.RollForJailEscape,
-                        onAllowed: () =>
-                        {
-                            Logger.Info("HumanPlayerController.ResolveJailAction",
-                                $"{controlledPlayer.GetPName()} requested a jail escape roll.",
-                                LogCategory.Gameplay);
-                        },
-                        onDenied: () =>
-                        {
-                            Logger.Info("HumanPlayerController.ResolveJailAction",
-                                $"{controlledPlayer.GetPName()} was denied a jail escape roll.",
-                                LogCategory.Gameplay);
-                        });
-                    break;
-            }
-        }
-
-        //attempts to pay jail fine and raise bakruptcy is player can't pay
-        private void ResolveJailFinePayment()
-        {
-            JailUtility.FeePaymentResult result = JailUtility.PayFee(controlledPlayer);
-
-            Logger.Info("HumanPlayerController.ResolveJailFinePayment",
-                $"{controlledPlayer.GetPName()} jail fine result: {result}.",
-                LogCategory.Gameplay);
-
-            if (result == JailUtility.FeePaymentResult.Bankrupt)
-            {
-                bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-            }
-        }
-
-        //uses the GOOJFCard if the player has it, logs the result.
-        private void ResolveJailCardUse()
-        {
-            JailUtility.CardUseResult result = JailUtility.UseGetOutOfJailFree(controlledPlayer);
-
-            Logger.Info("HumanPlayerController.ResolveJailCardUse",
-                $"{controlledPlayer.GetPName()} jail card result: {result}.",
-                LogCategory.Gameplay);
-
-            
-        }
-
         // This forces the end turn request to be validated the same way as any other player action,
         // This makes sure that end turn can be blocked by effects that prevent the player from ending
         // their turn. This is also a workaround to separate AwaitingResolution and Completed states.
@@ -366,72 +291,76 @@ namespace Managers.PlayerControllers
                 });
         }
 
-       private void RefreshPropertyManagementUI(bool debtMode = false, int debtAmount = 0)
+        private void HandleDiceRollPannel()
         {
-            uiActivationEventChannel?.RaiseEvent(
-                new UIActivationEvent(
-                    UIType.PropertyManagement,
-                    new PropertyManagementActivationContext(controlledPlayer, debtMode, debtAmount)));
+            if (!isMyTurn) return;
+
+            Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
+                       "Dice Roll Pannel Reached.",
+                       LogCategory.UI);
+            RequestTurnAction(
+                TurnActionType.RollDice,
+                onAllowed: () =>
+                {
+                    uiActivationEventChannel?.RaiseEvent(
+                        new UIActivationEvent(
+                            UIType.DiceRoll,
+                            new PurchaseActivationContext(
+                                /*TODO: update input fields below*/
+                                null,
+                                0,
+                                controlledPlayer.CanAfford(0))));
+                    Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
+                       "Dice Roll Pannel Allowed.",
+                       LogCategory.UI);
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
+                        " Dice Roll Pannel UI blocked by TurnFlow.",
+                        LogCategory.UI);
+                });
         }
 
-        private void ResolveUnmortgageProperty(UnmortgagePropertyContext context)
+        private void HandleChargePlayer(ChargePlayerEvent cpe)
         {
-            if (!isMyTurn || context == null || context.Tile == null) return;
+            if (!isMyTurn) return;
 
-            controlledPlayer.UnmortgageProperty(context.Tile);
-            RefreshPropertyManagementUI();
-            RequestResolutionComplete();
-        }
-
-        private void ResolvePropertyDowngrade(PropertyDowngradeContext context)
-        {
-            if (!isMyTurn || context == null || context.Property == null) return;
-
-            PropertySpaceData property = context.Property;
-            if (!controlledPlayer.GetValidDowngradableProperties().Contains(property))
+            if (!controlledPlayer.CanAfford(cpe.chargeAmount))
             {
-                RequestResolutionComplete();
-                return;
+                if (controlledPlayer.IsBankrupt(cpe.chargeAmount))
+                {
+                    // TODO: Call event channel for UI to notify of bankruptcy
+
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                }
+
+                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
             }
-            int currentLevel = property.GetCurrentUpgradeLevel();
 
-            if (currentLevel <= 0)
-            {
-                RequestResolutionComplete();
-                return;
-            }
-
-            int refund = property.GetUpgradeCostForLevel(currentLevel) / 2;
-            property.SetUpgradeLevel(currentLevel - 1);
-            controlledPlayer.AddMoney(refund);
-
-            int debtRemaining = Mathf.Max(0, -controlledPlayer.GetMoney());
-            RefreshPropertyManagementUI(debtRemaining > 0, debtRemaining);
-            RequestResolutionComplete();
+            controlledPlayer.TrySpend(cpe.chargeAmount);
+           
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, 
+                new GeneralNotificationContext(controlledPlayer,
+                    "Charged Fee!",
+                    $"You have been charged ${cpe.chargeAmount}.",
+                    () => RequestResolutionComplete())));
         }
 
-        //display jail options for the current human player
-        private void ShowJailOptionsUI()
+        private void HandleNoLandingActionEvent(NoActionLandingEvent noActionLanding)
         {
-            bool hasGetOutOfJailCard =
-                controlledPlayer.GetChanceCardCount() > 0 ||
-                controlledPlayer.GetCommunityCardCount() > 0;
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, 
+                new GeneralNotificationContext(controlledPlayer,
+                    noActionLanding.spaceName,
+                    noActionLanding.flavorText,
+                    () => RequestResolutionComplete())));
+        }
 
-
-            uiActivationEventChannel?.RaiseEvent(
-                new UIActivationEvent(
-                    UIType.JailOptions,
-                    new JailActivationContext(
-                        controlledPlayer.GetPName(),
-                        controlledPlayer.GetJailTurns(),
-                        JailUtility.MAX_TURNS_IN_JAIL,
-                        controlledPlayer.CanAfford(JailUtility.JAIL_FEE),
-                        hasGetOutOfJailCard,
-                        JailUtility.JAIL_FEE)));
-
-            Logger.Info("HumanPlayerController.ShowJailOptionsUI",
-                $"{controlledPlayer.GetPName()} is in jail. Showing jail options UI.",
-                LogCategory.UI);
+        private void HandleGeneralNotificationAcknowledgement(GeneralAcknowledgement ga)
+        {
+            ga.onAcknowledged.Invoke();
         }
     }
 }

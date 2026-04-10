@@ -376,6 +376,7 @@ GameObject:
   - component: {fileID: 8656185287428884291}
   - component: {fileID: 8333602358015108452}
   - component: {fileID: 509818690083316123}
+  - component: {fileID: 8028765666363472098}
   m_Layer: 5
   m_Name: PropertyPurchaseUICanvas
   m_TagString: Untagged
@@ -419,6 +420,7 @@ MonoBehaviour:
   ownableNameText: {fileID: 9009844076533134656}
   ownableByBuyPriceText: {fileID: 5583321343418407951}
   acceptButton: {fileID: 8914160074932746412}
+  declineButton: {fileID: 6506776226905133057}
   buttonText: {fileID: 4360114536158324977}
   propertyTextCanvas: {fileID: 744444254025824293}
   instrumentTextCanvas: {fileID: 2191457419477728614}
@@ -491,6 +493,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &8028765666363472098
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1336814160989551130}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1733071853327256868
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,7 +915,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!1 &2710190898055412198
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,7 +1850,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!1 &6457679439287928309
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,16 +9,15 @@ public class LaunchPadSpaceData : SpaceData
     [SerializeField] public String flavorText = "WAITING FOR LAUNCH.";
     [SerializeField] public PlayerEventChannel playerGoesToJailEventChannel;
     [SerializeField] public PlayerEventChannel playerLeavesJailEventChannel;
+    [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
 
     public List<Player> playersInJail = new ();
     
     public override void OnLanded(Player player)
     {
         // do nothing
-        
-        // right now, this whole thing is basically a data container to be used by the UI to
-        // tell a user who is in jail right now... Maybe we add some other logic, but for 
-        // now this seems satisfactory.
+        noLandingActionEventChannel.RaiseEvent(new NoActionLandingEvent(
+            spaceName, flavorText));
     }
 
     public override void OnPassed(Player player)
