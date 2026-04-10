@@ -51,12 +51,14 @@ public class GeneralNotificationUI : MonoBehaviour
         notificationText.text = gnc.notificationText;
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
     }
 
     public void Hide()
     {
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
         actionEventChannel.RaiseEvent(new UIActionEvent(
             UIType.GeneralNotification, 
             new GeneralAcknowledgement(currentOnAcknowledged)));
