@@ -180,8 +180,21 @@ namespace Managers.PlayerControllers
         {
             if (!isMyTurn) return;
 
+            // ADDED: guard against malformed event payloads.
+            if (ppe == null || ppe.paidPlayer == null)
+            {
+                Logger.Error("HumanPlayerController.HandlePassedGo",
+                    "Received null PayPlayerEvent or player payload.",
+                    LogCategory.Gameplay);
+                return;
+            }
+
+            if (ppe.paidPlayer.GetId() != controlledPlayer.GetId())
+                return;
+
             // handle passing go
             // call player method for getting paid for passing go
+            controlledPlayer.AddMoney(ppe.amountPaid);
 
             RequestResolutionComplete();
         }

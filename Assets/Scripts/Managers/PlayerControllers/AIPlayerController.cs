@@ -282,7 +282,20 @@ namespace Managers.PlayerControllers
         {
             if (!isMyTurn) return;
 
+            if (ppe == null || ppe.paidPlayer == null)
+            {
+                Logger.Error("AIPlayerController.HandlePassedGo",
+                    "Received null PayPlayerEvent or player payload.",
+                    LogCategory.AI);
+                return;
+            }
+
+            if (ppe.paidPlayer.GetId() != controlledPlayer.GetId())
+                return;
+
             // handle passing go
+            controlledPlayer.AddMoney(ppe.amountPaid);
+
             RequestResolutionComplete();
         }
 
