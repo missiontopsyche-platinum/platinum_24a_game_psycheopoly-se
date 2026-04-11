@@ -4,6 +4,7 @@ using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
 using UnityEngine;
 using Logging;
+using Assets.Scripts.Managers.Rent;
 using Logger = Logging.Logger;
 
 namespace PsycheOpoly.Board
@@ -24,6 +25,10 @@ namespace PsycheOpoly.Board
         [SerializeField] public IntEventChannel passedGoChannel;
         [SerializeField] public MoveToSpaceEventChannel moveToSpaceEventChannel;
         [SerializeField] public JailStateChangedEventChannel jailStateChangedEventChannel;
+        [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
+
+        [Header("Services")]
+        [SerializeField] private CostModifierService costModifierService;
 
         [Header("Board Spaces")]
         [SerializeField] public BoardSpaceContainer boardSpaceContainer;
@@ -49,6 +54,7 @@ namespace PsycheOpoly.Board
             EnsureSubscribed();
 
             Logger.Initialize(LogSettings.Current());
+
         }
 
         private void OnEnable() => EnsureSubscribed();
@@ -293,66 +299,99 @@ namespace PsycheOpoly.Board
                 return;
             }
 
-            // move to exact board space
+            int targetIndex = -1;
+
+            // resolve target first so we can apply any arrival modifiers before moving.
             if (moveToSpaceEvent.targetMode == MoveToSpaceCardEffect.TargetMode.SpecificSpace)
             {
-                MovePlayerToSpecificSpace(player, (int)moveToSpaceEvent.specificBoardSpace);
+                targetIndex = (int)moveToSpaceEvent.specificBoardSpace;
+            }
+            else
+            {
+                switch (moveToSpaceEvent.targetKind)
+                {
+                    case MoveToSpaceCardEffect.TargetSpaceType.CardSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(CardSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.ChargeSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(ChargeSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.GoForLaunchSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(GoForLaunchSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.GoSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(GoSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.GravityAssistSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(GravityAssistSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.InstrumentSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(InstrumentSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.LaunchPadSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(LaunchPadSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.PlanetSpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(PlanetSpaceData));
+                        break;
+
+                    case MoveToSpaceCardEffect.TargetSpaceType.PropertySpace:
+                        targetIndex = FindClosestSpaceIndex(player, typeof(PropertySpaceData));
+                        break;
+
+                    default:
+                        Logger.Warn("BoardManager.OnMoveToSpaceEvent",
+                            "Unknown target space type.",
+                            LogCategory.Gameplay,
+                            this);
+                        return;
+                }
+            }
+
+            // apply the one-time modifier before landing resolves.
+            if (targetIndex < 0 || targetIndex >= boardSpaces.Length)
+            {
+                Logger.Warn("BoardManager.OnMoveToSpaceEvent",
+                    $"Resolved invalid target index {targetIndex}.",
+                    LogCategory.Gameplay,
+                    this);
                 return;
             }
 
-            switch (moveToSpaceEvent.targetKind)
+            // queue rent modifier before landing is resolved.
+            if (boardSpaces[targetIndex] is OwnableSpaceData ownableSpace) 
             {
-                case MoveToSpaceCardEffect.TargetSpaceType.CardSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(CardSpaceData));
-                    break;
+                switch (moveToSpaceEvent.arrivalRentModifier) 
+                {
+                    case MoveToSpaceCardEffect.ArrivalRentModifierType.DoubleRent: 
+                        costModifierService?.DoubleRentOnceForTile(ownableSpace); 
+                        break; 
 
-                case MoveToSpaceCardEffect.TargetSpaceType.ChargeSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(ChargeSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.GoForLaunchSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(GoForLaunchSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.GoSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(GoSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.GravityAssistSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(GravityAssistSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.InstrumentSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(InstrumentSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.LaunchPadSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(LaunchPadSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.PlanetSpace:
-                    MovePlayerToClosestSpaceType(player, typeof(PlanetSpaceData));
-                    break;
-
-                case MoveToSpaceCardEffect.TargetSpaceType.PropertySpace:
-                    MovePlayerToClosestSpaceType(player, typeof(PropertySpaceData));
-                    break;
-                default:
-                    Logger.Warn("BoardManager.OnMoveToSpaceEvent",
-                    "Unknown target space type.",
-                    LogCategory.Gameplay,
-                    this);
-                    break;
+                    case MoveToSpaceCardEffect.ArrivalRentModifierType.FreeRent: 
+                        costModifierService?.FreeNextRentForTenant(player); 
+                        break;
+                }
             }
+
+            MovePlayerToSpecificSpace(player, targetIndex);
+
+            // move-to-space effects, resolve landing now.
+            pieceMoveCompletedEventChannel?.RaiseEvent(true);
         }
 
-        private void MovePlayerToClosestSpaceType(Player player, Type targetSpaceType)
+        // Helper so move-to-space cards can resolve the actual destination first.
+        private int FindClosestSpaceIndex(Player player, Type targetSpaceType)
         {
             int playerId = player.GetId();
             int currentIdx = GetPlayerPosition(playerId);
             int boardLength = boardSpaces.Length;
-
-            int stepsForward = 0;
 
             for (int i = 1; i <= boardLength; i++)
             {
@@ -360,13 +399,17 @@ namespace PsycheOpoly.Board
                 SpaceData spaceAtIdx = boardSpaces[idx];
 
                 if (spaceAtIdx != null && targetSpaceType.IsInstanceOfType(spaceAtIdx))
-                {
-                    stepsForward = i;
-                    break;
-                }
+                    return idx;
             }
 
-            if (stepsForward <= 0)
+            return -1;
+        }
+
+        private void MovePlayerToClosestSpaceType(Player player, Type targetSpaceType)
+        {
+            int targetIndex = FindClosestSpaceIndex(player, targetSpaceType); 
+
+            if (targetIndex < 0)
             {
                 Logger.Warn("BoardManager.MovePlayerToClosestSpaceType",
                     $"No space of type {targetSpaceType.Name} found on the board.",
@@ -375,7 +418,7 @@ namespace PsycheOpoly.Board
                 return;
             }
 
-            MovePlayer(new MovePlayerEvent(playerId, stepsForward));
+            MovePlayerToSpecificSpace(player, targetIndex); 
         }
 
         private void MovePlayerToSpecificSpace(Player player, int targetIndex)

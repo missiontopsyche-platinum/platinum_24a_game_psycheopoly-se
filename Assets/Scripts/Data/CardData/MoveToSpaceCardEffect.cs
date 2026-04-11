@@ -39,9 +39,18 @@ public class MoveToSpaceCardEffect : CardEffect
         Ceres = 39
     }
 
+    public enum ArrivalRentModifierType
+    {
+        None,
+        DoubleRent,
+        FreeRent
+    }
+
     public TargetMode targetMode = TargetMode.NearestByType;
     public TargetSpaceType targetType;
     public SpecificBoardSpace specificBoardSpace = SpecificBoardSpace.None;
+    // Enum so we can support both double and free rent.
+    [SerializeField] private ArrivalRentModifierType arrivalRentModifier = ArrivalRentModifierType.None;
 
     public MoveToSpaceEventChannel moveToSpaceEventChannel;
     
@@ -51,7 +60,13 @@ public class MoveToSpaceCardEffect : CardEffect
         if (!isValidPlayer(player) || moveToSpaceEventChannel == null)
             return;
 
-        var evt = new MoveToSpaceEvent(player, targetMode, targetType, specificBoardSpace);
+        var evt = new MoveToSpaceEvent( 
+            player,
+            targetMode,
+            targetType, 
+            specificBoardSpace,
+            arrivalRentModifier); // rent modifier flag in the move request.
+
         moveToSpaceEventChannel.RaiseEvent(evt);
     }
 }

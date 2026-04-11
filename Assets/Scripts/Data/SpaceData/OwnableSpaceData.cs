@@ -2,7 +2,7 @@ using Events.EventDataStructures;
 using UnityEngine;
 using Assets.Scripts.Managers.Rent;
 
-public abstract class OwnableSpaceData : SpaceData
+public abstract class OwnableSpaceData : SpaceData, ITileRentInfo
 {
     [SerializeField] public int buyPrice; // board value, price for first purchase
     [SerializeField] public int collaborationValue; // AKA Mortgage value
@@ -22,6 +22,7 @@ public abstract class OwnableSpaceData : SpaceData
     public abstract int BaseRent { get; }
     public abstract int[] RentByHouses { get; }
 
+    bool ITileRentInfo.IsMortgaged => isMortgaged;
 
     [Header("Ownable Event Channels")]
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
