@@ -2,6 +2,7 @@
 using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
+using Events.EventDataStructures.UI;
 using Logging;
 using System;
 using System.Collections.Generic;
@@ -220,11 +221,22 @@ namespace Managers.PlayerControllers
         /// </summary>
         protected virtual void HandleJailStateChanged(JailStateChangedEvent jailEvent)
         {
+            if (!isMyTurn) return;
+
             if (jailEvent == null || jailEvent.player == null)
                 return;
 
             if (jailEvent.player.GetId() != controlledPlayer.GetId())
                 return;
+
+            /* remove this later. Just for stuff
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification,
+                new GeneralNotificationContext(controlledPlayer,
+                    noActionLanding.spaceName,
+                    noActionLanding.flavorText,
+                    () => RequestResolutionComplete())));
+            */
 
             controlledPlayer.SetInJail(jailEvent.inJail);
             controlledPlayer.SetJailTurns(jailEvent.jailTurns);
