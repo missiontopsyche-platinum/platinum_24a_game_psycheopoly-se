@@ -444,8 +444,8 @@ public class Player : ScriptableObject
         FinancialStatus status = TrySpend(price);
         if (status  != FinancialStatus.Success) return status;
 
-        this.AddOwnedProperty(tile);
-        ownedProperties.Add(tile);
+        AddOwnedProperty(tile);
+        //ownedProperties.Add(tile);
 
         assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
         return status;

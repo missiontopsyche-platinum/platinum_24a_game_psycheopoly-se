@@ -20,18 +20,16 @@ public class PropertyManagementButtonController : UIPanelBase
 
     private void OnEnable()
     {
+        Debug.Log("PropertyManagementButtonController OnEnable");
+
         Subscribe(turnStartedChannel, OnTurnStarted);
         Subscribe(addPlayerEventChannel, AddPlayer);
 
         if (propertyManagementButton != null)
+        {
+            propertyManagementButton.onClick.RemoveListener(OnPropertyManagementClicked);
             propertyManagementButton.onClick.AddListener(OnPropertyManagementClicked);
-
-        Logging.Logger.Trace(
-            "PropertyManagementButtonController.OnEnable",
-            "Property management button controller enabled.",
-            LogCategory.UI,
-            this
-        );
+        }
     }
 
     private void OnDisable()
@@ -40,59 +38,53 @@ public class PropertyManagementButtonController : UIPanelBase
             propertyManagementButton.onClick.RemoveListener(OnPropertyManagementClicked);
 
         ClearSubscriptions();
-
-        Logging.Logger.Trace(
-            "PropertyManagementButtonController.OnDisable",
-            "Property management button controller disabled.",
-            LogCategory.UI,
-            this
-        );
     }
 
     private void OnTurnStarted(TurnStartedEvent turnStartedEvent)
     {
+        Debug.Log("OnTurnStarted fired");
+
         if (turnStartedEvent == null)
         {
-            Logging.Logger.Warn(
-                "PropertyManagementButtonController.OnTurnStarted",
-                "TurnStartedEvent is null.",
-                LogCategory.UI,
-                this
-            );
+            Debug.Log("TurnStartedEvent is null");
             return;
         }
 
         currentPlayerId = turnStartedEvent.playerId;
+        Debug.Log("Current player id set to: " + currentPlayerId);
     }
 
     private void AddPlayer(Player player)
     {
+        Debug.Log("AddPlayer fired for: " + (player == null ? "null" : player.GetPName()));
+
         if (player == null)
             return;
 
-        if (playersList.Contains(player))
-            return;
+        if (!playersList.Contains(player))
+            playersList.Add(player);
 
-        playersList.Add(player);
+        Debug.Log("Player list count: " + playersList.Count);
     }
 
     private Player GetCurrentPlayer()
     {
-        return playersList.Find(player => player.GetId() == currentPlayerId);
+        Player player = playersList.Find(p => p.GetId() == currentPlayerId);
+        Debug.Log("GetCurrentPlayer result: " + (player == null ? "null" : player.GetPName()));
+        return player;
     }
 
     public void OnPropertyManagementClicked()
     {
+        Debug.Log("Property button clicked");
+        Debug.Log("Current player id when clicked: " + currentPlayerId);
+        Debug.Log("Players count when clicked: " + playersList.Count);
+
         Player currentPlayer = GetCurrentPlayer();
 
         if (currentPlayer == null)
         {
-            Logging.Logger.Warn(
-                "PropertyManagementButtonController.OnPropertyManagementClicked",
-                $"Could not find current player for playerId {currentPlayerId}.",
-                LogCategory.UI,
-                this
-            );
+            Debug.LogWarning("Could not find current player for playerId " + currentPlayerId);
             return;
         }
 
@@ -103,11 +95,6 @@ public class PropertyManagementButtonController : UIPanelBase
             )
         );
 
-        Logging.Logger.Info(
-            "PropertyManagementButtonController.OnPropertyManagementClicked",
-            $"Opened property management for player {currentPlayer.GetPName()}.",
-            LogCategory.UI,
-            this
-        );
+        Debug.Log("Raised PropertyManagement activation event");
     }
 }
