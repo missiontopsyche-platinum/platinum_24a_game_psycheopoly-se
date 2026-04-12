@@ -95,14 +95,14 @@ namespace Managers.PlayerControllers
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
             // TODO: This needs to be implemented and property integrated. Currently the actions don't *do* anything.
-            base.CatchTurnStartedEvent(tse);
+            //base.CatchTurnStartedEvent(tse);
 
-            if (!isMyTurn) return;
+            //if (!isMyTurn) return;
 
-            myTurnActive = true;
-            endTurnRequested = false;
+           //myTurnActive = true;
+            //endTurnRequested = false;
             
-            HandleOptionalActions();
+            //HandleOptionalActions();
 
             // TODO This might need to run as a coroutine so that we can await the completed movement
             // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
@@ -110,13 +110,62 @@ namespace Managers.PlayerControllers
             // place.
 
             // AI must roll dice or the game stalls at AwaitingRoll.
+           // RequestTurnAction(
+             //   TurnActionType.RollDice,
+               // onAllowed: () =>
+                //{
+                 //   if (diceRollRequestChannel == null)
+                  //  {
+                   //     Logger.Error("AIPlayerController.CatchTurnStartedEvent",
+                     //       "DiceRollRequestChannel not found. AI cannot roll dice.",
+                       //     LogCategory.AI);
+                    //    return;
+                    //}
+
+                 //   diceRollRequestChannel.RaiseEvent(true);
+
+                 //   Logger.Info("AIPlayerController.CatchTurnStartedEvent",
+                 //       $"AI {controlledPlayer.GetPName()} rolled dice.",
+                //        LogCategory.AI);
+              //  },
+              //  onDenied: () =>
+              //  {
+               //     Logger.Warn("AIPlayerController.CatchTurnStartedEvent",
+               //         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
+               //         LogCategory.AI);
+             //   });
+            // wait for resolution of the movement phase (land on space, resolve space)
+
+         //   HandleOptionalActions();
+            // end turn
+
+            base.CatchTurnStartedEvent(tse);
+
+            if (!isMyTurn) return;
+
+            myTurnActive = true;
+            endTurnRequested = false;
+
+            HandleOptionalActions();
+
+            if (controlledPlayer.IsInJail())
+            {
+                HandleJailTurnStart();
+                return;
+            }
+
+            StartNormalRollFlow();
+        }
+
+        private void StartNormalRollFlow()
+        {
             RequestTurnAction(
                 TurnActionType.RollDice,
                 onAllowed: () =>
                 {
                     if (diceRollRequestChannel == null)
                     {
-                        Logger.Error("AIPlayerController.CatchTurnStartedEvent",
+                        Logger.Error("AIPlayerController.StartNormalRollFlow",
                             "DiceRollRequestChannel not found. AI cannot roll dice.",
                             LogCategory.AI);
                         return;
@@ -124,20 +173,16 @@ namespace Managers.PlayerControllers
 
                     diceRollRequestChannel.RaiseEvent(true);
 
-                    Logger.Info("AIPlayerController.CatchTurnStartedEvent",
+                    Logger.Info("AIPlayerController.StartNormalRollFlow",
                         $"AI {controlledPlayer.GetPName()} rolled dice.",
                         LogCategory.AI);
                 },
                 onDenied: () =>
                 {
-                    Logger.Warn("AIPlayerController.CatchTurnStartedEvent",
+                    Logger.Warn("AIPlayerController.StartNormalRollFlow",
                         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
                         LogCategory.AI);
                 });
-            // wait for resolution of the movement phase (land on space, resolve space)
-
-            HandleOptionalActions();
-            // end turn
         }
 
         private void HandleOptionalActions()
