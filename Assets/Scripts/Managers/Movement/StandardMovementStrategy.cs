@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
+using UnityEngine;
 using PsycheOpoly.Board;
 using Logging;
 using Logger = Logging.Logger;
@@ -20,14 +22,31 @@ namespace Assets.Scripts.Managers.Movement
 
         [Header("Event Channels")]
         [SerializeField] private MovePlayerEventChannel movePlayerChannel;
-        [SerializeField] private IntEventChannel goToJailChannel;
+        [SerializeField] private JailStateChangedEventChannel goToJailChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
+        [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
+        [SerializeField] private DiceRolledEventChannel diceRolledEventChannel;
 
         private int doublesCount = 0;
         private Player currentPlayer;
         private int[] lastPath;
         private bool normalMoveCompletedThisTurn = false;
+
+        private void OnEnable()
+        {
+            turnStartedEventChannel?.Subscribe(OnTurnStarted);
+            pieceMoveCompletedEventChannel?.Subscribe(ResolveCompletedMovement);
+            diceRolledEventChannel?.Subscribe(ExecuteRollMovement);
+        }
+
+
+        private void OnDisable()
+        {
+            turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
+            pieceMoveCompletedEventChannel?.Unsubscribe(ResolveCompletedMovement);
+        }
+
         private bool movementInProgress = false;
 
         private void Awake()
@@ -55,16 +74,6 @@ namespace Assets.Scripts.Managers.Movement
                 }
             }
 
-        }
-
-        private void OnEnable()
-        {
-            turnStartedEventChannel?.Subscribe(OnTurnStarted);
-        }
-
-        private void OnDisable()
-        {
-            turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
         }
 
 
@@ -111,15 +120,24 @@ namespace Assets.Scripts.Managers.Movement
                 doublesCount = 0;
         }
 
-        //executes current players movement using the DiceRolledEvent as payload object containing die values
+        // called by dice manager, begins movement
         public void ExecuteRollMovement(DiceRolledEvent diceRoll)
         {
+            if (currentPlayer != null && currentPlayer.IsInJail())
+            {
+                Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
+                    $"Player {currentPlayer.GetId()} is in jail. Movement skipped.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
             if (currentPlayer == null)
             {
                 Logger.Warn("StandardMovementStrategy.ExecuteRollMovement", "No active player set for movement.",
                     LogCategory.Gameplay, this);
                 return;
-
             }
 
             if (boardManager == null)
@@ -135,17 +153,37 @@ namespace Assets.Scripts.Managers.Movement
                     $"Movement already in progress for player {currentPlayer.GetId()}.",
                     LogCategory.Gameplay, this);
                 return;
-
-
             }
 
+            movementInProgress = true;
             int die1 = diceRoll.dieOne;
             int die2 = diceRoll.dieTwo;
             int total = diceRoll.totalRoll;
 
+            //make sure we account for jail-escape doubles roll
             bool isDouble = die1 == die2;
-            if (isDouble) doublesCount++;
-            else doublesCount = 0;
+
+            if (isDouble)
+            {
+                if (currentPlayer.ShouldSuppressNextDoublesBonus())
+                {
+                    currentPlayer.SetSuppressNextDoublesBonus(false);
+                    doublesCount = 0;
+
+                    Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
+                        $"Player {currentPlayer.GetId()} rolled doubles for a jail escape. No extra roll granted.",
+                        LogCategory.Gameplay,
+                        this);
+                }
+                else
+                {
+                    doublesCount++;
+                }
+            }
+            else
+            {
+                doublesCount = 0;
+            }
 
             //triple doubles > Go To Jail
             if (doublesCount >= 3)
@@ -161,34 +199,32 @@ namespace Assets.Scripts.Managers.Movement
                 lastPath = null;
 
                 if (goToJailChannel != null)
-                    goToJailChannel.RaiseEvent(currentPlayer.GetId());
+                    goToJailChannel.RaiseEvent(new JailStateChangedEvent(currentPlayer, true, 0));
                 else
                     boardManager.SetPlayerPosition(currentPlayer.GetId(), 10);
 
                 return;
             }
 
-            int playerId = currentPlayer.GetId();
-            int startIndex = boardManager.GetPlayerPosition(playerId);
+            // Standard movement
+            int startIndex = boardManager.GetPlayerPosition(currentPlayer.GetId());
             int endIndex = NormalizeIndex(startIndex + total, boardManager.boardSize);
+
             int[] pathIndices = BuildPathIndices(startIndex, total, boardManager.boardSize);
 
-            Logger.Debug("StandardMovementStrategy.ExecuteRollMovement",
-                $"Player {playerId} rolled {die1}+{die2}={total} moving from {startIndex} to {endIndex}.",
+            Logger.Debug("StandardMovementStrategy",
+                $"Player {currentPlayer.GetId()} rolled {die1}+{die2}={total} moving from {startIndex}→{endIndex}",
                 LogCategory.Gameplay, this);
 
+
+            movePlayerChannel?.RaiseEvent(new MovePlayerEvent(currentPlayer.GetId(), total, pathIndices));
+            
+            // store to run "OnPassed" on spaces
             lastPath = pathIndices;
-            movementInProgress = true;
-
-            normalMoveCompletedThisTurn = false;
-
-            MovePlayerEvent moveEvent = new MovePlayerEvent(playerId, total, pathIndices);
-            movePlayerChannel?.RaiseEvent(moveEvent);
-
-
         }
 
         //resolves passed spaces and landed spaces, caller will invoke after movement completion signals
+        // called by PieceMoveCompleted event fired by Piece at the end of the movement animation
         public void ResolveCompletedMovement(bool movementSucceeded)
         {
             if (!movementSucceeded)
@@ -207,7 +243,7 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Warn("StandardMovementStrategy.ResolveCompletedMovement",
                     "ResolveCompletedMovement called with no movement in progress.",
                     LogCategory.Gameplay, this);
-                return;
+                //return;
             }
 
             if (normalMoveCompletedThisTurn)
@@ -234,8 +270,7 @@ namespace Assets.Scripts.Managers.Movement
                 $"Player {playerId} landed on {landed?.GetType().Name ?? "Unknown"} at index {currentPos}.",
                 LogCategory.Gameplay,this);
 
-
-
+            
             landed?.OnLanded(currentPlayer);
 
             if (doublesCount > 0)
@@ -243,6 +278,7 @@ namespace Assets.Scripts.Managers.Movement
                 Logger.Debug("StandardMovementStrategy.ResolveCompletedMovement",
                     "Doubles rolled. Current player still has an extra turn available.",
                     LogCategory.Gameplay,this);
+                GameManager.instance.turnCycleManager.GrantExtraTurn(playerId);
             }
             else
             {
@@ -254,13 +290,6 @@ namespace Assets.Scripts.Managers.Movement
             movementInProgress = false;
             normalMoveCompletedThisTurn = true;
             spaceResolutionCompletedChannel?.RaiseEvent(true);
-        }
-
-
-        // returns true for when doubles are rolled and the player has an extra roll
-        public bool HasExtraRollAvailable()
-        {
-            return currentPlayer != null && doublesCount > 0 && !movementInProgress;
         }
 
         private static int NormalizeIndex(int raw, int boardSize)

@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7bff854e90ee8d4c865c312d408942a, type: 3}
-  m_Name: GameStateChangedEventChannel
-  m_EditorClassIdentifier: PsycheOpoly.Runtime::GameStateChangedEventChannel
+  m_Script: {fileID: 11500000, guid: c25196b797424bd4b0ca419d1c3c1715, type: 3}
+  m_Name: PassedGoEventChannel
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PayPlayerEventChannel

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1454738168082213176}
   - component: {fileID: 1622680094369037947}
+  - component: {fileID: 1572015464418388955}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -44,28 +45,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f2227d971b6ec4692b378f2e2e4fe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GameManager
-  diceRollPanel: {fileID: 0}
-  gameStateChangedChannel: {fileID: 11400000, guid: 86fd75f120dbc2341b1ea7b4db08811f, type: 2}
+  playerManager: {fileID: 0}
+  winSceneIndex: 2
+--- !u!114 &1572015464418388955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6717631317294787115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73cfd04a5ac740a4ab42aea1ffc6a3a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Assets.Scripts.Managers.TurnFlow.TurnFlowCoordinator
   turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
-  playerMovedChannel: {fileID: 11400000, guid: 356c213dbafbabb469f336213aac3e9c, type: 2}
-  initializePlayerCountChannel: {fileID: 11400000, guid: 1ffd839d51a8772428ccd8ac76dfcb46, type: 2}
   diceRolledChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
-  movePlayerChannel: {fileID: 11400000, guid: 320aec7fb93e00c4386db53bb1ec706c, type: 2}
-  pieceMoveCompletedChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
-  rollDiceRequestedChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
-  cardDrawnChannel: {fileID: 11400000, guid: 7f7e92ade0a412e49bfe3509cab52af5, type: 2}
-  turnEndedChannel: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
   spaceResolutionCompletedChannel: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
-  purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
-  chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
-  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
-  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}
-  playerDataUpdatedEventChannel: {fileID: 11400000, guid: 4aa6a3d44e5700a41b40f36abb24ff19, type: 2}
-  diceManager: {fileID: 0}
-  boardManager: {fileID: 0}
-  turnCycleManager: {fileID: 0}
-  movementStrategy: {fileID: 0}
-  rulesManager: {fileID: 0}
-  dieOne: 0
-  dieTwo: 0
-  totalRolled: 0
+  diceRollRequestChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
+  pieceMoveCompletedChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
+  turnActionRequestChannel: {fileID: 11400000, guid: 6c82dba37cd33b846a8b59b0e2ad8894, type: 2}
+  turnActionResultChannel: {fileID: 11400000, guid: 5e3b976d0ae06ec4d995ca9a1d9a37c9, type: 2}
+  actionResolvedEventChannel: {fileID: 11400000, guid: 53d4696fc061d4042a2af42aa5bf4ac1, type: 2}
+  turnStartedOutChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}

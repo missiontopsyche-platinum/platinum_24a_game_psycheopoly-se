@@ -26,6 +26,8 @@ public abstract class SpaceData : ScriptableObject
     public abstract void OnLanded(Player player);
     public abstract void OnPassed(Player player);
 
+   
+
     public virtual SpaceHoverEvent OnHover()
     {
         var payload = new SpaceHoverEvent(this);

@@ -49,7 +49,7 @@ MonoBehaviour:
   turnEndedEventChannel: {fileID: 11400000, guid: 4a5f30a94fb94ce48859360c64725c28, type: 2}
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
-  passedGoPaymentChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  passedGoPaymentChannel: {fileID: 11400000, guid: d715c49d04e652c409179a3022544eb1, type: 2}
   diceRollRequestChannel: {fileID: 11400000, guid: 0695d76788b637e43a8c86c9b91a116d, type: 2}
   turnActionRequestEventChannel: {fileID: 11400000, guid: 6c82dba37cd33b846a8b59b0e2ad8894, type: 2}
   turnActionResultEventChannel: {fileID: 11400000, guid: 5e3b976d0ae06ec4d995ca9a1d9a37c9, type: 2}
@@ -57,5 +57,9 @@ MonoBehaviour:
   uiActionEventChannel: {fileID: 11400000, guid: 0788bc0a6333f4949ad1dfc7205b6859, type: 2}
   mortgageFinishedEventChannel: {fileID: 11400000, guid: 8164590295a479b4292147ee96441fb7, type: 2}
   actionResolvedEventChannel: {fileID: 11400000, guid: 53d4696fc061d4042a2af42aa5bf4ac1, type: 2}
+  diceRollPannelEventChannel: {fileID: 11400000, guid: ccf4e43db6f48b0418bb5de71af95589, type: 2}
   upgradeRequestEventChannel: {fileID: 11400000, guid: f79750f692d4f7749ae74188e05b6a5c, type: 2}
   bankruptcyEventChannel: {fileID: 11400000, guid: 299fb0abce6e2af46b026eb97d51dfa6, type: 2}
+  jailEventChannel: {fileID: 11400000, guid: 32c94cb29664e6e4595d9251ba1d451c, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}
+  noLandingActionEventChannel: {fileID: 11400000, guid: 5056b9ff8a3f66940af4d562f52cbad1, type: 2}

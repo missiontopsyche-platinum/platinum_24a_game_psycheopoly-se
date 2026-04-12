@@ -1,4 +1,6 @@
-﻿namespace Events.EventDataStructures.UI
+﻿using System;
+
+namespace Events.EventDataStructures.UI
 {
     /// <summary>
     /// Generic class descriptor for UIActionContexts.
@@ -77,6 +79,26 @@
         }
     }
 
+    public class BankruptcyAcknowledgement : UIActionContext
+    {
+        public Action onAcknowledged { get; }
+        
+
+        public BankruptcyAcknowledgement(Action onAcknowledged)
+        {
+            this.onAcknowledged = onAcknowledged;
+        }
+    }
+
+    public class GeneralAcknowledgement : UIActionContext
+    {
+        public Action onAcknowledged { get; }
+
+        public GeneralAcknowledgement(Action onAcknowledged)
+        {
+            this.onAcknowledged = onAcknowledged;
+        }
+    }
     public class PropertyDowngradeContext : UIActionContext
     {
         public PropertySpaceData Property { get; }
@@ -95,5 +117,25 @@
         {
             Tile = tile;
         }
+    }
+
+    /// <summary>
+    /// Jail UI event types & context for jail options flow
+    /// </summary>
+    public class JailActionContext : UIActionContext
+    {
+        public JailChoice Choice { get; }
+
+        public JailActionContext(JailChoice choice)
+        {
+            Choice = choice;
+        }
+    }
+
+    public enum JailChoice
+    {
+        RollForEscape,
+        PayFine,
+        UseCard
     }
 }

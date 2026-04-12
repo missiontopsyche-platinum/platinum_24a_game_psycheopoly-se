@@ -14,10 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::LaunchPadSpaceData
   spaceName: Launch Pad (Just Watching)
   spaceColor: {r: 1, g: 0.8235294, b: 0.9098039, a: 1}
+  shortDisplayName: 
+  groupColor: {r: 1, g: 1, b: 1, a: 1}
+  numberOfPropertiesInGroup: 0
+  smallIcon: {fileID: 0}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   artwork: {fileID: 21300000, guid: 4f93af0cc6dddfc4b97e5beccaa65e8d, type: 3}
   flavorText: WAITING FOR LAUNCH.
   playerGoesToJailEventChannel: {fileID: 0}
   playerLeavesJailEventChannel: {fileID: 0}
+  noLandingActionEventChannel: {fileID: 11400000, guid: 5056b9ff8a3f66940af4d562f52cbad1, type: 2}
   playersInJail: []

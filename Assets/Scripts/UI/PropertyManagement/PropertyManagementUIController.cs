@@ -10,11 +10,16 @@ public class PropertyManagementUIController : MonoBehaviour
     [SerializeField] private TMP_Text playerNameText;
     [SerializeField] private Transform contentParent;
     [SerializeField] private PropertyManagementRowUI rowPrefab;
+    [SerializeField] private TMP_Text debtText;
+    [SerializeField] private GameObject debtBannerObject;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Event Channels")]
     [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
 
     private Player currentPlayer;
+    private bool isDebtResolutionMode;
+    private int currentDebtAmount;
 
     private void Awake()
     {
@@ -46,12 +51,35 @@ public class PropertyManagementUIController : MonoBehaviour
 
     private void Show()
     {
-        gameObject.SetActive(true);
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
     }
 
     public void Hide()
     {
-        gameObject.SetActive(false);
+        if (isDebtResolutionMode && currentDebtAmount > 0)
+            return;
+
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    private void HideInstant()
+    {
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 
     public void RefreshUI()
@@ -64,13 +92,23 @@ public class PropertyManagementUIController : MonoBehaviour
         if (playerNameText != null)
             playerNameText.text = currentPlayer.GetPName() + "'s Properties";
 
+        if (titleText != null)
+            titleText.text = isDebtResolutionMode ? "Debt Resolution" : "Property Management";
+
+        if (debtBannerObject != null)
+            debtBannerObject.SetActive(isDebtResolutionMode);
+
+        if (debtText != null)
+            debtText.text = isDebtResolutionMode ? $"Debt to Resolve: ${currentDebtAmount}" : string.Empty;
+
         if (contentParent == null || rowPrefab == null)
             return;
 
         foreach (OwnableSpaceData property in currentPlayer.GetOwnedProperties())
         {
             PropertyManagementRowUI rowInstance = Instantiate(rowPrefab, contentParent);
-            rowInstance.Initialize(currentPlayer, property);
+
+            rowInstance.Initialize(currentPlayer, property, isDebtResolutionMode);
         }
     }
 
@@ -84,4 +122,12 @@ public class PropertyManagementUIController : MonoBehaviour
             Destroy(contentParent.GetChild(i).gameObject);
         }
     }
+
+    public void SetDebtAmount(int amount)
+    {
+        currentDebtAmount = Mathf.Max(0, amount);
+        isDebtResolutionMode = currentDebtAmount > 0;
+        RefreshUI();
+    }
+
 }

@@ -1,4 +1,6 @@
-﻿namespace Events.EventDataStructures.UI
+﻿using System;
+
+namespace Events.EventDataStructures.UI
 {
     /// <summary>
     /// Generic class descriptor for UIActivationContexts.
@@ -45,14 +47,83 @@
         }
     }
 
+    public class BankruptcyNotificationContext : UIActivationContext
+    {
+        public Player player { get; }
+        public Action onAcknowledged { get; }
+
+        public BankruptcyNotificationContext(Player player, Action onAcknowledged)
+        {
+            this.player = player;
+            this.onAcknowledged = onAcknowledged;
+        }
+    }
+
+    public class GeneralNotificationContext : UIActivationContext
+    {
+        public Player player { get; }
+        public String notificationTitle { get; }
+        public String notificationText { get; }
+        public Action onAcknowledged { get; }
+
+        public GeneralNotificationContext(Player player, String notificationTitle, String notificationText, Action onAcknowledged)
+        {
+            this.player = player;
+            this.notificationTitle = notificationTitle;
+            this.notificationText = notificationText;
+            this.onAcknowledged = onAcknowledged;
+        }
+    }
+
     public class PropertyManagementActivationContext : UIActivationContext
     {
         public Player Player { get; }
+        public bool IsDebtResolutionMode { get; }
+        public int DebtAmount { get; }
 
         public PropertyManagementActivationContext(Player player)
         {
             Player = player;
+            IsDebtResolutionMode = false;
+            DebtAmount = 0;
+        }
+
+        public PropertyManagementActivationContext(Player player, bool isDebtResolutionMode, int debtAmount)
+        {
+            Player = player;
+            IsDebtResolutionMode = isDebtResolutionMode;
+            DebtAmount = debtAmount;
         }
     }
 
+
+    /// <summary>
+    /// Jail Options UI activation. 
+    /// Contains all info to render a Jail Options UI for a player
+    /// </summary>
+    public class JailActivationContext : UIActivationContext
+    {
+        public string PlayerName { get; }
+        public int JailTurns { get; }
+        public int MaxJailTurns { get; }
+        public bool CanAffordFine { get; }
+        public bool HasGetOutOfJailCard { get; }
+        public int FineAmount { get; }
+
+        public JailActivationContext(
+            string playerName,
+            int jailTurns,
+            int maxJailTurns,
+            bool canAffordFine,
+            bool hasGetOutOfJailCard,
+            int fineAmount)
+        {
+            PlayerName = playerName;
+            JailTurns = jailTurns;
+            MaxJailTurns = maxJailTurns;
+            CanAffordFine = canAffordFine;
+            HasGetOutOfJailCard = hasGetOutOfJailCard;
+            FineAmount = fineAmount;
+        }
+    }
 }

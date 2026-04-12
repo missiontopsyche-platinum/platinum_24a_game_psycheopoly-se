@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
 {
     [Header("Used Event Channels")]
     [SerializeField] public PlayerEventChannel playerAddedEventChannel;
-    
+
     [Header("PlayerController Event Channels")]
     [SerializeField] public TurnStartedEventChannel turnStartedEventChannel;
     [SerializeField] public BooleanEventChannel turnEndedEventChannel;
@@ -26,10 +26,12 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public UIActionEventChannel uiActionEventChannel;
     [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    [SerializeField] public BooleanEventChannel diceRollPannelEventChannel;
     [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
     [SerializeField] public IntEventChannel bankruptcyEventChannel;
     [SerializeField] public JailStateChangedEventChannel jailEventChannel;
-
+    [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
+    [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
     public List<PlayerController> playerControllers = new();
     
     private StandardRuleSet activeRuleset;
@@ -50,6 +52,7 @@ public class PlayerManager : MonoBehaviour
         foreach (var playerConfig in playerConfigs)
         {
             var player = playerConfig.playerData;
+            player.ResetData();
             player.SetMoney(1500); // temporary until we have configurable game settings
             player.SetId(playerControllers.Count);
 
@@ -73,7 +76,11 @@ public class PlayerManager : MonoBehaviour
                     bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
-                    jailEventChannel);
+                    jailEventChannel,
+                    diceRollPannelEventChannel,
+                    chargePlayerEventChannel,
+                    noLandingActionEventChannel
+                    );
             }
             else
             {
@@ -92,7 +99,10 @@ public class PlayerManager : MonoBehaviour
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
                     jailEventChannel,
-                    mortgageFinishedEventChannel);
+                    mortgageFinishedEventChannel,
+                    chargePlayerEventChannel,
+                    noLandingActionEventChannel
+                    );
             }
 
             playerController.Subscribe();

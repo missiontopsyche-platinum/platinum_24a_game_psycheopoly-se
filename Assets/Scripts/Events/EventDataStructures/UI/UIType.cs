@@ -5,11 +5,13 @@
         PropertyPurchase,
         PropertyManagement,
         RentNotification,
-        JailRelease,
+        JailOptions,
         DiceRoll,
         MortgagePropertyList,
         MortgagePropertySelected,
-        PropertyUpgradeSelected
+        PropertyUpgradeSelected,
+        BankruptcyNotification,
+        GeneralNotification
         // more to be added as needed
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.TurnFlow;
+using Events.EventDataStructures;
 using Logging;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,8 @@ namespace Managers.PlayerControllers
         protected UpgradeRequestEventChannel upgradeRequestEventChannel;
         protected IntEventChannel bankruptPlayerEventChannel;
         protected JailStateChangedEventChannel jailStateChangedEventChannel;
-
+        protected ChargePlayerEventChannel chargePlayerEventChannel;
+        protected NoActionLandingEventChannel noLandingActionEventChannel;
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
         private struct PendingCallbacks
@@ -50,7 +52,9 @@ namespace Managers.PlayerControllers
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel  turnActionResult,
             IntEventChannel bankruptPlayer,
-            JailStateChangedEventChannel jailStateChanged)
+            JailStateChangedEventChannel jailStateChanged,
+            ChargePlayerEventChannel chargePlayer,
+            NoActionLandingEventChannel noLandingAction)
         {
             controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
             turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
@@ -65,8 +69,10 @@ namespace Managers.PlayerControllers
             turnActionResultEventChannel = turnActionResult ?? 
                 throw new System.ArgumentNullException(nameof(turnActionResult));
             upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
-            bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentException(nameof(bankruptPlayer));
+            bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentNullException(nameof(bankruptPlayer));
             jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
+            chargePlayerEventChannel = chargePlayer ?? throw new System.ArgumentNullException(nameof(chargePlayer));
+            noLandingActionEventChannel = noLandingAction ?? throw new System.ArgumentNullException(nameof(noLandingAction));
         }
         
         /// <summary>
@@ -78,6 +84,7 @@ namespace Managers.PlayerControllers
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
             jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
+            
         }
 
         /// <summary>
@@ -187,8 +194,22 @@ namespace Managers.PlayerControllers
         {
             RequestTurnAction(
                 TurnActionType.CompleteResolution,
-                onAllowed ?? (() => { }),
-                onDenied);
+                onAllowed ?? (() =>
+                {
+                    Logger.Debug(
+                    "PlayerController.RequestResolutionComplete",
+                    $"Resolution Complete.",
+                    LogCategory.Gameplay,
+                    this);
+                }),
+                onDenied ?? (() =>
+                {
+                    Logger.Debug(
+                    "PlayerController.RequestResolutionComplete",
+                    $"Resolution Denied.",
+                    LogCategory.Gameplay,
+                    this);
+                }));
         }
 
         /// <summary>

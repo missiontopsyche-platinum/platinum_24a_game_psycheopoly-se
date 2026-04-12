@@ -24,11 +24,14 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private Player player;
     private OwnableSpaceData property;
+    private bool isDebtResolutionMode;
 
-    public void Initialize(Player owningPlayer, OwnableSpaceData propertyData)
+    public void Initialize(Player owningPlayer, OwnableSpaceData propertyData, bool debtMode)
     {
         player = owningPlayer;
         property = propertyData;
+        isDebtResolutionMode = debtMode;
+
 
         HookButtons();
         RefreshRow();
@@ -86,6 +89,23 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void RefreshButtonStates()
     {
+        if (isDebtResolutionMode)
+        {
+            if (upgradeButton != null)
+                upgradeButton.interactable = false;
+
+            if (unmortgageButton != null)
+                unmortgageButton.interactable = false;
+
+            if (downgradeButton != null)
+                downgradeButton.interactable = CanDowngrade();
+
+            if (mortgageButton != null)
+                mortgageButton.interactable = CanMortgage();
+
+            return;
+        }
+
         if (upgradeButton != null)
             upgradeButton.interactable = CanUpgrade();
 
@@ -109,10 +129,11 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private bool CanDowngrade()
     {
-        if (property is not PropertySpaceData streetProperty)
+        if (player == null || property is not PropertySpaceData streetProperty)
             return false;
 
-        return streetProperty.CanDowngrade() && !streetProperty.isMortgaged;
+        return player.GetValidDowngradableProperties().Contains(streetProperty);
+
     }
 
     private bool CanMortgage()
@@ -134,6 +155,7 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void OnUpgradeClicked()
     {
+        if (isDebtResolutionMode) return;
         if (property is not PropertySpaceData streetProperty) return;
 
         uiActionEventChannel?.RaiseEvent(
@@ -164,6 +186,7 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void OnUnmortgageClicked()
     {
+        if (isDebtResolutionMode) return;
         if (property == null) return;
 
         uiActionEventChannel?.RaiseEvent(
