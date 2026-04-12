@@ -90,12 +90,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DiceFaceView
   faceImage: {fileID: 1851763160836522578}
   faceSprites:
-  - {fileID: 21300000, guid: 46514905a0047b646a44fe51348c6ae3, type: 3}
-  - {fileID: 21300000, guid: 6b9c3b15dfb5e7647957103ec05430b7, type: 3}
-  - {fileID: 21300000, guid: 2a3a36dc273f24e47831cd811781b27d, type: 3}
-  - {fileID: 21300000, guid: 1ac3375c2b6944545b8ac98a839ed322, type: 3}
-  - {fileID: 21300000, guid: 160c65b48b09cd549880300f2caf1078, type: 3}
-  - {fileID: 21300000, guid: a443a38843177dc4e83b5b9629900332, type: 3}
+  - {fileID: 21300000, guid: a266157e537d80347b6c9ce96f56566b, type: 3}
+  - {fileID: 21300000, guid: ccec0c476ff023f4e8ad98833d0460c8, type: 3}
+  - {fileID: 21300000, guid: 39ffcd1eb8c0b2040b01c7f35a298015, type: 3}
+  - {fileID: 21300000, guid: f663a6de325aea44db9c68d221c7486a, type: 3}
+  - {fileID: 21300000, guid: a97595bde6b0cdc48b919a95f9d7ec4e, type: 3}
+  - {fileID: 21300000, guid: 44cd03af46c0f1e42b30127d2ca75ff3, type: 3}
   spinDuration: 0.5
   spinSpeed: 720
   randomDirection: 1
@@ -504,12 +504,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::DiceFaceView
   faceImage: {fileID: 4644214338955692279}
   faceSprites:
-  - {fileID: 21300000, guid: 46514905a0047b646a44fe51348c6ae3, type: 3}
-  - {fileID: 21300000, guid: 6b9c3b15dfb5e7647957103ec05430b7, type: 3}
-  - {fileID: 21300000, guid: 2a3a36dc273f24e47831cd811781b27d, type: 3}
-  - {fileID: 21300000, guid: 1ac3375c2b6944545b8ac98a839ed322, type: 3}
-  - {fileID: 21300000, guid: 160c65b48b09cd549880300f2caf1078, type: 3}
-  - {fileID: 21300000, guid: a443a38843177dc4e83b5b9629900332, type: 3}
+  - {fileID: 21300000, guid: a266157e537d80347b6c9ce96f56566b, type: 3}
+  - {fileID: 21300000, guid: ccec0c476ff023f4e8ad98833d0460c8, type: 3}
+  - {fileID: 21300000, guid: 39ffcd1eb8c0b2040b01c7f35a298015, type: 3}
+  - {fileID: 21300000, guid: f663a6de325aea44db9c68d221c7486a, type: 3}
+  - {fileID: 21300000, guid: a97595bde6b0cdc48b919a95f9d7ec4e, type: 3}
+  - {fileID: 21300000, guid: 44cd03af46c0f1e42b30127d2ca75ff3, type: 3}
   spinDuration: 0.5
   spinSpeed: 720
   randomDirection: 1

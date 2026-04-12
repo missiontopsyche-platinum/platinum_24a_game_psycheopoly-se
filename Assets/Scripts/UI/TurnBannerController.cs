@@ -1,11 +1,12 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TurnBannerController : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Text turnLabel;         
+    [SerializeField] private TMP_Text turnLabel;         
     [SerializeField] private Button continueButton;   //Start turn button
     [SerializeField] private CanvasGroup canvasGroup; //Controls fade
 
