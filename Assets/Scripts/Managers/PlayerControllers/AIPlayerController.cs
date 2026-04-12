@@ -364,5 +364,68 @@ namespace Managers.PlayerControllers
                     endTurnRequested = false;
                 });
         }
+
+        private enum AIJailDecision
+        {
+            RollForEscape,
+            PayFine,
+            UseCard
+        }
+
+        private void HandleJailTurnStart()
+        {
+            AIJailDecision decision = EvaluateJailDecision();
+
+            Logger.Info("AIPlayerController.HandleJailTurnStart",
+                $"AI {controlledPlayer.GetPName()} jail decision: {decision}",
+                LogCategory.AI);
+
+            switch (decision)
+            {
+                case AIJailDecision.UseCard:
+                    HandleUseJailCard();
+                    break;
+
+                case AIJailDecision.PayFine:
+                    HandlePayJailFine();
+                    break;
+
+                case AIJailDecision.RollForEscape:
+                default:
+                    HandleRollForJailEscape();
+                    break;
+            }
+        }
+
+        private AIJailDecision EvaluateJailDecision()
+        {
+            bool hasJailCard =
+                controlledPlayer.GetChanceCardCount() > 0 ||
+                controlledPlayer.GetCommunityCardCount() > 0;
+
+            bool canAffordFine = controlledPlayer.CanAfford(Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE);
+            int nextJailTurn = controlledPlayer.GetJailTurns() + 1;
+
+            //On 3rd attempt prefer  the guaranteed exit methods
+            if (nextJailTurn >= Assets.Scripts.Managers.Jail.JailUtility.MAX_TURNS_IN_JAIL)
+            {
+                if (hasJailCard)
+                    return AIJailDecision.UseCard;
+
+                if (canAffordFine)
+                    return AIJailDecision.PayFine;
+
+                return AIJailDecision.RollForEscape;
+            }
+
+            //use a card first, then pay only if cash allows and if not roll.
+            if (hasJailCard)
+                return AIJailDecision.UseCard;
+
+            if (canAffordFine && controlledPlayer.GetMoney() > (Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE + 200))
+                return AIJailDecision.PayFine;
+
+            return AIJailDecision.RollForEscape;
+        }
     }
 }
