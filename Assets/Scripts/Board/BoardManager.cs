@@ -62,7 +62,7 @@ namespace PsycheOpoly.Board
         private void Start()
         {
             InitializeBoard();
-            movePlayerChannel?.Subscribe(MovePlayer);
+            //movePlayerChannel?.Subscribe(MovePlayer);
         }
 
         private void OnDisable() => EnsureUnsubscribed();
@@ -79,7 +79,7 @@ namespace PsycheOpoly.Board
             if (!this) return;
             playerAddedChannel?.Subscribe(AddPlayer);
             movePlayerChannel?.Subscribe(MovePlayer);
-            moveToSpaceEventChannel?.Subscribe(OnMoveToSpaceEvent);
+            //moveToSpaceEventChannel?.Subscribe(OnMoveToSpaceEvent);
             jailStateChangedEventChannel?.Subscribe(OnJailStateChanged);
             subscribed = true;
         }
@@ -92,7 +92,7 @@ namespace PsycheOpoly.Board
             if (!subscribed) return;
             playerAddedChannel?.Unsubscribe(AddPlayer);
             movePlayerChannel?.Unsubscribe(MovePlayer);
-            moveToSpaceEventChannel?.Unsubscribe(OnMoveToSpaceEvent);
+            //moveToSpaceEventChannel?.Unsubscribe(OnMoveToSpaceEvent);
             jailStateChangedEventChannel?.Unsubscribe(OnJailStateChanged);
             subscribed = false;
         }
@@ -383,7 +383,8 @@ namespace PsycheOpoly.Board
             MovePlayerToSpecificSpace(player, targetIndex);
 
             // move-to-space effects, resolve landing now.
-            pieceMoveCompletedEventChannel?.RaiseEvent(true);
+            //Moved this to the actual movement completion point not from the board routing
+            //pieceMoveCompletedEventChannel?.RaiseEvent(true);
         }
 
         // Helper so move-to-space cards can resolve the actual destination first.
