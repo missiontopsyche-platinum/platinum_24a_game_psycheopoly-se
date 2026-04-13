@@ -5,6 +5,7 @@ using Logging;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Logger = UnityEngine.Logger;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
@@ -114,6 +115,10 @@ namespace Assets.Scripts.Managers.TurnFlow
             awaitingEndTurn = false;
             nextRollIsJailEscape = false;
             jailEscapePlayer = null;
+            
+            Logging.Logger.Info("TurnFlowCoordinator.OnTurnStarted",
+                $"New turn started: {data.turnNum} || Player: {players[ActivePlayer].GetPName()}",
+                LogCategory.Core);
 
             // This is a sanity check to make sure our TurnCycleManager is in sync with the turn
             if (turnCycleManager != null && turnCycleManager.CurrentPlayerIndex != data.playerId)
@@ -227,6 +232,12 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             int playerId = request.player.GetId();
             bool allowed = IsAllowed(request.action, request.player);
+            
+            Logging.Logger.Info("TurnFlowCoordinator.OnTurnActionRequested",
+                $"Turn action allowed: {allowed}" +
+                $"\n\t{request.action} || {request.player.GetPName()}" +
+                $"\n\tCurrent Phase: {Phase}",
+                LogCategory.Gameplay);
 
             turnActionResultChannel?.RaiseEvent(new TurnActionResult
             {
@@ -316,7 +327,7 @@ namespace Assets.Scripts.Managers.TurnFlow
                                                  || Phase == TurnPhase.AwaitingMovement
                                                  || Phase == TurnPhase.AwaitingResolution
                                                  || (Phase == TurnPhase.Completed && awaitingEndTurn),
-                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution,
+                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution || Phase == TurnPhase.Completed,
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false
             };
