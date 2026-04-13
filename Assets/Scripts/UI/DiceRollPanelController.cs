@@ -87,9 +87,11 @@ public class DiceRollPanelController : MonoBehaviour
                       "Dice Roll Pannel Launching.",
                       LogCategory.UI);
 
-        //if (uiae.UIType == UIType.DiceRoll)
-        gameObject.GetComponent<CanvasGroup>().alpha = 1;
-        gameObject.GetComponent<CanvasGroup>().interactable = true;
-        gameObject.GetComponent<CanvasGroup>().blocksRaycasts = true;
+        if (uiae.UIType == UIType.DiceRoll)
+        {
+            gameObject.GetComponent<CanvasGroup>().alpha = 1;
+            gameObject.GetComponent<CanvasGroup>().interactable = true;
+            gameObject.GetComponent<CanvasGroup>().blocksRaycasts = true;
+        }
     }
 }
