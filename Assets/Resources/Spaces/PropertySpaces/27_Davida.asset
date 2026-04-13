@@ -23,8 +23,12 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: 438afdef996da9d46b2bceb055e3a12c, type: 3}
   buyPrice: 260
   collaborationValue: 130
+  isMortgaged: 0
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   researchFundingValues: 160000006e0000004a01000020030000cf0300007e040000
   dataPointCost: 150
+  upgradeCostMultiplier: 1
+  upgradeCostByLevel: 0000000096000000960000009600000096000000
+  colorGroup: 0
   purchaseUpgradeRequestEventChannel: {fileID: 11400000, guid: f709ab2b9d2ef8f43add75ad874f0e54, type: 2}
