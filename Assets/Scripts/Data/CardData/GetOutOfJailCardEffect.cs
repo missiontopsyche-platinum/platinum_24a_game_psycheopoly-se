@@ -1,5 +1,6 @@
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
+using Events.EventDataStructures;
 using UnityEngine;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 
@@ -9,35 +10,14 @@ using static UnityEngine.UIElements.UxmlAttributeDescription;
 [CreateAssetMenu(fileName = "GetOutOfJailCardEffect", menuName = "Card Data/Effects/GetOutOfJailCardEffect")]
 public class GetOutOfJailCardEffect : CardEffect
 {
-    [SerializeField] public JailStateChangedEventChannel JailStateChangedEventChannel;
-
+    [SerializeField] public NoActionLandingEventChannel noActionLandingEventChannel;
+    
     public override void ApplyEffect(Player player)
     {
-        if (!isValidPlayer(player)) return;
-
-        if (JailStateChangedEventChannel == null)
-        {
-            Logging.Logger.Error("GetOutOfJailCardEffect.ApplyEffect",
-                "JailStateChangedEventChannel is not assigned in GetOutOfJailCardEffect.",
-                Logging.LogCategory.Gameplay,
-                this);
-            return;
-        }
-
-        // A Get Out of Jail Free card is used from the player's
-        // inventory and returned to its source deck.
-        if (!player.TryConsumeGetOutOfJailFreeCard(out Card usedCard, out CardDeck sourceDeck))
-        {
-            Logging.Logger.Warn("GetOutOfJailCardEffect.ApplyEffect",
-                $"{player.GetPName()} tried to use a Get Out of Jail Free card but none was available in inventory.",
-                Logging.LogCategory.Gameplay,
-                this);
-            return;
-        }
-
-        // Return the used card to the same deck it originally came from.
-        sourceDeck.ReturnCardToDeck(usedCard);
-
-        JailStateChangedEventChannel.RaiseEvent(new JailStateChangedEvent(player, false, 0));
+        // nothing happens on apply effect- this is all handled in CardDeck, Player, and JailUtility
+        // we just need to signal that the card has been stored so the turn can continue
+        noActionLandingEventChannel?.RaiseEvent(new NoActionLandingEvent(
+            "Card added to inventory",
+            "Get out of Launchpad Free card has been added to your inventory!"));
     }
 }

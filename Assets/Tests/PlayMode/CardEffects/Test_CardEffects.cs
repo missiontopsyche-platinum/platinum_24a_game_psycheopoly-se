@@ -150,35 +150,6 @@ namespace Assets.Tests.PlayMode.CardEffects
             Assert.AreEqual(25, captured.Amount);
         }
 
-        // GetOutOfJailCardEffect / GoToJailCardEffect
-        [Test]
-        public void GetOutOfJailCardEffect_RaisesEvent_NotInJail_WithZeroTurns()
-        {
-            var player = CreatePlayer(0, 1500);
-
-            var effect = CreateEffect<GetOutOfJailCardEffect>();
-
-            var channel = CreateChannel<JailStateChangedEventChannel>();
-
-            JailStateChangedEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.JailStateChangedEventChannel = channel;
-
-            // Pretend the player was in jail before the card
-            player.SetInJail(true);
-            player.SetJailTurns(2);
-
-            effect.ApplyEffect(player);
-
-            Assert.NotNull(captured, "JailStateChangedEvent should be raised");
-            Assert.AreEqual(player, captured.player);
-
-            Assert.IsFalse(captured.inJail);
-            Assert.AreEqual(0, captured.jailTurns);
-        }
-
-
-
         [Test]
         public void GoToJailCardEffect_RaisesEvent_InJail_WithConfiguredTurns()
         {
