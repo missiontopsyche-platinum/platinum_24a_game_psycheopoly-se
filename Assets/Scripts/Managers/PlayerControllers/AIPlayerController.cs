@@ -427,5 +427,70 @@ namespace Managers.PlayerControllers
 
             return AIJailDecision.RollForEscape;
         }
+
+        //The methods below help wire jail decisions to JailUtility
+        private void HandleRollForJailEscape()
+        {
+            RequestTurnAction(
+                TurnActionType.RollForJailEscape,
+                onAllowed: () =>
+                {
+                    Logger.Info("AIPlayerController.HandleRollForJailEscape",
+                        $"AI {controlledPlayer.GetPName()} is rolling for jail escape.",
+                        LogCategory.AI);
+                },
+                onDenied: () =>
+                {
+                    Logger.Warn("AIPlayerController.HandleRollForJailEscape",
+                        $"AI {controlledPlayer.GetPName()} was denied RollForJailEscape.",
+                        LogCategory.AI);
+                });
+        }
+
+        private void HandlePayJailFine()
+        {
+            var result = Assets.Scripts.Managers.Jail.JailUtility.PayFee(controlledPlayer);
+
+            Logger.Info("AIPlayerController.HandlePayJailFine",
+                $"AI {controlledPlayer.GetPName()} pay fine: {result}",
+                LogCategory.AI);
+
+            if (result == Assets.Scripts.Managers.Jail.JailUtility.FeePaymentResult.Paid)
+            {
+                RaiseJailStateChanged(false);
+                StartNormalRollFlow();
+                return;
+            }
+
+            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+            RequestEndTurn();
+        }
+
+        private void HandleUseJailCard()
+        {
+            var result = Assets.Scripts.Managers.Jail.JailUtility.UseGetOutOfJailFree(controlledPlayer);
+
+            Logger.Info("AIPlayerController.HandleUseJailCard",
+                $"AI {controlledPlayer.GetPName()} use card result: {result}",
+                LogCategory.AI);
+
+            if (result == Assets.Scripts.Managers.Jail.JailUtility.CardUseResult.Success)
+            {
+                RaiseJailStateChanged(false);
+                StartNormalRollFlow();
+                return;
+            }
+
+            HandleRollForJailEscape();
+        }
+
+        private void RaiseJailStateChanged(bool inJail)
+        {
+            jailStateChangedEventChannel?.RaiseEvent(
+                new Assets.Scripts.Events.EventDataStructures.JailStateChangedEvent(
+                    controlledPlayer,
+                    inJail,
+                    controlledPlayer.GetJailTurns()));
+        }
     }
 }
