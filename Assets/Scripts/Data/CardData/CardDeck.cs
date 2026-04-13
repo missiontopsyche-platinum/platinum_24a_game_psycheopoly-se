@@ -82,8 +82,6 @@ public class CardDeck : ScriptableObject
                 $"{player.GetPName()} drew a Get Out of Jail Free card from {name}. Card removed from deck until used.",
                 LogCategory.Gameplay,
                 this);
-
-            return;
         }
 
         cardDrawnChannel?.Raise(card, player, this);
