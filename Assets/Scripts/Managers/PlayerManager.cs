@@ -99,6 +99,7 @@ public class PlayerManager : MonoBehaviour
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
                     jailEventChannel,
+                    mortgageFinishedEventChannel,
                     chargePlayerEventChannel,
                     noLandingActionEventChannel
                     );
