@@ -83,5 +83,8 @@ namespace Data
         [Tooltip("The amount of cash that the AI must have to not consider itself in danger, which triggers" +
                  "the mortgage flow, or is the target to reach/exceed when resolving debt.")]
         [Min(0)] public int dangerThreshold = 75;
+
+        [Tooltip("Minimum amount of cash the AI should keep in the reserve before considering unmortgaging a property")]
+        [Min(0)] public int unmortgageReserveThreshold = 200;
     }
 }

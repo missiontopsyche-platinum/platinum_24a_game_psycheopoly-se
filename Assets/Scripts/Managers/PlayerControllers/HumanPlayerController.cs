@@ -350,6 +350,7 @@ namespace Managers.PlayerControllers
 
         private void HandleNoLandingActionEvent(NoActionLandingEvent noActionLanding)
         {
+            if (!isMyTurn) return;
             uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
                 UIType.GeneralNotification, 
                 new GeneralNotificationContext(controlledPlayer,

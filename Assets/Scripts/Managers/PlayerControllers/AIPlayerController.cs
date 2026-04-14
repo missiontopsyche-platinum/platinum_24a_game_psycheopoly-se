@@ -16,6 +16,8 @@ namespace Managers.PlayerControllers
         private readonly AIPurchaseBehavior purchaseBehavior;
         private readonly AIUpgradeBehavior upgradeBehavior;
         private readonly AIMortgageBehavior mortgageBehavior;
+        private readonly AIUnmortgageBehavior unmortgageBehavior;
+
         // private AIJailBehavior
         // etc...
         private bool myTurnActive;
@@ -23,6 +25,7 @@ namespace Managers.PlayerControllers
         // event channels ... I don't think this will need special ones
         private ActionResolvedEventChannel actionResolvedEventChannel;
         private BooleanEventChannel diceRollRequestChannel;
+        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
         /// <summary>
         /// Creates an AI player controller. This needs to be called in conjunction with <c>.Subscribe()</c>
@@ -49,9 +52,23 @@ namespace Managers.PlayerControllers
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
             JailStateChangedEventChannel jailStateChanged,
+            MortgageFinishedEventChannel mortgageFinishedEventChannel,
             ChargePlayerEventChannel chargePlayer,
             NoActionLandingEventChannel noLandingAction)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
+            : base(
+                player,
+                turnStarted,
+                turnEnded,
+                purchaseRequest,
+                chargeOwnershipFee,
+                passedGoPayment,
+                upgradeRequest,
+                turnActionRequest,
+                turnActionResult,
+                bankruptPlayer,
+                jailStateChanged,
+                chargePlayer,
+                noLandingAction)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -68,9 +85,15 @@ namespace Managers.PlayerControllers
             mortgageBehavior = new AIMortgageBehavior(
                 controlledPlayer,
                 weights.mortgageThresholds);
+            unmortgageBehavior = new AIUnmortgageBehavior(
+                controlledPlayer,
+                weights.mortgageThresholds);
+
             actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
             diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
             // mortgageBehavior
+            this.mortgageFinishedEventChannel =
+                mortgageFinishedEventChannel ?? throw new System.ArgumentNullException(nameof(mortgageFinishedEventChannel));
             // jailBehavior etc...
         }
 
@@ -144,6 +167,7 @@ namespace Managers.PlayerControllers
         {
             HandleMortgageAction();
             // handle unmortgage goes here
+            HandleUnmortgageAction();
             HandleUpgradeAction();
         }
 
@@ -215,6 +239,39 @@ namespace Managers.PlayerControllers
             }
             Logger.Info("AIPlayerController.HandleMortgageAction",
                 $"Mortgage Evaluation: {evaluation.message}.",
+                LogCategory.AI);
+        }
+
+        private void HandleUnmortgageAction()
+        {
+            AIUnmortgageEvaluation evaluation = unmortgageBehavior.EvaluateUnmortgage();
+
+            foreach (var action in evaluation.actions)
+            {
+                if (action.actionType != MortgageActionType.Unmortgage)
+                    continue;
+
+                bool success = controlledPlayer.UnmortgageProperty(action.ownableSpace);
+
+                if (success)
+                {
+                    Logger.Info("AIPlayerController.HandleUnmortgageAction",
+                        $"AI {controlledPlayer.GetPName()} unmortgaged {action.ownableSpace.spaceName}.",
+                        LogCategory.AI);
+
+                    mortgageFinishedEventChannel?.RaiseEvent(
+                        new MortgageFinishedEvent(controlledPlayer, action.ownableSpace));
+                }
+                else
+                {
+                    Logger.Warn("AIPlayerController.HandleUnmortgageAction",
+                        $"AI {controlledPlayer.GetPName()} failed to unmortgage {action.ownableSpace.spaceName}.",
+                        LogCategory.AI);
+                }
+            }
+
+            Logger.Info("AIPlayerController.HandleUnmortgageAction",
+                $"Unmortgage Evaluation: {evaluation.message}.",
                 LogCategory.AI);
         }
 
