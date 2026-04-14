@@ -337,7 +337,11 @@ namespace Managers.PlayerControllers
             if (!myTurnActive || endTurnRequested) return;
 
             // TODO: Any post-action logic or decision-making would go here before ending the turn.
-
+            if (controlledPlayer.IsInJail())
+            {
+                RequestEndTurn();
+                return;
+            }
 
             // After the AI player moves, it will skip AwaitingResolution phase and request to end turn.
             // This is with the assumption that the AI will be doing all of its decision-making and action
