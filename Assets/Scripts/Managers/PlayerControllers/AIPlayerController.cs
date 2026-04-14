@@ -23,6 +23,7 @@ namespace Managers.PlayerControllers
         // event channels ... I don't think this will need special ones
         private ActionResolvedEventChannel actionResolvedEventChannel;
         private BooleanEventChannel diceRollRequestChannel;
+        private MoneyDistributionEventChannel moneyDistributionEventChannel;
 
         /// <summary>
         /// Creates an AI player controller. This needs to be called in conjunction with <c>.Subscribe()</c>
@@ -50,7 +51,8 @@ namespace Managers.PlayerControllers
             TurnActionResultEventChannel turnActionResult,
             JailStateChangedEventChannel jailStateChanged,
             ChargePlayerEventChannel chargePlayer,
-            NoActionLandingEventChannel noLandingAction)
+            NoActionLandingEventChannel noLandingAction,
+            MoneyDistributionEventChannel moneyDistribution)
             : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // load in behavior / personality
@@ -70,6 +72,7 @@ namespace Managers.PlayerControllers
                 weights.mortgageThresholds);
             actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
             diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
+            moneyDistributionEventChannel = moneyDistribution ?? throw new System.ArgumentNullException(nameof(moneyDistribution));
             // mortgageBehavior
             // jailBehavior etc...
         }
@@ -81,6 +84,7 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
             actionResolvedEventChannel?.Subscribe(OnActionResolved);
+            moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
         }
 
         public override void Unsubscribe()
@@ -90,6 +94,7 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             actionResolvedEventChannel?.Unsubscribe(OnActionResolved);
+            moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
         }
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
@@ -297,6 +302,52 @@ namespace Managers.PlayerControllers
             controlledPlayer.AddMoney(ppe.amountPaid);
 
             RequestResolutionComplete();
+        }
+
+        // Handles CollectFromAllPlayers card effects for the AI player's controller.
+        private void HandleMoneyDistribution(MoneyDistributionEvent mde)
+        {
+            if (mde == null || mde.Player == null)
+                return;
+
+            // ignore invalid card values.
+            if (mde.Amount <= 0)
+                return;
+
+            // If this AI is the player who drew the collect card,
+            // do not charge them. Ask TFC to validate resolution completion.
+            if (mde.Player.GetId() == controlledPlayer.GetId())
+            {
+                if (isMyTurn)
+                {
+                    RequestResolutionComplete();
+                }
+                return;
+            }
+
+            // skip players already removed / marked bankrupt.
+            if (controlledPlayer.IsMarkedBankrupt())
+                return;
+
+            Player.FinancialStatus status = controlledPlayer.TrySpend(mde.Amount);
+
+            switch (status)
+            {
+                case Player.FinancialStatus.Success:
+                    // successful payment goes to the player who drew the card.
+                    mde.Player.AddMoney(mde.Amount);
+                    break;
+
+                case Player.FinancialStatus.Bankrupt:
+                    // notify existing bankruptcy flow.
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                    break;
+
+                case Player.FinancialStatus.MortgageRequired:
+                    // reuse existing AI mortgage handling.
+                    HandleMortgageAction();
+                    break;
+            }
         }
 
         private void OnActionResolved(ActionResolvedEvent evt)

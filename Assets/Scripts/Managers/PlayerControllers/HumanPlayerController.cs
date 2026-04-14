@@ -26,6 +26,7 @@ namespace Managers.PlayerControllers
         private readonly UIActionEventChannel uiActionEventChannel;
         private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
         private readonly BooleanEventChannel diceRollPannelEventChannel;
+        private readonly MoneyDistributionEventChannel moneyDistributionEventChannel;
 
 
         // I need to figure out the architecture for UI events that the human controller will make use of
@@ -61,7 +62,8 @@ namespace Managers.PlayerControllers
             JailStateChangedEventChannel jailStateChanged,
             BooleanEventChannel diceRollPannel,
             ChargePlayerEventChannel chargePlayer,
-            NoActionLandingEventChannel noLandingAction) 
+            NoActionLandingEventChannel noLandingAction,
+            MoneyDistributionEventChannel moneyDistribution)
             : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // human controller specific setup goes here
@@ -70,6 +72,7 @@ namespace Managers.PlayerControllers
             mortgageFinishedEventChannel = mortgageFinished;
             diceRollPannelEventChannel = diceRollPannel;
             bankruptPlayerEventChannel = bankruptPlayer;
+            moneyDistributionEventChannel = moneyDistribution;
         }
 
         ~HumanPlayerController()
@@ -88,6 +91,7 @@ namespace Managers.PlayerControllers
             chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
             noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
             jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
+            moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
         }
 
         public override void Unsubscribe()
@@ -101,6 +105,7 @@ namespace Managers.PlayerControllers
             chargePlayerEventChannel?.Unsubscribe(HandleChargePlayer);
             noLandingActionEventChannel?.Unsubscribe(HandleNoLandingActionEvent);
             jailStateChangedEventChannel?.Unsubscribe(HandleJailStateChanged);
+            moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
         }
         
         //PlayerController already established turn ownership, HumanPlayerController handles human-player
@@ -216,6 +221,54 @@ namespace Managers.PlayerControllers
             controlledPlayer.AddMoney(ppe.amountPaid);
 
             RequestResolutionComplete();
+        }
+
+        // handles CollectFromAllPlayers card effects for the human player's controller.
+        private void HandleMoneyDistribution(MoneyDistributionEvent mde)
+        {
+            if (mde == null || mde.Player == null)
+                return;
+
+            // ignore invalid card values.
+            if (mde.Amount <= 0)
+                return;
+
+            // if this is the player who drew the collect card,
+            // do not charge them. Tell TFC to validate resolution completion.
+            if (mde.Player.GetId() == controlledPlayer.GetId())
+            {
+                if (isMyTurn)
+                {
+                    RequestResolutionComplete();
+                }
+                return;
+            }
+
+            // skip players already removed / marked bankrupt.
+            if (controlledPlayer.IsMarkedBankrupt())
+                return;
+
+            Player.FinancialStatus status = controlledPlayer.TrySpend(mde.Amount);
+
+            switch (status)
+            {
+                case Player.FinancialStatus.Success:
+                    // successful payment goes to the player who drew the card.
+                    mde.Player.AddMoney(mde.Amount);
+                    break;
+
+                case Player.FinancialStatus.Bankrupt:
+                    // notify existing bankruptcy flow.
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                    break;
+
+                case Player.FinancialStatus.MortgageRequired:
+                    // leave this as the future hook for mortgage/debt UI.
+                    Logger.Info("HumanPlayerController.HandleMoneyDistribution",
+                        $"{controlledPlayer.GetPName()} needs mortgage/debt UI to pay ${mde.Amount} to {mde.Player.GetPName()}.",
+                        LogCategory.UI);
+                    break;
+            }
         }
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
