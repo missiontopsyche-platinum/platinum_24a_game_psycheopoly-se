@@ -1,8 +1,9 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
-using Assets.Scripts.Managers.TurnOrder;
 using Assets.Scripts.Managers.Jail;
+using Assets.Scripts.Managers.TurnOrder;
 using Logging;
 using System.Collections.Generic;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Logger = UnityEngine.Logger;
@@ -272,6 +273,10 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             Phase = TurnPhase.Completed;
             awaitingEndTurn = true;
+            Logging.Logger.Info("TurnFlowCoordinator.OnTurnActionRequested",
+                "Turn phase transitioned to completed. Can end turn",
+                LogCategory.Gameplay);
+
         }
 
         //unique roll for jail escape

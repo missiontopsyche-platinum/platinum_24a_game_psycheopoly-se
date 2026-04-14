@@ -1,9 +1,10 @@
 using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
-using UnityEngine;
 using Logging;
+using UnityEngine;
 using Logger = Logging.Logger;
 
 
@@ -362,6 +363,18 @@ namespace Managers.PlayerControllers
         private void HandleGeneralNotificationAcknowledgement(GeneralAcknowledgement ga)
         {
             ga.onAcknowledged.Invoke();
+        }
+
+        protected override void  HandleJailStateChanged(JailStateChangedEvent jailEvent)
+        {
+            base.HandleJailStateChanged(jailEvent);
+
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification,
+                new GeneralNotificationContext(controlledPlayer,
+                    "Go to jail!",
+                    "Has been sent to jail!",
+                    () => RequestResolutionComplete())));
         }
     }
 }

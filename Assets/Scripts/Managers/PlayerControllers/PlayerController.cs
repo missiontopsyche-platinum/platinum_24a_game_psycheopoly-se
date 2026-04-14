@@ -193,6 +193,12 @@ namespace Managers.PlayerControllers
         /// 
         protected void RequestResolutionComplete(Action onAllowed = null, Action onDenied = null)
         {
+            Logger.Debug(
+                    "PlayerController.RequestResolutionComplete",
+                    $"Requesting resolution.",
+                    LogCategory.Gameplay,
+                    this);
+
             RequestTurnAction(
                 TurnActionType.CompleteResolution,
                 onAllowed ?? (() =>
