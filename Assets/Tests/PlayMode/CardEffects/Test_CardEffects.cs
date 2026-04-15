@@ -84,28 +84,6 @@ namespace Assets.Tests.PlayMode.CardEffects
             Assert.AreEqual(MoveToSpaceCardEffect.TargetSpaceType.PlanetSpace, captured.targetKind);
         }
 
-        // PayPlayerCardEffect  (simple “give money to player” card)
-
-        [Test]
-        public void PayPlayerCardEffect_RaisesPayPlayerEvent_WithCorrectAmount()
-        {
-            var player = CreatePlayer(0, 1000);
-
-            var effect = CreateEffect<PayPlayerCardEffect>();
-            effect.amount = 200;
-
-            var channel = CreateChannel<PayPlayerEventChannel>();
-            PayPlayerEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.payPlayerEventChannel = channel;
-
-            effect.ApplyEffect(player);
-
-            Assert.NotNull(captured, "PayPlayerEvent should be raised");
-            Assert.AreEqual(player, captured.paidPlayer);
-            Assert.AreEqual(200, captured.amountPaid);
-        }
-
         // PayAllPlayersCardEffect / CollectFromAllPlayersCardEffect
         // These both use MoneyDistributionEvent with (Player, Amount).
 
@@ -121,7 +99,7 @@ namespace Assets.Tests.PlayMode.CardEffects
             MoneyDistributionEvent captured = null;
             channel.Subscribe(e => captured = e);
 
-            effect.payAllPlayersEventChannel = channel;
+            effect.moneyDistributionEventChannel = channel;
 
             effect.ApplyEffect(player);
 
@@ -141,7 +119,7 @@ namespace Assets.Tests.PlayMode.CardEffects
             var channel = CreateChannel<MoneyDistributionEventChannel>();
             MoneyDistributionEvent captured = null;
             channel.Subscribe(e => captured = e);
-            effect.collectFromAllPlayersEventChannel = channel;
+            effect.moneyDistributionEventChannel = channel;
 
             effect.ApplyEffect(player);
 

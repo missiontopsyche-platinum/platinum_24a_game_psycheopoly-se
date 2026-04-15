@@ -1,4 +1,5 @@
-﻿using AIBehavior;
+﻿using System.Linq;
+using AIBehavior;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
 using Data;
@@ -307,6 +308,10 @@ namespace Managers.PlayerControllers
         // Handles CollectFromAllPlayers card effects for the AI player's controller.
         private void HandleMoneyDistribution(MoneyDistributionEvent mde)
         {
+            // skip players already removed / marked bankrupt.
+            if (controlledPlayer.IsMarkedBankrupt())
+                return;
+            
             if (mde == null || mde.Player == null)
                 return;
 
@@ -314,40 +319,60 @@ namespace Managers.PlayerControllers
             if (mde.Amount <= 0)
                 return;
 
-            // If this AI is the player who drew the collect card,
-            // do not charge them. Ask TFC to validate resolution completion.
-            if (mde.Player.GetId() == controlledPlayer.GetId())
+            int actualAmount = mde.Amount;
+
+            bool isCardHolder = mde.Player.GetId() == controlledPlayer.GetId();
+
+            if (isCardHolder)
             {
-                if (isMyTurn)
+                int activePlayers = PlayerManager.GetInstance()
+                    .GetAllPlayers()
+                    .Count(p => p.IsMarkedBankrupt());
+                actualAmount = mde.Type switch
                 {
-                    RequestResolutionComplete();
-                }
-                return;
+                    // this player is paying- mult input amount by active players
+                    MoneyDistributionEvent.MoneyDistributionEventType.Pay => mde.Amount * activePlayers, 
+                    // this player is collecting
+                    MoneyDistributionEvent.MoneyDistributionEventType.Collect => 0, 
+                    _ => 0
+                };
             }
 
-            // skip players already removed / marked bankrupt.
-            if (controlledPlayer.IsMarkedBankrupt())
-                return;
-
-            Player.FinancialStatus status = controlledPlayer.TrySpend(mde.Amount);
-
-            switch (status)
+            if (actualAmount > 0)
             {
-                case Player.FinancialStatus.Success:
-                    // successful payment goes to the player who drew the card.
-                    mde.Player.AddMoney(mde.Amount);
-                    break;
+                // if this is a Pay All Players event and is not the cardholder, add money
+                if (mde.Type == MoneyDistributionEvent.MoneyDistributionEventType.Pay 
+                    && !isCardHolder)
+                    controlledPlayer.AddMoney(actualAmount);
+                else // otherwise, we can handle the charging based on actual amount
+                {
+                    // charge player this amount and resolve debt if necessary
+                    var status = controlledPlayer.TrySpend(actualAmount);
+                
+                    switch (status)
+                    {
+                        case Player.FinancialStatus.Success:
+                            // successful payment goes to the player who drew the card.
+                            mde.Player.AddMoney(mde.Amount);
+                            break;
 
-                case Player.FinancialStatus.Bankrupt:
-                    // notify existing bankruptcy flow.
-                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                    break;
+                        case Player.FinancialStatus.Bankrupt:
+                            // notify existing bankruptcy flow.
+                            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                            RequestResolutionComplete();
+                            break;
 
-                case Player.FinancialStatus.MortgageRequired:
-                    // reuse existing AI mortgage handling.
-                    HandleMortgageAction();
-                    break;
+                        case Player.FinancialStatus.MortgageRequired:
+                            // reuse existing AI mortgage handling.
+                            HandleMortgageAction();
+                            break;
+                    }
+                }
             }
+            // if actualAmount is 0, then we are being paid and don't need to do anything
+            // regardless, if it is our turn we need to mark resolution complete
+            if (isMyTurn)
+                RequestResolutionComplete();
         }
 
         private void OnActionResolved(ActionResolvedEvent evt)

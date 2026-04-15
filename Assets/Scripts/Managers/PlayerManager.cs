@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.Events.EventChannelTypes;
 using Logging;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using Managers.PlayerControllers;
 using Assets.Scripts.Managers.Rules;
 using UnityEngine;
 using Logger = Logging.Logger;
+using Object = UnityEngine.Object;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -36,6 +38,21 @@ public class PlayerManager : MonoBehaviour
     public List<PlayerController> playerControllers = new();
     
     private StandardRuleSet activeRuleset;
+
+    private static PlayerManager _instance;
+
+    private void Awake()
+    {
+        if (_instance != null)
+            _instance = this;
+        else
+            Destroy(this);
+    }
+
+    public static PlayerManager GetInstance()
+    {
+        return _instance;
+    }
 
     /// <summary>
     /// Bootstraps Players from data passed from GameManager

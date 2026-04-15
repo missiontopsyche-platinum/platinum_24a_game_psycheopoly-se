@@ -1,10 +1,10 @@
+using System.Linq;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.Jail;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
-using UnityEngine;
 using Logging;
 using Logger = Logging.Logger;
 
@@ -226,6 +226,10 @@ namespace Managers.PlayerControllers
         // handles CollectFromAllPlayers card effects for the human player's controller.
         private void HandleMoneyDistribution(MoneyDistributionEvent mde)
         {
+            // skip players already removed / marked bankrupt.
+            if (controlledPlayer.IsMarkedBankrupt())
+                return;
+            
             if (mde == null || mde.Player == null)
                 return;
 
@@ -233,42 +237,69 @@ namespace Managers.PlayerControllers
             if (mde.Amount <= 0)
                 return;
 
-            // if this is the player who drew the collect card,
-            // do not charge them. Tell TFC to validate resolution completion.
-            if (mde.Player.GetId() == controlledPlayer.GetId())
+            int actualAmount = mde.Amount;
+
+            bool isCardHolder = mde.Player.GetId() == controlledPlayer.GetId();
+
+            if (isCardHolder)
             {
-                if (isMyTurn)
+                int activePlayers = PlayerManager.GetInstance()
+                    .GetAllPlayers()
+                    .Count(p => p.IsMarkedBankrupt());
+                actualAmount = mde.Type switch
                 {
-                    RequestResolutionComplete();
-                }
-                return;
+                    // this player is paying- mult input amount by active players
+                    MoneyDistributionEvent.MoneyDistributionEventType.Pay => mde.Amount * activePlayers, 
+                    // this player is collecting
+                    MoneyDistributionEvent.MoneyDistributionEventType.Collect => 0, 
+                    _ => 0
+                };
             }
 
-            // skip players already removed / marked bankrupt.
-            if (controlledPlayer.IsMarkedBankrupt())
-                return;
-
-            Player.FinancialStatus status = controlledPlayer.TrySpend(mde.Amount);
-
-            switch (status)
+            if (actualAmount > 0)
             {
-                case Player.FinancialStatus.Success:
-                    // successful payment goes to the player who drew the card.
-                    mde.Player.AddMoney(mde.Amount);
-                    break;
+                // if this is a Pay All Players event and is not the cardholder, add money
+                if (mde.Type == MoneyDistributionEvent.MoneyDistributionEventType.Pay 
+                    && !isCardHolder)
+                    controlledPlayer.AddMoney(actualAmount);
+                else // otherwise, we can handle the charging based on actual amount
+                {
+                    // charge player this amount and resolve debt if necessary
+                    var status = controlledPlayer.TrySpend(actualAmount);
+                
+                    switch (status)
+                    {
+                        case Player.FinancialStatus.Success:
+                            // successful payment goes to the player who drew the card.
+                            mde.Player.AddMoney(mde.Amount);
+                            break;
 
-                case Player.FinancialStatus.Bankrupt:
-                    // notify existing bankruptcy flow.
-                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                    break;
+                        case Player.FinancialStatus.Bankrupt:
+                            // notify existing bankruptcy flow.
+                            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                            break;
 
-                case Player.FinancialStatus.MortgageRequired:
-                    // leave this as the future hook for mortgage/debt UI.
-                    Logger.Info("HumanPlayerController.HandleMoneyDistribution",
-                        $"{controlledPlayer.GetPName()} needs mortgage/debt UI to pay ${mde.Amount} to {mde.Player.GetPName()}.",
-                        LogCategory.UI);
-                    break;
+                        case Player.FinancialStatus.MortgageRequired:
+                            // reuse existing AI mortgage handling.
+                            HandleDebtResolution();
+                            break;
+                    }
+                }
             }
+            // if actualAmount is 0, then we are being paid and don't need to do anything
+            // regardless, if it is our turn we need to mark resolution complete
+            if (isMyTurn)
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, 
+                    new GeneralNotificationContext(controlledPlayer,
+                        "Card resolution complete!",
+                        $"Money distribution has been completed.",
+                        () => RequestResolutionComplete())));
+        }
+
+        private void HandleDebtResolution()
+        {
+            // TODO : Handle debt by opening the debt mode property management UI
         }
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
