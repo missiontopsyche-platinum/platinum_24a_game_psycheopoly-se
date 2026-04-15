@@ -1988,4 +1988,4 @@ MonoBehaviour:
   downgradeButton: {fileID: 2999984198670273740}
   mortgageButton: {fileID: 4869063625602450236}
   unmortgageButton: {fileID: 7791658978066824573}
-  upgradeRequestChannel: {fileID: 0}
+  uiActionEventChannel: {fileID: 11400000, guid: 0788bc0a6333f4949ad1dfc7205b6859, type: 2}

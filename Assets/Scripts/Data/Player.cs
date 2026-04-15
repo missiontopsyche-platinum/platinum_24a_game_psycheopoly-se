@@ -288,15 +288,19 @@ public class Player : ScriptableObject
         return true;
     }
     public bool UnmortgageProperty(OwnableSpaceData tile) {
+        if (tile == null) return false;
         if (!tile.isMortgaged) return false;
 
-        if (this.TrySpend(tile.mortgagePayoffValue) == FinancialStatus.Success) //this will need updating when US571 pushes to dev
-        {
-            tile.isMortgageable = true;
-            tile.isMortgaged = false;
-            return true;
-        }
-        return false;
+        if (tile.mortgagePayoffValue <= 0)
+            SetMortgagePayoff(tile);
+
+        if (TrySpend(tile.mortgagePayoffValue) != FinancialStatus.Success)
+            return false;
+
+        tile.isMortgaged = false;
+        tile.isMortgageable = true;
+
+        return true;
     }
 
 
@@ -511,8 +515,8 @@ public class Player : ScriptableObject
         FinancialStatus status = TrySpend(price);
         if (status  != FinancialStatus.Success) return status;
 
-        this.AddOwnedProperty(tile);
-        ownedProperties.Add(tile);
+        AddOwnedProperty(tile);
+        //ownedProperties.Add(tile);
 
         assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
         return status;
@@ -522,13 +526,13 @@ public class Player : ScriptableObject
     /// <summary>
     /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
     /// </summary>
-    public void ClearOwnership()
+    private void ClearOwnership()
     {
         foreach (OwnableSpaceData space in this.GetOwnedProperties())
         {
             space.SetOwner(null);
-            this.RemoveOwnedProperty(space);
         }
+        ownedProperties.Clear();
     }
 
 
@@ -572,13 +576,14 @@ public class Player : ScriptableObject
 
     public void ResetData()
     {
-        ownedProperties.Clear();
-
         getOutOfJailCards.Clear();
         getOutOfJailCardSources.Clear();
 
         getOutOfJailFree_Chance = 0;
         getOutOfJailFree_Community = 0;
+        
+        ClearOwnership();
+        ReleaseFromJail();
     }
     public List<PropertySpaceData> GetValidDowngradableProperties()
 {

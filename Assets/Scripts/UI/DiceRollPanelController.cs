@@ -43,6 +43,7 @@ public class DiceRollPanelController : MonoBehaviour
         if (rollButton != null) rollButton.onClick.RemoveListener(OnRollClicked);
         diceRolledChannel?.Unsubscribe(OnDiceRolled);
         pieceMoveCompletedChannel?.Unsubscribe(HideUI);
+        uiActivationChannel?.Unsubscribe(OnUIActivationEvent);
     }
 
 
@@ -83,15 +84,22 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
     {
+        if (uiae == null || uiae.UIType != UIType.DiceRoll)
+            return;
+
         Logger.Debug("DiceRollPanelController.OnUIActivationEvent",
-                      "Dice Roll Pannel Launching.",
-                      LogCategory.UI);
+            "Dice Roll Panel Launching.",
+            LogCategory.UI);
 
         if (uiae.UIType == UIType.DiceRoll)
         {
-            gameObject.GetComponent<CanvasGroup>().alpha = 1;
-            gameObject.GetComponent<CanvasGroup>().interactable = true;
-            gameObject.GetComponent<CanvasGroup>().blocksRaycasts = true;
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                return;
+
+            canvasGroup.alpha = 1;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
         }
     }
 }
