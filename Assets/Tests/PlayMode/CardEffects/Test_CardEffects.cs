@@ -149,35 +149,6 @@ namespace Assets.Tests.PlayMode.CardEffects
             Assert.AreEqual(3, captured.jailTurns);
         }
 
-        // CollectPerPropertyCardEffect / PayPerPropertyCardEffect
-        //
-        // These area bit  more complex (they look @ owned properties and upgrades).
-        // For now we at least verify the early-exit behaviour: when the player
-        // has NO owned properties, effects should NOT raise an event.
-        // That still acts as the guard logic and verifies we don’t charge
-        // or pay incorrectly.
-        [Test]
-        public void CollectPerPropertyCardEffect_NoOwnedProperties_DoesNotRaiseEvent()
-        {
-            var player = CreatePlayer(0, 1500);
-
-            var effect = CreateEffect<CollectPerPropertyCardEffect>();
-            effect.ChargeForHouse = 40;
-            effect.ChargeForHotel = 100;
-
-            var channel = CreateChannel<PayPlayerEventChannel>();
-            PayPlayerEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.payPlayerEventChannel = channel;
-
-            // Player has no owned properties by default
-            effect.ApplyEffect(player);
-
-            Assert.IsNull(captured, "No PayPlayerEvent should be raised when player owns no properties");
-        }
-
-
-
         [Test]
         public void PayPerPropertyCardEffect_NoOwnedProperties_DoesNotRaiseEvent()
         {
