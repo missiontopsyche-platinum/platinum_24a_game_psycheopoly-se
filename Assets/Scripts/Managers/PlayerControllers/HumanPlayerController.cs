@@ -491,18 +491,35 @@ namespace Managers.PlayerControllers
         protected override void HandleJailStateChanged(JailStateChangedEvent jailEvent)
         {
             base.HandleJailStateChanged(jailEvent);
-            
-            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
-                UIType.GeneralNotification,
-                new GeneralNotificationContext(controlledPlayer,
-                    "LAUNCH PAD!",
-                    "You're now stuck at the launch pad!",
-                    () => 
-                        RequestTurnAction(
-                            TurnActionType.EndTurn, 
-                            onAllowed: () => { }, 
-                            onDenied: () => { }
-                    ))));
+
+            if (jailEvent.inJail)
+            {
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "LAUNCH PAD!",
+                        "You're now stuck at the launch pad!",
+                        () => 
+                            RequestTurnAction(
+                                TurnActionType.EndTurn, 
+                                onAllowed: () => { }, 
+                                onDenied: () => { }
+                        ))));
+            }
+            else
+            {
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "GO FOR LAUNCH!",
+                        "You're no longer stuck on the Launch Pad!",
+                        () => 
+                            RequestTurnAction(
+                                TurnActionType.EndTurn, 
+                                onAllowed: () => { }, 
+                                onDenied: () => { }
+                            ))));
+            }
         }
 
         //display jail options for the current human player
