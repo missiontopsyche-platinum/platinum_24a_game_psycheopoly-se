@@ -248,6 +248,7 @@ namespace Managers.PlayerControllers
             if (isMyTurn && jailEvent.inJail)
             {
                 pendingActions.Clear();
+                turnForcedEnd = true;
             }
         }
     }
