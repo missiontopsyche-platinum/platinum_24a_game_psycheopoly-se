@@ -69,7 +69,7 @@ public class PropertyPurchaseUI : MonoBehaviour
             else if (context.Property is InstrumentSpaceData instrument)
             {
                 SetInstrumentText(instrument);
-                propertyTextCanvas.gameObject.SetActive(true);
+                instrumentTextCanvas.gameObject.SetActive(true);
             } 
             else if (context.Property is PlanetSpaceData)
             {

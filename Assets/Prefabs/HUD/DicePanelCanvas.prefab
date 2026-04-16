@@ -60,7 +60,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &6380431092377150759
 MonoBehaviour:
@@ -74,12 +74,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -110,6 +110,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8159967160589745388}
     m_Modifications:
+    - target: {fileID: 2357015034603135191, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.b
+      value: 0.11372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 2357015034603135191, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.g
+      value: 0.011764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 2357015034603135191, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.r
+      value: 0.07058824
+      objectReference: {fileID: 0}
+    - target: {fileID: 2357015034603135191, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_FontData.m_FontStyle
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2870134839701558650, guid: 45b613052b752e546806d06ba425b065, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -190,9 +206,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2879180733543735661, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2879180733543735661, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.g
+      value: 0.627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 2879180733543735661, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9764706
+      objectReference: {fileID: 0}
     - target: {fileID: 3242882054019138609, guid: 45b613052b752e546806d06ba425b065, type: 3}
       propertyPath: m_Name
       value: DicePanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3861050146311106283, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3861050146311106283, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.b
+      value: 0.26666668
+      objectReference: {fileID: 0}
+    - target: {fileID: 3861050146311106283, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.g
+      value: 0.12941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 3861050146311106283, guid: 45b613052b752e546806d06ba425b065, type: 3}
+      propertyPath: m_Color.r
+      value: 0.1882353
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

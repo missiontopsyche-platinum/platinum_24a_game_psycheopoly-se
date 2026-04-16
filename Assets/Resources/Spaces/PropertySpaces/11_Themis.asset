@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 11_Themis
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
   spaceName: Themis
-  spaceColor: {r: 1, g: 0.64705884, b: 0, a: 0}
+  spaceColor: {r: 1, g: 0.64705884, b: 0, a: 1}
   shortDisplayName: 
   groupColor: {r: 1, g: 0.64705884, b: 0, a: 1}
   numberOfPropertiesInGroup: 3
@@ -23,8 +23,12 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: d26b7a1a1e58e344684c4efcb5c81d6f, type: 3}
   buyPrice: 140
   collaborationValue: 70
+  isMortgaged: 0
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
   researchFundingValues: 0a0000003200000096000000c201000071020000ee020000
   dataPointCost: 100
+  upgradeCostMultiplier: 1
+  upgradeCostByLevel: 0000000064000000640000006400000064000000
+  colorGroup: 0
   purchaseUpgradeRequestEventChannel: {fileID: 11400000, guid: f709ab2b9d2ef8f43add75ad874f0e54, type: 2}
