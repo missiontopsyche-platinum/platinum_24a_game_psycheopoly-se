@@ -34,10 +34,9 @@ namespace Assets.Scripts.Managers.TurnFlow
         
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
-
-        public TurnPhase Phase { get; private set; } = TurnPhase.None;
+        
         public int ActivePlayer { get; private set; } = -1;
-
+        public TurnPhase Phase { get; private set; } = TurnPhase.None;
         //these are needed for TFC to know if we are rolling for a jail escape
         private bool nextRollIsJailEscape = false;
         private Player jailEscapePlayer = null;
@@ -240,29 +239,30 @@ namespace Assets.Scripts.Managers.TurnFlow
                 $"\n\tCurrent Phase: {Phase}",
                 LogCategory.Gameplay);
 
+
+            if (allowed) {
+                switch (request.action)
+                {
+                    case TurnActionType.RollForJailEscape:
+                        BeginJailEscapeRoll(request.player);
+                        break;
+
+                    case TurnActionType.CompleteResolution:
+                        CompleteResolution();
+                        break;
+
+                    case TurnActionType.EndTurn:
+                        CompleteTurnFlow();
+                        break;
+                }
+            }
+            
             turnActionResultChannel?.RaiseEvent(new TurnActionResult
             {
                 playerId = playerId,
                 action = request.action,
                 allowed = allowed
             });
-
-            if (!allowed) return;
-
-            switch (request.action)
-            {
-                case TurnActionType.RollForJailEscape:
-                    BeginJailEscapeRoll(request.player);
-                    break;
-
-                case TurnActionType.CompleteResolution:
-                    CompleteResolution();
-                    break;
-
-                case TurnActionType.EndTurn:
-                    CompleteTurnFlow();
-                    break;
-            }
         }
 
         private void CompleteResolution()
@@ -309,15 +309,17 @@ namespace Assets.Scripts.Managers.TurnFlow
         private bool IsAllowed(TurnActionType action, Player player)
         {
             if (IsGameOver) return false;
-            if (player.GetId() != ActivePlayer) return false;
+            //if (player.GetId() != ActivePlayer) return false;
 
             //sends to the roll for escape turn action (since it's a unique dice roll)
+            //TODO: FIX THIS SO IT LETS YOU END THE FUCKING TURN ON THE TURN YOU GO TO JAIL
             if (player != null && player.IsInJail())
             {
                 return action switch
                 {
                     TurnActionType.RollForJailEscape => Phase == TurnPhase.AwaitingRoll,
                     TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
+                    TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution || Phase == TurnPhase.Completed,
                     _ => false
                 };
             }

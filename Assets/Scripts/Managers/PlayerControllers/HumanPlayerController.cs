@@ -86,6 +86,7 @@ namespace Managers.PlayerControllers
             turnEndedEventChannel?.Subscribe(OnTurnEnded);
             chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
             noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
+            jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
         }
 
         public override void Unsubscribe()
@@ -102,7 +103,7 @@ namespace Managers.PlayerControllers
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
                 TurnActionType.BuyProperty,
@@ -126,7 +127,7 @@ namespace Managers.PlayerControllers
 
         private void HandleUpgradeEvent(PropertySpaceData property)
         {
-            if (!isMyTurn || property == null) return;
+            if (!isMyTurn || property == null || turnForcedEnd) return;
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
                 TurnActionType.ModifyProperty,
@@ -149,7 +150,7 @@ namespace Managers.PlayerControllers
 
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
             
             // activate Rent notification UI
 
@@ -179,7 +180,7 @@ namespace Managers.PlayerControllers
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             // handle passing go
             // call player method for getting paid for passing go
@@ -189,7 +190,7 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             if(controlledPlayer.MortgageProperty(context.tile))
             {
@@ -274,8 +275,11 @@ namespace Managers.PlayerControllers
         // their turn. This is also a workaround to separate AwaitingResolution and Completed states.
         private void OnTurnEnded(bool ended)
         {
-            if (!isMyTurn) return;
 
+            if (!isMyTurn) return;
+            Logger.Debug("HumanPlayerController.RequestEndTurn",
+                        "Checking that the player turn isn't cycling somehow.",
+                        LogCategory.Gameplay);
             RequestTurnAction(
                 TurnActionType.EndTurn,
                 onAllowed: () =>
@@ -294,7 +298,7 @@ namespace Managers.PlayerControllers
 
         private void HandleDiceRollPannel()
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
                        "Dice Roll Pannel Reached.",
@@ -325,7 +329,7 @@ namespace Managers.PlayerControllers
 
         private void HandleChargePlayer(ChargePlayerEvent cpe)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             if (!controlledPlayer.CanAfford(cpe.chargeAmount))
             {
@@ -369,12 +373,18 @@ namespace Managers.PlayerControllers
         {
             base.HandleJailStateChanged(jailEvent);
 
+            Logger.Debug("HumanPlayerController.HandleJailStateChanged",
+                      "Handling Human Specific Jail information.",
+                      LogCategory.UI);
+
             uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
                 UIType.GeneralNotification,
                 new GeneralNotificationContext(controlledPlayer,
-                    "Go to jail!",
-                    "Has been sent to jail!",
+                    "Go for Launch!",
+                    "Proceed directly to the Launch Pad!\nDo not pass go, do not collect $200\nPress end turn!",
                     () => RequestResolutionComplete())));
+
+            
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Managers.PlayerControllers
         // fields
         protected readonly Player controlledPlayer;
         protected bool isMyTurn = false;
+        protected bool turnForcedEnd = false;
 
         //gets the player scriptable object
         public Player GetControlledPlayer() => controlledPlayer;
@@ -84,7 +85,7 @@ namespace Managers.PlayerControllers
         {
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
-            jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
+            //jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
             
         }
 
@@ -110,7 +111,8 @@ namespace Managers.PlayerControllers
         protected virtual void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
             isMyTurn = tse.playerId == controlledPlayer.GetId();
-            
+            turnForcedEnd = false;
+
             if (isMyTurn)
                 Logging.Logger.Info("PlayerController.CatchTurnStartedEvent",
                     $"Player {controlledPlayer.GetId()} turn started.",
@@ -235,15 +237,6 @@ namespace Managers.PlayerControllers
             if (jailEvent.player.GetId() != controlledPlayer.GetId())
                 return;
 
-            /* remove this later. Just for stuff
-            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
-                UIType.GeneralNotification,
-                new GeneralNotificationContext(controlledPlayer,
-                    noActionLanding.spaceName,
-                    noActionLanding.flavorText,
-                    () => RequestResolutionComplete())));
-            */
-
             controlledPlayer.SetInJail(jailEvent.inJail);
             controlledPlayer.SetJailTurns(jailEvent.jailTurns);
 
@@ -255,7 +248,6 @@ namespace Managers.PlayerControllers
             if (isMyTurn && jailEvent.inJail)
             {
                 pendingActions.Clear();
-                isMyTurn = false;
             }
         }
     }
