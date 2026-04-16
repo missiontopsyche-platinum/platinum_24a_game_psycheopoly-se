@@ -1,5 +1,8 @@
+using System.Linq;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
+
+using Assets.Scripts.Managers.Jail;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
@@ -25,6 +28,7 @@ namespace Managers.PlayerControllers
         private readonly UIActionEventChannel uiActionEventChannel;
         private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
         private readonly BooleanEventChannel diceRollPannelEventChannel;
+        private readonly MoneyDistributionEventChannel moneyDistributionEventChannel;
 
 
         // I need to figure out the architecture for UI events that the human controller will make use of
@@ -60,7 +64,8 @@ namespace Managers.PlayerControllers
             JailStateChangedEventChannel jailStateChanged,
             BooleanEventChannel diceRollPannel,
             ChargePlayerEventChannel chargePlayer,
-            NoActionLandingEventChannel noLandingAction) 
+            NoActionLandingEventChannel noLandingAction,
+            MoneyDistributionEventChannel moneyDistribution)
             : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // human controller specific setup goes here
@@ -69,6 +74,7 @@ namespace Managers.PlayerControllers
             mortgageFinishedEventChannel = mortgageFinished;
             diceRollPannelEventChannel = diceRollPannel;
             bankruptPlayerEventChannel = bankruptPlayer;
+            moneyDistributionEventChannel = moneyDistribution;
         }
 
         ~HumanPlayerController()
@@ -87,6 +93,7 @@ namespace Managers.PlayerControllers
             chargePlayerEventChannel?.Subscribe(HandleChargePlayer);
             noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
             jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
+            moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
         }
 
         public override void Unsubscribe()
@@ -99,6 +106,23 @@ namespace Managers.PlayerControllers
             turnEndedEventChannel?.Unsubscribe(OnTurnEnded);
             chargePlayerEventChannel?.Unsubscribe(HandleChargePlayer);
             noLandingActionEventChannel?.Unsubscribe(HandleNoLandingActionEvent);
+            jailStateChangedEventChannel?.Unsubscribe(HandleJailStateChanged);
+            moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
+        }
+        
+        //PlayerController already established turn ownership, HumanPlayerController handles human-player
+        //specific decisions/flow
+        protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
+        {
+            base.CatchTurnStartedEvent(tse);
+
+            if (!isMyTurn)
+                return;
+
+            if (!controlledPlayer.IsInJail())
+                return;
+
+            ShowJailOptionsUI();
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -182,10 +206,102 @@ namespace Managers.PlayerControllers
         {
             if (!isMyTurn || turnForcedEnd) return;
 
+            // ADDED: guard against malformed event payloads.
+            if (ppe == null || ppe.paidPlayer == null)
+            {
+                Logger.Error("HumanPlayerController.HandlePassedGo",
+                    "Received null PayPlayerEvent or player payload.",
+                    LogCategory.Gameplay);
+                return;
+            }
+
+            if (ppe.paidPlayer.GetId() != controlledPlayer.GetId())
+                return;
+
             // handle passing go
             // call player method for getting paid for passing go
+            controlledPlayer.AddMoney(ppe.amountPaid);
 
             RequestResolutionComplete();
+        }
+
+        // handles CollectFromAllPlayers card effects for the human player's controller.
+        private void HandleMoneyDistribution(MoneyDistributionEvent mde)
+        {
+            // skip players already removed / marked bankrupt.
+            if (controlledPlayer.IsMarkedBankrupt())
+                return;
+            
+            if (mde == null || mde.Player == null)
+                return;
+
+            // ignore invalid card values.
+            if (mde.Amount <= 0)
+                return;
+
+            int actualAmount = mde.Amount;
+
+            bool isCardHolder = mde.Player.GetId() == controlledPlayer.GetId();
+
+            if (isCardHolder)
+            {
+                int activePlayers = PlayerManager.GetInstance()
+                    .GetAllPlayers()
+                    .Count(p => p.IsMarkedBankrupt());
+                actualAmount = mde.Type switch
+                {
+                    // this player is paying- mult input amount by active players
+                    MoneyDistributionEvent.MoneyDistributionEventType.Pay => mde.Amount * activePlayers, 
+                    // this player is collecting
+                    MoneyDistributionEvent.MoneyDistributionEventType.Collect => 0, 
+                    _ => 0
+                };
+            }
+
+            if (actualAmount > 0)
+            {
+                // if this is a Pay All Players event and is not the cardholder, add money
+                if (mde.Type == MoneyDistributionEvent.MoneyDistributionEventType.Pay 
+                    && !isCardHolder)
+                    controlledPlayer.AddMoney(actualAmount);
+                else // otherwise, we can handle the charging based on actual amount
+                {
+                    // charge player this amount and resolve debt if necessary
+                    var status = controlledPlayer.TrySpend(actualAmount);
+                
+                    switch (status)
+                    {
+                        case Player.FinancialStatus.Success:
+                            // successful payment goes to the player who drew the card.
+                            mde.Player.AddMoney(mde.Amount);
+                            break;
+
+                        case Player.FinancialStatus.Bankrupt:
+                            // notify existing bankruptcy flow.
+                            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                            break;
+
+                        case Player.FinancialStatus.MortgageRequired:
+                            // reuse existing AI mortgage handling.
+                            HandleDebtResolution();
+                            break;
+                    }
+                }
+            }
+            // if actualAmount is 0, then we are being paid and don't need to do anything
+            // regardless, if it is our turn we need to mark resolution complete
+            if (isMyTurn)
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, 
+                    new GeneralNotificationContext(controlledPlayer,
+                        "Card resolution complete!",
+                        $"Money distribution has been completed.",
+                        () => RequestResolutionComplete())));
+        }
+
+        private void HandleDebtResolution()
+        {
+            // TODO : Handle debt by opening the debt mode property management UI
         }
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
@@ -223,6 +339,14 @@ namespace Managers.PlayerControllers
                     else
                         Logger.Error("HumanPlayerController.HandleUIAction",
                             $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
+                            LogCategory.UI);
+                    break;
+                case UIType.JailOptions:
+                    if (uiae.Context is JailActionContext jailContext)
+                        ResolveJailAction(jailContext);
+                    else
+                        Logger.Error("HumanPlayerController.HandleUIAction",
+                            $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
                             LogCategory.UI);
                     break;
                 case UIType.PropertyUpgradeSelected:
@@ -369,20 +493,128 @@ namespace Managers.PlayerControllers
             ga.onAcknowledged.Invoke();
         }
 
-        protected override void  HandleJailStateChanged(JailStateChangedEvent jailEvent)
+        // show you're in jail notification
+        protected override void HandleJailStateChanged(JailStateChangedEvent jailEvent)
         {
             base.HandleJailStateChanged(jailEvent);
 
-            Logger.Debug("HumanPlayerController.HandleJailStateChanged",
-                      "Handling Human Specific Jail information.",
-                      LogCategory.UI);
+            if (jailEvent.inJail)
+            {
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "LAUNCH PAD!",
+                        "You're now stuck at the launch pad!",
+                        () => 
+                            RequestTurnAction(
+                                TurnActionType.CompleteResolution,
+                                onAllowed: () => RequestTurnAction(
+                                    TurnActionType.EndTurn,
+                                    onAllowed: () => { },
+                                    onDenied: () => { }
+                        ), 
+                                onDenied: () => { }
+                        ))));
+            }
+            else
+            {
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "GO FOR LAUNCH!",
+                        "You're no longer stuck on the Launch Pad!",
+                        () => 
+                            RequestTurnAction(
+                                TurnActionType.EndTurn, 
+                                onAllowed: () => { }, 
+                                onDenied: () => { }
+                            ))));
+            }
+        }
 
-            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
-                UIType.GeneralNotification,
-                new GeneralNotificationContext(controlledPlayer,
-                    "Go for Launch!",
-                    "Proceed directly to the Launch Pad!\nDo not pass go, do not collect $200\nPress end turn!",
-                    () => RequestResolutionComplete())));
+        //display jail options for the current human player
+        private void ShowJailOptionsUI()
+        {
+            bool hasGetOutOfJailCard =
+                controlledPlayer.GetChanceCardCount() > 0 ||
+                controlledPlayer.GetCommunityCardCount() > 0;
+
+
+            uiActivationEventChannel?.RaiseEvent(
+                new UIActivationEvent(
+                    UIType.JailOptions,
+                    new JailActivationContext(
+                        controlledPlayer.GetPName(),
+                        controlledPlayer.GetJailTurns(),
+                        JailUtility.MAX_TURNS_IN_JAIL,
+                        controlledPlayer.CanAfford(JailUtility.JAIL_FEE),
+                        hasGetOutOfJailCard,
+                        JailUtility.JAIL_FEE)));
+
+            Logger.Info("HumanPlayerController.ShowJailOptionsUI",
+                $"{controlledPlayer.GetPName()} is in jail. Showing jail options UI.",
+                LogCategory.UI);
+        }
+        
+        //handles player-selected jail actions by routing to JailUtility OR requesting a TFC-controlled escape roll 
+        // done to keep dice ownership out of PlayerController
+        private void ResolveJailAction(JailActionContext context)
+        {
+            if (!isMyTurn || context == null)
+                return;
+
+            switch (context.Choice)
+            {
+                case JailChoice.PayFine:
+                    ResolveJailFinePayment();
+                    break;
+
+                case JailChoice.UseCard:
+                    ResolveJailCardUse();
+                    break;
+
+                case JailChoice.RollForEscape:
+                    RequestTurnAction(
+                        TurnActionType.RollForJailEscape,
+                        onAllowed: () =>
+                        {
+                            Logger.Info("HumanPlayerController.ResolveJailAction",
+                                $"{controlledPlayer.GetPName()} requested a jail escape roll.",
+                                LogCategory.Gameplay);
+                        },
+                        onDenied: () =>
+                        {
+                            Logger.Info("HumanPlayerController.ResolveJailAction",
+                                $"{controlledPlayer.GetPName()} was denied a jail escape roll.",
+                                LogCategory.Gameplay);
+                        });
+                    break;
+            }
+        }
+
+        //attempts to pay jail fine and raise bakruptcy is player can't pay
+        private void ResolveJailFinePayment()
+        {
+            JailUtility.FeePaymentResult result = JailUtility.PayFee(controlledPlayer);
+
+            Logger.Info("HumanPlayerController.ResolveJailFinePayment",
+                $"{controlledPlayer.GetPName()} jail fine result: {result}.",
+                LogCategory.Gameplay);
+
+            if (result == JailUtility.FeePaymentResult.Bankrupt)
+            {
+                bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+            }
+        }
+
+        //uses the GOOJFCard if the player has it, logs the result.
+        private void ResolveJailCardUse()
+        {
+            JailUtility.CardUseResult result = JailUtility.UseGetOutOfJailFree(controlledPlayer);
+
+            Logger.Info("HumanPlayerController.ResolveJailCardUse",
+                $"{controlledPlayer.GetPName()} jail card result: {result}.",
+                LogCategory.Gameplay);
 
             
         }

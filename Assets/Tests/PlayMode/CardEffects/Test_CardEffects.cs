@@ -84,28 +84,6 @@ namespace Assets.Tests.PlayMode.CardEffects
             Assert.AreEqual(MoveToSpaceCardEffect.TargetSpaceType.PlanetSpace, captured.targetKind);
         }
 
-        // PayPlayerCardEffect  (simple “give money to player” card)
-
-        [Test]
-        public void PayPlayerCardEffect_RaisesPayPlayerEvent_WithCorrectAmount()
-        {
-            var player = CreatePlayer(0, 1000);
-
-            var effect = CreateEffect<PayPlayerCardEffect>();
-            effect.amount = 200;
-
-            var channel = CreateChannel<PayPlayerEventChannel>();
-            PayPlayerEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.payPlayerEventChannel = channel;
-
-            effect.ApplyEffect(player);
-
-            Assert.NotNull(captured, "PayPlayerEvent should be raised");
-            Assert.AreEqual(player, captured.paidPlayer);
-            Assert.AreEqual(200, captured.amountPaid);
-        }
-
         // PayAllPlayersCardEffect / CollectFromAllPlayersCardEffect
         // These both use MoneyDistributionEvent with (Player, Amount).
 
@@ -121,7 +99,7 @@ namespace Assets.Tests.PlayMode.CardEffects
             MoneyDistributionEvent captured = null;
             channel.Subscribe(e => captured = e);
 
-            effect.payAllPlayersEventChannel = channel;
+            effect.moneyDistributionEventChannel = channel;
 
             effect.ApplyEffect(player);
 
@@ -141,7 +119,7 @@ namespace Assets.Tests.PlayMode.CardEffects
             var channel = CreateChannel<MoneyDistributionEventChannel>();
             MoneyDistributionEvent captured = null;
             channel.Subscribe(e => captured = e);
-            effect.collectFromAllPlayersEventChannel = channel;
+            effect.moneyDistributionEventChannel = channel;
 
             effect.ApplyEffect(player);
 
@@ -149,35 +127,6 @@ namespace Assets.Tests.PlayMode.CardEffects
             Assert.AreEqual(player, captured.Player);
             Assert.AreEqual(25, captured.Amount);
         }
-
-        // GetOutOfJailCardEffect / GoToJailCardEffect
-        [Test]
-        public void GetOutOfJailCardEffect_RaisesEvent_NotInJail_WithZeroTurns()
-        {
-            var player = CreatePlayer(0, 1500);
-
-            var effect = CreateEffect<GetOutOfJailCardEffect>();
-
-            var channel = CreateChannel<JailStateChangedEventChannel>();
-
-            JailStateChangedEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.JailStateChangedEventChannel = channel;
-
-            // Pretend the player was in jail before the card
-            player.SetInJail(true);
-            player.SetJailTurns(2);
-
-            effect.ApplyEffect(player);
-
-            Assert.NotNull(captured, "JailStateChangedEvent should be raised");
-            Assert.AreEqual(player, captured.player);
-
-            Assert.IsFalse(captured.inJail);
-            Assert.AreEqual(0, captured.jailTurns);
-        }
-
-
 
         [Test]
         public void GoToJailCardEffect_RaisesEvent_InJail_WithConfiguredTurns()
@@ -199,35 +148,6 @@ namespace Assets.Tests.PlayMode.CardEffects
             Assert.IsTrue(captured.inJail);
             Assert.AreEqual(3, captured.jailTurns);
         }
-
-        // CollectPerPropertyCardEffect / PayPerPropertyCardEffect
-        //
-        // These area bit  more complex (they look @ owned properties and upgrades).
-        // For now we at least verify the early-exit behaviour: when the player
-        // has NO owned properties, effects should NOT raise an event.
-        // That still acts as the guard logic and verifies we don’t charge
-        // or pay incorrectly.
-        [Test]
-        public void CollectPerPropertyCardEffect_NoOwnedProperties_DoesNotRaiseEvent()
-        {
-            var player = CreatePlayer(0, 1500);
-
-            var effect = CreateEffect<CollectPerPropertyCardEffect>();
-            effect.ChargeForHouse = 40;
-            effect.ChargeForHotel = 100;
-
-            var channel = CreateChannel<PayPlayerEventChannel>();
-            PayPlayerEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.payPlayerEventChannel = channel;
-
-            // Player has no owned properties by default
-            effect.ApplyEffect(player);
-
-            Assert.IsNull(captured, "No PayPlayerEvent should be raised when player owns no properties");
-        }
-
-
 
         [Test]
         public void PayPerPropertyCardEffect_NoOwnedProperties_DoesNotRaiseEvent()

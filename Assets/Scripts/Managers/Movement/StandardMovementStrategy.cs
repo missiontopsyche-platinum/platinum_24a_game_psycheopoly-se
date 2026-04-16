@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
+using Assets.Scripts.Managers.Rent;
 using UnityEngine;
 using PsycheOpoly.Board;
 using Logging;
@@ -27,6 +28,8 @@ namespace Assets.Scripts.Managers.Movement
         [SerializeField] private TurnStartedEventChannel turnStartedEventChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledEventChannel;
+        [SerializeField] private MoveToSpaceEventChannel moveToSpaceEventChannel;
+        [SerializeField] private CostModifierService costModifierService;
 
         private int doublesCount = 0;
         private Player currentPlayer;
@@ -38,6 +41,7 @@ namespace Assets.Scripts.Managers.Movement
             turnStartedEventChannel?.Subscribe(OnTurnStarted);
             pieceMoveCompletedEventChannel?.Subscribe(ResolveCompletedMovement);
             diceRolledEventChannel?.Subscribe(ExecuteRollMovement);
+            moveToSpaceEventChannel?.Subscribe(ExecuteMoveToSpaceMovement);
         }
 
 
@@ -45,6 +49,7 @@ namespace Assets.Scripts.Managers.Movement
         {
             turnStartedEventChannel?.Unsubscribe(OnTurnStarted);
             pieceMoveCompletedEventChannel?.Unsubscribe(ResolveCompletedMovement);
+            moveToSpaceEventChannel?.Unsubscribe(ExecuteMoveToSpaceMovement);
         }
 
         private bool movementInProgress = false;
@@ -308,6 +313,126 @@ namespace Assets.Scripts.Managers.Movement
             }
 
             return path;
+        }
+
+        private int ResolveMoveToSpaceTargetIndex(MoveToSpaceEvent evt)
+        {
+            if (evt == null || evt.player == null || boardManager == null)
+                return -1;
+
+            if (evt.targetMode == MoveToSpaceCardEffect.TargetMode.SpecificSpace)
+                return (int)evt.specificBoardSpace;
+
+            int currentIdx = boardManager.GetPlayerPosition(evt.player.GetId());
+            int boardLength = boardManager.boardSize;
+
+            for (int i = 1; i <= boardLength; i++)
+            {
+                int idx = NormalizeIndex(currentIdx + i, boardLength);
+                SpaceData space = boardManager.GetSpace(idx);
+
+                switch (evt.targetKind)
+                {
+                    case MoveToSpaceCardEffect.TargetSpaceType.CardSpace:
+                        if (space is CardSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.ChargeSpace:
+                        if (space is ChargeSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.GoForLaunchSpace:
+                        if (space is GoForLaunchSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.GoSpace:
+                        if (space is GoSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.GravityAssistSpace:
+                        if (space is GravityAssistSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.InstrumentSpace:
+                        if (space is InstrumentSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.LaunchPadSpace:
+                        if (space is LaunchPadSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.PlanetSpace:
+                        if (space is PlanetSpaceData) return idx;
+                        break;
+                    case MoveToSpaceCardEffect.TargetSpaceType.PropertySpace:
+                        if (space is PropertySpaceData) return idx;
+                        break;
+                }
+            }
+
+            return -1;
+        }
+
+        private void ExecuteMoveToSpaceMovement(MoveToSpaceEvent evt)
+        {
+            if (evt == null || evt.player == null)
+                return;
+
+            if (boardManager == null)
+            {
+                Logger.Error("StandardMovementStrategy.ExecuteMoveToSpaceMovement",
+                    "BoardManager is not assigned.",
+                    LogCategory.Core,
+                    this);
+                return;
+            }
+
+            if (movementInProgress)
+            {
+                Logger.Warn("StandardMovementStrategy.ExecuteMoveToSpaceMovement",
+                    "Movement already in progress.",
+                    LogCategory.Gameplay,
+                    this);
+                return;
+            }
+
+            int playerId = evt.player.GetId();
+            int startIndex = boardManager.GetPlayerPosition(playerId);
+            int targetIndex = ResolveMoveToSpaceTargetIndex(evt);
+
+            if (targetIndex < 0)
+            {
+                Logger.Warn("StandardMovementStrategy.ExecuteMoveToSpaceMovement",
+                    "Could not resolve target index for MoveToSpace event.",
+                    LogCategory.Gameplay,
+                    this);
+                return;
+            }
+
+            SpaceData targetSpace = boardManager.GetSpace(targetIndex);
+            if (targetSpace is OwnableSpaceData ownableSpace)
+            {
+                switch (evt.arrivalRentModifier)
+                {
+                    case MoveToSpaceCardEffect.ArrivalRentModifierType.DoubleRent:
+                        costModifierService?.DoubleRentOnceForTile(ownableSpace);
+                        break;
+
+                    case MoveToSpaceCardEffect.ArrivalRentModifierType.FreeRent:
+                        costModifierService?.FreeNextRentForTenant(evt.player);
+                        break;
+                }
+            }
+
+            int boardSize = boardManager.boardSize;
+            int stepsForward = targetIndex >= startIndex
+                ? targetIndex - startIndex
+                : (boardSize - startIndex) + targetIndex;
+
+            currentPlayer = evt.player;
+            movementInProgress = true;
+            normalMoveCompletedThisTurn = false;
+            lastPath = BuildPathIndices(startIndex, stepsForward, boardSize);
+
+            Logger.Debug("StandardMovementStrategy.ExecuteMoveToSpaceMovement",
+                $"Player {playerId} moving via card from {startIndex} to {targetIndex} by {stepsForward} spaces.",
+                LogCategory.Gameplay,
+                this);
+
+            movePlayerChannel?.RaiseEvent(new MovePlayerEvent(playerId, stepsForward, lastPath));
         }
 
     }

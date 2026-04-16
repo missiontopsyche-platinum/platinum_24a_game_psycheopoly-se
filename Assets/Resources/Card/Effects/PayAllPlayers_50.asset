@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: PayAllPlayers_50
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PayAllPlayersCardEffect
   Amount: 50
-  payAllPlayersEventChannel: {fileID: 11400000, guid: 101d6cb95fd321f47b586ba6b9b3c7dd, type: 2}
+  moneyDistributionEventChannel: {fileID: 11400000, guid: 3f1303e6fe84bac46a0c63947fba1af0, type: 2}

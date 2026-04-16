@@ -15,7 +15,7 @@ namespace Tests.EditMode.CardTests
 
             var effect = TrackEffect(ScriptableObject.CreateInstance<PayAllPlayersCardEffect>());
             effect.Amount = 25;
-            effect.payAllPlayersEventChannel = channel;
+            effect.moneyDistributionEventChannel = channel;
 
             effect.ApplyEffect(testPlayer);
 
@@ -33,7 +33,7 @@ namespace Tests.EditMode.CardTests
 
             var effect = TrackEffect(ScriptableObject.CreateInstance<CollectFromAllPlayersCardEffect>());
             effect.Amount = 25;
-            effect.collectFromAllPlayersEventChannel = channel;
+            effect.moneyDistributionEventChannel = channel;
 
             effect.ApplyEffect(testPlayer);
 

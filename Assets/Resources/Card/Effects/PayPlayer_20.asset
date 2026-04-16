@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: PayPlayer_20
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PayPlayerCardEffect
   amount: 20
-  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  noActionLandingEventChannel: {fileID: 11400000, guid: 5056b9ff8a3f66940af4d562f52cbad1, type: 2}
+  chargePlayerEventChannel: {fileID: 11400000, guid: 02c5e69698aae3647aeb45b65bebbc8f, type: 2}

@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.Events.EventChannelTypes;
 using Logging;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using Managers.PlayerControllers;
 using Assets.Scripts.Managers.Rules;
 using UnityEngine;
 using Logger = Logging.Logger;
+using Object = UnityEngine.Object;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -32,9 +34,25 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public JailStateChangedEventChannel jailEventChannel;
     [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
     [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
+    [SerializeField] public MoneyDistributionEventChannel moneyDistributionEventChannel;
     public List<PlayerController> playerControllers = new();
     
     private StandardRuleSet activeRuleset;
+
+    private static PlayerManager _instance = null;
+
+    private void Awake()
+    {
+        if (_instance == null)
+            _instance = this;
+        else
+            Destroy(this);
+    }
+
+    public static PlayerManager GetInstance()
+    {
+        return _instance;
+    }
 
     /// <summary>
     /// Bootstraps Players from data passed from GameManager
@@ -79,7 +97,8 @@ public class PlayerManager : MonoBehaviour
                     jailEventChannel,
                     diceRollPannelEventChannel,
                     chargePlayerEventChannel,
-                    noLandingActionEventChannel
+                    noLandingActionEventChannel,
+                    moneyDistributionEventChannel
                     );
             }
             else
@@ -101,7 +120,8 @@ public class PlayerManager : MonoBehaviour
                     jailEventChannel,
                     mortgageFinishedEventChannel,
                     chargePlayerEventChannel,
-                    noLandingActionEventChannel
+                    noLandingActionEventChannel,
+                    moneyDistributionEventChannel
                     );
             }
 

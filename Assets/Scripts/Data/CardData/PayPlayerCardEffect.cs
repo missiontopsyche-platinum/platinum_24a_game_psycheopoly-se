@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
@@ -12,26 +13,28 @@ using Events.EventDataStructures;
 public class PayPlayerCardEffect : CardEffect
 {
     [SerializeField] public int amount = 0;
-    [SerializeField] public PayPlayerEventChannel payPlayerEventChannel;
+    [SerializeField] public NoActionLandingEventChannel noActionLandingEventChannel;
+    [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
 
     public override void ApplyEffect(Player player)
     {
         if (!isValidPlayer(player)) return;
-        if (payPlayerEventChannel == null)
-        {
-            Logging.Logger.Error("PayPlayerCardEffect.ApplyEffect",
-                "PayPlayerEventChannel is not assigned.",
-                Logging.LogCategory.Gameplay,
-                this);
-            return;
-        }
 
-        Logging.Logger.Info("PayPlayerCardEffect.ApplyEffect",
-            $"Effect: Paying {player.GetPName()} ${amount}.",
-            Logging.LogCategory.Gameplay,
-            this);
-        
-        payPlayerEventChannel.RaiseEvent(new PayPlayerEvent(player, amount));
-        
+        if (amount >= 0)
+        {
+            // directly add money to player and trigger a notification UI to signal
+            // resolution complete
+            player.AddMoney(amount);
+            noActionLandingEventChannel.RaiseEvent(new NoActionLandingEvent(
+                "Money Added!",
+                $"You gained ${amount}!"));
+        }
+        else
+        {
+            // charge money to the player, which handles bankruptcy checks and a
+            // UI notification + resolution completion
+            chargePlayerEventChannel.RaiseEvent(
+                new ChargePlayerEvent(player, Mathf.Abs(amount)));
+        }
     }
 }

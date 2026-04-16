@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Causes all other players to pay a fixed amount to the acting player.
@@ -8,11 +9,12 @@ using UnityEngine;
 public class CollectFromAllPlayersCardEffect : CardEffect
 {
     [SerializeField] public int Amount = 0;
-    [SerializeField] public MoneyDistributionEventChannel collectFromAllPlayersEventChannel;
+    [SerializeField] public MoneyDistributionEventChannel moneyDistributionEventChannel;
     public override void ApplyEffect(Player player)
     {
         if (!isValidPlayer(player)) return;
-        collectFromAllPlayersEventChannel.RaiseEvent(new MoneyDistributionEvent(player, Amount));
+        moneyDistributionEventChannel.RaiseEvent(new MoneyDistributionEvent(
+            MoneyDistributionEvent.MoneyDistributionEventType.Collect, player, Amount));
     }
 }
 

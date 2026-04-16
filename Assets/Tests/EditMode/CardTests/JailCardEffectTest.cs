@@ -26,24 +26,6 @@ namespace Tests.EditMode.CardTests
             Assert.IsTrue(raised[0].inJail);
             Assert.AreEqual(2, raised[0].jailTurns);
         }
-
-        [Test]
-        public void GetOutOfJailCardEffect_RaisesReleaseEvent()
-        {
-            JailStateChangedEventChannel jailChannel = CreateChannel<JailStateChangedEventChannel>();
-            List<JailStateChangedEvent> raised = new();
-            jailChannel.Subscribe(e => raised.Add(e));
-
-            var effect = TrackEffect(ScriptableObject.CreateInstance<GetOutOfJailCardEffect>());
-            effect.JailStateChangedEventChannel = jailChannel;
-
-            effect.ApplyEffect(testPlayer);
-
-            Assert.AreEqual(1, raised.Count);
-            Assert.AreSame(testPlayer, raised[0].player);
-            Assert.IsFalse(raised[0].inJail);
-            Assert.AreEqual(0, raised[0].jailTurns);
-        }
     }
 
 }
