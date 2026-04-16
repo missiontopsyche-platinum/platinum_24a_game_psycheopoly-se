@@ -39,11 +39,11 @@ public class PlayerManager : MonoBehaviour
     
     private StandardRuleSet activeRuleset;
 
-    private static PlayerManager _instance;
+    private static PlayerManager _instance = null;
 
     private void Awake()
     {
-        if (_instance != null)
+        if (_instance == null)
             _instance = this;
         else
             Destroy(this);
