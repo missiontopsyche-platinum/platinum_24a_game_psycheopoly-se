@@ -312,7 +312,6 @@ namespace Assets.Scripts.Managers.TurnFlow
             //if (player.GetId() != ActivePlayer) return false;
 
             //sends to the roll for escape turn action (since it's a unique dice roll)
-            //TODO: FIX THIS SO IT LETS YOU END THE FUCKING TURN ON THE TURN YOU GO TO JAIL
             if (player != null && player.IsInJail())
             {
                 return action switch
