@@ -1,11 +1,13 @@
 using System.Linq;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Events.EventDataStructures;
+
 using Assets.Scripts.Managers.Jail;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
+using UnityEngine;
 using Logger = Logging.Logger;
 
 
@@ -125,7 +127,7 @@ namespace Managers.PlayerControllers
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
                 TurnActionType.BuyProperty,
@@ -149,7 +151,7 @@ namespace Managers.PlayerControllers
 
         private void HandleUpgradeEvent(PropertySpaceData property)
         {
-            if (!isMyTurn || property == null) return;
+            if (!isMyTurn || property == null || turnForcedEnd) return;
             // Note: Follow this pattern for any event that requires player input.
             RequestTurnAction(
                 TurnActionType.ModifyProperty,
@@ -172,7 +174,7 @@ namespace Managers.PlayerControllers
 
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
             
             // activate Rent notification UI
 
@@ -202,7 +204,7 @@ namespace Managers.PlayerControllers
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             // ADDED: guard against malformed event payloads.
             if (ppe == null || ppe.paidPlayer == null)
@@ -304,7 +306,7 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             if(controlledPlayer.MortgageProperty(context.tile))
             {
@@ -397,8 +399,11 @@ namespace Managers.PlayerControllers
         // their turn. This is also a workaround to separate AwaitingResolution and Completed states.
         private void OnTurnEnded(bool ended)
         {
-            if (!isMyTurn) return;
 
+            if (!isMyTurn) return;
+            Logger.Debug("HumanPlayerController.RequestEndTurn",
+                        "Checking that the player turn isn't cycling somehow.",
+                        LogCategory.Gameplay);
             RequestTurnAction(
                 TurnActionType.EndTurn,
                 onAllowed: () =>
@@ -417,7 +422,7 @@ namespace Managers.PlayerControllers
 
         private void HandleDiceRollPannel()
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             Logger.Debug("HumanPlayerController.HandleDiceRollePannel",
                        "Dice Roll Pannel Reached.",
@@ -448,7 +453,7 @@ namespace Managers.PlayerControllers
 
         private void HandleChargePlayer(ChargePlayerEvent cpe)
         {
-            if (!isMyTurn) return;
+            if (!isMyTurn || turnForcedEnd) return;
 
             if (!controlledPlayer.CanAfford(cpe.chargeAmount))
             {
@@ -502,8 +507,12 @@ namespace Managers.PlayerControllers
                         "You're now stuck at the launch pad!",
                         () => 
                             RequestTurnAction(
-                                TurnActionType.EndTurn, 
-                                onAllowed: () => { }, 
+                                TurnActionType.CompleteResolution,
+                                onAllowed: () => RequestTurnAction(
+                                    TurnActionType.EndTurn,
+                                    onAllowed: () => { },
+                                    onDenied: () => { }
+                        ), 
                                 onDenied: () => { }
                         ))));
             }
@@ -516,7 +525,7 @@ namespace Managers.PlayerControllers
                         "You're no longer stuck on the Launch Pad!",
                         () => 
                             RequestTurnAction(
-                                TurnActionType.EndTurn, 
+                                TurnActionType.CompleteResolution, 
                                 onAllowed: () => { }, 
                                 onDenied: () => { }
                             ))));

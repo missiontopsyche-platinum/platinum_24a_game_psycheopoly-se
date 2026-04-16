@@ -15,6 +15,7 @@ public class LaunchPadSpaceData : SpaceData
     
     public override void OnLanded(Player player)
     {
+        if (player.GetInJail()) return; // if the player is sent to jail, do not display
         // do nothing
         noLandingActionEventChannel.RaiseEvent(new NoActionLandingEvent(
             spaceName, flavorText));

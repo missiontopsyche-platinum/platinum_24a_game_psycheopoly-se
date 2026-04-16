@@ -2,6 +2,7 @@
 using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
+using Events.EventDataStructures.UI;
 using Logging;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Managers.PlayerControllers
         // fields
         protected readonly Player controlledPlayer;
         protected bool isMyTurn = false;
+        protected bool turnForcedEnd = false;
 
         //gets the player scriptable object
         public Player GetControlledPlayer() => controlledPlayer;
@@ -83,7 +85,7 @@ namespace Managers.PlayerControllers
         {
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
-            jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
+            //jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
             
         }
 
@@ -109,7 +111,8 @@ namespace Managers.PlayerControllers
         protected virtual void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
             isMyTurn = tse.playerId == controlledPlayer.GetId();
-            
+            turnForcedEnd = false;
+
             if (isMyTurn)
                 Logging.Logger.Info("PlayerController.CatchTurnStartedEvent",
                     $"Player {controlledPlayer.GetId()} turn started.",
@@ -192,6 +195,12 @@ namespace Managers.PlayerControllers
         /// 
         protected void RequestResolutionComplete(Action onAllowed = null, Action onDenied = null)
         {
+            Logger.Debug(
+                    "PlayerController.RequestResolutionComplete",
+                    $"Requesting resolution.",
+                    LogCategory.Gameplay,
+                    this);
+
             RequestTurnAction(
                 TurnActionType.CompleteResolution,
                 onAllowed ?? (() =>
@@ -220,6 +229,8 @@ namespace Managers.PlayerControllers
         /// </summary>
         protected virtual void HandleJailStateChanged(JailStateChangedEvent jailEvent)
         {
+            if (!isMyTurn) return;
+
             if (jailEvent == null || jailEvent.player == null)
                 return;
 
@@ -237,6 +248,7 @@ namespace Managers.PlayerControllers
             if (isMyTurn && jailEvent.inJail)
             {
                 pendingActions.Clear();
+                turnForcedEnd = true;
             }
         }
     }
