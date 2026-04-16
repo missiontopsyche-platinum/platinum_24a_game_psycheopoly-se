@@ -525,7 +525,7 @@ namespace Managers.PlayerControllers
                         "You're no longer stuck on the Launch Pad!",
                         () => 
                             RequestTurnAction(
-                                TurnActionType.EndTurn, 
+                                TurnActionType.CompleteResolution, 
                                 onAllowed: () => { }, 
                                 onDenied: () => { }
                             ))));
