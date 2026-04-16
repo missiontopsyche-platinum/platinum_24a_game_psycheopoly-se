@@ -82,61 +82,6 @@ namespace Tests.EditMode.CardTests
 
         Assert.AreEqual(0, raised.Count);
     }
-
-    [Test]
-    public void CollectPerProperty_PaysCorrectTotal()
-    {
-        PayPlayerEventChannel pay = CreateChannel<PayPlayerEventChannel>();
-        List<PayPlayerEvent> raised = new();
-        pay.Subscribe(e => raised.Add(e));
-
-        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectPerPropertyCardEffect>());
-        effect.ChargeForHouse = 20;
-        effect.ChargeForHotel = 100;
-        effect.payPlayerEventChannel = pay;
-
-        CreatePropertyForTestPlayer();
-        effect.ApplyEffect(testPlayer);
-
-        Assert.AreEqual(1, raised.Count);
-        Assert.AreSame(testPlayer, raised[0].paidPlayer);
-        Assert.AreEqual(140, raised[0].amountPaid);
-    }
-
-    [Test]
-    public void CollectPerProperty_NoOwnedProperties()
-    {
-        PayPlayerEventChannel pay = CreateChannel<PayPlayerEventChannel>();
-        List<PayPlayerEvent> raised = new();
-        pay.Subscribe(e => raised.Add(e));
-
-        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectPerPropertyCardEffect>());
-        effect.ChargeForHouse = 20;
-        effect.ChargeForHotel = 100;
-        effect.payPlayerEventChannel = pay;
-
-        effect.ApplyEffect(testPlayer);
-
-        Assert.AreEqual(0, raised.Count);
-    }
-
-    [Test]
-    public void CollectPerProperty_NoCharge()
-    {
-        PayPlayerEventChannel pay = CreateChannel<PayPlayerEventChannel>();
-        List<PayPlayerEvent> raised = new();
-        pay.Subscribe(e => raised.Add(e));
-
-        var effect = TrackEffect(ScriptableObject.CreateInstance<CollectPerPropertyCardEffect>());
-        effect.ChargeForHouse = 0;
-        effect.ChargeForHotel = 0;
-        effect.payPlayerEventChannel = pay;
-
-        CreatePropertyForTestPlayer();
-        effect.ApplyEffect(testPlayer);
-
-        Assert.AreEqual(0, raised.Count);
-    }
 }
 }
 

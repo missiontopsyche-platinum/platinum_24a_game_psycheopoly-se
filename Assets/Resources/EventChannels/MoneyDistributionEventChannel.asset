@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c5d2f21e57b497408df51207c151505, type: 3}
-  m_Name: PayAllPlayersEventChannel
+  m_Name: MoneyDistributionEventChannel
   m_EditorClassIdentifier: PsycheOpoly.Runtime::MoneyDistributionEventChannel

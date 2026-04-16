@@ -33,6 +33,10 @@ public class Player : ScriptableObject
     private List<OwnableSpaceData> ownedProperties = new();
     private List<Card> getOutOfJailCards = new();
 
+    // Track which deck each held Get Out of Jail Free card came from
+    // so it can be returned to the correct deck when used.
+    private Dictionary<Card, CardDeck> getOutOfJailCardSources = new();
+
     public void SetBankrupt(bool bankrupt)
     {
         isBankrupt = bankrupt;
@@ -328,7 +332,9 @@ public class Player : ScriptableObject
         return this.position;
     }
 
-    public void AddJailCard(Card card)
+    // Require the source deck when the player receives a Get Out of Jail Free card.
+    // This lets us return the same card to the correct deck when it is used.
+    public void AddJailCard(Card card, CardDeck sourceDeck)
     {
         if (card == null)
         {
@@ -338,7 +344,19 @@ public class Player : ScriptableObject
                 this);
             throw new ArgumentNullException("Cannot add null card to player's get out of jail cards.");
         }
+
+        // validate deck source because this card must go back to the same deck later.
+        if (sourceDeck == null)
+        {
+            Logging.Logger.Error("Player.AddJailCard",
+                "Cannot add jail card without a source deck.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException(nameof(sourceDeck));
+        }
+
         getOutOfJailCards.Add(card);
+        getOutOfJailCardSources[card] = sourceDeck;
     }
 
     public void RemoveJailCard(Card card)
@@ -352,6 +370,55 @@ public class Player : ScriptableObject
             throw new ArgumentNullException("Cannot remove null card from player's get out of jail cards.");
         }
         getOutOfJailCards.Remove(card);
+        getOutOfJailCardSources.Remove(card);
+    }
+
+    public bool HasGetOutOfJailFreeCard()
+    {
+        return getOutOfJailCards != null && getOutOfJailCards.Count > 0;
+    }
+
+    public bool TryConsumeGetOutOfJailFreeCard(out Card card, out CardDeck sourceDeck)
+    {
+        card = null;
+        sourceDeck = null;
+
+        if (getOutOfJailCards == null || getOutOfJailCards.Count == 0)
+            return false;
+
+        // Use the first available card in inventory.
+        card = getOutOfJailCards[0];
+
+        if (card == null)
+        {
+            Logging.Logger.Warn("Player.TryConsumeGetOutOfJailFreeCard",
+                $"{p_Name} has a null jail card entry in inventory.",
+                LogCategory.Gameplay,
+                this);
+
+            getOutOfJailCards.RemoveAt(0);
+            return false;
+        }
+
+        if (!getOutOfJailCardSources.TryGetValue(card, out sourceDeck) || sourceDeck == null)
+        {
+            Logging.Logger.Error("Player.TryConsumeGetOutOfJailFreeCard",
+                $"Could not find source deck for {p_Name}'s Get Out of Jail Free card.",
+                LogCategory.Gameplay,
+                this);
+            return false;
+        }
+
+        // Remove from inventory as part of use/consume behavior.
+        getOutOfJailCards.RemoveAt(0);
+        getOutOfJailCardSources.Remove(card);
+
+        Logging.Logger.Info("Player.TryConsumeGetOutOfJailFreeCard",
+            $"{p_Name} used a Get Out of Jail Free card.",
+            LogCategory.Gameplay,
+            this);
+
+        return true;
     }
 
     public List<Card> GetJailCards()
@@ -509,6 +576,12 @@ public class Player : ScriptableObject
 
     public void ResetData()
     {
+        getOutOfJailCards.Clear();
+        getOutOfJailCardSources.Clear();
+
+        getOutOfJailFree_Chance = 0;
+        getOutOfJailFree_Community = 0;
+        
         ClearOwnership();
         ReleaseFromJail();
     }

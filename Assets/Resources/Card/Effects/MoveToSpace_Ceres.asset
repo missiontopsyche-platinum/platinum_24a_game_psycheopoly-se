@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f6e419543d9dca4ea66cfefb065a778, type: 3}
   m_Name: MoveToSpace_Ceres
   m_EditorClassIdentifier: PsycheOpoly.Runtime::MoveToSpaceCardEffect
+  targetMode: 1
   targetType: 7
+  specificBoardSpace: 39
   moveToSpaceEventChannel: {fileID: 11400000, guid: 7a9765d84a0a54b409423e8a0415aac9, type: 2}

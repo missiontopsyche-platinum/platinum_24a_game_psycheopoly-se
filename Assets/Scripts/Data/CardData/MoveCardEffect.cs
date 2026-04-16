@@ -14,6 +14,7 @@ public class MoveCardEffect : CardEffect
     [SerializeField] public EffectType Type;
     [SerializeField] public int SpacesToMove = 1;
     [SerializeField] public MovePlayerEventChannel MovePlayerEventChannel;
+    [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
 
     public override void ApplyEffect(Player player)
     {
@@ -41,7 +42,10 @@ public class MoveCardEffect : CardEffect
                     "Unknown EffectType in MoveCardEffect: " + Type.ToString(),
                     Logging.LogCategory.Gameplay,
                     this);
-                break;
+                return;
         }
+
+        // card movement should resolve landing just like normal movement.
+        pieceMoveCompletedEventChannel?.RaiseEvent(true);
     }
 }

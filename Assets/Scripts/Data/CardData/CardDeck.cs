@@ -70,12 +70,18 @@ public class CardDeck : ScriptableObject
                 this);
             return;
         }
-        
+
         if (IsGetOutOfJailFreeCard(card))
         {
-            // TODO: When refactoring, call event channel to notify all components
-            player.AddJailCard(card);
-            return;
+            // Store both the card and the deck source on the player.
+            // This keeps the card out of the deck while held and allows it to
+            // be returned to the same deck when used.
+            player.AddJailCard(card, this);
+
+            Logging.Logger.Info("CardDeck.DrawCard",
+                $"{player.GetPName()} drew a Get Out of Jail Free card from {name}. Card removed from deck until used.",
+                LogCategory.Gameplay,
+                this);
         }
 
         cardDrawnChannel?.Raise(card, player, this);
@@ -83,8 +89,22 @@ public class CardDeck : ScriptableObject
 
     public void ReturnCardToDeck(Card card)
     {
-        // TODO: When refactoring, call event channel to notify all components
+        if (card == null)
+        {
+            Logging.Logger.Error("CardDeck.ReturnCardToDeck",
+                "Cannot return a null card to the deck.",
+                LogCategory.Gameplay,
+                this);
+            return;
+        }
+
+        // The card is added back into the deck queue only when it is used.
         deckQueue.Enqueue(card);
+
+        Logging.Logger.Info("CardDeck.ReturnCardToDeck",
+            $"Returned {card.title} to {name}.",
+            LogCategory.Gameplay,
+            this);
     }
 
     private void Shuffle()

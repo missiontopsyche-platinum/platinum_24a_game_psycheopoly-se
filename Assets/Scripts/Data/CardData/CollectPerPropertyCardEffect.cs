@@ -18,7 +18,7 @@ public class CollectPerPropertyCardEffect : CardEffect
 {
     [SerializeField] public int ChargeForHouse = 0;
     [SerializeField] public int ChargeForHotel = 0;
-    [SerializeField] public PayPlayerEventChannel payPlayerEventChannel;
+    [SerializeField] public NoActionLandingEventChannel noActionLandingEventChannel;
     public override void ApplyEffect(Player player)
     {
         if (!isValidPlayer(player) 
@@ -39,6 +39,9 @@ public class CollectPerPropertyCardEffect : CardEffect
             }
         }
         int totalAmount = (ChargeForHouse * houseCount) + (ChargeForHotel * hotelCount);
-        payPlayerEventChannel.RaiseEvent(new PayPlayerEvent(player, totalAmount));
+        player.AddMoney(totalAmount);
+        noActionLandingEventChannel.RaiseEvent(new NoActionLandingEvent(
+            "Collected money for data!",
+            $"You collected ${totalAmount} for your data!"));
     }
 }

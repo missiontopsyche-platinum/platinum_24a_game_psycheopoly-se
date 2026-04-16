@@ -26,17 +26,26 @@ namespace Assets.Scripts.Managers.Rent
         {
             int rent = baseRent;
 
+            // Apply permanent modifiers independently of temporary modifier count.
+            for (int i = _permanent_mods.Count - 1; i >= 0; i--) 
+            {
+                var pm = _permanent_mods[i];
+                if (pm == null || !pm.IsActive()) 
+                    continue; 
+
+                rent = Mathf.Max(0, pm.Apply(rent, tile, tenant, owner));
+            }
+
             for (int i = _mods.Count - 1; i >= 0; i--)
             {
                 var m = _mods[i];
-                var pm = _permanent_mods[i];
+
                 if (!m.IsActive())
                 {
                     _mods.RemoveAt(i);
                     continue;
                 }
 
-                rent = Mathf.Max(0, pm.Apply(rent, tile, tenant, owner));
                 rent = Mathf.Max(0, m.Apply(rent, tile, tenant, owner));
             }
 

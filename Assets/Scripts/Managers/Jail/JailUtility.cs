@@ -68,33 +68,25 @@ namespace Assets.Scripts.Managers.Jail
 
         public static CardUseResult UseGetOutOfJailFree(Player player)
         {
-            if (player.GetChanceCardCount() > 0)
+            // US985: The player's actual jail-card inventory is now the source of truth.
+            if (!player.TryConsumeGetOutOfJailFreeCard(out Card usedCard, out CardDeck sourceDeck))
             {
-                player.DecrementChanceCard();
-                ReleasePlayer(player);
-                
-                Logger.Info("JailUtility.UseGetOutOfJailFree",
-                    $"{player.GetPName()} used a Chance Get-Out-Of-Jail-Free card.",
+                Logger.Warn("JailUtility.UseGetOutOfJailFree",
+                    $"{player.GetPName()} has no Get-Out-Of-Jail-Free cards!",
                     LogCategory.Gameplay);
 
-                return CardUseResult.Success;
+                return CardUseResult.NoCardAvailable;
             }
-            if (player.GetCommunityCardCount() > 0)
-            {
-                player.DecrementCommunityCard();
-                ReleasePlayer(player);
-                Logger.Info("JailUtility.UseGetOutOfJailFree",
-                    $"{player.GetPName()} used a Community Chest Get-Out-Of-Jail-Free card.",
-                    LogCategory.Gameplay);
-                
-                return CardUseResult.Success;
-            }
-            
-            Logger.Warn("JailUtility.UseGetOutOfJailFree",
-                $"{player.GetPName()} has no Get-Out-Of-Jail-Free cards!",
+
+            // Return the consumed card to the deck it originally came from.
+            sourceDeck.ReturnCardToDeck(usedCard);
+            ReleasePlayer(player);
+
+            Logger.Info("JailUtility.UseGetOutOfJailFree",
+                $"{player.GetPName()} used a Get-Out-Of-Jail-Free card and returned it to {sourceDeck.name}.",
                 LogCategory.Gameplay);
 
-            return CardUseResult.NoCardAvailable;
+            return CardUseResult.Success;
         }
 
         private static EscapeAttemptResult ForcedExit(Player player)

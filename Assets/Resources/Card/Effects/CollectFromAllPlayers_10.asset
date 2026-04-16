@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CollectFromAllPlayers_10
   m_EditorClassIdentifier: PsycheOpoly.Runtime::CollectFromAllPlayersCardEffect
   Amount: 10
-  collectFromAllPlayersEventChannel: {fileID: 11400000, guid: 31774ba8ec1c33a42b7ff50e3cd9b844, type: 2}
+  moneyDistributionEventChannel: {fileID: 11400000, guid: 3f1303e6fe84bac46a0c63947fba1af0, type: 2}

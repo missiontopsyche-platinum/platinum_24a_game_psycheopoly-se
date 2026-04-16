@@ -1,4 +1,5 @@
-﻿using AIBehavior;
+﻿using System.Linq;
+using AIBehavior;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
 using Data;
@@ -25,6 +26,7 @@ namespace Managers.PlayerControllers
         // event channels ... I don't think this will need special ones
         private ActionResolvedEventChannel actionResolvedEventChannel;
         private BooleanEventChannel diceRollRequestChannel;
+        private MoneyDistributionEventChannel moneyDistributionEventChannel;
         private MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
         /// <summary>
@@ -54,21 +56,9 @@ namespace Managers.PlayerControllers
             JailStateChangedEventChannel jailStateChanged,
             MortgageFinishedEventChannel mortgageFinishedEventChannel,
             ChargePlayerEventChannel chargePlayer,
-            NoActionLandingEventChannel noLandingAction)
-            : base(
-                player,
-                turnStarted,
-                turnEnded,
-                purchaseRequest,
-                chargeOwnershipFee,
-                passedGoPayment,
-                upgradeRequest,
-                turnActionRequest,
-                turnActionResult,
-                bankruptPlayer,
-                jailStateChanged,
-                chargePlayer,
-                noLandingAction)
+            NoActionLandingEventChannel noLandingAction,
+            MoneyDistributionEventChannel moneyDistribution)
+            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -91,6 +81,7 @@ namespace Managers.PlayerControllers
 
             actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
             diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
+            moneyDistributionEventChannel = moneyDistribution ?? throw new System.ArgumentNullException(nameof(moneyDistribution));
             // mortgageBehavior
             this.mortgageFinishedEventChannel =
                 mortgageFinishedEventChannel ?? throw new System.ArgumentNullException(nameof(mortgageFinishedEventChannel));
@@ -104,6 +95,7 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
             actionResolvedEventChannel?.Subscribe(OnActionResolved);
+            moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
         }
 
         public override void Unsubscribe()
@@ -113,6 +105,7 @@ namespace Managers.PlayerControllers
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
             actionResolvedEventChannel?.Unsubscribe(OnActionResolved);
+            moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
         }
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
@@ -339,8 +332,91 @@ namespace Managers.PlayerControllers
         {
             if (!isMyTurn) return;
 
+            if (ppe == null || ppe.paidPlayer == null)
+            {
+                Logger.Error("AIPlayerController.HandlePassedGo",
+                    "Received null PayPlayerEvent or player payload.",
+                    LogCategory.AI);
+                return;
+            }
+
+            if (ppe.paidPlayer.GetId() != controlledPlayer.GetId())
+                return;
+
             // handle passing go
+            controlledPlayer.AddMoney(ppe.amountPaid);
+
             RequestResolutionComplete();
+        }
+
+        // Handles CollectFromAllPlayers card effects for the AI player's controller.
+        private void HandleMoneyDistribution(MoneyDistributionEvent mde)
+        {
+            // skip players already removed / marked bankrupt.
+            if (controlledPlayer.IsMarkedBankrupt())
+                return;
+            
+            if (mde == null || mde.Player == null)
+                return;
+
+            // ignore invalid card values.
+            if (mde.Amount <= 0)
+                return;
+
+            int actualAmount = mde.Amount;
+
+            bool isCardHolder = mde.Player.GetId() == controlledPlayer.GetId();
+
+            if (isCardHolder)
+            {
+                int activePlayers = PlayerManager.GetInstance()
+                    .GetAllPlayers()
+                    .Count(p => p.IsMarkedBankrupt());
+                actualAmount = mde.Type switch
+                {
+                    // this player is paying- mult input amount by active players
+                    MoneyDistributionEvent.MoneyDistributionEventType.Pay => mde.Amount * activePlayers, 
+                    // this player is collecting
+                    MoneyDistributionEvent.MoneyDistributionEventType.Collect => 0, 
+                    _ => 0
+                };
+            }
+
+            if (actualAmount > 0)
+            {
+                // if this is a Pay All Players event and is not the cardholder, add money
+                if (mde.Type == MoneyDistributionEvent.MoneyDistributionEventType.Pay 
+                    && !isCardHolder)
+                    controlledPlayer.AddMoney(actualAmount);
+                else // otherwise, we can handle the charging based on actual amount
+                {
+                    // charge player this amount and resolve debt if necessary
+                    var status = controlledPlayer.TrySpend(actualAmount);
+                
+                    switch (status)
+                    {
+                        case Player.FinancialStatus.Success:
+                            // successful payment goes to the player who drew the card.
+                            mde.Player.AddMoney(mde.Amount);
+                            break;
+
+                        case Player.FinancialStatus.Bankrupt:
+                            // notify existing bankruptcy flow.
+                            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                            RequestResolutionComplete();
+                            break;
+
+                        case Player.FinancialStatus.MortgageRequired:
+                            // reuse existing AI mortgage handling.
+                            HandleMortgageAction();
+                            break;
+                    }
+                }
+            }
+            // if actualAmount is 0, then we are being paid and don't need to do anything
+            // regardless, if it is our turn we need to mark resolution complete
+            if (isMyTurn)
+                RequestResolutionComplete();
         }
 
         private void OnActionResolved(ActionResolvedEvent evt)
