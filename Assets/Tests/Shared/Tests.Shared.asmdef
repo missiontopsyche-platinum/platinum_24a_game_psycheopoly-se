@@ -1,8 +1,0 @@
-{
-  "name": "Tests.Shared",
-  "references": [ "PsycheOpoly.Runtime" ],
-  "includePlatforms": [],
-  "optionalUnityReferences": [],
-  "overrideReferences": false,
-  "autoReferenced": true
-}

@@ -1,7 +1,0 @@
-{
-	"name": "PsycheOpoly.Runtime",
-	"references": [
-		"Unity.InputSystem",
-		"Unity.TextMeshPro"
-	]
-}

@@ -1,9 +1,0 @@
-{
-  "name": "Tests.PlayMode",
-  "references": [ "PsycheOpoly.Runtime", "Tests.Shared" ],
-  "optionalUnityReferences": [ "TestAssemblies" ],
-  "includePlatforms": [],
-  "overrideReferences": false,
-  "autoReferenced": false,
-  "defineConstraints": [ "UNITY_INCLUDE_TESTS" ]
-}

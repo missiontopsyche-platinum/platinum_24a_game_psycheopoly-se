@@ -1,9 +1,0 @@
-{
-  "name": "Tests.EditMode",
-  "references": [ "PsycheOpoly.Runtime", "Tests.Shared" ],
-  "optionalUnityReferences": [ "TestAssemblies" ],
-  "includePlatforms": [ "Editor" ],
-  "overrideReferences": false,
-  "autoReferenced": false,
-  "defineConstraints": [ "UNITY_INCLUDE_TESTS" ]
-}
