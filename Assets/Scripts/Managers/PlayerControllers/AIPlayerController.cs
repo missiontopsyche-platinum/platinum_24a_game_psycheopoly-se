@@ -111,14 +111,14 @@ namespace Managers.PlayerControllers
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
             // TODO: This needs to be implemented and property integrated. Currently the actions don't *do* anything.
-            base.CatchTurnStartedEvent(tse);
+            //base.CatchTurnStartedEvent(tse);
 
-            if (!isMyTurn) return;
+            //if (!isMyTurn) return;
 
-            myTurnActive = true;
-            endTurnRequested = false;
+           //myTurnActive = true;
+            //endTurnRequested = false;
             
-            HandleOptionalActions();
+            //HandleOptionalActions();
 
             // TODO This might need to run as a coroutine so that we can await the completed movement
             // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
@@ -126,13 +126,62 @@ namespace Managers.PlayerControllers
             // place.
 
             // AI must roll dice or the game stalls at AwaitingRoll.
+           // RequestTurnAction(
+             //   TurnActionType.RollDice,
+               // onAllowed: () =>
+                //{
+                 //   if (diceRollRequestChannel == null)
+                  //  {
+                   //     Logger.Error("AIPlayerController.CatchTurnStartedEvent",
+                     //       "DiceRollRequestChannel not found. AI cannot roll dice.",
+                       //     LogCategory.AI);
+                    //    return;
+                    //}
+
+                 //   diceRollRequestChannel.RaiseEvent(true);
+
+                 //   Logger.Info("AIPlayerController.CatchTurnStartedEvent",
+                 //       $"AI {controlledPlayer.GetPName()} rolled dice.",
+                //        LogCategory.AI);
+              //  },
+              //  onDenied: () =>
+              //  {
+               //     Logger.Warn("AIPlayerController.CatchTurnStartedEvent",
+               //         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
+               //         LogCategory.AI);
+             //   });
+            // wait for resolution of the movement phase (land on space, resolve space)
+
+         //   HandleOptionalActions();
+            // end turn
+
+            base.CatchTurnStartedEvent(tse);
+
+            if (!isMyTurn) return;
+
+            myTurnActive = true;
+            endTurnRequested = false;
+
+            HandleOptionalActions();
+
+            if (controlledPlayer.IsInJail())
+            {
+                HandleJailTurnStart();
+                return;
+            }
+
+            StartNormalRollFlow();
+        }
+
+        private void StartNormalRollFlow()
+        {
             RequestTurnAction(
                 TurnActionType.RollDice,
                 onAllowed: () =>
                 {
                     if (diceRollRequestChannel == null)
                     {
-                        Logger.Error("AIPlayerController.CatchTurnStartedEvent",
+                        Logger.Error("AIPlayerController.StartNormalRollFlow",
                             "DiceRollRequestChannel not found. AI cannot roll dice.",
                             LogCategory.AI);
                         return;
@@ -140,20 +189,16 @@ namespace Managers.PlayerControllers
 
                     diceRollRequestChannel.RaiseEvent(true);
 
-                    Logger.Info("AIPlayerController.CatchTurnStartedEvent",
+                    Logger.Info("AIPlayerController.StartNormalRollFlow",
                         $"AI {controlledPlayer.GetPName()} rolled dice.",
                         LogCategory.AI);
                 },
                 onDenied: () =>
                 {
-                    Logger.Warn("AIPlayerController.CatchTurnStartedEvent",
+                    Logger.Warn("AIPlayerController.StartNormalRollFlow",
                         $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
                         LogCategory.AI);
                 });
-            // wait for resolution of the movement phase (land on space, resolve space)
-
-            HandleOptionalActions();
-            // end turn
         }
 
         private void HandleOptionalActions()
@@ -425,7 +470,11 @@ namespace Managers.PlayerControllers
             if (!myTurnActive || endTurnRequested) return;
 
             // TODO: Any post-action logic or decision-making would go here before ending the turn.
-
+            if (controlledPlayer.IsInJail())
+            {
+                RequestEndTurn();
+                return;
+            }
 
             // After the AI player moves, it will skip AwaitingResolution phase and request to end turn.
             // This is with the assumption that the AI will be doing all of its decision-making and action
@@ -451,6 +500,134 @@ namespace Managers.PlayerControllers
                 {
                     endTurnRequested = false;
                 });
+        }
+
+        private enum AIJailDecision
+        {
+            RollForEscape,
+            PayFine,
+            UseCard
+        }
+
+        private void HandleJailTurnStart()
+        {
+            AIJailDecision decision = EvaluateJailDecision();
+
+            Logger.Info("AIPlayerController.HandleJailTurnStart",
+                $"AI {controlledPlayer.GetPName()} jail decision: {decision}",
+                LogCategory.AI);
+
+            switch (decision)
+            {
+                case AIJailDecision.UseCard:
+                    HandleUseJailCard();
+                    break;
+
+                case AIJailDecision.PayFine:
+                    HandlePayJailFine();
+                    break;
+
+                case AIJailDecision.RollForEscape:
+                default:
+                    HandleRollForJailEscape();
+                    break;
+            }
+        }
+
+        private AIJailDecision EvaluateJailDecision()
+        {
+            bool hasJailCard =
+                controlledPlayer.GetChanceCardCount() > 0 ||
+                controlledPlayer.GetCommunityCardCount() > 0;
+
+            bool canAffordFine = controlledPlayer.CanAfford(Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE);
+            int nextJailTurn = controlledPlayer.GetJailTurns() + 1;
+
+            //On 3rd attempt prefer  the guaranteed exit methods
+            if (nextJailTurn >= Assets.Scripts.Managers.Jail.JailUtility.MAX_TURNS_IN_JAIL)
+            {
+                if (hasJailCard)
+                    return AIJailDecision.UseCard;
+
+                if (canAffordFine)
+                    return AIJailDecision.PayFine;
+
+                return AIJailDecision.RollForEscape;
+            }
+
+            //use a card first, then pay only if cash allows and if not roll.
+            if (hasJailCard)
+                return AIJailDecision.UseCard;
+
+            if (canAffordFine && controlledPlayer.GetMoney() > (Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE + 200))
+                return AIJailDecision.PayFine;
+
+            return AIJailDecision.RollForEscape;
+        }
+
+        //The methods below help wire jail decisions to JailUtility
+        private void HandleRollForJailEscape()
+        {
+            RequestTurnAction(
+                TurnActionType.RollForJailEscape,
+                onAllowed: () =>
+                {
+                    Logger.Info("AIPlayerController.HandleRollForJailEscape",
+                        $"AI {controlledPlayer.GetPName()} is rolling for jail escape.",
+                        LogCategory.AI);
+                },
+                onDenied: () =>
+                {
+                    Logger.Warn("AIPlayerController.HandleRollForJailEscape",
+                        $"AI {controlledPlayer.GetPName()} was denied RollForJailEscape.",
+                        LogCategory.AI);
+                });
+        }
+
+        private void HandlePayJailFine()
+        {
+            var result = Assets.Scripts.Managers.Jail.JailUtility.PayFee(controlledPlayer);
+
+            Logger.Info("AIPlayerController.HandlePayJailFine",
+                $"AI {controlledPlayer.GetPName()} pay fine: {result}",
+                LogCategory.AI);
+
+            if (result == Assets.Scripts.Managers.Jail.JailUtility.FeePaymentResult.Paid)
+            {
+                RaiseJailStateChanged(false);
+                StartNormalRollFlow();
+                return;
+            }
+
+            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+            RequestEndTurn();
+        }
+
+        private void HandleUseJailCard()
+        {
+            var result = Assets.Scripts.Managers.Jail.JailUtility.UseGetOutOfJailFree(controlledPlayer);
+
+            Logger.Info("AIPlayerController.HandleUseJailCard",
+                $"AI {controlledPlayer.GetPName()} use card result: {result}",
+                LogCategory.AI);
+
+            if (result == Assets.Scripts.Managers.Jail.JailUtility.CardUseResult.Success)
+            {
+                RaiseJailStateChanged(false);
+                StartNormalRollFlow();
+                return;
+            }
+
+            HandleRollForJailEscape();
+        }
+
+        private void RaiseJailStateChanged(bool inJail)
+        {
+            jailStateChangedEventChannel?.RaiseEvent(
+                new Assets.Scripts.Events.EventDataStructures.JailStateChangedEvent(
+                    controlledPlayer,
+                    inJail,
+                    controlledPlayer.GetJailTurns()));
         }
     }
 }
