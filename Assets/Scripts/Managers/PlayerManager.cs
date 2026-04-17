@@ -1,96 +1,138 @@
-using System.Collections.Generic;
-using UnityEngine;
+using System;
+using Assets.Scripts.Events.EventChannelTypes;
 using Logging;
+using System.Collections.Generic;
+using System.Linq;
+using Data;
+using Managers.PlayerControllers;
+using Assets.Scripts.Managers.Rules;
+using UnityEngine;
+using Logger = Logging.Logger;
+using Object = UnityEngine.Object;
 
 public class PlayerManager : MonoBehaviour
 {
-    [Header("Event Channels")]
+    [Header("Used Event Channels")]
     [SerializeField] public PlayerEventChannel playerAddedEventChannel;
-    [SerializeField] public PlayerEventChannel playerRemovedEventChannel;
-    [SerializeField] public IntEventChannel initializePlayerCountChannel;
-    [SerializeField] public IntEventChannel passedGoChannel;
 
-    public List<Player> players = new List<Player>();
+    [Header("PlayerController Event Channels")]
+    [SerializeField] public TurnStartedEventChannel turnStartedEventChannel;
+    [SerializeField] public BooleanEventChannel turnEndedEventChannel;
+    [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
+    [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+    [SerializeField] public PayPlayerEventChannel passedGoPaymentChannel;
+    [SerializeField] public BooleanEventChannel diceRollRequestChannel;
+    [SerializeField] public TurnActionRequestEventChannel turnActionRequestEventChannel;
+    [SerializeField] public TurnActionResultEventChannel turnActionResultEventChannel;
+    [SerializeField] public UIActivationEventChannel uiActivationEventChannel;
+    [SerializeField] public UIActionEventChannel uiActionEventChannel;
+    [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
+    [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
+    [SerializeField] public BooleanEventChannel diceRollPannelEventChannel;
+    [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
+    [SerializeField] public IntEventChannel bankruptcyEventChannel;
+    [SerializeField] public JailStateChangedEventChannel jailEventChannel;
+    [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
+    [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
+    [SerializeField] public MoneyDistributionEventChannel moneyDistributionEventChannel;
+    public List<PlayerController> playerControllers = new();
+    
+    private StandardRuleSet activeRuleset;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private static PlayerManager _instance = null;
+
+    private void Awake()
     {
-        // added this to decouple GameManager from PlayerManager to use events instead - hdathert
-        initializePlayerCountChannel?.Subscribe(InitializePlayers);
-        passedGoChannel?.Subscribe(PassedGo);
+        if (_instance == null)
+            _instance = this;
+        else
+            Destroy(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public static PlayerManager GetInstance()
     {
-        
+        return _instance;
     }
 
     /// <summary>
-    /// Initializes given number of Players. For now, just assigns "Player X" to the
-    /// name, where X is the player number. Eventually, should be enhanced to allow
-    /// for assigning names and/or colors.
+    /// Bootstraps Players from data passed from GameManager
     /// </summary>
-    /// <param name="numPlayers">Number of players to initialize</param>
-    public void InitializePlayers(int numPlayers)
+    /// <param name="playerConfigs">List of PlayerConfig packages containing Player data
+    /// and if they're a human player or not</param>
+    public void InitializePlayers(List<PlayerConfig> playerConfigs)
     {
-        Logging.Logger.Info("PlayerManager.InitializePlayers",
-            $"Creating players: {numPlayers}",
-            LogCategory.Gameplay, 
-            this);
+        Logger.Info("PlayerManager.InitializePlayers",
+            $"Creating {playerConfigs.Count} players.",
+            LogCategory.Core);
 
-        players.Clear();  //prevent duplicates when starting new game
-        int startingMoney = 1500; //Amount based on normal Monopoly game
-        int startingPosition = 0; //GO
+        UnsubscribeAndClearControllers();
 
-        for (int i = 0; i < numPlayers; i++)
+        foreach (var playerConfig in playerConfigs)
         {
-            // I think making the Player a scriptable object is the wrong move,
-            // since its meant to be a data class, not an Asset in the browser.
-            // We might rethink this later, if we create a list of specific
-            // "Player" archetypes to get around naming issues, like Monopoly's
-            // pieces. In that case, we should probably do something totally
-            // different for creating players.
-            Player newPlayer = ScriptableObject.CreateInstance<Player>();
-            
-            newPlayer.SetId(i);
-            // doing i+1 so that the name is Player 1, 2, 3, etc.
-            newPlayer.SetPName($"Player {i+1}");
-            // setting money should be done somewhere else, I think...
-            //dzadroga - added basic setting money here, can change after we set up 
-            //System to track money, but might be easiest to set cash here to make
-            //sure it happens each time, we can definitely move it as we get futher along
-            newPlayer.SetMoney(startingMoney);
-            newPlayer.SetPosition(startingPosition);
-            newPlayer.SetColor(Random.ColorHSV());
+            var player = playerConfig.playerData;
+            player.ResetData();
+            player.SetMoney(1500); // temporary until we have configurable game settings
+            player.SetId(playerControllers.Count);
 
-            //Defaults added for monoploy
-            newPlayer.SetInJail(false);
-            newPlayer.SetJailTurns(0);
-            newPlayer.SetDoublesInRow(0);
-
-            //The other basic card initialization as well as basic property tracking 
-            //could be set up here as we continue to develop game.
-            //Just adding these as a placeholder for the starting points the system can 
-            //build on as we develop.  
-            //examples
-            // newPlayer.SetGetOutOfJailFree_Chance(0);
-            // newPlayer.SetGetOutOfJailFree_Community(0);
-            // newPlayer.ClearOwnedProperties();
+            PlayerController playerController;
             
-            players.Add(newPlayer);
-            
-            //notify event channel listeners of added player 
-            if (playerAddedEventChannel != null)
+            // this creates the PlayerControllers, but its definitely brittle and will need updating
+            // if we add more channels to the player controller subclasses.
+            if (playerConfig.isHuman)
             {
-                playerAddedEventChannel.RaiseEvent(newPlayer);
+                playerController = new HumanPlayerController(
+                    player,
+                    turnStartedEventChannel,
+                    turnEndedEventChannel,
+                    purchaseOwnableRequestEventChannel,
+                    chargeOwnershipFeeEventChannel,
+                    passedGoPaymentChannel,
+                    uiActivationEventChannel,
+                    uiActionEventChannel,
+                    mortgageFinishedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
+                    turnActionRequestEventChannel,
+                    turnActionResultEventChannel,
+                    jailEventChannel,
+                    diceRollPannelEventChannel,
+                    chargePlayerEventChannel,
+                    noLandingActionEventChannel,
+                    moneyDistributionEventChannel
+                    );
+            }
+            else
+            {
+                playerController = new AIPlayerController(
+                    player,
+                    playerConfig.behaviorWeights,
+                    turnStartedEventChannel,
+                    turnEndedEventChannel,
+                    purchaseOwnableRequestEventChannel,
+                    chargeOwnershipFeeEventChannel,
+                    passedGoPaymentChannel,
+                    diceRollRequestChannel,
+                    actionResolvedEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
+                    turnActionRequestEventChannel,
+                    turnActionResultEventChannel,
+                    jailEventChannel,
+                    mortgageFinishedEventChannel,
+                    chargePlayerEventChannel,
+                    noLandingActionEventChannel,
+                    moneyDistributionEventChannel
+                    );
             }
 
-            //Log confirmation
-            Logging.Logger.Info("PlayerManager.InitializePlayers",
-                $"Initialized {newPlayer.GetPName()} with ${newPlayer.GetMoney()}.",
-                LogCategory.Gameplay,
-                this);
+            playerController.Subscribe();
+            playerControllers.Add(playerController);
+            
+            playerAddedEventChannel?.RaiseEvent(player);
+            Logger.Info("PlayerManager.InitializePlayers",
+                $"Initialized {player.GetPName()} with ${player.GetMoney()}, " +
+                $"and is a {(playerConfig.isHuman ? "Human" :"AI")} player.",
+                LogCategory.Core);
         }
     }
 
@@ -101,16 +143,16 @@ public class PlayerManager : MonoBehaviour
     /// <returns>Player ScriptableObject, or null if ID not found.</returns>
     public Player GetPlayer(int playerId)
     {
-        if (players != null && playerId >= 0 && playerId < players.Count)
-            return players[playerId];
-        else
+        if (playerControllers == null || playerId < 0 || playerId >= playerControllers.Count)
         {
-            Logging.Logger.Error("PlayerManager.GetPlayer",
+            Logger.Error("PlayerManager.GetPlayer",
                 $"Attempted access of playerID out of bounds: {playerId}",
                 LogCategory.Gameplay,
                 this);
             return null;
         }
+        
+        return playerControllers[playerId].GetControlledPlayer();
     }
 
     /// <summary>
@@ -119,64 +161,30 @@ public class PlayerManager : MonoBehaviour
     /// <returns>List of all Player ScriptableObjects</returns>
     public List<Player> GetAllPlayers()
     {
-        var playersCopy = new List<Player>();
-        
-        foreach (var player in players)
-            playersCopy.Add(player);
-        
-        return playersCopy;
+        List<Player> players = playerControllers.Select(c => c.GetControlledPlayer()).ToList();
+        return players;
     }
 
-    //us103task122: create removal behavior to allow players to be removed from game start
-    public bool RemovePlayer(int playerId)
+    public int GetPlayerCount()
     {
-        //player checker first
-        if (playerId < 0 || playerId >= players.Count)
-        {
-            Logging.Logger.Warn("PlayerManager.RemovePlayer",
-                $"RemovePlayer functionality invalid id={playerId}. No action.",
-                LogCategory.Gameplay,
-                this);
-            return false;
-        }
-
-        Player removedPlayer = players[playerId];
-        players.RemoveAt(playerId);
-
-        //id == list index from GetPlayer functionality
-        for (int i = playerId; i < players.Count; i++)
-        {
-            players[i].SetId(i);
-        }
-
-        Logging.Logger.Info("PlayerManager.RemovePlayer",
-            $"Removed player with id={playerId}.",
-            LogCategory.Gameplay,
-            this);
-
-        playerRemovedEventChannel?.RaiseEvent(removedPlayer);
-        return true;
+        return playerControllers.Count;
     }
 
     /// <summary>
-    /// Event listener for the passed go channel. Kept seperate from add money
-    /// TODO: Refactor so magic number is stored elsewhere
+    /// makes sure all player controllers are cleaned up before resetting them
     /// </summary>
-    /// <param name="id"></param>
-    public void PassedGo(int id)
+    private void UnsubscribeAndClearControllers()
     {
-        AddMoney(id, 200); 
+        foreach (var controller in playerControllers)
+        {
+            controller?.Unsubscribe();
+        }
+
+        playerControllers.Clear();
     }
 
-    /// <summary>
-    /// Adds money to player object
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="money"></param>
-    public void AddMoney(int id, int money)
+    private void OnDestroy()
     {
-        int pMoney = GetPlayer(id).GetMoney();
-        GetPlayer(id).SetMoney(pMoney + money);
+        UnsubscribeAndClearControllers();
     }
-
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Logging;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
@@ -9,7 +10,7 @@ namespace Tests.EditMode.PlayerManagerTests
         [Test]
         public void PlayerManager_CanInitialize2Players()
         {
-            playerManager.InitializePlayers(2);
+            playerManager.InitializePlayers(GeneratePlayerConfigs("Player 1", "Player 2"));
 
             List<Player> players = playerManager.GetAllPlayers();
         
@@ -21,7 +22,8 @@ namespace Tests.EditMode.PlayerManagerTests
         [Test]
         public void PlayerManager_CanInitialize3Players()
         {
-            playerManager.InitializePlayers(3);
+            playerManager.InitializePlayers(
+                GeneratePlayerConfigs("Player 1", "Player 2", "Player 3"));
 
             List<Player> players = playerManager.GetAllPlayers();
         
@@ -34,7 +36,8 @@ namespace Tests.EditMode.PlayerManagerTests
         [Test]
         public void PlayerManager_CanInitialize4Players()
         {
-            playerManager.InitializePlayers(4);
+            playerManager.InitializePlayers(
+                GeneratePlayerConfigs("Player 1", "Player 2", "Player 3", "Player 4"));
 
             List<Player> players = playerManager.GetAllPlayers();
         
@@ -48,7 +51,8 @@ namespace Tests.EditMode.PlayerManagerTests
         [Test]
         public void PlayerManager_CanGetPlayerById()
         {
-            playerManager.InitializePlayers(4);
+            playerManager.InitializePlayers(
+                GeneratePlayerConfigs("Player 1", "Player 2", "Player 3", "Player 4"));
 
             Player player = playerManager.GetPlayer(2);
         
@@ -59,12 +63,10 @@ namespace Tests.EditMode.PlayerManagerTests
         [Test]
         public void PlayerManager_GetByInvalidIdReturnsNull()
         {
-            playerManager.InitializePlayers(2);
-        
-            LogAssert.Expect("Test [Level: Error] " +
-                "[Category: Gameplay] " +
-                "[Event Name: PlayerManager.GetPlayer] " +
-                "[Message: Attempted access of playerID out of bounds: 3]");
+            playerManager.InitializePlayers(GeneratePlayerConfigs("Player 1", "Player 2"));
+
+            var pattern = CreateRegexLogPattern("Error", "Gameplay", "PlayerManager.GetPlayer", "Attempted access of playerID out of bounds: 3");
+            LogAssert.Expect(UnityEngine.LogType.Error, pattern);
             Assert.IsNull(playerManager.GetPlayer(3));
         }
     }

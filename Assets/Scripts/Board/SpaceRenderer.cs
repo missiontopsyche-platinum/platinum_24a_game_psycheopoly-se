@@ -1,42 +1,93 @@
 using Interactable;
 using Logging;
 using UnityEngine;
-using Space = PsycheOpoly.Board.Space;
-using Random = UnityEngine.Random;
 
 public class SpaceRenderer : InteractableGameObject
 {
-    [SerializeField] public Color color;
     [SerializeField] public MeshRenderer meshRenderer;
+    [SerializeField] private TileAlwaysVisibleUI alwaysVisibleUI;
+    [SerializeField] private GameObject ownedIconGO;
+    [SerializeField] private GameObject mortgagedIconGO;
 
-    private Space space;
+
+    private SpaceData spaceData;
     
     // debug timer - remove when we add actual functionality.
     private float hoverTime = 1f;
     private float hoverTimer = 0f;
-    
-    // to add: EventChannels to communicate with our other elements
-    
-    private void Awake()
-    {
-        // until we have actual Space parameters as ScriptableObjects, we'll have random colors.
-        color = Random.ColorHSV(0,1,0,1,0,1,1,1);
-    }
 
-    public void SetUpSpace(Space spaceData, float scale)
+    public void SetUpSpace(SpaceData inputSpaceData, float scale)
     {
-        space = spaceData;
-        // scale the space relative to board/camera size
+        spaceData = inputSpaceData;
+        alwaysVisibleUI?.Apply(spaceData);
         transform.localScale *= scale;
-        meshRenderer.material.color = color;
+        if (spaceData != null && spaceData.Artwork != null && meshRenderer != null)
+        {
+            var mat = meshRenderer.material;
+            Texture2D tex = spaceData.Artwork.texture;
 
-        name = space.Name;
+            // add texture (URP uses _BaseMap, Built-in uses _MainTex)
+            if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", tex);
+            else if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+            else mat.mainTexture = tex;
 
+            //no tint
+            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", Color.white);
+            else if (mat.HasProperty("_Color")) mat.SetColor("_Color", Color.white);
+            else mat.color = Color.white;
+        }
+        else if (meshRenderer != null)
+        {
+            // Original behavior: color-only tile
+            meshRenderer.material.color = this.spaceData.spaceColor;
+        }
+
+        name = spaceData.spaceName;
+
+        //call method to identify if Owned/Mortgaged Inidactor is visible
+        RefreshIndicators();
+
+        if (alwaysVisibleUI != null)
+            alwaysVisibleUI.Apply(spaceData);
+        
         // ensure box collider
         BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
         if (!boxCollider)
             boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.size = new Vector3(scale, scale, 1f);
+    }
+
+    //easier to call the method rather than running it EVERY single time in SetUpSpace
+    private void RefreshIndicators()
+    {
+        //only display indicators for spaces that are ownable
+        bool isOwnable = spaceData is OwnableSpaceData;
+        bool isOwned = false;
+
+        bool isMortgaged = false;
+
+        if (isOwnable && spaceData is OwnableSpaceData ownable)
+        {
+            isOwned = ownable.GetOwner() != null;
+            isMortgaged = ownable.isMortgaged;
+
+
+        }
+
+        //mortgage replaces owned 
+        if (ownedIconGO != null)
+            ownedIconGO.SetActive(isOwnable && isOwned && !isMortgaged);
+
+        if (mortgagedIconGO != null)
+            mortgagedIconGO.SetActive(isOwnable && isMortgaged);
+    }
+
+    public void RefreshTileStateVisuals()
+    {
+        RefreshIndicators();
+
+        if (alwaysVisibleUI != null && spaceData != null)
+            alwaysVisibleUI.Apply(spaceData);
     }
 
     public override void OnLeftClick()
@@ -61,16 +112,19 @@ public class SpaceRenderer : InteractableGameObject
             $"SpaceRenderer: {name}", 
             "On Hover Enter", 
             LogCategory.UI, this);
+
+        spaceData.OnHover();
     }
     
     public override void OnHoverExit()
     {
         Logging.Logger.Info(
-            $"SpaceRenderer: {name}", 
-            "On Hover Exit", 
+            $"SpaceRenderer: {name}",
+            "On Hover Exit",
             LogCategory.UI, this);
-        
         hoverTimer = 0f; // reset hover timer, remove later
+        
+        spaceData.OnExit();
     }
 
     public override void OnHover()

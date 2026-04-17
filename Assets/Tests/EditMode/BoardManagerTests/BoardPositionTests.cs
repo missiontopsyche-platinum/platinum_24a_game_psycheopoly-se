@@ -8,7 +8,7 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void GetSetPosition_DefaultsZero()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             const int pid = 42;
 
             Assert.AreEqual(0, boardManager.GetPlayerPosition(pid));
@@ -21,7 +21,7 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void SetPositionOutOfBoundsThrowsError()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             const int pid = 1;
 
 
@@ -33,14 +33,14 @@ namespace Tests.EditMode.BoardManagerTests
         [Test]
         public void MovePlayer_WrapsMod_PositiveAndNegative()
         {
-            boardManager.InitializeBoard(6);
+            boardManager.InitializeBoard();
             const int pid = 1;
 
-            boardManager.SetPlayerPosition(pid, 5);
+            boardManager.SetPlayerPosition(pid, 39);
             boardManager.MovePlayer(new MovePlayerEvent(pid, 3));
             Assert.AreEqual(2, boardManager.GetPlayerPosition(pid));
             boardManager.MovePlayer(new MovePlayerEvent(pid, -3));
-            Assert.AreEqual(5, boardManager.GetPlayerPosition(pid));
+            Assert.AreEqual(39, boardManager.GetPlayerPosition(pid));
         }
     }
 }

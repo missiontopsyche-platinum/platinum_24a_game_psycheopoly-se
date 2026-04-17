@@ -2,22 +2,26 @@ using System.Collections;
 using Logging;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures;
+using Events.EventDataStructures.UI;
 using Logger = Logging.Logger;
 
 public class DiceRollPanelController : MonoBehaviour
 {
     [Header ("Event Channels")]
     [SerializeField] private DiceRolledEventChannel diceRolledChannel;
-
     [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
-    [Header("Dependencies")]
-    [SerializeField] private DiceManager diceManager; //optional if we want to add a Roll button
+    [SerializeField] private BooleanEventChannel rollDiceRequestedChannel;
+    [SerializeField] private UIActivationEventChannel uiActivationChannel;
 
     [Header("UI")]
     [SerializeField] private DiceFaceView dieOneView;
     [SerializeField] private DiceFaceView dieTwoView;
-    [SerializeField] private Text totalText;          
+    [SerializeField] private Text totalText;
 
+    [Header("Dice")]
+    [SerializeField] private DiceManager diceManager;
     [Header("Optional")]
     [SerializeField] private Button rollButton;      
     [SerializeField] private bool hideUntilFirstRoll = false;
@@ -25,11 +29,13 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void Awake()
     {
-        if (hideUntilFirstRoll) gameObject.SetActive(false);
         if (totalText != null) totalText.text = "Total: -";
         if (rollButton != null) rollButton.onClick.AddListener(OnRollClicked);
         diceRolledChannel?.Subscribe(OnDiceRolled);
         pieceMoveCompletedChannel?.Subscribe(HideUI);
+        uiActivationChannel?.Subscribe(OnUIActivationEvent);
+        if (hideUntilFirstRoll) HideUI(true);
+        
     }
 
     private void OnDestroy()
@@ -37,13 +43,15 @@ public class DiceRollPanelController : MonoBehaviour
         if (rollButton != null) rollButton.onClick.RemoveListener(OnRollClicked);
         diceRolledChannel?.Unsubscribe(OnDiceRolled);
         pieceMoveCompletedChannel?.Unsubscribe(HideUI);
+        uiActivationChannel?.Unsubscribe(OnUIActivationEvent);
     }
+
 
     private void OnRollClicked()
     {
         Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);
-        try { diceManager?.RollDice(); }
-        catch (MissingComponentException ex) { Debug.LogWarning(ex.Message, this); }
+        diceManager.RollDice();
+           
     }
 
     private void OnDiceRolled(DiceRolledEvent e)
@@ -69,6 +77,29 @@ public class DiceRollPanelController : MonoBehaviour
 
     private void HideUI(bool pieceMoveCompleted)
     {
-        gameObject.SetActive(false);
+        gameObject.GetComponent<CanvasGroup>().alpha = 0;
+        gameObject.GetComponent<CanvasGroup>().interactable = false;
+        gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
+    }
+
+    private void OnUIActivationEvent(UIActivationEvent uiae)
+    {
+        if (uiae == null || uiae.UIType != UIType.DiceRoll)
+            return;
+
+        Logger.Debug("DiceRollPanelController.OnUIActivationEvent",
+            "Dice Roll Panel Launching.",
+            LogCategory.UI);
+
+        if (uiae.UIType == UIType.DiceRoll)
+        {
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+                return;
+
+            canvasGroup.alpha = 1;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+        }
     }
 }

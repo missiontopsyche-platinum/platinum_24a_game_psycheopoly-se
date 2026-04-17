@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a360b48e66d7638449f9a6390c0fe542, type: 3}
+  m_Name: Card_Silicate_SuccessfullyDetermineConditions
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
+  title: Successfully determine the conditions Psyche formed under!
+  bodyText: Successfully determine the conditions Psyche formed under! Collect $100.
+  artwork: {fileID: 21300000, guid: c40b62ea4e2151e4197b427b184c0312, type: 3}
+  effect:
+  - {fileID: 11400000, guid: 4b91ca483beb2d14592a551ffd001d2e, type: 2}

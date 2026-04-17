@@ -1,0 +1,134 @@
+﻿using Logging;
+using Logger = Logging.Logger;
+
+namespace Assets.Scripts.Managers.Jail
+{
+    public static class JailUtility
+    {
+        // return enums
+        public enum EscapeAttemptResult { Escaped, Failed, ForcedExitPaid, ForcedExitBankrupt }
+        public enum FeePaymentResult { Paid, Bankrupt }
+        public enum CardUseResult { Success, NoCardAvailable }
+        
+        public const int MAX_TURNS_IN_JAIL = 3;
+        public const int JAIL_FEE = 100;
+
+        public static EscapeAttemptResult AttemptEscape(Player player, int dice1, int dice2)
+        {
+            int turns = player.GetJailTurns() + 1;
+
+            player.SetJailTurns(turns);
+
+            bool rolledDoubles = (dice1 == dice2);
+
+            //this enters logic to evaluate if they rolled doubles OR if they reached the forced exit
+            if (rolledDoubles)
+            {
+                Logger.Info("JailUtility.AttemptEscape",
+                    $"{player.GetPName()} rolled doubles and escaped jail!",
+                    LogCategory.Gameplay);
+                ReleasePlayer(player);
+                return EscapeAttemptResult.Escaped;
+            }
+            if (turns >= MAX_TURNS_IN_JAIL)
+            {
+                Logger.Info("JailUtility.AttemptEscape",
+                    $"{player.GetPName()} failed to roll doubles, but has served their sentence! Forced to pay & exit.",
+                    LogCategory.Gameplay);
+                return ForcedExit(player);
+            }
+            
+            Logger.Info("JailUtility.AttemptEscape",
+                $"{player.GetPName()} did not roll doubles. Turn {turns}/3 in jail.",
+                LogCategory.Gameplay);
+            return EscapeAttemptResult.Failed;
+        }
+
+        public static FeePaymentResult PayFee(Player player)
+        {
+            FeePaymentResult result = ChargeJailFee(player);
+
+            if (result == FeePaymentResult.Paid)
+            {
+                ReleasePlayer(player);
+
+                Logger.Info("JailUtility.PayFee",
+                    $"{player.GetPName()} paid ${JAIL_FEE} to leave jail.",
+                    LogCategory.Gameplay);
+            }
+            else
+            {
+                Logger.Warn("JailUtility.PayFee",
+                    $"{player.GetPName()} cannot afford the jail fee!",
+                    LogCategory.Gameplay);
+            }
+
+            return result;
+        }
+
+        public static CardUseResult UseGetOutOfJailFree(Player player)
+        {
+            // US985: The player's actual jail-card inventory is now the source of truth.
+            if (!player.TryConsumeGetOutOfJailFreeCard(out Card usedCard, out CardDeck sourceDeck))
+            {
+                Logger.Warn("JailUtility.UseGetOutOfJailFree",
+                    $"{player.GetPName()} has no Get-Out-Of-Jail-Free cards!",
+                    LogCategory.Gameplay);
+
+                return CardUseResult.NoCardAvailable;
+            }
+
+            // Return the consumed card to the deck it originally came from.
+            sourceDeck.ReturnCardToDeck(usedCard);
+            ReleasePlayer(player);
+
+            Logger.Info("JailUtility.UseGetOutOfJailFree",
+                $"{player.GetPName()} used a Get-Out-Of-Jail-Free card and returned it to {sourceDeck.name}.",
+                LogCategory.Gameplay);
+
+            return CardUseResult.Success;
+        }
+
+        private static EscapeAttemptResult ForcedExit(Player player)
+        {
+            FeePaymentResult result = ChargeJailFee(player);
+
+            if (result == FeePaymentResult.Paid)
+            {
+                ReleasePlayer(player);
+
+                Logger.Info("JailUtility.ForcedExit",
+                    $"{player.GetPName()} was forced to pay ${JAIL_FEE} after 3 turns.",
+                    LogCategory.Gameplay);
+
+                return EscapeAttemptResult.ForcedExitPaid;
+            }
+
+            Logger.Warn("JailUtility.ForcedExit",
+                $"{player.GetPName()} cannot afford the forced jail fee!",
+                LogCategory.Gameplay);
+
+            return EscapeAttemptResult.ForcedExitBankrupt;
+        }
+
+        private static FeePaymentResult ChargeJailFee(Player player)
+        {
+            Player.FinancialStatus status = player.TrySpend(JAIL_FEE);
+
+            return status == Player.FinancialStatus.Success
+                ? FeePaymentResult.Paid
+                : FeePaymentResult.Bankrupt;
+            
+        }
+
+        private static void ReleasePlayer(Player player)
+        {
+            player.SetInJail(false);
+            player.SetJailTurns(0);
+            
+            Logger.Info("JailUtility.ReleasePlayer",
+                $"{player.GetPName()} is free from jail.",
+                LogCategory.Gameplay);
+        }
+    }
+}

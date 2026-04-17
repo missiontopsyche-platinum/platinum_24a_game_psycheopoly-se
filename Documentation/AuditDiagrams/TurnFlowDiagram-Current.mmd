@@ -1,0 +1,45 @@
+﻿%% TurnFlowDiagram-Current
+%% Last Updated: 3/18/2026
+%% Version: 1.0
+
+%% Purpose
+%% To show the current turn flow within the project
+
+%% Scope
+%% The turn flow logic
+
+sequenceDiagram
+    participant GM as GameManager
+    participant TFC as TurnFlowCoordinator
+    participant PC as PlayerController
+    participant Space as Space/Board
+
+    Note over GM: GameState = PlayerTurn
+    GM->>TFC: TurnStartedEvent (playerId)
+    GM->>PC: TurnStartedEvent (playerId)
+    Note over TFC: Phase = AwaitingRoll
+    Note over PC: isMyTurn = true
+
+    PC->>TFC: TurnActionRequest (RollDice)
+    TFC->>PC: TurnActionResult (allowed)
+    PC->>GM: BooleanEvent (diceRollRequest)
+    Note over GM: Phase = RollingDice
+    GM->>TFC: DiceRolledEvent
+    Note over TFC: Phase = AwaitingMovement
+
+    Note over GM: Movement resolves...
+    GM->>TFC: PieceMoveCompletedEvent
+    Note over TFC: Phase = AwaitingResolution
+    TFC->>PC: ActionResolvedEvent
+
+    Note over Space: Space logic fires
+    Space->>PC: PurchaseOwnableRequestEvent OR ChargeOwnershipFeeEvent
+    PC->>TFC: TurnActionRequest (BuyProperty / etc)
+    TFC->>PC: TurnActionResult (allowed)
+    Note over PC: Player resolves space action
+    Note over TFC: Phase = Completed, awaitingEndTurn = true
+
+    PC->>TFC: TurnActionRequest (EndTurn)
+    TFC->>PC: TurnActionResult (allowed)
+    Note over TFC: CompleteTurnFlow()
+    TFC->>GM: TurnStartedEvent (nextPlayerId)

@@ -1,0 +1,94 @@
+﻿%% TurnFlowDiagram-Refactor
+%% Last Updated: 3/18/2026
+%% Version: 1.0
+
+%% Purpose
+%% To show the turn flow within the project after the refactors have occured
+
+%% Scope
+%% The turn flow logic
+
+sequenceDiagram
+    participant GM as GameManager
+    participant TFC as TurnFlowCoordinator
+    participant TCM as TurnCycleManager
+    participant PC as PlayerController
+    participant Space as Space/Board
+
+%% :: GAME SETUP 
+%% GameManager is only responsible for bootstrapping the game.
+%% After StartFirstTurn(), it steps back entirely until a win condition is met.
+%% It has no role in the turn loop itself.
+
+    Note over GM: GameState = Initializing
+    Note over GM: Sets up players, board,<br/>and scene references
+    GM->>TCM: ResetCycle(playerCount)
+    GM->>TFC: StartFirstTurn()
+    Note over GM: GameState = PlayerTurn<br/>Now only listening for BankruptPlayerEvent
+
+%% :: TURN START (owned by TurnFlowCoordinator)
+%% TFC fires TurnStartedEvent to kick off every turn, including the first.
+%% GameManager never fires this, TFC owns the loop entirely.
+
+    Note over TFC: Phase = AwaitingRoll
+    TFC->>PC: TurnStartedEvent (playerId)
+    Note over PC: isMyTurn = true
+
+%% :: ROLL PHASE 
+%% PlayerController requests permission before acting.
+%% TFC validates: is it your turn? are we in AwaitingRoll?
+%% Once allowed, PC triggers the dice roll and waits for resolution.
+%% PC signals completion -> TFC does not listen to the dice system directly.
+
+    PC->>TFC: TurnActionRequest (RollDice)
+    TFC->>PC: TurnActionResult (allowed)
+    Note over TFC: Phase = AwaitingMovement
+    Note over PC: PC triggers dice roll,<br/>awaits movement completion
+    PC->>TFC: TurnActionRequest (RollCompleted)
+    Note over TFC: Phase = AwaitingResolution
+
+%% :: SPACE RESOLUTION PHASE 
+%% Space fires the appropriate event based on its type.
+%% PC handles the interaction (purchase, pay rent, draw card, etc.)
+%% Once resolved, PC fires SpaceResolved to signal TFC that it can advance.
+%% TFC does not listen to Space events directly.
+
+    Note over Space: Space logic fires based on type<br/>(property, rent, card, tax, etc.)
+    Space->>PC: PurchaseOwnableRequestEvent OR<br/>ChargeOwnershipFeeEvent OR other
+    Note over PC: PC handles space action.<br/>For Human: waits for UI input.<br/>For AI: evaluates and acts.
+
+    alt Player cannot afford payment (bankruptcy)
+    %% GameManager intercepts bankruptcy as its ONLY hook into the turn loop.
+    %% It eliminates the player from turn order and checks win condition.
+    %% TFC is notified to stop only if the game is over.
+        PC->>GM: BankruptPlayerEvent (playerId)
+        GM->>TCM: Eliminate(playerId)
+        Note over GM: Check: one player remaining?
+        alt One player remaining
+            Note over GM: GameState = GameOver
+            GM->>TFC: Stop()
+        else Game continues
+            Note over GM: GameManager does nothing further.<br/>TFC continues loop naturally,<br/>skipping eliminated player.
+        end
+    else Space action resolves normally
+        PC->>TFC: TurnActionRequest (SpaceResolved)
+        TFC->>PC: TurnActionResult (allowed)
+        Note over TFC: Phase = Completed<br/>awaitingEndTurn = true
+    end
+
+%% :: END TURN
+%% Human: End Turn button fires turnEndedChannel, PC catches it and requests EndTurn.
+%% AI: requests EndTurn automatically after SpaceResolved is acknowledged. * Can run optional actions as well
+%% Both paths go through TurnActionRequest, TFC validates before advancing.
+
+    PC->>TFC: TurnActionRequest (EndTurn)
+    TFC->>PC: TurnActionResult (allowed)
+    TFC->>TCM: Advance()
+    TCM->>TFC: nextPlayerId
+
+%% :: LOOP
+%% TFC fires TurnStartedEvent for the next player and the loop repeats.
+%% GameManager is not involved unless another BankruptPlayerEvent fires.
+
+    Note over TFC: Loop repeats for nextPlayerId
+    TFC->>PC: TurnStartedEvent (nextPlayerId)

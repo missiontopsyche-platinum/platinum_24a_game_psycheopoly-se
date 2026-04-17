@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e03847a4e5a7624fb726d0560bca7d0, type: 3}
+  m_Name: 19_Bamberga
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::PropertySpaceData
+  spaceName: Bamberga
+  spaceColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 1}
+  shortDisplayName: 
+  groupColor: {r: 0.98039216, g: 0.49019608, b: 0.44705883, a: 1}
+  numberOfPropertiesInGroup: 3
+  smallIcon: {fileID: 0}
+  spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
+  onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
+  artwork: {fileID: 21300000, guid: c998efa310f7a0241a809b5e00010cdf, type: 3}
+  buyPrice: 200
+  collaborationValue: 100
+  isMortgaged: 0
+  purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
+  chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
+  researchFundingValues: 1000000050000000dc0000005802000020030000e8030000
+  dataPointCost: 100
+  upgradeCostMultiplier: 1
+  upgradeCostByLevel: 0000000064000000640000006400000064000000
+  colorGroup: 0
+  purchaseUpgradeRequestEventChannel: {fileID: 11400000, guid: f709ab2b9d2ef8f43add75ad874f0e54, type: 2}

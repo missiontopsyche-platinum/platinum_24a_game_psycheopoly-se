@@ -1,17 +1,23 @@
-using System;
-using UnityEngine;
-using System.Collections.Generic;
 using Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Player", menuName = "Scriptable Objects/Player")]
 public class Player : ScriptableObject
 {
+    // Configurable Variables
+    [SerializeField] private string p_Name = "Unnamed Player";
+    [SerializeField] private Color color = Color.white;
+    // add player model if we decide to do special models
+    
     //Private variables
     private int id;
-    private string p_Name;
     private int money;
-    private int position = 0;
+    private int assets = 0;
+    private int position = 0; // this is never used anywhere, BoardManager owns positions.
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
@@ -20,9 +26,34 @@ public class Player : ScriptableObject
     private int doublesInRow;
     private int getOutOfJailFree_Chance;
     private int getOutOfJailFree_Community;
-    private List<int> ownedProperties = new();
-    
-    private Color color;
+    private bool suppressNextDoublesBonus;
+
+    private bool isBankrupt;
+
+    private List<OwnableSpaceData> ownedProperties = new();
+    private List<Card> getOutOfJailCards = new();
+
+    // Track which deck each held Get Out of Jail Free card came from
+    // so it can be returned to the correct deck when used.
+    private Dictionary<Card, CardDeck> getOutOfJailCardSources = new();
+
+    public void SetBankrupt(bool bankrupt)
+    {
+        isBankrupt = bankrupt;
+
+        if (bankrupt)
+        {
+            Logging.Logger.Warn("Player.SetBankrupt",
+                $"{p_Name} has been marked bankrupt.",
+                LogCategory.Gameplay,
+                this);
+        }
+    }
+
+    public bool IsMarkedBankrupt()
+    {
+        return isBankrupt;
+    }
 
     public void SetId(int id)
     {
@@ -32,6 +63,11 @@ public class Player : ScriptableObject
     public int GetId()
     {
         return this.id;
+    }
+
+    public bool IsInJail()
+    {
+        return inJail;
     }
 
     public void SetPName(string name)
@@ -46,14 +82,14 @@ public class Player : ScriptableObject
 
     public void SetMoney(int money)
     {
-        if (money < 0)
-        {
-            Logging.Logger.Error("Player.SetMoney", 
-                "Money cannot be negative yet...", 
-                LogCategory.Economy,
-                this);
-            throw new ArgumentException("Money cannot be negative yet...");
-        }
+        // I've removed the negative balance check here, since we need to allow balances to
+        // be negative to resolve other behavior paths (such as figuring out now much a
+        // player needs to sell off to get out of debt).
+        
+        Logging.Logger.Info("Player.SetMoney",
+            $"Setting {p_Name}'s money from ${this.money} to ${money}.",
+            LogCategory.Economy, this);
+        
         this.money = money;
     }
 
@@ -62,32 +98,166 @@ public class Player : ScriptableObject
         return this.money;
     }
 
+    public int GetAssests()
+    {
+        return this.assets;
+    }
+
     //Task 120 Initializing player
     //Basic getters and setters, more logic will have to be added as game
     //continues to be developed and once final confirmation on ruleset
-    public void SetInJail(bool jail) { }
+    public void SetInJail(bool jail)
+    {
+        inJail = jail;
+
+        if (jail)
+        {
+            //reset doubles streak if they hit jail
+            doublesInRow = 0;
+            Logging.Logger.Info("Player.SetInJail", $"{p_Name} was sent to jail.", LogCategory.Gameplay, this);
+        }
+        else
+        {
+            Logging.Logger.Info("Player.SetInJail", $"{p_Name} released from jail.", LogCategory.Gameplay, this);
+        }
+    }
+
     public bool GetInJail() 
     { 
         return inJail; 
     }
 
-    public void SetJailTurns(int turns) { }
+    public void SetJailTurns(int turns)
+    {
+        jailTurns = Mathf.Clamp(turns, 0, 3);
+    }
     public int GetJailTurns() 
     { 
         return jailTurns; 
     }
 
-    public void SetDoublesInRow(int count) { }
+    public void SetSuppressNextDoublesBonus(bool suppress)
+    {
+        suppressNextDoublesBonus = suppress;
+    }
+
+    public bool ShouldSuppressNextDoublesBonus()
+    {
+        return suppressNextDoublesBonus;
+    }
+
+    public int GetChanceCardCount()
+    {
+        return getOutOfJailFree_Chance;
+    }
+
+    public int GetCommunityCardCount()
+    {
+        return getOutOfJailFree_Community;
+    }
+
+    public void DecrementChanceCard()
+    {
+        getOutOfJailFree_Chance = Mathf.Max(0, getOutOfJailFree_Chance - 1);
+    }
+
+    public void DecrementCommunityCard()
+    {
+        getOutOfJailFree_Community = Mathf.Max(0, getOutOfJailFree_Community - 1);
+    }
+
+    public void SetDoublesInRow(int count)
+    {
+        doublesInRow = Mathf.Max(0, count);
+
+    }
     public int GetDoublesInRow() 
     { 
         return doublesInRow; 
     }
 
-    public void AddOwnedProperty(int propertyIndex) { }
-    public void RemoveOwnedProperty(int propertyIndex) { }
-    public List<int> GetOwnedProperties() 
+    public void AddOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        ownedProperties.Add(ownableSpace);
+    }
+
+    public void RemoveOwnedProperty(OwnableSpaceData ownableSpace)
+    {
+        ownedProperties.Remove(ownableSpace);
+    }
+    public List<OwnableSpaceData> GetOwnedProperties() 
     { 
         return ownedProperties; 
+    }
+
+    public List<PropertySpaceData> GetValidUpgradableProperties()
+    {
+        var groups = ownedProperties
+            .OfType<PropertySpaceData>()
+            .GroupBy(p => p.groupColor);
+
+        var targets = new List<PropertySpaceData>();
+
+        foreach (var group in groups)
+        {
+            var groupList = group.ToList();
+            
+            // only consider monopolies
+            if (groupList.Count != groupList[0].numberOfPropertiesInGroup)
+                continue;
+            
+            // even-building rule... make sure we're upgrading evenly
+            // for example, you can only build a second datapoint when all other props in the
+            // color group have 1 data point already.
+            int minLevel = groupList.Min(p => p.GetCurrentUpgradeLevel());
+            
+            targets.AddRange(groupList.Where(
+                p => p.GetCurrentUpgradeLevel() == minLevel && !p.IsMaxed));
+        }
+
+        return targets;
+    }
+    
+    /// <summary>
+    /// Get the number of Instrument spaces owned by this player.
+    /// </summary>
+    /// <returns>Count of Instruments owned by player.</returns>
+    public int GetNumberInstrumentsOwned()
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+            if (space.GetType() == typeof(InstrumentSpaceData))
+                count++;
+        return count;
+    }
+
+    /// <summary>
+    /// Get the number of Planet spaces owned by this player.
+    /// </summary>
+    /// <returns>Count of Planets owned by the player.</returns>
+    public int GetNumberPlanetsOwned()
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+            if (space.GetType() == typeof(PlanetSpaceData))
+                count++;
+        return count;
+    }
+
+    /// <summary>
+    /// Get the number of properties owned by the group color.
+    /// </summary>
+    /// <param name="groupColor"></param>
+    /// <returns>Count of owned properties matching the group color.</returns>
+    public int GetNumberOfPropertiesOwnedByColor(Color groupColor)
+    {
+        int count = 0;
+        foreach (OwnableSpaceData space in ownedProperties)
+        {
+            if (space.groupColor == groupColor)
+                count++;
+        }
+        return count;
     }
 
     //Placeholders for future logic, I feel like these should be moved into
@@ -96,14 +266,42 @@ public class Player : ScriptableObject
     //initalized in the above code.  We can definitely change the structure
     //as we keep developing the game. 
     public void GoToJail() { }
-    public void ReleaseFromJail() { }
+    public void ReleaseFromJail()
+    {
+        SetInJail(false);
+        SetJailTurns(0);
+    }
+
     public void UseGetOutOfJailFreeCard() { }
     public void MovePlayer(int spacesToMove) { }
     public void PayPlayer(Player otherPlayer, int amount) { }
-    public void BuyProperty(int propertyIndex, int price) { }
+    public void BuyProperty(int propertyIndex, int price) { } // replaced by Execute Purchase function. 
     public void SellProperty(int propertyIndex, int price) { }
-    public void MortgageProperty(int propertyIndex) { }
-    public void UnmortgageProperty(int propertyIndex) { }
+    public bool MortgageProperty(OwnableSpaceData tile) {
+        if (!tile.isMortgageable) return false;
+
+        this.AddMoney(tile.collaborationValue);
+        this.SetMortgagePayoff(tile);
+        tile.isMortgaged = true;
+        tile.isMortgageable = false;
+
+        return true;
+    }
+    public bool UnmortgageProperty(OwnableSpaceData tile) {
+        if (tile == null) return false;
+        if (!tile.isMortgaged) return false;
+
+        if (tile.mortgagePayoffValue <= 0)
+            SetMortgagePayoff(tile);
+
+        if (TrySpend(tile.mortgagePayoffValue) != FinancialStatus.Success)
+            return false;
+
+        tile.isMortgaged = false;
+        tile.isMortgageable = true;
+
+        return true;
+    }
 
 
     public void SetColor(Color color)
@@ -127,11 +325,291 @@ public class Player : ScriptableObject
             throw new System.ArgumentException("Position values must always be positive.");
         }
         this.position = position;
-        
     }
 
     public int GetPosition()
     {
         return this.position;
     }
+
+    // Require the source deck when the player receives a Get Out of Jail Free card.
+    // This lets us return the same card to the correct deck when it is used.
+    public void AddJailCard(Card card, CardDeck sourceDeck)
+    {
+        if (card == null)
+        {
+            Logging.Logger.Error("Player.AddJailCard",
+                "Cannot add null card to player's get out of jail cards.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException("Cannot add null card to player's get out of jail cards.");
+        }
+
+        // validate deck source because this card must go back to the same deck later.
+        if (sourceDeck == null)
+        {
+            Logging.Logger.Error("Player.AddJailCard",
+                "Cannot add jail card without a source deck.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException(nameof(sourceDeck));
+        }
+
+        getOutOfJailCards.Add(card);
+        getOutOfJailCardSources[card] = sourceDeck;
+    }
+
+    public void RemoveJailCard(Card card)
+    {
+        if (card == null)
+        {
+            Logging.Logger.Error("Player.RemoveJailCard",
+                "Cannot remove null card from player's get out of jail cards.",
+                LogCategory.Gameplay,
+                this);
+            throw new ArgumentNullException("Cannot remove null card from player's get out of jail cards.");
+        }
+        getOutOfJailCards.Remove(card);
+        getOutOfJailCardSources.Remove(card);
+    }
+
+    public bool HasGetOutOfJailFreeCard()
+    {
+        return getOutOfJailCards != null && getOutOfJailCards.Count > 0;
+    }
+
+    public bool TryConsumeGetOutOfJailFreeCard(out Card card, out CardDeck sourceDeck)
+    {
+        card = null;
+        sourceDeck = null;
+
+        if (getOutOfJailCards == null || getOutOfJailCards.Count == 0)
+            return false;
+
+        // Use the first available card in inventory.
+        card = getOutOfJailCards[0];
+
+        if (card == null)
+        {
+            Logging.Logger.Warn("Player.TryConsumeGetOutOfJailFreeCard",
+                $"{p_Name} has a null jail card entry in inventory.",
+                LogCategory.Gameplay,
+                this);
+
+            getOutOfJailCards.RemoveAt(0);
+            return false;
+        }
+
+        if (!getOutOfJailCardSources.TryGetValue(card, out sourceDeck) || sourceDeck == null)
+        {
+            Logging.Logger.Error("Player.TryConsumeGetOutOfJailFreeCard",
+                $"Could not find source deck for {p_Name}'s Get Out of Jail Free card.",
+                LogCategory.Gameplay,
+                this);
+            return false;
+        }
+
+        // Remove from inventory as part of use/consume behavior.
+        getOutOfJailCards.RemoveAt(0);
+        getOutOfJailCardSources.Remove(card);
+
+        Logging.Logger.Info("Player.TryConsumeGetOutOfJailFreeCard",
+            $"{p_Name} used a Get Out of Jail Free card.",
+            LogCategory.Gameplay,
+            this);
+
+        return true;
+    }
+
+    public List<Card> GetJailCards()
+    {
+        List<Card> cardsCopy = new List<Card>();
+        foreach (Card card in getOutOfJailCards)
+        {
+            cardsCopy.Add(card);
+        }
+        return cardsCopy;
+    }
+
+    public List<Card> GetGetOutOfJailCards()
+    {
+        if (getOutOfJailCards == null)
+            getOutOfJailCards = new List<Card>();
+
+        List<Card > cardsCopy = new List<Card>();
+        foreach (Card card in getOutOfJailCards)
+        {
+            cardsCopy.Add(card);
+        }
+        return cardsCopy;
+    }
+
+    /// <summary>
+    /// Validates if the player has enough money to make a purchase or spend money
+    /// </summary>
+    /// <param name="amount">Int - how much the payment is</param>
+    /// <returns>Bool - False if the player has less money than the amount, true if the player has enough money</returns>
+    public bool CanAfford(int amount)
+    {
+        if (money < amount) return false;
+
+        return true;
+
+    }
+
+    /// <summary>
+    /// Task 599 - adjust method to calculate money + assets. 
+    /// </summary>
+    /// <returns>Bool: True if the player has less than or 0 money, false otherwise</returns>
+    public bool IsBankrupt(int price) {
+        bool bankruptNow = money + assets <= price;
+
+        if (bankruptNow)
+        {
+            SetBankrupt(true);
+        }
+
+        return bankruptNow;
+    }
+
+    /// <summary>
+    /// Attempts to spend money. Validates
+    /// player money first, then spends if it can.
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <returns>Returns True if the money is spent. Returns false if the player does not have money.</returns>
+    public FinancialStatus TrySpend(int amount)
+    {
+        if (CanAfford(amount))
+
+        {
+            SetMoney(GetMoney() - amount);
+            return FinancialStatus.Success;
+        }
+        if (IsBankrupt(amount)) return FinancialStatus.Bankrupt;
+   
+        return FinancialStatus.MortgageRequired;
+    }
+
+    /// <summary>
+    /// Adds specified amount of money to player total.
+    /// </summary>
+    /// <param name="amount"></param>
+    public void AddMoney(int amount)
+    {
+        SetMoney(GetMoney() + amount);
+    }
+
+    /// <summary>
+    /// For full breakdown of event flow, see document at Documentation/PlayerController/ValidationLayerFlow.md
+    /// Executes purchase. Called by PC after doing verification and checking that the player is correct.
+    /// It then verifies if the player has enough money.
+    /// The Execute Purchase then uses TrySpend() to once again verify if there is enough money, and then spends if it can. 
+    /// I
+    /// </summary>
+    /// <param name="tile"></param>
+    /// <param name="price"></param>
+    /// <returns>Bool - True if purchase is successful. False if the purchase fails due to no money</returns>
+    public FinancialStatus ExecutePurchase(OwnableSpaceData tile, int price)
+    {
+        FinancialStatus status = TrySpend(price);
+        if (status  != FinancialStatus.Success) return status;
+
+        AddOwnedProperty(tile);
+        //ownedProperties.Add(tile);
+
+        assets += tile.collaborationValue; //right now update assests during purchase. Will need to process reductions during mortage/sale
+        return status;
+    }
+
+
+    /// <summary>
+    /// Called upon becoming bankrupt. Resets owner on both the ownable space data and removes the space data from the player.
+    /// </summary>
+    private void ClearOwnership()
+    {
+        foreach (OwnableSpaceData space in this.GetOwnedProperties())
+        {
+            space.SetOwner(null);
+        }
+        ownedProperties.Clear();
+    }
+
+
+    /// <summary>
+    /// Returns a list of all properties the player can mortgage.
+    /// The isMortgageable flag must be set or removed when buying or selling upgrades on the prop. 
+    /// </summary>
+    /// <returns></returns>
+    public List<OwnableSpaceData> GetMortgageableProperties() => 
+        ownedProperties.Where(p => p.isMortgageable).ToList();
+
+    public List<OwnableSpaceData> GetMortgagedProperties() => 
+        ownedProperties.Where(p => p.isMortgaged).ToList();
+    
+    // this is used for AI behavior, and differs from GetMortgageableProperties in that
+    // the AI also needs to evaluate upgraded properties for its mortgage/debt resolve
+    // behavior- and upgraded properties by rules are *not* mortgageable.
+    public List<OwnableSpaceData> GetUnmortgagedProperties() =>
+        ownedProperties.Where(p => !p.isMortgaged).ToList();
+
+    public void SetMortgagePayoff(OwnableSpaceData p)
+    {
+        //Sets the mortgage payoff value. 
+        //Per monolopy rules, it is 110% of the mortgage amount.
+        //This currently just uses an int cast, which is probably not correct.
+        //However, all collab values are currently divisible by 10, so no truncation should occur for now.
+        //We can refactor this to deal with rounding at a later time.
+        int payoff = (int)(p.collaborationValue * 1.10f);
+        p.mortgagePayoffValue = payoff;
+    }
+
+    // Player Enums for calculating bankruptcy and if a player can afford. This may get moved to PC class later
+
+    public enum FinancialStatus
+    {
+        Success,
+        MortgageRequired,
+        Bankrupt
+
+    }
+
+    public void ResetData()
+    {
+        getOutOfJailCards.Clear();
+        getOutOfJailCardSources.Clear();
+
+        getOutOfJailFree_Chance = 0;
+        getOutOfJailFree_Community = 0;
+        
+        ClearOwnership();
+        ReleaseFromJail();
+    }
+    public List<PropertySpaceData> GetValidDowngradableProperties()
+{
+    var groups = ownedProperties
+        .OfType<PropertySpaceData>()
+        .GroupBy(p => p.groupColor);
+
+    var targets = new List<PropertySpaceData>();
+
+    foreach (var group in groups)
+    {
+        var groupList = group.ToList();
+
+        //only consider full monopolies
+        if (groupList.Count != groupList[0].numberOfPropertiesInGroup)
+            continue;
+
+        //even selling
+        int maxLevel = groupList.Max(p => p.GetCurrentUpgradeLevel());
+
+        targets.AddRange(groupList.Where(
+            p => p.GetCurrentUpgradeLevel() == maxLevel &&
+                 p.CanDowngrade() &&
+                 !p.isMortgaged));
+    }
+
+    return targets;
+}
 }

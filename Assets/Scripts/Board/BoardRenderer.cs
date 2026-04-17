@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Logging;
 using UnityEngine;
-using Space = PsycheOpoly.Board.Space;
+using Assets.Scripts.Events.EventChannelTypes;
 
 public class BoardRenderer : MonoBehaviour
 {
@@ -15,6 +15,7 @@ public class BoardRenderer : MonoBehaviour
 
     [Header("Event Channels")] 
     [SerializeField] public PlayerEventChannel playerAddedChannel;
+    [SerializeField] private MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
     [SerializeField] public PlayerMovedEventChannel playerMovedEventChannel;
 
@@ -22,8 +23,9 @@ public class BoardRenderer : MonoBehaviour
     public List<Piece> playerPieces = new();
     private int sideSpacesCount = 11; // number of spaces per side of the board. Can make this dynamic later
     private int edgeBranch = 5;
-    private float increment = 0f;
-    
+    private float increment;
+    private readonly Dictionary<SpaceData, SpaceRenderer> rendererBySpaceData = new ();
+
     /// <summary>
     /// Corner targets for piece bumping on shared spaces, normalized
     /// </summary>
@@ -39,33 +41,42 @@ public class BoardRenderer : MonoBehaviour
     {
         playerAddedChannel?.Subscribe(AddPlayerPiece);
         playerMovedEventChannel?.Subscribe(MovePiece);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        mortgageFinishedEventChannel?.Subscribe(OnMortgageFinished);
     }
 
     private void OnDestroy()
     {
         ClearBoard();
         playerAddedChannel.Unsubscribe(AddPlayerPiece);
-    } 
+        playerMovedEventChannel?.Unsubscribe(MovePiece);
+        mortgageFinishedEventChannel?.Unsubscribe(OnMortgageFinished);
+    }
 
-    public void GenerateBoard(Space[] spaces)
+    //when a player mortgages a property, the tile will update immediately, not sure if needed for unmortgage...
+    private void OnMortgageFinished(MortgageFinishedEvent e)
+    {
+        if (e == null || e.Tile == null) return;
+
+        if (rendererBySpaceData.TryGetValue(e.Tile, out var renderer) && renderer != null)
+        {
+            renderer.RefreshTileStateVisuals();
+        }
+    }
+
+    public void GenerateBoard(SpaceData[] spaces)
     {
         // only allow board generation in play mode
         if (!Application.isPlaying)
         {
             Logging.Logger.Warn("GenerateBoard",
-                "Board generation attemped in EditMode - skipping.",
+                "Board generation attempted in EditMode - skipping.",
                 LogCategory.UI,
                 this);
             return;
         }
         
         ClearBoard();
+        rendererBySpaceData.Clear();
 
         if (spaces == null || spaces.Length == 0)
         {
@@ -105,6 +116,7 @@ public class BoardRenderer : MonoBehaviour
             SpaceRenderer newRenderer = InstantiateSpace(
                 position.x, position.y, spaces[i], increment);
             spaceRenderers[i] = newRenderer;
+            rendererBySpaceData[spaces[i]] = newRenderer;
         }
         
         OnBoardReady();
@@ -129,7 +141,7 @@ public class BoardRenderer : MonoBehaviour
         };
     }
 
-    private SpaceRenderer InstantiateSpace(float x, float y, Space spaceData, float scale)
+    private SpaceRenderer InstantiateSpace(float x, float y, SpaceData spaceData, float scale)
     {
         GameObject newSpace = Instantiate(spaceRendererPrefab, transform);
         SpaceRenderer newRenderer = newSpace.GetComponent<SpaceRenderer>();
@@ -183,7 +195,7 @@ public class BoardRenderer : MonoBehaviour
         playerPieces = playerPieces.OrderBy(playerPiece => playerPiece.playerId).ToList();
         
         // move the piece to the starting location (GO)
-        MovePiece(new PlayerMovedEvent(piece.playerId, 0,0));
+        MovePiece(new PlayerMovedEvent(piece.playerId, 0, 0, null));
     }
 
     /// <summary>
@@ -209,11 +221,31 @@ public class BoardRenderer : MonoBehaviour
         Vector3 targetPosition = spaceRenderers[mpe.newPosition].transform.position;
         movingPiece.spaceIndex = mpe.newPosition;
         Vector3 bumpPosition = BumpCrowdedSpacePieces(mpe.newPosition, mpe.id);
+        Vector3[] vSteps = BuildVectorPathFromIndexPath(mpe.pathIndices);
         
         if (bumpPosition == Vector3.zero)
-            movingPiece.MoveTo(targetPosition, false);
+            movingPiece.MoveToWaypoints(vSteps);
         else
-            movingPiece.MoveToWaypoints(new []{targetPosition, bumpPosition});
+        {
+            vSteps[^1] = bumpPosition; // ^1 means get the last element... C# 8.0 feature. equivalent to ".Length - x".
+            movingPiece.MoveToWaypoints(vSteps);
+        }
+    }
+
+    private Vector3[] BuildVectorPathFromIndexPath(int[] path)
+    {
+        if (path.Length < 1)
+            return new [] { Vector3.zero };
+        
+        Vector3[] vPath = new Vector3[path.Length];
+        
+        for (int i = 0; i < path.Length; i++)
+        {
+            Vector3 vStep = spaceRenderers[path[i]].transform.position;
+            vPath[i] = vStep;
+        }
+
+        return vPath;
     }
 
     /// <summary>
@@ -244,9 +276,26 @@ public class BoardRenderer : MonoBehaviour
             if (piecesOnTarget[i].playerId == currentPlayerId)
                 currentPlayerTargetBump = targetPosition;
             else
-                piecesOnTarget[i].MoveTo(targetPosition, true);
+                piecesOnTarget[i].MoveTo(targetPosition, true); // this shuffles existing pieces into a new bump pos
         }
 
         return currentPlayerTargetBump;
+    }
+
+    /// <summary>
+    /// This is a helper method for testing.
+    /// While using the test scene the player manager
+    /// automatically fills everything forcing adding plays to tests
+    /// to fail. This is run on every test to fix it.
+    /// </summary>
+    /// <returns></returns>
+    public bool ClearPlayers()
+    {
+        playerPieces.Clear();
+
+        if (playerPieces.Count == 0)
+            return true;
+
+        return false;
     }
 }

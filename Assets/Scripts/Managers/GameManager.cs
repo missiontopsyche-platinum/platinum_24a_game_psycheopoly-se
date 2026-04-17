@@ -1,55 +1,34 @@
-using System.Collections;
-using UnityEngine;
-using System.Collections.Generic;
+using Assets.Scripts.Managers.TurnFlow;
+using Assets.Scripts.Managers.TurnOrder;
+using Data;
 using Logging;
+using System.Collections;
+using System.Collections.Generic;
+using UI;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    //adding in reference to Enum created in the Data folder - nnastase us11-t33
-    //default setter
-    public GameState gameState { get; set; } = GameState.None;
-
     //us11-t41 keep one instance of a gamemanager at a time for security
     public static GameManager instance { get; private set; }
 
-    [Header("UI Elements")] [SerializeField]
-    public DiceRollPanelController diceRollPanel;
-    
-    [Header("Event Channels")]
-    //us11-t36 allows for gamestate change action
-    [SerializeField] public GameStateChangedEventChannel gameStateChangedChannel;
-    [SerializeField] public TurnStartedEventChannel turnStartedChannel;
-    [SerializeField] public PlayerMovedEventChannel playerMovedChannel;
-    [SerializeField] public IntEventChannel initializePlayerCountChannel;
-    [SerializeField] public DiceRolledEventChannel diceRolledChannel;
-    [SerializeField] public MovePlayerEventChannel movePlayerChannel;
-    [SerializeField] public BooleanEventChannel pieceMoveCompletedChannel;
-    
+    [Header("Manager References")]
+    [SerializeField] private PlayerManager playerManager;
+    public TurnCycleManager turnCycleManager { get; private set; }
+    public TurnFlowCoordinator turnFlowCoordinator { get; private set; }
+
+    [Header("Scene Flow")]
+    [SerializeField] private int winSceneIndex = 2;
 
     private int playerCount = 0;
-    private int currentPlayer = 0;
-    private int currentTurn = 0;
 
-    //The below are for testing that the event is properly registering in the class
-    public int dieOne = 0;
-    public int dieTwo = 0;
-    public int totalRolled = 0;
+    public static int LastWinningPlayerId { get; private set; } = -1;
+    public static string LastWinningPlayerName { get; private set; } = string.Empty;
 
-    private Coroutine currentTurnCoroutine;
-    private bool turnComplete = false;
-
-    // Task 111 legal state transition map
-    private static readonly Dictionary<GameState, HashSet<GameState>> Allowed = new()
-    {
-        { GameState.None,            new HashSet<GameState>{ GameState.Initializing } },
-        { GameState.Initializing,    new HashSet<GameState>{ GameState.WaitingForTurn } },
-        { GameState.WaitingForTurn,  new HashSet<GameState>{ GameState.PlayerTurn, GameState.GameOver } },
-        { GameState.PlayerTurn,      new HashSet<GameState>{ GameState.PlayerTurn, GameState.BotTurn, GameState.GameOver } },
-        { GameState.BotTurn,         new HashSet<GameState>{ GameState.WaitingForTurn, GameState.GameOver } },
-        { GameState.GameOver,        new HashSet<GameState>{ GameState.Initializing } },
-    };
-
-    //us11t41 duplicate prevention with Awake() method
+    // In Project Settings/Script Execution Order, this has been moved below all other
+    // scripts to ensure they have the time to set themselves up on init before we
+    // try to start a game. This solves race conditions we introduced when we
+    // decoupled the GameManager from all other systems.
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -62,128 +41,126 @@ public class GameManager : MonoBehaviour
         instance = this;
         //keeps game object
         DontDestroyOnLoad(gameObject);
-
         
-    }
-
-    //Task 112 which is a guarded transition API
-    public bool TryChangeState(GameState newState)
-    {
-        if (newState == gameState) return false;
-
-        if (!Allowed.TryGetValue(gameState, out var nexts) || !nexts.Contains(newState))
+        // ensure we find/have PlayerManager
+        if (playerManager == null)
         {
-            Logging.Logger.Warn("GameManager.TryChangeState",
-                $"[GameManager] Illegal transition: {gameState} -> {newState}",
-                LogCategory.Gameplay,
-                this);
-            return false;
+            playerManager = FindFirstObjectByType<PlayerManager>();
+
+            if (playerManager == null)
+            {
+                Logging.Logger.Error("StandardMovementStrategy.Awake", "PlayerManager not found in scene.",
+                    LogCategory.Core, this);
+            }
         }
-
-        var old = gameState;
-        gameState = newState;
-
-        if (gameStateChangedChannel != null)
-            gameStateChangedChannel.RaiseEvent(new GameStateChangedEvent(old, newState));
-
-        Logging.Logger.Info("GameManager.TryChangeState",
-            $"[GameManager] State changed: {old} -> {newState}",
-            LogCategory.Gameplay,
-            this);
-        return true;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    //added Initialize by nnastase for us11-t34
-    void Start()
+    private void Start()
     {
-        //US156T157 subscribe to DiceRolled Listener
-        diceRolledChannel.Subscribe(DiceRolled);
-        pieceMoveCompletedChannel?.Subscribe(PieceMoveCompleted);
+        StartGame();
     }
 
     //start & end game to satisfy us11-35
     //pasing player count for now.
-    public void StartGame(int playerCount)
+    public void StartGame()
     {
-        if (gameState != GameState.None && gameState != GameState.GameOver)
+        if (playerManager == null)
         {
             Logging.Logger.Warn("GameManager.StartGame",
-                $"[GameManager] is unable to start game from state: {gameState}",
-                LogCategory.Gameplay,
+                "PlayerManager reference is missing.",
+                LogCategory.Core,
                 this);
             return;
         }
 
-        this.playerCount = playerCount;
-        Initialize();
-        SetUpGame(this.playerCount);
+        SetUpGame();
     }
 
     public void EndGame()
     {
         StopAllCoroutines();
-        SetState(GameState.GameOver);
+
+        Logging.Logger.Info("GameManager.EndGame",
+            "Game ended.",
+            LogCategory.Core,
+            this);
+
+        if (SceneTransitioner.instance != null)
+        {
+            SceneTransitioner.instance.TransitionScene(winSceneIndex);
+        }
+        else
+        {
+            // fallback if no scene transitioner exists in scene
+            UnityEngine.SceneManagement.SceneManager.LoadScene(winSceneIndex);
+        }
     }
 
 
-    // Update is called once per frame
-    void Update()
-    {
-        // us232 t238 start the game once everything is loaded in- happens once.
-        // this is *not* a good solution long term and is simply to demonstrate
-        // current prototype progress.
-        if (gameState == GameState.None)
-            StartGame(4);
-    }
-
-    /// <summary>
-    /// Called when the object is destroyed. 
-    /// </summary>
-    public void OnDestroy()
-    {
-       //Unsubscribe from event channels
-       diceRolledChannel.Unsubscribe(DiceRolled);
-    }
-
-    private void PieceMoveCompleted(bool pieceMoveCompleted)
-    {
-        // in future, should have a state machine for turn progress
-        turnComplete = pieceMoveCompleted;
-    }
 
     /// <summary>
     /// Sets up a new game by initializing the PlayerManager and starting the first turn.
     /// </summary>
-    /// <param name="playerCount">Number of players for the game.</param>
-    public void SetUpGame(int playerCount)
+    public void SetUpGame()
     {
-        if (playerCount < 2 || playerCount > 4)
-        {
-            Logging.Logger.Error("GameManager.SetUpGame",
-                "Invalid player count, must be between 2 and 4.",
-                LogCategory.Gameplay,
-                this);
-            gameState = GameState.None;
-            return;
-        }
-        this.playerCount = playerCount;
-        currentPlayer = 0;
-        initializePlayerCountChannel.RaiseEvent(playerCount); // raises event for player count
+        LastWinningPlayerId = -1;
+        LastWinningPlayerName = string.Empty;
 
-        //edited in for us11
-        SetState(GameState.WaitingForTurn);
+        // if there are no game configs loaded, do the temp one.
+        // this allows us to start the game from the game screen quickly for testing.
+        if (GameConfiguration.playerConfigs == null) 
+            InitializePlayers_Temporary();
+        else 
+            playerManager.InitializePlayers(GameConfiguration.playerConfigs);
+
+        playerCount = playerManager.GetPlayerCount();
         
-        // Wait for game to init
+        turnCycleManager = new TurnCycleManager(playerCount);
+        InitializeTurnFlowCoordinator();
+
         StartCoroutine(WaitForGameInit());
     }
 
     /// <summary>
+    /// This is a demonstration/stop-gap method to handle player creation while we don't have
+    /// a proper game setup configuration solution, which involves manually creating players
+    /// for testing purposes.
+    ///
+    /// In the future, we'll either extract or construct the PlayerConfig from the configuration
+    /// and call InitializePlayers in PlayerManager in exactly the same way. The call is blocking,
+    /// so it can operate in the sequence needed by GameManager when setting up the game.
+    /// </summary>
+    private void InitializePlayers_Temporary()
+    {
+        Player MakePlayer(string name, Color color)
+        {
+            var player = ScriptableObject.CreateInstance<Player>();
+            player.SetPName(name);
+            player.SetColor(color);
+            return player;
+        }
+        
+        var configs = new List<PlayerConfig>
+        {
+            new (MakePlayer("Player 1", Color.red), true, null),
+            new (MakePlayer("Player 2", Color.blue), false, 
+                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+            new (MakePlayer("Player 3", Color.yellow), false, 
+                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+            new (MakePlayer("Player 4", Color.green), false, 
+                ScriptableObject.CreateInstance<AIBehaviorWeights>())
+        };
+        
+        playerManager.InitializePlayers(configs);
+    }
+
+    /// <summary>
     /// This is exposed to allow for testing in editmode, bypasses the init wait.
+    /// Completes any asynchronous game initialization and starts the first player's turn.
     /// </summary>
     public void CompleteGameInit()
     {
-        StartTurn();
+        BeginTurnSystem();
     }
 
     private IEnumerator WaitForGameInit()
@@ -192,141 +169,58 @@ public class GameManager : MonoBehaviour
         CompleteGameInit();
     }
 
-    private void StartTurn()
+
+    private void InitializeTurnFlowCoordinator()
     {
-        // temporary, assume every player is a 'human' player
-        SetState(GameState.PlayerTurn);
-        turnStartedChannel.RaiseEvent(new TurnStartedEvent(currentPlayer, currentTurn));
-        turnComplete = false;
-        currentTurnCoroutine = StartCoroutine(ExecuteTurn());
-    }
+        turnFlowCoordinator = GetComponent<TurnFlowCoordinator>();
 
-    public void NextTurn()
-    {
-        if (currentTurnCoroutine != null)
-            StopCoroutine(currentTurnCoroutine);
-        
-        currentPlayer = (currentPlayer + 1) % playerCount;
-        currentTurn++;
-        StartTurn();
-    }
+        if (turnFlowCoordinator == null)
+            turnFlowCoordinator = gameObject.AddComponent<TurnFlowCoordinator>();
 
-    private IEnumerator ExecuteTurn()
-    {
-        diceRollPanel?.gameObject.SetActive(true);
+        turnFlowCoordinator.Initialize(turnCycleManager, playerManager.GetAllPlayers());
 
-        // we should move through the state machine over time, this is a way to wait per frame
-        // to check for event fires.
-        while (!turnComplete)
-            yield return new WaitForEndOfFrame(); // busy wait for turn to complete (event fire etc)
-        
-        // turn is complete, call next turn
-        NextTurn();
-    }
-
-    //us11-t34 very basic initializer, just initializing GameState...
-    public void Initialize()
-    {
-        SetState(GameState.Initializing);
-
-        // TODO Why is this even here? hdathert
-        //this is where we should load / create board/players/etc
-        //mini tester
-        Logging.Logger.Debug("GameManager.Initialize",
-            "Initialize() successfully called - test passed!",
+        Logging.Logger.Info("GameManager.InitializeTurnFlowCoordinator",
+            "TurnFlowCoordinator initialized by GameManager.",
             LogCategory.Core,
             this);
-
     }
 
-    //transaction stubs for furutre us11 tskss - nnastase
-    //public void StartGame() => SetState(GameState.WaitingForTurn);
-    //public void EndGame() => SetState(GameState.GameOver);
-
-    
-    // TODO this seems like it might be redundant with the HashMap implementaion at the top of this file.
-    // We might want to refactor this to use that, as it seems like it would be a much more maintainable
-    // solution long-term.
-    //us11t35
-    //here we are looking to have a method that allows for valid state transitions for enums
-    private bool CanTransition(GameState from, GameState to)
+    private void BeginTurnSystem()
     {
-        //our game start transition options
-        if (from == GameState.None && to == GameState.Initializing) return true;
-
-        if (from == GameState.Initializing && to == GameState.WaitingForTurn) return true;
-
-        //turn cycling transitin options
-        if (from == GameState.WaitingForTurn && to == GameState.PlayerTurn) return true;
-        if (from == GameState.PlayerTurn && to == GameState.BotTurn) return true;
-        if (from == GameState.PlayerTurn && to == GameState.PlayerTurn) return true;
-        if (from == GameState.BotTurn && to == GameState.WaitingForTurn) return true;
-
-        //end of game and restart transitions options
-        //further code will dictate if these transitions are met (for game oveer)
-        if (from == GameState.PlayerTurn && to == GameState.GameOver) return true;
-        if (from == GameState.BotTurn && to == GameState.GameOver) return true;
-        if (from == GameState.WaitingForTurn && to == GameState.GameOver) return true;
-
-        if (from == GameState.GameOver && to == GameState.Initializing) return true;
-
-        return false;
-    }
-
-
-    //change state event helper us11-t36
-    private void SetState(GameState newState)
-    {
-        if (newState == gameState) return;
-        if (!CanTransition(gameState, newState))
+        if (turnCycleManager == null)
         {
-            Logging.Logger.Warn("GameManager.SetState",
-                $"Illegal transition: {gameState} -> {newState}",
-                LogCategory.Gameplay,
+            Logging.Logger.Error("GameManager.BeginTurnSystem",
+                "TurnCycleManager was not initialized.",
+                LogCategory.Core,
                 this);
             return;
         }
 
-        var prev = gameState;
-        gameState = newState;
+        if (turnFlowCoordinator == null)
+        {
+            Logging.Logger.Error("GameManager.BeginTurnSystem",
+                "TurnFlowCoordinator was not initialized.",
+                LogCategory.Core,
+                this);
+            return;
+        }
 
-        //null safe raise so tests for testing
-        gameStateChangedChannel?.RaiseEvent(new GameStateChangedEvent(prev, newState));
-
-        //Corrected Order
-        Logging.Logger.Debug("GameManager.SetState",
-            $"State: {prev} > {newState}",
-            LogCategory.Gameplay,
+        Logging.Logger.Info("GameManager.BeginTurnSystem",
+            "Initialization complete. Handing control to TurnFlowCoordinator.",
+            LogCategory.Core,
             this);
+
+        turnFlowCoordinator.StartGame();
     }
 
-    /// <summary>
-    /// Dice Rolled event listener. Takes the DiceRolledEvent pushed by the event channel and
-    /// then will utilize the contents as necessary. 
-    /// For now, it just logs the details and saves the amounts to a class variable 
-    /// </summary>
-    /// <param name="diceRolledEvent"></param>
-    /// <returns>DiceRolledEvent object</returns>
-    public void DiceRolled(DiceRolledEvent diceRolledEvent)
+    public void SetWinner(Player winner)
     {
-        // Refactor to use US145 Logger
-        Logging.Logger.Info("gameManager.DiceRolled",
-            "Die One: " + diceRolledEvent.dieOne,
-            Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("gameManager.DiceRolled", 
-            "Die Two: " + diceRolledEvent.dieTwo,
-            Logging.LogCategory.Gameplay);
-        Logging.Logger.Info("gameManager.DiceRolled",
-            "Total: " + diceRolledEvent.totalRoll,
-            Logging.LogCategory.Gameplay);
+        LastWinningPlayerId = winner != null ? winner.GetId() : -1;
+        LastWinningPlayerName = winner != null ? winner.GetPName() : "No Winner";
 
-        this.dieOne = diceRolledEvent.dieOne;
-        this.dieTwo = diceRolledEvent.dieTwo;
-        this.totalRolled = diceRolledEvent.totalRoll;
-
-        if (this.gameState == GameState.PlayerTurn)
-        {
-            movePlayerChannel?.RaiseEvent(new MovePlayerEvent(this.currentPlayer, this.totalRolled));
-        }
+        Logging.Logger.Info("GameManager.SetWinner",
+            $"Winner set to: {LastWinningPlayerName}",
+            LogCategory.Core,
+            this);
     }
 }

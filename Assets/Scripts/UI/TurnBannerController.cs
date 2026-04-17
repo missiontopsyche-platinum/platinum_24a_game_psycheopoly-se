@@ -1,11 +1,12 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TurnBannerController : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Text turnLabel;         
+    [SerializeField] private TMP_Text turnLabel;         
     [SerializeField] private Button continueButton;   //Start turn button
     [SerializeField] private CanvasGroup canvasGroup; //Controls fade
 
@@ -41,8 +42,6 @@ public class TurnBannerController : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
         rect.anchoredPosition = hiddenPos;
-
-        //gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -74,7 +73,9 @@ public class TurnBannerController : MonoBehaviour
 
     private void OnTurnStarted(TurnStartedEvent payload)
     {
-        turnLabel.text = $"Player {payload.playerId}'s Turn";
+        // this is a quick fix, in the future, we might need to have some sort of way for the UI to query players from
+        // the playermanager
+        turnLabel.text = $"Player {payload.playerId + 1}'s Turn";
         Show();
     }
 
@@ -94,6 +95,7 @@ public class TurnBannerController : MonoBehaviour
 
     private IEnumerator FadeSlide(bool show)
     {
+        // for editmode tests, skip the animation and set to end state
         if (!Application.isPlaying)
         {
             float targetAlpha = show ? 1f : 0f;
@@ -117,15 +119,6 @@ public class TurnBannerController : MonoBehaviour
         Vector2 startPos = rect.anchoredPosition;
         Vector2 endPos = show ? shownPos : hiddenPos;
 
-        if (show && !gameObject.activeSelf)
-        {
-            gameObject.SetActive(true);
-            canvasGroup.alpha = 0;
-            rect.anchoredPosition = hiddenPos;
-            startA = 0;
-            startPos = hiddenPos;
-        }
-
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = false;
 
@@ -135,7 +128,7 @@ public class TurnBannerController : MonoBehaviour
             float t = ease.Evaluate(time / duration);
             canvasGroup.alpha = Mathf.Lerp(startA, endA, t);
             rect.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
-            yield return null;
+            yield return new WaitForEndOfFrame(); // this ensures that this is updated per frame
         }
 
         canvasGroup.alpha = endA;
@@ -150,8 +143,7 @@ public class TurnBannerController : MonoBehaviour
     {
         if (turnLabel != null)
             turnLabel.text = $"Player {playerId}'s Turn";
-
-        gameObject.SetActive(true);
+        
         PlayAnim(true);
     }
 
@@ -160,8 +152,7 @@ public class TurnBannerController : MonoBehaviour
     {
         if (turnLabel != null)
             turnLabel.text = $"Turn {turnNum} — Player {playerId}";
-
-        gameObject.SetActive(true);
+        
         PlayAnim(true);
     }
 

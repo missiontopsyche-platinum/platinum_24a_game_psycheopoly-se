@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a360b48e66d7638449f9a6390c0fe542, type: 3}
+  m_Name: Card_Silicate_SuccessfullyMeasuredGravity
+  m_EditorClassIdentifier: PsycheOpoly.Runtime::Card
+  title: Successfully measure Psyche's gravity field.
+  bodyText: Successfully measure Psyche's gravity field with the X-band radio telecommunications
+    system! Collect $20.
+  artwork: {fileID: 21300000, guid: d4deb10578a804440b45b2c7d16d5e85, type: 3}
+  effect:
+  - {fileID: 11400000, guid: 0575f42db32d98c4b8a13beaa4d0677e, type: 2}

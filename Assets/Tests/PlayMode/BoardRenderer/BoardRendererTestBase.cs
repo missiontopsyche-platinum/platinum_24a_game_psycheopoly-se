@@ -1,80 +1,57 @@
-using System.Collections;
+using Logging;
 using NUnit.Framework;
-using PsycheOpoly.Board;
+using System.Collections;
 using UnityEngine;
-using Space = PsycheOpoly.Board.Space;
+using UnityEngine.SceneManagement;
+using BoardManager = PsycheOpoly.Board.BoardManager; 
+using Logger = Logging.Logger;
 
 namespace Tests.PlayMode.BoardRenderer
 {
-    public class BoardRendererTestBase
+    public class BoardRendererTestBase : PlayTestBase
     {
         // components and objects
         protected GameObject boardGameObject;
         protected global::BoardRenderer boardRenderer;
+        protected BoardManager boardManager;
+        protected GameManager gameManager;
         protected Camera testCamera;
         protected GameObject spaceRendererPrefab;
         protected GameObject playerPiecePrefab;
-
+        
         // event channels
         protected PlayerEventChannel testPlayerEventChannel;
         protected PlayerMovedEventChannel testMoveEventChannel;
-
+        protected BooleanEventChannel testPieceMoveCompletedChannel;
+        
         [SetUp]
         public void SetUp()
         {
-            // set up camera
-            GameObject cameraObject = new GameObject("TestCamera");
-            testCamera = cameraObject.AddComponent<Camera>();
-            testCamera.orthographicSize = 5.5f;
-            testCamera.orthographic = true;
-            
-            // create boardrenderer
-            boardGameObject = new GameObject("TestBoardRenderer");
-            boardRenderer = boardGameObject.AddComponent<global::BoardRenderer>();
-            
-            // create "space prefab" stand-in
-            spaceRendererPrefab = new GameObject("SpacePrefab");
-            spaceRendererPrefab.AddComponent<BoxCollider>(); // required component of SpaceRenderer
-            SpaceRenderer spaceRenderer = spaceRendererPrefab.AddComponent<SpaceRenderer>();
-            spaceRenderer.meshRenderer = spaceRendererPrefab.AddComponent<MeshRenderer>();
-            
-            // create 'player piece' prefab stand-in
-            playerPiecePrefab = new GameObject("PiecePrefab");
-            Piece piece = playerPiecePrefab.AddComponent<Piece>();
-            piece.meshRenderer = playerPiecePrefab.AddComponent<MeshRenderer>();
-            piece.meshRenderer.material = new Material(Shader.Find("Unlit/Color"));
-            
-            // create event channels, ensure subscription
-            testPlayerEventChannel = ScriptableObject.CreateInstance<PlayerEventChannel>();
-            testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
-            testMoveEventChannel = ScriptableObject.CreateInstance<PlayerMovedEventChannel>();
-            testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
+            Logging.Logger.Trace("DicePanelControllerPlayModeTests.SetUp",
+                "Setting up DicePanelController PlayMode test",
+                Logging.LogCategory.UI,
+                this);
 
-            boardRenderer.mainCamera = testCamera;
-            boardRenderer.spaceRendererPrefab = spaceRendererPrefab;
-            boardRenderer.playerPiecePrefab = playerPiecePrefab;
-            boardRenderer.playerAddedChannel = testPlayerEventChannel;
-            
-            // generate a test board
-            Space[] testSpaces = CreateTestSpaces(40);
-            boardRenderer.GenerateBoard(testSpaces);
+            //Create an on sceneLoaded event handler to build objects
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.LoadScene("PlayTestScene", LoadSceneMode.Single);
         }
 
         [TearDown]
         public void TearDown()
         {
-            Object.Destroy(boardGameObject);
-            Object.Destroy(testCamera.gameObject);
-            Object.Destroy(spaceRendererPrefab);
-            Object.Destroy(testPlayerEventChannel);
+            SceneManager.UnloadScene("PlayTestScene");
+            
         }
 
-        private Space[] CreateTestSpaces(int count)
+        private SpaceData[] CreateTestSpaces(int count)
         {
-            Space[] spaces = new Space[count];
+            SpaceData[] spaces = new SpaceData[count];
             for (int i = 0; i < count; i++)
             {
-                spaces[i] = new PropertySpace($"Space_{i}");
+                PropertySpaceData newSpace = ScriptableObject.CreateInstance<PropertySpaceData>();
+                newSpace.spaceName = $"Space_{i}";
+                spaces[i] = newSpace;
             }
             return spaces;
         }
@@ -104,8 +81,13 @@ namespace Tests.PlayMode.BoardRenderer
         /// <returns></returns>
         protected IEnumerator AddPlayerAndWait(Player player)
         {
+            bool playerAdded = false;
+
+            testPlayerEventChannel.Subscribe((v) => playerAdded = true);
+
             testPlayerEventChannel.RaiseEvent(player);
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitWhile(() => !playerAdded);
+
         }
         
         /// <summary>
@@ -115,10 +97,64 @@ namespace Tests.PlayMode.BoardRenderer
         /// <param name="targetSpace">target space to move to</param>
         /// <param name="waitTime">default: 2 seconds</param>
         /// <returns></returns>
-        protected IEnumerator MovePieceAndWait(int playerId, int targetSpace, float waitTime = 2f)
+        protected IEnumerator MovePieceAndWait(int playerId, int targetSpace)
         {
-            boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace));
-            yield return new WaitForSeconds(waitTime);
+            bool finishedMove = false;
+
+            testPieceMoveCompletedChannel.Subscribe((v) => finishedMove = true);
+            boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace, null));
+            
+            yield return new WaitWhile(()=> !finishedMove);
+        }
+
+      
+        /// <summary>
+        /// Event handler for "SceneLoaded" event to build out testing objects after
+        /// PlayTestScene has loaded. This is necessary to ensure the scene is loaded
+        /// Before trying to access information
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="mode"></param>
+        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            // set up camera using Scene Manager
+            testCamera = GameObject.FindFirstObjectByType<Camera>();
+            if (testCamera != null)
+            {
+                Logger.Info("BoardManagerTestBase.SetUp",
+                "Sucessfully Found the Camera.",
+                LogCategory.Core, this);
+            }
+
+            // get the board game object
+            boardGameObject = GameObject.Find("Board");
+            if (boardGameObject == null)
+            {
+                Logger.Info("BoardManagerTestBase.SetUp",
+                "Cannot Locate Board.",
+                LogCategory.Core, this);
+                Assert.IsNotNull(boardGameObject, "Wh" +
+                    "y is this fucking null?");
+            }
+            
+            boardManager = boardGameObject.GetComponent<BoardManager>() as BoardManager;
+            boardRenderer = boardManager.boardRenderer;
+            gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+            testPlayerEventChannel = boardManager.playerAddedChannel;
+            testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
+            testMoveEventChannel = boardManager.playerMovedChannel;
+            testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
+            // generate a test board
+            SpaceData[] testSpaces = CreateTestSpaces(40);
+            boardRenderer.GenerateBoard(testSpaces);
+
+            //Ensures any players auto made by the playermanager are cleared so adding player tests
+            //function correctly
+            boardManager.ClearPlayers();
+            boardRenderer.ClearPlayers();
+
+            sceneLoaded = true;
         }
     }
 }
