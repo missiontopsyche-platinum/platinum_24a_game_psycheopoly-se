@@ -106,7 +106,7 @@ public class BoardRenderer : MonoBehaviour
         spaceRenderers = new SpaceRenderer[spaces.Length];
         
         // vertical units of space in ortho-camera view from origin
-        float size = mainCamera.orthographicSize * .85f; 
+        float size = mainCamera.orthographicSize * .9f; 
         // distance in units between spaces, also space scale value.
         increment = (size * 2) / sideSpacesCount;
 
@@ -145,9 +145,9 @@ public class BoardRenderer : MonoBehaviour
     {
         GameObject newSpace = Instantiate(spaceRendererPrefab, transform);
         SpaceRenderer newRenderer = newSpace.GetComponent<SpaceRenderer>();
-        float yOffset = -mainCamera.orthographicSize * 0.1f;
+        float yOffset = -mainCamera.orthographicSize * 0.09f;
         newSpace.transform.position = new Vector3(x, y + yOffset, 0);
-        newRenderer.SetUpSpace(spaceData, scale * 1.09f);
+        newRenderer.SetUpSpace(spaceData, scale * 1.03f);
         return newRenderer;
     }
 
