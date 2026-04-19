@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Player
   p_Name: Psyche
   color: {r: 0.9372549, g: 0.34901962, b: 0.4, a: 1}
+  piecePrefab: {fileID: 5434558461240466513, guid: d4921687c58220d4b9d7a2302cd61632, type: 3}

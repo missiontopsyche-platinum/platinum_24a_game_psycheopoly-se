@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Player
   p_Name: Dawn
   color: {r: 0.9607843, g: 0.9019608, b: 0.25882354, a: 1}
+  piecePrefab: {fileID: 8209740379756327106, guid: 69fe46833c447c64da918a56fea79bdb, type: 3}

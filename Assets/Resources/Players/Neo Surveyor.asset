@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Player
   p_Name: Neo Surveyor
   color: {r: 0.41960785, g: 0.24705882, b: 0.627451, a: 1}
+  piecePrefab: {fileID: 9132524892621017832, guid: acc2f6a098cf0b5448c5e7d099684677, type: 3}
