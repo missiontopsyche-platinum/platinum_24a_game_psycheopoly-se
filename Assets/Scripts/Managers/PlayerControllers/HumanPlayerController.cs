@@ -179,6 +179,10 @@ namespace Managers.PlayerControllers
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
+            // TODO refactor this with a more specific event type that can distinguish between passing and landing on GO.
+            // passing go shouldn't fire a notification UI, but landing on it should, but we currently have no good way
+            // of knowing if we've passed it or landed on it.
+            
             if (!isMyTurn || turnForcedEnd) return;
 
             // ADDED: guard against malformed event payloads.
@@ -222,7 +226,7 @@ namespace Managers.PlayerControllers
             {
                 int activePlayers = PlayerManager.GetInstance()
                     .GetAllPlayers()
-                    .Count(p => p.IsMarkedBankrupt());
+                    .Count(p => !p.IsMarkedBankrupt());
                 actualAmount = mde.Type switch
                 {
                     // this player is paying- mult input amount by active players
