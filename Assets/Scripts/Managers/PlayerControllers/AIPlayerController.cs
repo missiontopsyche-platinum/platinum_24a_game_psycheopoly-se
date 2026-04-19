@@ -8,6 +8,8 @@ using Data;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
+using UnityEngine;
+using Logger = Logging.Logger;
 
 namespace Managers.PlayerControllers
 {
@@ -93,6 +95,7 @@ namespace Managers.PlayerControllers
         public override void Subscribe()
         {
             base.Subscribe();
+            uiActionEventChannel?.Subscribe(HandleUIAction);
             purchaseOwnableRequestEventChannel?.Subscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
@@ -104,6 +107,7 @@ namespace Managers.PlayerControllers
         public override void Unsubscribe()
         {
             base.Unsubscribe();
+            uiActionEventChannel?.Unsubscribe(HandleUIAction);
             purchaseOwnableRequestEventChannel?.Unsubscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
@@ -121,14 +125,20 @@ namespace Managers.PlayerControllers
             endTurnRequested = false;
             hasRolled = false;
             isInDebt = false;
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.TurnStartedBanner, new TurnStartedBannerContext(
+                    controlledPlayer,
+                    () =>
+                    {
+                        if (controlledPlayer.IsInJail())
+                        {
+                            HandleJailTurnStart();
+                            return;
+                        }
 
-            if (controlledPlayer.IsInJail())
-            {
-                HandleJailTurnStart();
-                return;
-            }
-
-            ExecuteOptionalActions();
+                        ExecuteOptionalActions();
+                    }, isAI:true)));
         }
 
         private void ExecuteOptionalActions()
@@ -180,6 +190,19 @@ namespace Managers.PlayerControllers
                 RequestEndTurn();
             else
                 ExecuteDiceRoll();
+        }
+
+        private void HandleUIAction(UIActionEvent uiae)
+        {
+            if (!isMyTurn) return;
+
+            switch (uiae.UIType)
+            {
+                case UIType.GeneralNotification:
+                    if (uiae.Context is GeneralAcknowledgement context)
+                        context.onAcknowledged.Invoke();
+                    break;
+            }
         }
 
         private void ExecuteDiceRoll()
@@ -364,7 +387,7 @@ namespace Managers.PlayerControllers
                     pore.requestedSpace.buyPrice);
                 
                 Logger.Info("AIPlayerController.PurchaseRequestDecision",
-                    $"Computer Player {controlledPlayer.GetPName()} has executed purchase on {pore.requestedSpace.name}",
+                    $"Computer Player {controlledPlayer.GetPName()} has executed purchase on {pore.requestedSpace.spaceName}",
                     LogCategory.AI);
                 uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
                     UIType.GeneralNotification, new GeneralNotificationContext(
@@ -383,7 +406,7 @@ namespace Managers.PlayerControllers
                 uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
                     UIType.GeneralNotification, new GeneralNotificationContext(
                         controlledPlayer,
-                        "Charged Fee!",
+                        "Purchase Declined!",
                         $"{controlledPlayer.GetPName()} has declined purchase on {pore.requestedSpace.spaceName}.",
                         RequestAIResolutionComplete,
                         true)));
@@ -595,7 +618,7 @@ namespace Managers.PlayerControllers
                 TurnActionType.EndTurn,
                 onAllowed: () =>
                 {
-                    Logger.Error("AIPlayerController.RequestEndTurn",
+                    Logger.Info("AIPlayerController.RequestEndTurn",
                         $"{controlledPlayer.GetPName()} has ended their turn.",
                         LogCategory.AI);
                 },

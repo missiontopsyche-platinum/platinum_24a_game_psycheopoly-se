@@ -87,6 +87,19 @@ namespace Events.EventDataStructures.UI
         }
     }
 
+    public class TurnStartedBannerContext: UIActivationContext
+    {
+        public Player player { get; }
+        public Action onAcknowledged { get; }
+        public bool isAI { get; }
+        public TurnStartedBannerContext(Player player, Action onAcknowledged, bool isAI = false)
+        {
+            this.player = player;
+            this.onAcknowledged = onAcknowledged;
+            this.isAI = isAI;
+        }
+    }
+
     public class PropertyManagementActivationContext : UIActivationContext
     {
         public Player Player { get; }

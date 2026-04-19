@@ -94,11 +94,17 @@ namespace Managers.PlayerControllers
 
             if (!isMyTurn)
                 return;
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.TurnStartedBanner, new TurnStartedBannerContext(
+                    controlledPlayer,
+                    () =>
+                    {
+                        if (!controlledPlayer.IsInJail())
+                            return;
 
-            if (!controlledPlayer.IsInJail())
-                return;
-
-            ShowJailOptionsUI();
+                        ShowJailOptionsUI();
+                    })));
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
