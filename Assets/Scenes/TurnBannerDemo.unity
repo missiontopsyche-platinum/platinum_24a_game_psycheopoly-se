@@ -945,7 +945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92785cb621d487643b722a82224d2f9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::TurnBannerController
-  turnLabel: {fileID: 508631379}
+  turnLabel: {fileID: 0}
   continueButton: {fileID: 8351608936898040431}
   canvasGroup: {fileID: 8351608936898040436}
   turnStartedChannel: {fileID: 0}
