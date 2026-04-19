@@ -21,19 +21,17 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
     [SerializeField] public PayPlayerEventChannel passedGoPaymentChannel;
-    [SerializeField] public BooleanEventChannel diceRollRequestChannel;
     [SerializeField] public TurnActionRequestEventChannel turnActionRequestEventChannel;
     [SerializeField] public TurnActionResultEventChannel turnActionResultEventChannel;
-    [SerializeField] public UIActivationEventChannel uiActivationEventChannel;
-    [SerializeField] public UIActionEventChannel uiActionEventChannel;
-    [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public ActionResolvedEventChannel actionResolvedEventChannel;
-    [SerializeField] public BooleanEventChannel diceRollPannelEventChannel;
     [SerializeField] public UpgradeRequestEventChannel upgradeRequestEventChannel;
     [SerializeField] public IntEventChannel bankruptcyEventChannel;
     [SerializeField] public JailStateChangedEventChannel jailEventChannel;
     [SerializeField] public ChargePlayerEventChannel chargePlayerEventChannel;
     [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
+    [SerializeField] public UIActivationEventChannel uiActivationEventChannel;
+    [SerializeField] public UIActionEventChannel uiActionEventChannel;
+    [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public MoneyDistributionEventChannel moneyDistributionEventChannel;
     public List<PlayerController> playerControllers = new();
     
@@ -87,19 +85,18 @@ public class PlayerManager : MonoBehaviour
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
-                    uiActivationEventChannel,
-                    uiActionEventChannel,
-                    mortgageFinishedEventChannel,
-                    upgradeRequestEventChannel,
-                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     jailEventChannel,
-                    diceRollPannelEventChannel,
                     chargePlayerEventChannel,
                     noLandingActionEventChannel,
-                    moneyDistributionEventChannel
-                    );
+                    uiActivationEventChannel,
+                    uiActionEventChannel,
+                    moneyDistributionEventChannel,
+                    mortgageFinishedEventChannel
+                );
             }
             else
             {
@@ -111,17 +108,17 @@ public class PlayerManager : MonoBehaviour
                     purchaseOwnableRequestEventChannel,
                     chargeOwnershipFeeEventChannel,
                     passedGoPaymentChannel,
-                    diceRollRequestChannel,
-                    actionResolvedEventChannel,
-                    upgradeRequestEventChannel,
-                    bankruptcyEventChannel,
                     turnActionRequestEventChannel,
                     turnActionResultEventChannel,
+                    upgradeRequestEventChannel,
+                    bankruptcyEventChannel,
                     jailEventChannel,
-                    mortgageFinishedEventChannel,
                     chargePlayerEventChannel,
                     noLandingActionEventChannel,
-                    moneyDistributionEventChannel
+                    uiActivationEventChannel,
+                    uiActionEventChannel,
+                    moneyDistributionEventChannel,
+                    mortgageFinishedEventChannel
                     );
             }
 

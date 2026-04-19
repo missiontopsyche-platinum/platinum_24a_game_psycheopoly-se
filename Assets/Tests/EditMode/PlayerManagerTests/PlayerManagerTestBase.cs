@@ -43,7 +43,6 @@ namespace Tests.EditMode.PlayerManagerTests
             playerManager.purchaseOwnableRequestEventChannel = CreateChannel<PurchaseOwnableRequestEventChannel>();
             playerManager.chargeOwnershipFeeEventChannel = CreateChannel<ChargeOwnershipFeeEventChannel>();
             playerManager.passedGoPaymentChannel = CreateChannel<PayPlayerEventChannel>();
-            playerManager.diceRollRequestChannel = CreateChannel<BooleanEventChannel>();
             playerManager.turnActionRequestEventChannel = CreateChannel<TurnActionRequestEventChannel>();
             playerManager.turnActionResultEventChannel = CreateChannel<TurnActionResultEventChannel>();
             playerManager.uiActivationEventChannel = CreateChannel<UIActivationEventChannel>();

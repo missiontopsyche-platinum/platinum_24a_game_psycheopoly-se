@@ -23,22 +23,11 @@ namespace Managers.PlayerControllers
         // etc...
         private bool myTurnActive;
         private bool endTurnRequested;
-        // event channels ... I don't think this will need special ones
-        private ActionResolvedEventChannel actionResolvedEventChannel;
-        private BooleanEventChannel diceRollRequestChannel;
-        private MoneyDistributionEventChannel moneyDistributionEventChannel;
-        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
 
         /// <summary>
         /// Creates an AI player controller. This needs to be called in conjunction with <c>.Subscribe()</c>
         /// so that event channels are properly routed.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="aiBehaviorWeights"></param>
-        /// <param name="turnStarted"></param>
-        /// <param name="purchaseRequest"></param>
-        /// <param name="chargeOwnershipFee"></param>
-        /// <param name="passedGoPayment"></param>
         public AIPlayerController(
             Player player,
             AIBehaviorWeights aiBehaviorWeights,
@@ -47,18 +36,34 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            BooleanEventChannel diceRollRequest,
-            ActionResolvedEventChannel actionResolved,
-            UpgradeRequestEventChannel upgradeRequest,
-            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
-            MortgageFinishedEventChannel mortgageFinishedEventChannel,
             ChargePlayerEventChannel chargePlayer,
             NoActionLandingEventChannel noLandingAction,
-            MoneyDistributionEventChannel moneyDistribution)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
+            UIActivationEventChannel uiActivation,
+            UIActionEventChannel uiAction,
+            MoneyDistributionEventChannel moneyDistribution,
+            MortgageFinishedEventChannel mortgageFinished
+        ) : base(player, 
+            turnStarted, 
+            turnEnded, 
+            purchaseRequest,
+            chargeOwnershipFee,
+            passedGoPayment, 
+            turnActionRequest,
+            turnActionResult,
+            upgradeRequest, 
+            bankruptPlayer, 
+            jailStateChanged, 
+            chargePlayer, 
+            noLandingAction,
+            uiActivation,
+            uiAction,
+            moneyDistribution,
+            mortgageFinished)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -78,14 +83,6 @@ namespace Managers.PlayerControllers
             unmortgageBehavior = new AIUnmortgageBehavior(
                 controlledPlayer,
                 weights.mortgageThresholds);
-
-            actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
-            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
-            moneyDistributionEventChannel = moneyDistribution ?? throw new System.ArgumentNullException(nameof(moneyDistribution));
-            // mortgageBehavior
-            this.mortgageFinishedEventChannel =
-                mortgageFinishedEventChannel ?? throw new System.ArgumentNullException(nameof(mortgageFinishedEventChannel));
-            // jailBehavior etc...
         }
 
         public override void Subscribe()
@@ -94,7 +91,6 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Subscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
-            actionResolvedEventChannel?.Subscribe(OnActionResolved);
             moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
         }
 
@@ -104,7 +100,6 @@ namespace Managers.PlayerControllers
             purchaseOwnableRequestEventChannel?.Unsubscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
-            actionResolvedEventChannel?.Unsubscribe(OnActionResolved);
             moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
         }
         
@@ -179,16 +174,6 @@ namespace Managers.PlayerControllers
                 TurnActionType.RollDice,
                 onAllowed: () =>
                 {
-                    if (diceRollRequestChannel == null)
-                    {
-                        Logger.Error("AIPlayerController.StartNormalRollFlow",
-                            "DiceRollRequestChannel not found. AI cannot roll dice.",
-                            LogCategory.AI);
-                        return;
-                    }
-
-                    diceRollRequestChannel.RaiseEvent(true);
-
                     Logger.Info("AIPlayerController.StartNormalRollFlow",
                         $"AI {controlledPlayer.GetPName()} rolled dice.",
                         LogCategory.AI);

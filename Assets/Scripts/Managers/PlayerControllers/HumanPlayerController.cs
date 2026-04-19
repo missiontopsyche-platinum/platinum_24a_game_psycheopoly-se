@@ -15,38 +15,10 @@ namespace Managers.PlayerControllers
 {
     public class HumanPlayerController : PlayerController
     {
-        // attributes
-
-        // event channels
-
-        
-
-        // event channel for bankruptcy
-        public IntEventChannel bankruptPlayerEventChannel;
-
-        private readonly UIActivationEventChannel uiActivationEventChannel;
-        private readonly UIActionEventChannel uiActionEventChannel;
-        private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
-        private readonly BooleanEventChannel diceRollPannelEventChannel;
-        private readonly MoneyDistributionEventChannel moneyDistributionEventChannel;
-
-
-        // I need to figure out the architecture for UI events that the human controller will make use of
-        // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
-        // the UI team.
-
         /// <summary>
         /// Creates Human Player controller. Once called, it must have <c>Subscribe()</c> called on it to ensure
         /// all event channels are properly subscribed.
         /// </summary>
-        /// <param name="player">Player ScriptableObject the controller is responsible for</param>
-        /// <param name="turnStarted">TurnStartedEventChannel</param>
-        /// <param name="purchaseRequest">PurchaseOwnableRequestEventChannel</param>
-        /// <param name="chargeOwnershipFee">ChargeOwnershipFeeEventChannel</param>
-        /// <param name="passedGoPayment">PayPlayerEventChannel for passing Go</param>
-        /// <param name="uiActivation">UI Activation Event Channel</param>
-        /// <param name="uiAction">UI Action Event Channel</param>
-        /// <param name="mortgageFinished">Mortgage Finished Event Channel</param>
         public HumanPlayerController(
             Player player,
             TurnStartedEventChannel turnStarted,
@@ -54,28 +26,34 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            UIActivationEventChannel uiActivation,
-            UIActionEventChannel uiAction,
-            MortgageFinishedEventChannel mortgageFinished,
-            UpgradeRequestEventChannel upgradeRequest,
-            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
-            BooleanEventChannel diceRollPannel,
             ChargePlayerEventChannel chargePlayer,
             NoActionLandingEventChannel noLandingAction,
-            MoneyDistributionEventChannel moneyDistribution)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
-        {
-            // human controller specific setup goes here
-            uiActivationEventChannel = uiActivation;
-            uiActionEventChannel = uiAction;
-            mortgageFinishedEventChannel = mortgageFinished;
-            diceRollPannelEventChannel = diceRollPannel;
-            bankruptPlayerEventChannel = bankruptPlayer;
-            moneyDistributionEventChannel = moneyDistribution;
-        }
+            UIActivationEventChannel uiActivation,
+            UIActionEventChannel uiAction,
+            MoneyDistributionEventChannel moneyDistribution,
+            MortgageFinishedEventChannel mortgageFinished
+            ) : base(player, 
+                turnStarted, 
+                turnEnded, 
+                purchaseRequest,
+                chargeOwnershipFee,
+                passedGoPayment, 
+                turnActionRequest,
+                turnActionResult,
+                upgradeRequest, 
+                bankruptPlayer, 
+                jailStateChanged, 
+                chargePlayer, 
+                noLandingAction,
+                uiActivation,
+                uiAction,
+                moneyDistribution,
+                mortgageFinished) { }
 
         ~HumanPlayerController()
         {
