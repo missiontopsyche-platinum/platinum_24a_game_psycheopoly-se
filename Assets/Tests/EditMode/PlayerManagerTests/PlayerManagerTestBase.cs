@@ -47,7 +47,6 @@ namespace Tests.EditMode.PlayerManagerTests
             playerManager.turnActionResultEventChannel = CreateChannel<TurnActionResultEventChannel>();
             playerManager.uiActivationEventChannel = CreateChannel<UIActivationEventChannel>();
             playerManager.uiActionEventChannel = CreateChannel<UIActionEventChannel>();
-            playerManager.mortgageFinishedEventChannel = CreateChannel<MortgageFinishedEventChannel>();
             playerManager.actionResolvedEventChannel = CreateChannel<ActionResolvedEventChannel>();
 
             InitializeTestLogger();

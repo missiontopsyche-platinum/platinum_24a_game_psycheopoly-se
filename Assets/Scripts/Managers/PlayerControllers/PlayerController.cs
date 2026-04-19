@@ -34,7 +34,6 @@ namespace Managers.PlayerControllers
         protected UIActivationEventChannel uiActivationEventChannel;
         protected UIActionEventChannel uiActionEventChannel;
         protected MoneyDistributionEventChannel moneyDistributionEventChannel;
-        protected MortgageFinishedEventChannel mortgageFinishedEventChannel;
         protected BooleanEventChannel turnEndedEventChannel;
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
@@ -62,8 +61,7 @@ namespace Managers.PlayerControllers
             NoActionLandingEventChannel noLandingAction,
             UIActivationEventChannel uiActivation,
             UIActionEventChannel uiAction,
-            MoneyDistributionEventChannel moneyDistribution,
-            MortgageFinishedEventChannel mortgageFinished
+            MoneyDistributionEventChannel moneyDistribution
             )
         {
             controlledPlayer = player ?? throw new ArgumentNullException(nameof(player));
@@ -87,8 +85,6 @@ namespace Managers.PlayerControllers
             uiActionEventChannel = uiAction ?? throw new ArgumentNullException(nameof(uiAction));
             moneyDistributionEventChannel =
                 moneyDistribution ?? throw new ArgumentNullException(nameof(moneyDistribution));
-            mortgageFinishedEventChannel =
-                mortgageFinished ?? throw new ArgumentNullException(nameof(mortgageFinished));
         }
         
         /// <summary>

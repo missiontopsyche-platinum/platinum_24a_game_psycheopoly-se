@@ -31,7 +31,6 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
     [SerializeField] public UIActivationEventChannel uiActivationEventChannel;
     [SerializeField] public UIActionEventChannel uiActionEventChannel;
-    [SerializeField] public MortgageFinishedEventChannel mortgageFinishedEventChannel;
     [SerializeField] public MoneyDistributionEventChannel moneyDistributionEventChannel;
     public List<PlayerController> playerControllers = new();
     
@@ -94,8 +93,7 @@ public class PlayerManager : MonoBehaviour
                     noLandingActionEventChannel,
                     uiActivationEventChannel,
                     uiActionEventChannel,
-                    moneyDistributionEventChannel,
-                    mortgageFinishedEventChannel
+                    moneyDistributionEventChannel
                 );
             }
             else
@@ -117,8 +115,7 @@ public class PlayerManager : MonoBehaviour
                     noLandingActionEventChannel,
                     uiActivationEventChannel,
                     uiActionEventChannel,
-                    moneyDistributionEventChannel,
-                    mortgageFinishedEventChannel
+                    moneyDistributionEventChannel
                     );
             }
 

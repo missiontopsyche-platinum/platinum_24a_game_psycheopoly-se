@@ -35,8 +35,7 @@ namespace Managers.PlayerControllers
             NoActionLandingEventChannel noLandingAction,
             UIActivationEventChannel uiActivation,
             UIActionEventChannel uiAction,
-            MoneyDistributionEventChannel moneyDistribution,
-            MortgageFinishedEventChannel mortgageFinished
+            MoneyDistributionEventChannel moneyDistribution
             ) : base(player, 
                 turnStarted, 
                 turnEnded, 
@@ -52,8 +51,7 @@ namespace Managers.PlayerControllers
                 noLandingAction,
                 uiActivation,
                 uiAction,
-                moneyDistribution,
-                mortgageFinished) { }
+                moneyDistribution) { }
 
         ~HumanPlayerController()
         {
@@ -135,11 +133,10 @@ namespace Managers.PlayerControllers
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    upgradeRequestEventChannel?.RaiseEvent(
-                        new UpgradeRequestEvent(controlledPlayer, property));
-
+                    UpgradeManager.TryHandleUpgrade(controlledPlayer, property, out var decision);
                     Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
-                        $"Raised upgrade request for {property.spaceName}.",
+                        $"{controlledPlayer.GetPName()} attempted to upgrade {property.spaceName}: " +
+                        $"{(decision.Allowed ? "success" : "failure")}.",
                         LogCategory.UI);
                 },
                 onDenied: () =>
@@ -285,13 +282,6 @@ namespace Managers.PlayerControllers
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
             if (!isMyTurn || turnForcedEnd) return;
-
-            if(controlledPlayer.MortgageProperty(context.tile))
-            {
-                mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    this.controlledPlayer,
-                    context.tile));
-            }
 
             RequestResolutionComplete();
         }

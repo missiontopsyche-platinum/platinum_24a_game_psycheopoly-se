@@ -10,7 +10,7 @@ namespace Tests.EditMode.UpgradeManagerTests
         {
             var mgr = CreateManager();
 
-            var result = mgr.TryHandleUpgrade(null, null, out _);
+            var result = UpgradeManager.TryHandleUpgrade(null, null, out _);
 
             Assert.IsFalse(result);
         }
@@ -49,7 +49,7 @@ namespace Tests.EditMode.UpgradeManagerTests
             RegisterOwnedProperty(player, pd2);
             RegisterOwnedProperty(player, pd3);
 
-            var result = mgr.TryHandleUpgrade(player, pd1, out var decision);
+            var result = UpgradeManager.TryHandleUpgrade(player, pd1, out var decision);
 
             Assert.IsFalse(result);
             Assert.IsFalse(decision.Allowed);
@@ -68,7 +68,7 @@ namespace Tests.EditMode.UpgradeManagerTests
             var otherPlayer = CreateOtherPlayer(999);
             var pd = CreateProperty(new[] { 10, 20, 30 }, upgradeCost: 50, owner: otherPlayer);
 
-            var result = mgr.TryHandleUpgrade(owner, pd, out var decision);
+            var result = UpgradeManager.TryHandleUpgrade(owner, pd, out var decision);
 
             Assert.IsFalse(result);
             Assert.IsFalse(decision.Allowed);
@@ -108,7 +108,7 @@ namespace Tests.EditMode.UpgradeManagerTests
             RegisterOwnedProperty(player, pd2);
             RegisterOwnedProperty(player, pd3);
 
-            var result = mgr.TryHandleUpgrade(player, pd1, out var decision);
+            var result = UpgradeManager.TryHandleUpgrade(player, pd1, out var decision);
 
             Assert.IsTrue(result);
             Assert.IsTrue(decision.Allowed);

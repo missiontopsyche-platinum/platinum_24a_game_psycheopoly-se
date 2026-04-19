@@ -1,3 +1,4 @@
+using System;
 using Interactable;
 using Logging;
 using UnityEngine;
@@ -11,10 +12,18 @@ public class SpaceRenderer : InteractableGameObject
 
 
     private SpaceData spaceData;
+
+    private bool isSetUp = false;
     
     // debug timer - remove when we add actual functionality.
     private float hoverTime = 1f;
     private float hoverTimer = 0f;
+
+    private void Update()
+    {
+        if(isSetUp)
+            RefreshTileStateVisuals();
+    }
 
     public void SetUpSpace(SpaceData inputSpaceData, float scale)
     {
@@ -55,6 +64,8 @@ public class SpaceRenderer : InteractableGameObject
         if (!boxCollider)
             boxCollider = gameObject.AddComponent<BoxCollider>();
         boxCollider.size = new Vector3(scale, scale, 1f);
+
+        isSetUp = true;
     }
 
     //easier to call the method rather than running it EVERY single time in SetUpSpace
