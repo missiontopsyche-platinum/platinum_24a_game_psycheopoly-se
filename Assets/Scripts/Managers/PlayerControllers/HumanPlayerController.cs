@@ -7,7 +7,7 @@ using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
-using UnityEngine;
+
 using Logger = Logging.Logger;
 
 
@@ -434,11 +434,7 @@ namespace Managers.PlayerControllers
                     uiActivationEventChannel?.RaiseEvent(
                         new UIActivationEvent(
                             UIType.DiceRoll,
-                            new PurchaseActivationContext(
-                                /*TODO: update input fields below*/
-                                null,
-                                0,
-                                controlledPlayer.CanAfford(0))));
+                            new DiceRollPanelContext(isAI: false)));
                     Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
                        "Dice Roll Pannel Allowed.",
                        LogCategory.UI);
@@ -523,12 +519,7 @@ namespace Managers.PlayerControllers
                     new GeneralNotificationContext(controlledPlayer,
                         "GO FOR LAUNCH!",
                         "You're no longer stuck on the Launch Pad!",
-                        () => 
-                            RequestTurnAction(
-                                TurnActionType.CompleteResolution, 
-                                onAllowed: () => { }, 
-                                onDenied: () => { }
-                            ))));
+                        () => RequestResolutionComplete())));
             }
         }
 

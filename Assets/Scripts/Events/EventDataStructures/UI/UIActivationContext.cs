@@ -59,19 +59,31 @@ namespace Events.EventDataStructures.UI
         }
     }
 
+    public class DiceRollPanelContext : UIActivationContext
+    {
+        public bool isAI { get; }
+
+        public DiceRollPanelContext(bool isAI = false)
+        {
+            this.isAI = isAI;
+        }
+    }
+
     public class GeneralNotificationContext : UIActivationContext
     {
         public Player player { get; }
         public String notificationTitle { get; }
         public String notificationText { get; }
         public Action onAcknowledged { get; }
+        public bool isAI { get; }
 
-        public GeneralNotificationContext(Player player, String notificationTitle, String notificationText, Action onAcknowledged)
+        public GeneralNotificationContext(Player player, String notificationTitle, String notificationText, Action onAcknowledged, bool isAI = false)
         {
             this.player = player;
             this.notificationTitle = notificationTitle;
             this.notificationText = notificationText;
             this.onAcknowledged = onAcknowledged;
+            this.isAI = isAI;
         }
     }
 

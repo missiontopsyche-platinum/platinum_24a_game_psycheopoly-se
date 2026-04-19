@@ -1,12 +1,9 @@
-﻿using Assets.Scripts.Events.EventChannelTypes;
-using Assets.Scripts.Managers.Jail;
+﻿using Assets.Scripts.Managers.Jail;
 using Assets.Scripts.Managers.TurnOrder;
 using Logging;
 using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Logger = UnityEngine.Logger;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
