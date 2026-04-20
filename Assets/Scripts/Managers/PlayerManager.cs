@@ -77,6 +77,7 @@ public class PlayerManager : MonoBehaviour
             // if we add more channels to the player controller subclasses.
             if (playerConfig.isHuman)
             {
+                player.isAI = false;
                 playerController = new HumanPlayerController(
                     player,
                     turnStartedEventChannel,
@@ -98,6 +99,7 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
+                player.isAI = true;
                 playerController = new AIPlayerController(
                     player,
                     playerConfig.behaviorWeights,

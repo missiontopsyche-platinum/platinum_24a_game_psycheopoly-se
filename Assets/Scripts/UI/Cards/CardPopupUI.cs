@@ -14,6 +14,7 @@ public class CardPopupUI : MonoBehaviour
     [SerializeField] private CardView cardView;
     [SerializeField] private CardDrawnEventChannel cardDrawnChannel;
     [SerializeField] private float fadeDuration = 0.25f;
+    [SerializeField] private int aiWaitDuration = 2;
 
     private Card currentCard;
     private Player currentPlayer;
@@ -55,14 +56,20 @@ public class CardPopupUI : MonoBehaviour
         currentDeck = deck;
 
         ShowCard(card);
+        
+        if (player.isAI)
+            StartCoroutine(AIWait());
+    }
+
+    private IEnumerator AIWait()
+    {
+        yield return new WaitForSeconds(aiWaitDuration);
+        OnOkClicked();
     }
 
     private void ShowCard(Card card)
     {
-          if (card == null)
-        {
-            return;
-        }
+        if (card == null) return;
 
         //Makes sure popup GameObject is active
         if (!gameObject.activeSelf)

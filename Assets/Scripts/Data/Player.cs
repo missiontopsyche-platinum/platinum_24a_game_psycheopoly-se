@@ -18,6 +18,7 @@ public class Player : ScriptableObject
     private int money;
     private int assets = 0;
     private int position = 0; // this is never used anywhere, BoardManager owns positions.
+    public bool isAI { get; set; }
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
