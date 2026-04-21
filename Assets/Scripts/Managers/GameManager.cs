@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     public static int LastWinningPlayerId { get; private set; } = -1;
     public static string LastWinningPlayerName { get; private set; } = string.Empty;
 
+    public int CurrentRoundNumber { get; set; }
+
     // In Project Settings/Script Execution Order, this has been moved below all other
     // scripts to ensure they have the time to set themselves up on init before we
     // try to start a game. This solves race conditions we introduced when we

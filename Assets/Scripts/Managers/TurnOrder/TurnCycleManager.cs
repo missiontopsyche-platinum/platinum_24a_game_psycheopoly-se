@@ -10,21 +10,31 @@ namespace Assets.Scripts.Managers.TurnOrder
         
         private readonly int playerCount;
         private readonly PlayerTurnState playerTurnState;
+        public int CurrentTurnNumber { get; private set; }
 
         public TurnCycleManager(int playerCount)
         {
             this.playerCount = Mathf.Max(2, playerCount);
             CurrentPlayerIndex = 0;
             playerTurnState = new PlayerTurnState(playerCount);
+            CurrentTurnNumber = 1;
+            GameManager.instance.CurrentRoundNumber = 1;
         }
 
         //Call when a turn ends
         //Moves to next player or repeats if extra turn 
         public int Advance()
         {
+            int previousPlayerIndex = CurrentPlayerIndex;
             int next = NextPlayerIndex(CurrentPlayerIndex);
 
             CurrentPlayerIndex = next;
+            CurrentTurnNumber++;
+
+            if (next <= previousPlayerIndex)
+            {
+                GameManager.instance.CurrentRoundNumber++;
+            }
 
             return CurrentPlayerIndex;
         }
