@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Player
   p_Name: Dart
   color: {r: 0.7529412, g: 0.15294118, b: 0.1764706, a: 1}
-  piecePrefab: {fileID: 1784731697659655542, guid: d0e321defdeba0b489a63d6fa9dbfa1c, type: 3}
+  piecePrefab: {fileID: 919132149155446097, guid: 3d1d5d7e98ad5ff47a2c877efffad6e4, type: 3}

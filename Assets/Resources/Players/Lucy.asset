@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::Player
   p_Name: Lucy
   color: {r: 0.5529412, g: 0.7137255, b: 0, a: 1}
-  piecePrefab: {fileID: 8753846370057783764, guid: b08399ac60c590440bd24633458bc959, type: 3}
+  piecePrefab: {fileID: 919132149155446097, guid: 80d6eddede7bef34ba75cfc62337b3ac, type: 3}
