@@ -152,11 +152,11 @@ public class PropertyManagementRowUI : MonoBehaviour
         return player.GetMortgagedProperties().Contains(property)
                && player.CanAfford(property.mortgagePayoffValue);
     }
-
+    
     private void OnUpgradeClicked()
     {
-        if (isDebtResolutionMode) return;
-        if (property is not PropertySpaceData streetProperty) return;
+        if (property is not PropertySpaceData streetProperty)
+            return;
 
         uiActionEventChannel?.RaiseEvent(
             new UIActionEvent(
@@ -166,17 +166,19 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void OnDowngradeClicked()
     {
-        if (property is not PropertySpaceData streetProperty) return;
+        if (property is not PropertySpaceData streetProperty)
+            return;
 
         uiActionEventChannel?.RaiseEvent(
             new UIActionEvent(
-                UIType.PropertyManagement,
+                UIType.PropertyDowngradeSelected,
                 new PropertyDowngradeContext(streetProperty)));
     }
 
     private void OnMortgageClicked()
     {
-        if (property == null) return;
+        if (property == null)
+            return;
 
         uiActionEventChannel?.RaiseEvent(
             new UIActionEvent(
@@ -186,12 +188,12 @@ public class PropertyManagementRowUI : MonoBehaviour
 
     private void OnUnmortgageClicked()
     {
-        if (isDebtResolutionMode) return;
-        if (property == null) return;
+        if (property == null)
+            return;
 
         uiActionEventChannel?.RaiseEvent(
             new UIActionEvent(
-                UIType.PropertyManagement,
+                UIType.UnmortgagePropertySelected,
                 new UnmortgagePropertyContext(property)));
-    }
+}
 }

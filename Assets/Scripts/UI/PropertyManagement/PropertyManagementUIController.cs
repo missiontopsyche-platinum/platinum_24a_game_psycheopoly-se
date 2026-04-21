@@ -62,6 +62,9 @@ public class PropertyManagementUIController : MonoBehaviour
             Debug.Log("Valid property management context received for: " + context.Player?.GetPName());
 
             currentPlayer = context.Player;
+            isDebtResolutionMode = context.IsDebtResolutionMode;
+            currentDebtAmount = context.DebtAmount;
+
             RefreshUI();
             Show();
         }

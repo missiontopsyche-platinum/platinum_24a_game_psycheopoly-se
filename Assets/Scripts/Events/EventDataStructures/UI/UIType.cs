@@ -9,7 +9,9 @@
         DiceRoll,
         MortgagePropertyList,
         MortgagePropertySelected,
+        UnmortgagePropertySelected,
         PropertyUpgradeSelected,
+        PropertyDowngradeSelected,
         BankruptcyNotification,
         GeneralNotification
         // more to be added as needed
