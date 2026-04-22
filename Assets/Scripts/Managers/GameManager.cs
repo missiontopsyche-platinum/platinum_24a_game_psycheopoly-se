@@ -144,11 +144,11 @@ public class GameManager : MonoBehaviour
         {
             new (MakePlayer("Player 1", Color.red), true, null),
             new (MakePlayer("Player 2", Color.blue), false, 
-                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+                Resources.Load<AIBehaviorWeights>("AIPersonalities/DefaultPersonality")),
             new (MakePlayer("Player 3", Color.yellow), false, 
-                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+                Resources.Load<AIBehaviorWeights>("AIPersonalities/DefaultPersonality")),
             new (MakePlayer("Player 4", Color.green), false, 
-                ScriptableObject.CreateInstance<AIBehaviorWeights>())
+                Resources.Load<AIBehaviorWeights>("AIPersonalities/DefaultPersonality"))
         };
         
         playerManager.InitializePlayers(configs);

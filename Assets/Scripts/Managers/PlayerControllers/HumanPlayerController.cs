@@ -7,7 +7,7 @@ using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
-using UnityEngine;
+
 using Logger = Logging.Logger;
 
 
@@ -15,38 +15,10 @@ namespace Managers.PlayerControllers
 {
     public class HumanPlayerController : PlayerController
     {
-        // attributes
-
-        // event channels
-
-        
-
-        // event channel for bankruptcy
-        public IntEventChannel bankruptPlayerEventChannel;
-
-        private readonly UIActivationEventChannel uiActivationEventChannel;
-        private readonly UIActionEventChannel uiActionEventChannel;
-        private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
-        private readonly BooleanEventChannel diceRollPannelEventChannel;
-        private readonly MoneyDistributionEventChannel moneyDistributionEventChannel;
-
-
-        // I need to figure out the architecture for UI events that the human controller will make use of
-        // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
-        // the UI team.
-
         /// <summary>
         /// Creates Human Player controller. Once called, it must have <c>Subscribe()</c> called on it to ensure
         /// all event channels are properly subscribed.
         /// </summary>
-        /// <param name="player">Player ScriptableObject the controller is responsible for</param>
-        /// <param name="turnStarted">TurnStartedEventChannel</param>
-        /// <param name="purchaseRequest">PurchaseOwnableRequestEventChannel</param>
-        /// <param name="chargeOwnershipFee">ChargeOwnershipFeeEventChannel</param>
-        /// <param name="passedGoPayment">PayPlayerEventChannel for passing Go</param>
-        /// <param name="uiActivation">UI Activation Event Channel</param>
-        /// <param name="uiAction">UI Action Event Channel</param>
-        /// <param name="mortgageFinished">Mortgage Finished Event Channel</param>
         public HumanPlayerController(
             Player player,
             TurnStartedEventChannel turnStarted,
@@ -54,28 +26,32 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            UIActivationEventChannel uiActivation,
-            UIActionEventChannel uiAction,
-            MortgageFinishedEventChannel mortgageFinished,
-            UpgradeRequestEventChannel upgradeRequest,
-            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
-            BooleanEventChannel diceRollPannel,
             ChargePlayerEventChannel chargePlayer,
             NoActionLandingEventChannel noLandingAction,
-            MoneyDistributionEventChannel moneyDistribution)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
-        {
-            // human controller specific setup goes here
-            uiActivationEventChannel = uiActivation;
-            uiActionEventChannel = uiAction;
-            mortgageFinishedEventChannel = mortgageFinished;
-            diceRollPannelEventChannel = diceRollPannel;
-            bankruptPlayerEventChannel = bankruptPlayer;
-            moneyDistributionEventChannel = moneyDistribution;
-        }
+            UIActivationEventChannel uiActivation,
+            UIActionEventChannel uiAction,
+            MoneyDistributionEventChannel moneyDistribution
+            ) : base(player, 
+                turnStarted, 
+                turnEnded, 
+                purchaseRequest,
+                chargeOwnershipFee,
+                passedGoPayment, 
+                turnActionRequest,
+                turnActionResult,
+                upgradeRequest, 
+                bankruptPlayer, 
+                jailStateChanged, 
+                chargePlayer, 
+                noLandingAction,
+                uiActivation,
+                uiAction,
+                moneyDistribution) { }
 
         ~HumanPlayerController()
         {
@@ -118,11 +94,17 @@ namespace Managers.PlayerControllers
 
             if (!isMyTurn)
                 return;
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.TurnStartedBanner, new TurnStartedBannerContext(
+                    controlledPlayer,
+                    () =>
+                    {
+                        if (!controlledPlayer.IsInJail())
+                            return;
 
-            if (!controlledPlayer.IsInJail())
-                return;
-
-            ShowJailOptionsUI();
+                        ShowJailOptionsUI();
+                    })));
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -157,11 +139,10 @@ namespace Managers.PlayerControllers
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    upgradeRequestEventChannel?.RaiseEvent(
-                        new UpgradeRequestEvent(controlledPlayer, property));
-
+                    UpgradeManager.TryHandleUpgrade(controlledPlayer, property, out var decision);
                     Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
-                        $"Raised upgrade request for {property.spaceName}.",
+                        $"{controlledPlayer.GetPName()} attempted to upgrade {property.spaceName}: " +
+                        $"{(decision.Allowed ? "success" : "failure")}.",
                         LogCategory.UI);
                 },
                 onDenied: () =>
@@ -204,6 +185,10 @@ namespace Managers.PlayerControllers
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
+            // TODO refactor this with a more specific event type that can distinguish between passing and landing on GO.
+            // passing go shouldn't fire a notification UI, but landing on it should, but we currently have no good way
+            // of knowing if we've passed it or landed on it.
+            
             if (!isMyTurn || turnForcedEnd) return;
 
             // ADDED: guard against malformed event payloads.
@@ -247,7 +232,7 @@ namespace Managers.PlayerControllers
             {
                 int activePlayers = PlayerManager.GetInstance()
                     .GetAllPlayers()
-                    .Count(p => p.IsMarkedBankrupt());
+                    .Count(p => !p.IsMarkedBankrupt());
                 actualAmount = mde.Type switch
                 {
                     // this player is paying- mult input amount by active players
@@ -307,13 +292,6 @@ namespace Managers.PlayerControllers
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
             if (!isMyTurn || turnForcedEnd) return;
-
-            if(controlledPlayer.MortgageProperty(context.tile))
-            {
-                mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    this.controlledPlayer,
-                    context.tile));
-            }
 
             RequestResolutionComplete();
         }
@@ -434,11 +412,7 @@ namespace Managers.PlayerControllers
                     uiActivationEventChannel?.RaiseEvent(
                         new UIActivationEvent(
                             UIType.DiceRoll,
-                            new PurchaseActivationContext(
-                                /*TODO: update input fields below*/
-                                null,
-                                0,
-                                controlledPlayer.CanAfford(0))));
+                            new DiceRollPanelContext(isAI: false)));
                     Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
                        "Dice Roll Pannel Allowed.",
                        LogCategory.UI);
@@ -523,12 +497,7 @@ namespace Managers.PlayerControllers
                     new GeneralNotificationContext(controlledPlayer,
                         "GO FOR LAUNCH!",
                         "You're no longer stuck on the Launch Pad!",
-                        () => 
-                            RequestTurnAction(
-                                TurnActionType.CompleteResolution, 
-                                onAllowed: () => { }, 
-                                onDenied: () => { }
-                            ))));
+                        () => RequestResolutionComplete())));
             }
         }
 

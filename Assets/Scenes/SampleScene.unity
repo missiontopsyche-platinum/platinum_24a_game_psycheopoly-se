@@ -1606,10 +1606,6 @@ PrefabInstance:
       propertyPath: playerManager
       value: 
       objectReference: {fileID: 1020314815}
-    - target: {fileID: 2226373426372459705, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
-      propertyPath: diceRolledEventChannel
-      value: 
-      objectReference: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
     - target: {fileID: 7251822855252539597, guid: 653cf98f35485be429f92e7ac7432cea, type: 3}
       propertyPath: m_LocalPosition.x
       value: 809.77747

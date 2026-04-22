@@ -20,12 +20,10 @@ namespace Managers.PlayerControllers
         public Player GetControlledPlayer() => controlledPlayer;
         
         // event channels || may need to add more as requirements change. Potentially have all channels in all subclasses.
-        private TurnStartedEventChannel turnStartedEventChannel;
-        protected BooleanEventChannel turnEndedEventChannel;
+        protected TurnStartedEventChannel turnStartedEventChannel;
         protected PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
         protected ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
         protected PayPlayerEventChannel passedGoPaymentChannel;
-        protected CardDrawnEventChannel cardDrawnEventChannel;
         protected TurnActionRequestEventChannel turnActionRequestEventChannel;
         protected TurnActionResultEventChannel turnActionResultEventChannel;
         protected UpgradeRequestEventChannel upgradeRequestEventChannel;
@@ -33,6 +31,10 @@ namespace Managers.PlayerControllers
         protected JailStateChangedEventChannel jailStateChangedEventChannel;
         protected ChargePlayerEventChannel chargePlayerEventChannel;
         protected NoActionLandingEventChannel noLandingActionEventChannel;
+        protected UIActivationEventChannel uiActivationEventChannel;
+        protected UIActionEventChannel uiActionEventChannel;
+        protected MoneyDistributionEventChannel moneyDistributionEventChannel;
+        protected BooleanEventChannel turnEndedEventChannel;
 
         // These handle the callbacks for when a turn action request is allowed or denied from the TurnFlowCoordinator.
         private struct PendingCallbacks
@@ -45,36 +47,44 @@ namespace Managers.PlayerControllers
         // constructor, needs to be called in future subclass constructors with `super(args)`
         public PlayerController(
             Player player, 
-            TurnStartedEventChannel turnStarted, 
+            TurnStartedEventChannel turnStarted,
             BooleanEventChannel turnEnded,
-            PurchaseOwnableRequestEventChannel purchaseRequest, 
-            ChargeOwnershipFeeEventChannel chargeOwnershipFee, 
+            PurchaseOwnableRequestEventChannel purchaseRequest,
+            ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            UpgradeRequestEventChannel upgradeRequest,
             TurnActionRequestEventChannel turnActionRequest,
-            TurnActionResultEventChannel  turnActionResult,
+            TurnActionResultEventChannel turnActionResult,
+            UpgradeRequestEventChannel upgradeRequest,
             IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
             ChargePlayerEventChannel chargePlayer,
-            NoActionLandingEventChannel noLandingAction)
+            NoActionLandingEventChannel noLandingAction,
+            UIActivationEventChannel uiActivation,
+            UIActionEventChannel uiAction,
+            MoneyDistributionEventChannel moneyDistribution
+            )
         {
-            controlledPlayer = player ?? throw new System.ArgumentNullException(nameof(player));
-            turnStartedEventChannel = turnStarted ?? throw new System.ArgumentNullException(nameof(turnStarted));
-            turnEndedEventChannel = turnEnded ?? throw new System.ArgumentNullException(nameof(turnEnded));
+            controlledPlayer = player ?? throw new ArgumentNullException(nameof(player));
+            turnStartedEventChannel = turnStarted ?? throw new ArgumentNullException(nameof(turnStarted));
+            turnEndedEventChannel = turnEnded ?? throw new ArgumentNullException(nameof(turnEnded));
             purchaseOwnableRequestEventChannel =
-                purchaseRequest ?? throw new System.ArgumentNullException(nameof(purchaseRequest));
+                purchaseRequest ?? throw new ArgumentNullException(nameof(purchaseRequest));
             chargeOwnershipFeeEventChannel =
-                chargeOwnershipFee ?? throw new System.ArgumentNullException(nameof(chargeOwnershipFee));
-            passedGoPaymentChannel = passedGoPayment ?? throw new System.ArgumentNullException(nameof(passedGoPayment));
+                chargeOwnershipFee ?? throw new ArgumentNullException(nameof(chargeOwnershipFee));
+            passedGoPaymentChannel = passedGoPayment ?? throw new ArgumentNullException(nameof(passedGoPayment));
             turnActionRequestEventChannel = turnActionRequest ?? 
-                throw new System.ArgumentNullException(nameof(turnActionRequest));
+                throw new ArgumentNullException(nameof(turnActionRequest));
             turnActionResultEventChannel = turnActionResult ?? 
-                throw new System.ArgumentNullException(nameof(turnActionResult));
-            upgradeRequestEventChannel = upgradeRequest ?? throw new System.ArgumentNullException(nameof(upgradeRequest));
-            bankruptPlayerEventChannel = bankruptPlayer ?? throw new System.ArgumentNullException(nameof(bankruptPlayer));
-            jailStateChangedEventChannel = jailStateChanged ?? throw new System.ArgumentNullException(nameof(jailStateChanged));
-            chargePlayerEventChannel = chargePlayer ?? throw new System.ArgumentNullException(nameof(chargePlayer));
-            noLandingActionEventChannel = noLandingAction ?? throw new System.ArgumentNullException(nameof(noLandingAction));
+                throw new ArgumentNullException(nameof(turnActionResult));
+            upgradeRequestEventChannel = upgradeRequest ?? throw new ArgumentNullException(nameof(upgradeRequest));
+            bankruptPlayerEventChannel = bankruptPlayer ?? throw new ArgumentNullException(nameof(bankruptPlayer));
+            jailStateChangedEventChannel = jailStateChanged ?? throw new ArgumentNullException(nameof(jailStateChanged));
+            chargePlayerEventChannel = chargePlayer ?? throw new ArgumentNullException(nameof(chargePlayer));
+            noLandingActionEventChannel = noLandingAction ?? throw new ArgumentNullException(nameof(noLandingAction));
+            uiActivationEventChannel = uiActivation ?? throw new ArgumentNullException(nameof(uiActivation));
+            uiActionEventChannel = uiAction ?? throw new ArgumentNullException(nameof(uiAction));
+            moneyDistributionEventChannel =
+                moneyDistribution ?? throw new ArgumentNullException(nameof(moneyDistribution));
         }
         
         /// <summary>

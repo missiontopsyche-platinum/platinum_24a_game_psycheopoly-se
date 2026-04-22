@@ -269,6 +269,7 @@ MonoBehaviour:
   playerNameText: {fileID: 8427775587522030788}
   notificationTitle: {fileID: 5080222234242938808}
   notificationText: {fileID: 8126267996223414916}
+  automaticWaitTime: 2
   activationEventChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
   actionEventChannel: {fileID: 11400000, guid: 0788bc0a6333f4949ad1dfc7205b6859, type: 2}
 --- !u!223 &2347814509789878282

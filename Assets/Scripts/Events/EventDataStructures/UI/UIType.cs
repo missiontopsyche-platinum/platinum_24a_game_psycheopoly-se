@@ -11,7 +11,8 @@
         MortgagePropertySelected,
         PropertyUpgradeSelected,
         BankruptcyNotification,
-        GeneralNotification
+        GeneralNotification,
+        TurnStartedBanner
         // more to be added as needed
     }
 }
