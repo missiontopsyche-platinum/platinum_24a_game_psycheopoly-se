@@ -39,15 +39,6 @@ namespace Tests.PlayMode
             BoardManager boardManager = GameObject.Find("Board").GetComponent<BoardManager>() as BoardManager;
             boardManager.ClearPlayers();
             boardManager.boardRenderer.ClearPlayers();
-
-            GameObject.Find("HUD")
-                .transform
-                .Find("HUDRoot")
-                .Find("PlayerPanel")
-                .Find("PlayerPanelController")
-                .gameObject.GetComponent<PlayerPanelController>()
-                .ClearPlayers();
-                
         }
     }
 }
