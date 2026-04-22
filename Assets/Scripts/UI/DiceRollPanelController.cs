@@ -51,6 +51,7 @@ public class DiceRollPanelController : MonoBehaviour
     {
         Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);
         diceManager.RollDice();
+        rollButton.interactable = false;
            
     }
 
@@ -100,7 +101,8 @@ public class DiceRollPanelController : MonoBehaviour
             canvasGroup.alpha = 1;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
-            
+            rollButton.interactable = true;
+
             if (context.isAI)
                 OnRollClicked();
         }
