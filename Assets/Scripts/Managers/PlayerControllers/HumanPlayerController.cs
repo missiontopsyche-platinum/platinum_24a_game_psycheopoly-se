@@ -547,6 +547,8 @@ namespace Managers.PlayerControllers
                         TurnActionType.RollForJailEscape,
                         onAllowed: () =>
                         {
+                            uiActivationEventChannel?.RaiseEvent(new UIActivationEvent(
+                                UIType.DiceRoll, new DiceRollPanelContext(isAI: controlledPlayer.isAI)));
                             Logger.Info("HumanPlayerController.ResolveJailAction",
                                 $"{controlledPlayer.GetPName()} requested a jail escape roll.",
                                 LogCategory.Gameplay);
