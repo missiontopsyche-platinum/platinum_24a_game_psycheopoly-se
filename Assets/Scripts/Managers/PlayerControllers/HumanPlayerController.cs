@@ -140,8 +140,7 @@ namespace Managers.PlayerControllers
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    upgradeRequestEventChannel?.RaiseEvent(
-                        new UpgradeRequestEvent(controlledPlayer, property));
+                    UpgradeManager.TryHandleUpgrade(controlledPlayer, property, out UpgradeDecision decision);
 
                     ReopenPropertyManagementUI();
 
@@ -301,10 +300,10 @@ namespace Managers.PlayerControllers
 
             if (controlledPlayer.MortgageProperty(context.tile))
             {
-                mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    controlledPlayer,
-                    context.tile));
-
+                // this whole event channel and event payload are used *nowhere else* in the system
+                // mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
+                //     controlledPlayer,
+                //     context.tile));
                 ReopenPropertyManagementUI();
             }
 
@@ -654,8 +653,12 @@ namespace Managers.PlayerControllers
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    if (property.TryDowngrade())
+                    if (property.CanDowngrade())
                     {
+                        // handle discovery (hotel) vs data point (house)
+                        controlledPlayer.AddMoney(property.UpgradeLevel == 5
+                            ? property.SellDiscovery()
+                            : property.SellDataPoint());
                         ReopenPropertyManagementUI();
                     }
 
