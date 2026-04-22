@@ -187,7 +187,9 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             if (IsGameOver) return;
             if (!success) return;
-            //if (Phase != TurnPhase.AwaitingMovement) return;
+            // guard in case this is called after movement resolution, to ensure
+            // that we aren't accidentally setting the turn phase back and locking ourselves
+            if (Phase == TurnPhase.Completed) return;
 
             Phase = TurnPhase.AwaitingResolution;
 
