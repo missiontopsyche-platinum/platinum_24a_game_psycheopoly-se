@@ -487,7 +487,8 @@ MonoBehaviour:
   turnLabel: {fileID: 4229650480173778210}
   continueButton: {fileID: 601457559474760328}
   canvasGroup: {fileID: 3619232495696166789}
-  turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
+  uiActivationEventChannel: {fileID: 11400000, guid: 2af04ec54fabdd74bb74db7c00ef6d84, type: 2}
+  aiWaitTime: 1
   fadeDuration: 0.25
   slideOffset: 180
   ease:

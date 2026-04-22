@@ -41,7 +41,6 @@ public class BoardRenderer : MonoBehaviour
     {
         playerAddedChannel?.Subscribe(AddPlayerPiece);
         playerMovedEventChannel?.Subscribe(MovePiece);
-        mortgageFinishedEventChannel?.Subscribe(OnMortgageFinished);
     }
 
     private void OnDestroy()
@@ -49,18 +48,6 @@ public class BoardRenderer : MonoBehaviour
         ClearBoard();
         playerAddedChannel.Unsubscribe(AddPlayerPiece);
         playerMovedEventChannel?.Unsubscribe(MovePiece);
-        mortgageFinishedEventChannel?.Unsubscribe(OnMortgageFinished);
-    }
-
-    //when a player mortgages a property, the tile will update immediately, not sure if needed for unmortgage...
-    private void OnMortgageFinished(MortgageFinishedEvent e)
-    {
-        if (e == null || e.Tile == null) return;
-
-        if (rendererBySpaceData.TryGetValue(e.Tile, out var renderer) && renderer != null)
-        {
-            renderer.RefreshTileStateVisuals();
-        }
     }
 
     public void GenerateBoard(SpaceData[] spaces)

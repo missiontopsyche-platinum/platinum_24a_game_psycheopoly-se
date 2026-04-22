@@ -44,15 +44,11 @@ public class PropertyManagementUIController : MonoBehaviour
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
     {
-         Debug.Log("PropertyManagementUIController received event");
-
         if (uiae == null)
         {
             Debug.Log("UIActivationEvent was null");
             return;
         }
-
-        Debug.Log("UI type was: " + uiae.UIType);
 
         if (uiae.UIType != UIType.PropertyManagement)
             return;

@@ -1,6 +1,10 @@
+using System;
 using System.Collections;
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class TurnBannerController : MonoBehaviour
@@ -10,8 +14,11 @@ public class TurnBannerController : MonoBehaviour
     [SerializeField] private Button continueButton;   //Start turn button
     [SerializeField] private CanvasGroup canvasGroup; //Controls fade
 
+    [FormerlySerializedAs("turnStartedChannel")]
     [Header("Events")]
-    [SerializeField] private TurnStartedEventChannel turnStartedChannel;
+    [SerializeField] private UIActivationEventChannel uiActivationEventChannel;
+
+    [SerializeField] private int aiWaitTime = 2;
 
     [Header("Animation Settings")]
     [SerializeField] private float fadeDuration = 0.25f;
@@ -23,6 +30,9 @@ public class TurnBannerController : MonoBehaviour
     private Vector2 hiddenPos;
     private Coroutine anim;
     private bool _buttonHooked;
+
+    private Action currentCallback = null;
+    
     public bool IsSubscribed { get; private set; }
 
     private void Awake()
@@ -53,9 +63,9 @@ public class TurnBannerController : MonoBehaviour
             _buttonHooked = true;
         }
 
-        if (turnStartedChannel != null)
+        if (uiActivationEventChannel != null)
         {
-            turnStartedChannel.Subscribe(OnTurnStarted);
+            uiActivationEventChannel.Subscribe(OnTurnStarted);
             IsSubscribed = true;
         }
     }
@@ -65,18 +75,30 @@ public class TurnBannerController : MonoBehaviour
         if (continueButton != null)
             continueButton.onClick.RemoveListener(OnContinueClicked);
 
-        if (turnStartedChannel != null)
-            turnStartedChannel.Unsubscribe(OnTurnStarted);
+        if (uiActivationEventChannel != null)
+            uiActivationEventChannel.Unsubscribe(OnTurnStarted);
 
         IsSubscribed = false;
     }
 
-    private void OnTurnStarted(TurnStartedEvent payload)
+    private void OnTurnStarted(UIActivationEvent uiae)
     {
-        // this is a quick fix, in the future, we might need to have some sort of way for the UI to query players from
-        // the playermanager
-        turnLabel.text = $"Player {payload.playerId + 1}'s Turn";
-        Show();
+        if (uiae.UIType != UIType.TurnStartedBanner) return;
+
+        if (uiae.Context is TurnStartedBannerContext context)
+        {
+            turnLabel.text = $"{context.player.GetPName()}'s Turn";
+            currentCallback = context.onAcknowledged;
+            Show();
+            if(context.isAI)
+                StartCoroutine(AIWait());
+        }
+    }
+
+    private IEnumerator AIWait()
+    {
+        yield return new WaitForSeconds(aiWaitTime);
+        OnContinueClicked();
     }
 
     private void OnContinueClicked()
@@ -84,8 +106,18 @@ public class TurnBannerController : MonoBehaviour
         Hide();
     }
 
-    public void Show() => PlayAnim(true);
-    public void Hide() => PlayAnim(false);
+    public void Show()
+    {
+        PlayAnim(true);
+    }
+
+    public void Hide()
+    {
+        StopAllCoroutines();
+        PlayAnim(false);
+        currentCallback.Invoke();
+        currentCallback = null;
+    }
 
     private void PlayAnim(bool show)
     {

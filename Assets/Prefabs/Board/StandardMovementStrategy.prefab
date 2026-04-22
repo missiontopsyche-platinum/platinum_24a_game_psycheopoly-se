@@ -51,3 +51,6 @@ MonoBehaviour:
   spaceResolutionCompletedChannel: {fileID: 11400000, guid: 945e3cf09d1d2ec4282bccfeeb893f00, type: 2}
   turnStartedEventChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
   pieceMoveCompletedEventChannel: {fileID: 11400000, guid: 945f041171c95a94995d70ce14d65e60, type: 2}
+  diceRolledEventChannel: {fileID: 11400000, guid: df4ca670d5b40f94b93ff1839a1d28f1, type: 2}
+  moveToSpaceEventChannel: {fileID: 11400000, guid: 7a9765d84a0a54b409423e8a0415aac9, type: 2}
+  costModifierService: {fileID: 0}

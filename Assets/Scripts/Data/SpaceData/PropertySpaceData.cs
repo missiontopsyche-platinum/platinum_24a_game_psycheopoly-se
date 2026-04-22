@@ -276,19 +276,24 @@ public class PropertySpaceData : OwnableSpaceData
         return currentUpgradeLevel > 0;
     }
 
-    public bool TryDowngrade()
+    public int SellDataPoint()
     {
         if (!CanDowngrade())
-            return false;
+            return 0;
 
         currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel - 1, 0, MaxUpgradeLevel);
         VerifyMortagableStatus();
-        return true;
+        return dataPointCost / 2;
     }
 
-    public void ApplyDowngrade()
+    public int SellDiscovery()
     {
-        TryDowngrade();
+        if (!CanDowngrade())
+            return 0;
+
+        currentUpgradeLevel = 0;
+        VerifyMortagableStatus();
+        return (dataPointCost * 5) / 2;
     }
 
 }

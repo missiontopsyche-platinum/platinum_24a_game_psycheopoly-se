@@ -22,4 +22,4 @@ MonoBehaviour:
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   artwork: {fileID: 21300000, guid: e8fea0aa7394c7941b394418240c8cbf, type: 3}
   payout: 200
-  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  payPlayerEventChannel: {fileID: 11400000, guid: d715c49d04e652c409179a3022544eb1, type: 2}
