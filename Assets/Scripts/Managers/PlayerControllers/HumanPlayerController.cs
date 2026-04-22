@@ -133,13 +133,17 @@ namespace Managers.PlayerControllers
 
         private void HandleUpgradeEvent(PropertySpaceData property)
         {
-            if (!isMyTurn || property == null || turnForcedEnd) return;
-            // Note: Follow this pattern for any event that requires player input.
+            if (!isMyTurn || property == null || turnForcedEnd) 
+                return;
+
             RequestTurnAction(
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    UpgradeManager.TryHandleUpgrade(controlledPlayer, property, out var decision);
+                    UpgradeManager.TryHandleUpgrade(controlledPlayer, property, out UpgradeDecision decision);
+
+                    ReopenPropertyManagementUI();
+
                     Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
                         $"{controlledPlayer.GetPName()} attempted to upgrade {property.spaceName}: " +
                         $"{(decision.Allowed ? "success" : "failure")}.",
@@ -291,7 +295,17 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn || turnForcedEnd) return;
+            if (!isMyTurn || turnForcedEnd || context == null)
+                return;
+
+            if (controlledPlayer.MortgageProperty(context.tile))
+            {
+                // this whole event channel and event payload are used *nowhere else* in the system
+                // mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
+                //     controlledPlayer,
+                //     context.tile));
+                ReopenPropertyManagementUI();
+            }
 
             RequestResolutionComplete();
         }
@@ -302,46 +316,65 @@ namespace Managers.PlayerControllers
             
             switch (uiae.UIType)
             {
-
                 case UIType.PropertyPurchase:
-                    if(uiae.Context is PurchaseActionContext purchaseContext)
-                        ResolvePropertyPurchase(purchaseContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.MortgagePropertySelected:
-                    if(uiae.Context is MortgagePropertyContext mortgageContext)
-                        ResolveMortgageProperty(mortgageContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.JailOptions:
-                    if (uiae.Context is JailActionContext jailContext)
-                        ResolveJailAction(jailContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.PropertyUpgradeSelected:
-                     if (uiae.Context is PropertyUpgradeContext upgradeContext)
-                         HandleUpgradeEvent(upgradeContext.property);
-                     break;
-                case UIType.DiceRoll:
-                      HandleDiceRollPannel();
-                      break;
-                case UIType.GeneralNotification:
-                      HandleGeneralNotificationAcknowledgement((GeneralAcknowledgement)uiae.Context);
-                      break;
-                default:
-                    Logger.Debug("HumanPlayerController.HandleUIAction",
-                        $"Unhandled UI Type: ${uiae.UIType}",
-                        LogCategory.UI);
-                    break;
+                            if (uiae.Context is PurchaseActionContext purchaseContext)
+                                ResolvePropertyPurchase(purchaseContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.MortgagePropertySelected:
+                            if (uiae.Context is MortgagePropertyContext mortgageContext)
+                                ResolveMortgageProperty(mortgageContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected MortgagePropertyContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.UnmortgagePropertySelected:
+                            if (uiae.Context is UnmortgagePropertyContext unmortgageContext)
+                                ResolveUnmortgageProperty(unmortgageContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected UnmortgagePropertyContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.PropertyUpgradeSelected:
+                            if (uiae.Context is PropertyUpgradeContext upgradeContext)
+                                HandleUpgradeEvent(upgradeContext.property);
+                            break;
+
+                        case UIType.PropertyDowngradeSelected:
+                            if (uiae.Context is PropertyDowngradeContext downgradeContext)
+                                HandleDowngradeEvent(downgradeContext.Property);
+                            break;
+
+                        case UIType.JailOptions:
+                            if (uiae.Context is JailActionContext jailContext)
+                                ResolveJailAction(jailContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.DiceRoll:
+                            HandleDiceRollPannel();
+                            break;
+
+                        case UIType.GeneralNotification:
+                            HandleGeneralNotificationAcknowledgement((GeneralAcknowledgement)uiae.Context);
+                            break;
+
+                        default:
+                            Logger.Debug("HumanPlayerController.HandleUIAction",
+                                $"Unhandled UI Type: {uiae.UIType}",
+                                LogCategory.UI);
+                            break;
             }
         }
 
@@ -586,6 +619,57 @@ namespace Managers.PlayerControllers
                 LogCategory.Gameplay);
 
             
+        }
+
+        private void ReopenPropertyManagementUI()
+        {
+            uiActivationEventChannel?.RaiseEvent(
+                new UIActivationEvent(
+                    UIType.PropertyManagement,
+                    new PropertyManagementActivationContext(controlledPlayer)
+                )
+            );
+        }
+
+        private void ResolveUnmortgageProperty(UnmortgagePropertyContext context)
+        {
+            if (!isMyTurn || turnForcedEnd || context == null)
+                return;
+
+            if (controlledPlayer.UnmortgageProperty(context.Tile))
+            {
+                ReopenPropertyManagementUI();
+            }
+
+            RequestResolutionComplete();
+        }
+
+        private void HandleDowngradeEvent(PropertySpaceData property)
+        {
+            if (!isMyTurn || turnForcedEnd || property == null)
+                return;
+
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                onAllowed: () =>
+                {
+                    if (property.CanDowngrade())
+                    {
+                        // handle discovery (hotel) vs data point (house)
+                        controlledPlayer.AddMoney(property.UpgradeLevel == 5
+                            ? property.SellDiscovery()
+                            : property.SellDataPoint());
+                        ReopenPropertyManagementUI();
+                    }
+
+                    RequestResolutionComplete();
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.HandleDowngradeEvent",
+                        "Downgrade blocked by TurnFlow.",
+                        LogCategory.UI);
+                });
         }
     }
 }
