@@ -504,11 +504,8 @@ namespace Managers.PlayerControllers
         //display jail options for the current human player
         private void ShowJailOptionsUI()
         {
-            bool hasGetOutOfJailCard =
-                controlledPlayer.GetChanceCardCount() > 0 ||
-                controlledPlayer.GetCommunityCardCount() > 0;
-
-
+            bool hasGetOutOfJailCard = controlledPlayer.GetJailCards().Count > 0;
+            
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.JailOptions,

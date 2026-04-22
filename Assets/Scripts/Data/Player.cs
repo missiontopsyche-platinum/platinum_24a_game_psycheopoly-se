@@ -357,6 +357,8 @@ public class Player : ScriptableObject
         }
 
         getOutOfJailCards.Add(card);
+        Logging.Logger.Info("Player.AddJailCard",
+            $"Jail Card added to {p_Name}.");
         getOutOfJailCardSources[card] = sourceDeck;
     }
 

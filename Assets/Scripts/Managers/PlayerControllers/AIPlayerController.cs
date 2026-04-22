@@ -664,9 +664,7 @@ namespace Managers.PlayerControllers
 
         private AIJailDecision EvaluateJailDecision()
         {
-            bool hasJailCard =
-                controlledPlayer.GetChanceCardCount() > 0 ||
-                controlledPlayer.GetCommunityCardCount() > 0;
+            bool hasJailCard = controlledPlayer.GetJailCards().Count > 0;
 
             bool canAffordFine = controlledPlayer.CanAfford(Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE);
             int nextJailTurn = controlledPlayer.GetJailTurns() + 1;
