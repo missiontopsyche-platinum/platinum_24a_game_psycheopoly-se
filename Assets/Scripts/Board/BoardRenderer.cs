@@ -172,7 +172,7 @@ public class BoardRenderer : MonoBehaviour
         // create and initialize new piece object
         GameObject newPlayer = Instantiate(playerPiecePrefab);
         Piece piece = newPlayer.GetComponent<Piece>();
-        piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor());
+        piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor(), player.GetPiecePrefab());
         
         // scale new player game object to board scale
         newPlayer.transform.localScale *= increment;

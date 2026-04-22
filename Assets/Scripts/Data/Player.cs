@@ -11,6 +11,8 @@ public class Player : ScriptableObject
     // Configurable Variables
     [SerializeField] private string p_Name = "Unnamed Player";
     [SerializeField] private Color color = Color.white;
+    [SerializeField] private GameObject piecePrefab;
+    public GameObject GetPiecePrefab() => piecePrefab;
     // add player model if we decide to do special models
     
     //Private variables
@@ -106,7 +108,7 @@ public class Player : ScriptableObject
 
     //Task 120 Initializing player
     //Basic getters and setters, more logic will have to be added as game
-    //continues to be developed and once final confirmation on ruleset
+    //continues to be developed and once final confirmation on ruleset 
     public void SetInJail(bool jail)
     {
         inJail = jail;
