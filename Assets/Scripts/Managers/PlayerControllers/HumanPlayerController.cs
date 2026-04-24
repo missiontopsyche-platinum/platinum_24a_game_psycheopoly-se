@@ -390,7 +390,7 @@ namespace Managers.PlayerControllers
                 }
 
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
-                    $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
+                    $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.spaceName}",
                     LogCategory.Gameplay); 
                 //Fire
             }
@@ -398,7 +398,7 @@ namespace Managers.PlayerControllers
             {
                 // controlledPlayer.DeclinePurchase(pac.Property);
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
-                    $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.name}",
+                    $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.spaceName}",
                     LogCategory.Gameplay);
             }
 
