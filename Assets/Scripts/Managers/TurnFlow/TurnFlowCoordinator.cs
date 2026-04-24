@@ -48,6 +48,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         public bool IsGameOver { get; private set; }
         public static int LastWinningPlayerId { get; private set; } = -1;
         public static string LastWinningPlayerName { get; private set; } = string.Empty;
+        private bool pendingCompleteResolution = false;
 
         public void Initialize(TurnCycleManager tcm, List<Player> gamePlayers)
         {
@@ -113,6 +114,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;
+            pendingCompleteResolution = false;
             nextRollIsJailEscape = false;
             jailEscapePlayer = null;
             
@@ -202,11 +204,17 @@ namespace Assets.Scripts.Managers.TurnFlow
             Phase = TurnPhase.AwaitingResolution;
 
             Logging.Logger.Info("TurnFlowCoordinator.OnPieceMoveCompleted",
-                    "Move completed. Can end turn",
+                    "Movement resolution completed. Awaiting turn resolution.",
                     LogCategory.Core,
                     this);
 
             actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
+
+            if (pendingCompleteResolution)
+            {
+                pendingCompleteResolution = false;
+                CompleteResolution();
+            }
         }
 
 
@@ -275,14 +283,33 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void CompleteResolution()
         {
             if (IsGameOver) return;
+
+            if (Phase == TurnPhase.AwaitingMovement)
+            {
+                pendingCompleteResolution = true;
+
+                Logging.Logger.Info("TurnFlowCoordinator.CompleteResolution",
+                    "CompleteResolution requested before movement resolution finished. Deferring.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
+
+            if (Phase == TurnPhase.Completed)
+                return;
+
             if (Phase != TurnPhase.AwaitingResolution)
                 return;
 
             Phase = TurnPhase.Completed;
             awaitingEndTurn = true;
-            Logging.Logger.Info("TurnFlowCoordinator.OnTurnActionRequested",
-                "Turn phase transitioned to completed. Can end turn",
-                LogCategory.Gameplay);
+
+            Logging.Logger.Info("TurnFlowCoordinator.CompleteResolution",
+                "Turn phase transitioned to Completed. Can end turn.",
+                LogCategory.Gameplay,
+                this);
 
         }
 
@@ -323,7 +350,9 @@ namespace Assets.Scripts.Managers.TurnFlow
                 {
                     TurnActionType.RollForJailEscape => Phase == TurnPhase.AwaitingRoll,
                     TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
-                    TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution || Phase == TurnPhase.Completed,
+                    TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingMovement
+                                                         || Phase == TurnPhase.AwaitingResolution
+                                                         || Phase == TurnPhase.Completed,
                     _ => false
                 };
             }
@@ -338,7 +367,9 @@ namespace Assets.Scripts.Managers.TurnFlow
                                                  || Phase == TurnPhase.AwaitingMovement
                                                  || Phase == TurnPhase.AwaitingResolution
                                                  || (Phase == TurnPhase.Completed && awaitingEndTurn),
-                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution || Phase == TurnPhase.Completed,
+                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingMovement 
+                                                    || Phase == TurnPhase.AwaitingResolution
+                                                    || Phase == TurnPhase.Completed,
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false
             };
