@@ -27,6 +27,7 @@ public abstract class OwnableSpaceData : SpaceData, ITileRentInfo
     [Header("Ownable Event Channels")]
     [SerializeField] public PurchaseOwnableRequestEventChannel purchaseOwnableRequestEventChannel;
     [SerializeField] public ChargeOwnershipFeeEventChannel chargeOwnershipFeeEventChannel;
+    [SerializeField] public NoActionLandingEventChannel noLandingActionEventChannel;
 
     public void ResetData()
     {

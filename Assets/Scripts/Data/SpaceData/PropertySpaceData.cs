@@ -54,37 +54,15 @@ public class PropertySpaceData : OwnableSpaceData
     {
         base.OnLanded(player);
         if (owner == null) return;
+        if (owner == player)
+        {
+            noLandingActionEventChannel.RaiseEvent(new NoActionLandingEvent(spaceName,
+                "You already own this space!"));
+            return;
+        }
 
         // If the property is mortaged, no OnLanded events should fire.
         if (isMortgaged) return; 
-
-        /*if (owner.Equals(player))
-        {
-            // TODO remove
-            // after double checking the rules, players can upgrade any properties they want at
-            // the start of their turn, not when they land on a property. This should be "do nothing".
-            
-            // maybe we move this to GameManager so we can modify how this works
-            // in a ruleset later on...
-            
-            // if the current upgrade level is less than DISCOVERY
-            if (currentUpgradeLevel < 5)
-            {
-                // offer to upgrade space in UI in future
-                purchaseUpgradeRequestEventChannel?.RaiseEvent(new PurchaseOwnableRequestEvent(
-                    player,
-                    this,
-                    dataPointCost));
-            } // else do nothing or inform player they cant upgrade anymore
-        }
-        else
-        {
-            // charge player from researchFundingValues at the current upgrade level
-            int chargeAmount = researchFundingValues[currentUpgradeLevel];
-            chargeOwnershipFeeEventChannel?.RaiseEvent(new ChargeOwnershipFeeEvent(
-                player, owner,
-                chargeAmount, this));
-        }*/
 
         if (!owner.Equals(player))
         {
