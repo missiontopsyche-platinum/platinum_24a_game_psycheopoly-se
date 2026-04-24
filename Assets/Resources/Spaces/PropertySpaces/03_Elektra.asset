@@ -26,6 +26,7 @@ MonoBehaviour:
   isMortgaged: 0
   purchaseOwnableRequestEventChannel: {fileID: 11400000, guid: 9703342a6b927e14c9d6986979c6be5e, type: 2}
   chargeOwnershipFeeEventChannel: {fileID: 11400000, guid: a51e52d1bdd5d9f41bb89b3f5d797ed9, type: 2}
+  noLandingActionEventChannel: {fileID: 11400000, guid: 5056b9ff8a3f66940af4d562f52cbad1, type: 2}
   researchFundingValues: 04000000140000003c000000b400000040010000c2010000
   dataPointCost: 50
   upgradeCostMultiplier: 1

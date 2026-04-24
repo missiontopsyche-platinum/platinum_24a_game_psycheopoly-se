@@ -18,9 +18,10 @@ public class InstrumentSpaceData : OwnableSpaceData
         // modify the method signatures or something to flag stuff.
         if (owner == null) return;
         if (isMortgaged) return;
-        if (owner.Equals(player))
+        if (owner == player)
         {
-            // do nothing, I think based on rules
+            noLandingActionEventChannel.RaiseEvent(new NoActionLandingEvent(spaceName,
+                "You already own this space!"));
         }
         else
         {
