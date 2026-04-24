@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MoveToSpace_Eunomia
   m_EditorClassIdentifier: PsycheOpoly.Runtime::MoveToSpaceCardEffect
   targetMode: 1
-  targetType: 7
+  targetType: 8
   specificBoardSpace: 24
+  arrivalRentModifier: 0
   moveToSpaceEventChannel: {fileID: 11400000, guid: 7a9765d84a0a54b409423e8a0415aac9, type: 2}

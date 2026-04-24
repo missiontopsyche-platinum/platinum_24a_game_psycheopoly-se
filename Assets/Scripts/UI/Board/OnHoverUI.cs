@@ -97,7 +97,9 @@ public class OnHoverUI : MonoBehaviour
             // rent
             if (rentValueText != null)
             {
-                rentValueText.text = property.collaborationValue.ToString();
+                int level = property.GetCurrentUpgradeLevel();
+
+                rentValueText.text = property.researchFundingValues[level].ToString();
                 SetRow(rentValueText, true);
             }
 

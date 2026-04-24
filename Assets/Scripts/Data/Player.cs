@@ -11,6 +11,8 @@ public class Player : ScriptableObject
     // Configurable Variables
     [SerializeField] private string p_Name = "Unnamed Player";
     [SerializeField] private Color color = Color.white;
+    [SerializeField] private GameObject piecePrefab;
+    public GameObject GetPiecePrefab() => piecePrefab;
     // add player model if we decide to do special models
     
     //Private variables
@@ -18,6 +20,7 @@ public class Player : ScriptableObject
     private int money;
     private int assets = 0;
     private int position = 0; // this is never used anywhere, BoardManager owns positions.
+    public bool isAI { get; set; }
 
     //Added for task 120
     //Adding basic fields that will need to be tracked for each player 
@@ -105,7 +108,7 @@ public class Player : ScriptableObject
 
     //Task 120 Initializing player
     //Basic getters and setters, more logic will have to be added as game
-    //continues to be developed and once final confirmation on ruleset
+    //continues to be developed and once final confirmation on ruleset 
     public void SetInJail(bool jail)
     {
         inJail = jail;
@@ -356,6 +359,8 @@ public class Player : ScriptableObject
         }
 
         getOutOfJailCards.Add(card);
+        Logging.Logger.Info("Player.AddJailCard",
+            $"Jail Card added to {p_Name}.");
         getOutOfJailCardSources[card] = sourceDeck;
     }
 

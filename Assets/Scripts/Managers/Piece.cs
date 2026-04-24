@@ -8,31 +8,70 @@ using System.Collections;
 /// </summary>
 public class Piece : MonoBehaviour
 {
-    [SerializeField] private Color pieceColor = Color.white;
+      [SerializeField] private Color pieceColor = Color.white;
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
 
-    public MeshRenderer meshRenderer;
+    [Header("Visuals")]
+    [SerializeField] private Transform modelAnchor;
+    [SerializeField] private MeshRenderer meshRenderer;
+
     public int playerId;
     public int spaceIndex;
-    
+
+    private GameObject currentModelInstance;
+
     private void Start()
     {
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material.color = pieceColor;
         spaceIndex = 0;
+
+        if (meshRenderer == null)
+            meshRenderer = GetComponent<MeshRenderer>();
+
+        ApplyColor();
     }
 
-    public void InitializePiece(int id, String name, Color color)
+    public void InitializePiece(int id, string pieceName, Color color, GameObject modelPrefab = null)
     {
         playerId = id;
-        this.name = name;
+        name = pieceName;
         pieceColor = color;
-        if (!meshRenderer)
-            meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material.color = pieceColor;
+
+        ApplyColor();
+
+        if (modelPrefab != null)
+        {
+            SetModel(modelPrefab);
+        }
     }
 
+    private void ApplyColor()
+    {
+        if (meshRenderer != null && meshRenderer.material != null)
+        {
+            meshRenderer.material.color = pieceColor;
+        }
+    }
+
+    public void SetModel(GameObject modelPrefab)
+    {
+        if (modelAnchor == null)
+        {
+            Debug.LogWarning("ModelAnchor is not assigned!");
+            return;
+        }
+
+        if (currentModelInstance != null)
+        {
+            Destroy(currentModelInstance);
+        }
+
+        currentModelInstance = Instantiate(modelPrefab, modelAnchor);
+        currentModelInstance.transform.localPosition = Vector3.zero;
+        currentModelInstance.transform.localRotation = Quaternion.identity;
+        currentModelInstance.transform.localScale = Vector3.one;
+    }
+    
     public void MoveTo(Vector3 targetPosition, bool isBump)
     {
         StopAllCoroutines();
@@ -77,7 +116,7 @@ public class Piece : MonoBehaviour
         {
             while (Vector3.Distance(transform.position, target) > 0.01f)
             {
-                yield return MoveTowardsTarget(target, Time.deltaTime);
+                yield return MoveTowardsTarget(target, Time.deltaTime > 0 ? Time.deltaTime : 0.02f);
             }
 
             transform.position = target;

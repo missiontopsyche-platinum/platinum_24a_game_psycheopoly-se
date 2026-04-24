@@ -44,15 +44,11 @@ public class PropertyManagementUIController : MonoBehaviour
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
     {
-         Debug.Log("PropertyManagementUIController received event");
-
         if (uiae == null)
         {
             Debug.Log("UIActivationEvent was null");
             return;
         }
-
-        Debug.Log("UI type was: " + uiae.UIType);
 
         if (uiae.UIType != UIType.PropertyManagement)
             return;
@@ -62,6 +58,9 @@ public class PropertyManagementUIController : MonoBehaviour
             Debug.Log("Valid property management context received for: " + context.Player?.GetPName());
 
             currentPlayer = context.Player;
+            isDebtResolutionMode = context.IsDebtResolutionMode;
+            currentDebtAmount = context.DebtAmount;
+
             RefreshUI();
             Show();
         }

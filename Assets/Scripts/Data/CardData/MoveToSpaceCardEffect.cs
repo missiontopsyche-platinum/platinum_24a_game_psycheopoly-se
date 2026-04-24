@@ -7,7 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MoveToSpaceCardEffect", menuName = "Card Data/Effects/MoveToSpaceCardEffect")]
 public class MoveToSpaceCardEffect : CardEffect
 {
-    // TODO: Not sure what spaces we need atm, will be expanded on Sprint 4
     public enum TargetMode
     {
         NearestByType,

@@ -1,3 +1,4 @@
+using Events.EventDataStructures;
 using UnityEngine;
 
 /// <summary>
@@ -14,7 +15,7 @@ public class MoveCardEffect : CardEffect
     [SerializeField] public EffectType Type;
     [SerializeField] public int SpacesToMove = 1;
     [SerializeField] public MovePlayerEventChannel MovePlayerEventChannel;
-    [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
+    [SerializeField] public NoActionLandingEventChannel NoActionLandingEventChannel;
 
     public override void ApplyEffect(Player player)
     {
@@ -38,14 +39,17 @@ public class MoveCardEffect : CardEffect
                 MovePlayerEventChannel.RaiseEvent(new MovePlayerEvent(player.GetId(), -SpacesToMove));
                 break;
             default:
-                Logging.Logger.Warn("MoveCardEffect.ApplyEffect",
+                Logging.Logger.Error("MoveCardEffect.ApplyEffect",
                     "Unknown EffectType in MoveCardEffect: " + Type.ToString(),
                     Logging.LogCategory.Gameplay,
                     this);
                 return;
         }
-
-        // card movement should resolve landing just like normal movement.
-        pieceMoveCompletedEventChannel?.RaiseEvent(true);
+        // there is no action taken from this card, it doesn't say to pay rent- just move back three
+        // spaces... so I'll assume that no action is to be taken. hdathert
+        NoActionLandingEventChannel.RaiseEvent(new NoActionLandingEvent(
+            "Move Effect!",
+            $"{player.GetPName()} moved {(Type == EffectType.MoveForward ? "forward" : "backward" )} " +
+            $"{SpacesToMove} spaces!"));
     }
 }

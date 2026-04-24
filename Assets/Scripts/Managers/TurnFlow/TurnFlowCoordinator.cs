@@ -1,12 +1,13 @@
-﻿using Assets.Scripts.Events.EventChannelTypes;
+﻿using System;
+using System.Collections;
 using Assets.Scripts.Managers.Jail;
 using Assets.Scripts.Managers.TurnOrder;
 using Logging;
 using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
+using Assets.Scripts.Events.EventChannelTypes;
+using Events.EventDataStructures.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Logger = UnityEngine.Logger;
 
 namespace Assets.Scripts.Managers.TurnFlow
 {
@@ -22,7 +23,6 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private TurnStartedEventChannel turnStartedChannel;
         [SerializeField] private DiceRolledEventChannel diceRolledChannel;
         [SerializeField] private BooleanEventChannel spaceResolutionCompletedChannel;
-        [SerializeField] private BooleanEventChannel diceRollRequestChannel;
         [SerializeField] private BooleanEventChannel pieceMoveCompletedChannel;
         [SerializeField] private TurnActionRequestEventChannel turnActionRequestChannel;
         [SerializeField] private TurnActionResultEventChannel turnActionResultChannel;
@@ -153,8 +153,6 @@ namespace Assets.Scripts.Managers.TurnFlow
                     this);
 
                 nextRollIsJailEscape = false;
-                jailEscapePlayer = null;
-
 
                 switch (result)
                 {
@@ -170,18 +168,25 @@ namespace Assets.Scripts.Managers.TurnFlow
                     case JailUtility.EscapeAttemptResult.Failed:
                         Phase = TurnPhase.Completed;
                         awaitingEndTurn = true;
-                        CompleteTurnFlow();
+                        StartCoroutine(WaitForSecondsToRun(2, CompleteTurnFlow));
                         return;
 
                     case JailUtility.EscapeAttemptResult.ForcedExitBankrupt:
                         Phase = TurnPhase.Completed;
                         awaitingEndTurn = true;
-                        CompleteTurnFlow();
+                        StartCoroutine(WaitForSecondsToRun(2, CompleteTurnFlow));
                         return;
-
                 }
+                jailEscapePlayer = null;
             }
             Phase = TurnPhase.AwaitingMovement;
+        }
+
+        // using this to get rid of race conditions on failed dice rolls to escape jail
+        private IEnumerator WaitForSecondsToRun(int seconds, Action action)
+        {
+            yield return new WaitForSeconds(seconds);
+            action.Invoke();
         }
 
 
@@ -190,7 +195,9 @@ namespace Assets.Scripts.Managers.TurnFlow
         {
             if (IsGameOver) return;
             if (!success) return;
-            //if (Phase != TurnPhase.AwaitingMovement) return;
+            // guard in case this is called after movement resolution, to ensure
+            // that we aren't accidentally setting the turn phase back and locking ourselves
+            if (Phase == TurnPhase.Completed) return;
 
             Phase = TurnPhase.AwaitingResolution;
 
@@ -287,8 +294,6 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             nextRollIsJailEscape = true;
             jailEscapePlayer = player;
-
-            diceRollRequestChannel?.RaiseEvent(true);
 
             Logging.Logger.Info("TurnFlowCoordinator.BeginJailEscapeRoll",
                 $"{player.GetPName()} is attempting to escape jail.",

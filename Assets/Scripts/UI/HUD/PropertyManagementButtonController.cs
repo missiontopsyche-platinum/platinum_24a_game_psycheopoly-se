@@ -42,8 +42,6 @@ public class PropertyManagementButtonController : UIPanelBase
 
     private void OnTurnStarted(TurnStartedEvent turnStartedEvent)
     {
-        Debug.Log("OnTurnStarted fired");
-
         if (turnStartedEvent == null)
         {
             Debug.Log("TurnStartedEvent is null");
@@ -51,7 +49,6 @@ public class PropertyManagementButtonController : UIPanelBase
         }
 
         currentPlayerId = turnStartedEvent.playerId;
-        Debug.Log("Current player id set to: " + currentPlayerId);
     }
 
     private void AddPlayer(Player player)

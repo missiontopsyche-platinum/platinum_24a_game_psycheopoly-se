@@ -7,7 +7,7 @@ using Assets.Scripts.Managers.TurnFlow;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
 using Logging;
-using UnityEngine;
+
 using Logger = Logging.Logger;
 
 
@@ -15,38 +15,10 @@ namespace Managers.PlayerControllers
 {
     public class HumanPlayerController : PlayerController
     {
-        // attributes
-
-        // event channels
-
-        
-
-        // event channel for bankruptcy
-        public IntEventChannel bankruptPlayerEventChannel;
-
-        private readonly UIActivationEventChannel uiActivationEventChannel;
-        private readonly UIActionEventChannel uiActionEventChannel;
-        private readonly MortgageFinishedEventChannel mortgageFinishedEventChannel;
-        private readonly BooleanEventChannel diceRollPannelEventChannel;
-        private readonly MoneyDistributionEventChannel moneyDistributionEventChannel;
-
-
-        // I need to figure out the architecture for UI events that the human controller will make use of
-        // before I get too deep into this one- so I'll shelve it for a bit until I can work that out with
-        // the UI team.
-
         /// <summary>
         /// Creates Human Player controller. Once called, it must have <c>Subscribe()</c> called on it to ensure
         /// all event channels are properly subscribed.
         /// </summary>
-        /// <param name="player">Player ScriptableObject the controller is responsible for</param>
-        /// <param name="turnStarted">TurnStartedEventChannel</param>
-        /// <param name="purchaseRequest">PurchaseOwnableRequestEventChannel</param>
-        /// <param name="chargeOwnershipFee">ChargeOwnershipFeeEventChannel</param>
-        /// <param name="passedGoPayment">PayPlayerEventChannel for passing Go</param>
-        /// <param name="uiActivation">UI Activation Event Channel</param>
-        /// <param name="uiAction">UI Action Event Channel</param>
-        /// <param name="mortgageFinished">Mortgage Finished Event Channel</param>
         public HumanPlayerController(
             Player player,
             TurnStartedEventChannel turnStarted,
@@ -54,28 +26,32 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            UIActivationEventChannel uiActivation,
-            UIActionEventChannel uiAction,
-            MortgageFinishedEventChannel mortgageFinished,
-            UpgradeRequestEventChannel upgradeRequest,
-            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
-            BooleanEventChannel diceRollPannel,
             ChargePlayerEventChannel chargePlayer,
             NoActionLandingEventChannel noLandingAction,
-            MoneyDistributionEventChannel moneyDistribution)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
-        {
-            // human controller specific setup goes here
-            uiActivationEventChannel = uiActivation;
-            uiActionEventChannel = uiAction;
-            mortgageFinishedEventChannel = mortgageFinished;
-            diceRollPannelEventChannel = diceRollPannel;
-            bankruptPlayerEventChannel = bankruptPlayer;
-            moneyDistributionEventChannel = moneyDistribution;
-        }
+            UIActivationEventChannel uiActivation,
+            UIActionEventChannel uiAction,
+            MoneyDistributionEventChannel moneyDistribution
+            ) : base(player, 
+                turnStarted, 
+                turnEnded, 
+                purchaseRequest,
+                chargeOwnershipFee,
+                passedGoPayment, 
+                turnActionRequest,
+                turnActionResult,
+                upgradeRequest, 
+                bankruptPlayer, 
+                jailStateChanged, 
+                chargePlayer, 
+                noLandingAction,
+                uiActivation,
+                uiAction,
+                moneyDistribution) { }
 
         ~HumanPlayerController()
         {
@@ -118,11 +94,17 @@ namespace Managers.PlayerControllers
 
             if (!isMyTurn)
                 return;
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.TurnStartedBanner, new TurnStartedBannerContext(
+                    controlledPlayer,
+                    () =>
+                    {
+                        if (!controlledPlayer.IsInJail())
+                            return;
 
-            if (!controlledPlayer.IsInJail())
-                return;
-
-            ShowJailOptionsUI();
+                        ShowJailOptionsUI();
+                    })));
         }
 
         private void HandlePurchaseOwnableEvent(PurchaseOwnableRequestEvent pore)
@@ -151,17 +133,20 @@ namespace Managers.PlayerControllers
 
         private void HandleUpgradeEvent(PropertySpaceData property)
         {
-            if (!isMyTurn || property == null || turnForcedEnd) return;
-            // Note: Follow this pattern for any event that requires player input.
+            if (!isMyTurn || property == null || turnForcedEnd) 
+                return;
+
             RequestTurnAction(
                 TurnActionType.ModifyProperty,
                 onAllowed: () =>
                 {
-                    upgradeRequestEventChannel?.RaiseEvent(
-                        new UpgradeRequestEvent(controlledPlayer, property));
+                    UpgradeManager.TryHandleUpgrade(controlledPlayer, property, out UpgradeDecision decision);
+
+                    ReopenPropertyManagementUI();
 
                     Logger.Debug("HumanPlayerController.HandleUpgradeEvent",
-                        $"Raised upgrade request for {property.spaceName}.",
+                        $"{controlledPlayer.GetPName()} attempted to upgrade {property.spaceName}: " +
+                        $"{(decision.Allowed ? "success" : "failure")}.",
                         LogCategory.UI);
                 },
                 onDenied: () =>
@@ -204,6 +189,10 @@ namespace Managers.PlayerControllers
 
         private void HandlePassedGo(PayPlayerEvent ppe)
         {
+            // TODO refactor this with a more specific event type that can distinguish between passing and landing on GO.
+            // passing go shouldn't fire a notification UI, but landing on it should, but we currently have no good way
+            // of knowing if we've passed it or landed on it.
+            
             if (!isMyTurn || turnForcedEnd) return;
 
             // ADDED: guard against malformed event payloads.
@@ -247,7 +236,7 @@ namespace Managers.PlayerControllers
             {
                 int activePlayers = PlayerManager.GetInstance()
                     .GetAllPlayers()
-                    .Count(p => p.IsMarkedBankrupt());
+                    .Count(p => !p.IsMarkedBankrupt());
                 actualAmount = mde.Type switch
                 {
                     // this player is paying- mult input amount by active players
@@ -306,13 +295,16 @@ namespace Managers.PlayerControllers
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
         {
-            if (!isMyTurn || turnForcedEnd) return;
+            if (!isMyTurn || turnForcedEnd || context == null)
+                return;
 
-            if(controlledPlayer.MortgageProperty(context.tile))
+            if (controlledPlayer.MortgageProperty(context.tile))
             {
-                mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
-                    this.controlledPlayer,
-                    context.tile));
+                // this whole event channel and event payload are used *nowhere else* in the system
+                // mortgageFinishedEventChannel?.RaiseEvent(new MortgageFinishedEvent(
+                //     controlledPlayer,
+                //     context.tile));
+                ReopenPropertyManagementUI();
             }
 
             RequestResolutionComplete();
@@ -324,46 +316,65 @@ namespace Managers.PlayerControllers
             
             switch (uiae.UIType)
             {
-
                 case UIType.PropertyPurchase:
-                    if(uiae.Context is PurchaseActionContext purchaseContext)
-                        ResolvePropertyPurchase(purchaseContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.MortgagePropertySelected:
-                    if(uiae.Context is MortgagePropertyContext mortgageContext)
-                        ResolveMortgageProperty(mortgageContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected MortageActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.JailOptions:
-                    if (uiae.Context is JailActionContext jailContext)
-                        ResolveJailAction(jailContext);
-                    else
-                        Logger.Error("HumanPlayerController.HandleUIAction",
-                            $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
-                            LogCategory.UI);
-                    break;
-                case UIType.PropertyUpgradeSelected:
-                     if (uiae.Context is PropertyUpgradeContext upgradeContext)
-                         HandleUpgradeEvent(upgradeContext.property);
-                     break;
-                case UIType.DiceRoll:
-                      HandleDiceRollPannel();
-                      break;
-                case UIType.GeneralNotification:
-                      HandleGeneralNotificationAcknowledgement((GeneralAcknowledgement)uiae.Context);
-                      break;
-                default:
-                    Logger.Debug("HumanPlayerController.HandleUIAction",
-                        $"Unhandled UI Type: ${uiae.UIType}",
-                        LogCategory.UI);
-                    break;
+                            if (uiae.Context is PurchaseActionContext purchaseContext)
+                                ResolvePropertyPurchase(purchaseContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected PurchaseActionContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.MortgagePropertySelected:
+                            if (uiae.Context is MortgagePropertyContext mortgageContext)
+                                ResolveMortgageProperty(mortgageContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected MortgagePropertyContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.UnmortgagePropertySelected:
+                            if (uiae.Context is UnmortgagePropertyContext unmortgageContext)
+                                ResolveUnmortgageProperty(unmortgageContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected UnmortgagePropertyContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.PropertyUpgradeSelected:
+                            if (uiae.Context is PropertyUpgradeContext upgradeContext)
+                                HandleUpgradeEvent(upgradeContext.property);
+                            break;
+
+                        case UIType.PropertyDowngradeSelected:
+                            if (uiae.Context is PropertyDowngradeContext downgradeContext)
+                                HandleDowngradeEvent(downgradeContext.Property);
+                            break;
+
+                        case UIType.JailOptions:
+                            if (uiae.Context is JailActionContext jailContext)
+                                ResolveJailAction(jailContext);
+                            else
+                                Logger.Error("HumanPlayerController.HandleUIAction",
+                                    $"Expected JailActionContext but got {uiae.Context?.GetType().Name}",
+                                    LogCategory.UI);
+                            break;
+
+                        case UIType.DiceRoll:
+                            HandleDiceRollPannel();
+                            break;
+
+                        case UIType.GeneralNotification:
+                            HandleGeneralNotificationAcknowledgement((GeneralAcknowledgement)uiae.Context);
+                            break;
+
+                        default:
+                            Logger.Debug("HumanPlayerController.HandleUIAction",
+                                $"Unhandled UI Type: {uiae.UIType}",
+                                LogCategory.UI);
+                            break;
             }
         }
 
@@ -379,7 +390,7 @@ namespace Managers.PlayerControllers
                 }
 
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
-                    $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.name}",
+                    $"{controlledPlayer.GetPName()} has executed purchase on ${pac.Property.spaceName}",
                     LogCategory.Gameplay); 
                 //Fire
             }
@@ -387,7 +398,7 @@ namespace Managers.PlayerControllers
             {
                 // controlledPlayer.DeclinePurchase(pac.Property);
                 Logger.Debug("HumanPlayerController.ResolvePropertyPurchase",
-                    $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.name}",
+                    $"{controlledPlayer.GetPName()} has declined purchase on ${pac.Property.spaceName}",
                     LogCategory.Gameplay);
             }
 
@@ -434,11 +445,7 @@ namespace Managers.PlayerControllers
                     uiActivationEventChannel?.RaiseEvent(
                         new UIActivationEvent(
                             UIType.DiceRoll,
-                            new PurchaseActivationContext(
-                                /*TODO: update input fields below*/
-                                null,
-                                0,
-                                controlledPlayer.CanAfford(0))));
+                            new DiceRollPanelContext(isAI: false)));
                     Logger.Debug("HumanPlayerController.HandleDiceRollPannel",
                        "Dice Roll Pannel Allowed.",
                        LogCategory.UI);
@@ -523,23 +530,15 @@ namespace Managers.PlayerControllers
                     new GeneralNotificationContext(controlledPlayer,
                         "GO FOR LAUNCH!",
                         "You're no longer stuck on the Launch Pad!",
-                        () => 
-                            RequestTurnAction(
-                                TurnActionType.CompleteResolution, 
-                                onAllowed: () => { }, 
-                                onDenied: () => { }
-                            ))));
+                        () => RequestResolutionComplete())));
             }
         }
 
         //display jail options for the current human player
         private void ShowJailOptionsUI()
         {
-            bool hasGetOutOfJailCard =
-                controlledPlayer.GetChanceCardCount() > 0 ||
-                controlledPlayer.GetCommunityCardCount() > 0;
-
-
+            bool hasGetOutOfJailCard = controlledPlayer.GetJailCards().Count > 0;
+            
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.JailOptions,
@@ -578,6 +577,8 @@ namespace Managers.PlayerControllers
                         TurnActionType.RollForJailEscape,
                         onAllowed: () =>
                         {
+                            uiActivationEventChannel?.RaiseEvent(new UIActivationEvent(
+                                UIType.DiceRoll, new DiceRollPanelContext(isAI: controlledPlayer.isAI)));
                             Logger.Info("HumanPlayerController.ResolveJailAction",
                                 $"{controlledPlayer.GetPName()} requested a jail escape roll.",
                                 LogCategory.Gameplay);
@@ -617,6 +618,57 @@ namespace Managers.PlayerControllers
                 LogCategory.Gameplay);
 
             
+        }
+
+        private void ReopenPropertyManagementUI()
+        {
+            uiActivationEventChannel?.RaiseEvent(
+                new UIActivationEvent(
+                    UIType.PropertyManagement,
+                    new PropertyManagementActivationContext(controlledPlayer)
+                )
+            );
+        }
+
+        private void ResolveUnmortgageProperty(UnmortgagePropertyContext context)
+        {
+            if (!isMyTurn || turnForcedEnd || context == null)
+                return;
+
+            if (controlledPlayer.UnmortgageProperty(context.Tile))
+            {
+                ReopenPropertyManagementUI();
+            }
+
+            RequestResolutionComplete();
+        }
+
+        private void HandleDowngradeEvent(PropertySpaceData property)
+        {
+            if (!isMyTurn || turnForcedEnd || property == null)
+                return;
+
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                onAllowed: () =>
+                {
+                    if (property.CanDowngrade())
+                    {
+                        // handle discovery (hotel) vs data point (house)
+                        controlledPlayer.AddMoney(property.UpgradeLevel == 5
+                            ? property.SellDiscovery()
+                            : property.SellDataPoint());
+                        ReopenPropertyManagementUI();
+                    }
+
+                    RequestResolutionComplete();
+                },
+                onDenied: () =>
+                {
+                    Logger.Debug("HumanPlayerController.HandleDowngradeEvent",
+                        "Downgrade blocked by TurnFlow.",
+                        LogCategory.UI);
+                });
         }
     }
 }

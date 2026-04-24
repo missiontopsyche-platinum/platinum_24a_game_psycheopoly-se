@@ -23,7 +23,7 @@ public class UpgradeManager : MonoBehaviour
         }
     }
 
-    public bool TryHandleUpgrade(Player owner, PropertySpaceData tile, out UpgradeDecision decision)
+    public static bool TryHandleUpgrade(Player owner, PropertySpaceData tile, out UpgradeDecision decision)
     {
         decision = default;
 

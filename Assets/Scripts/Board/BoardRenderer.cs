@@ -41,7 +41,6 @@ public class BoardRenderer : MonoBehaviour
     {
         playerAddedChannel?.Subscribe(AddPlayerPiece);
         playerMovedEventChannel?.Subscribe(MovePiece);
-        mortgageFinishedEventChannel?.Subscribe(OnMortgageFinished);
     }
 
     private void OnDestroy()
@@ -49,18 +48,6 @@ public class BoardRenderer : MonoBehaviour
         ClearBoard();
         playerAddedChannel.Unsubscribe(AddPlayerPiece);
         playerMovedEventChannel?.Unsubscribe(MovePiece);
-        mortgageFinishedEventChannel?.Unsubscribe(OnMortgageFinished);
-    }
-
-    //when a player mortgages a property, the tile will update immediately, not sure if needed for unmortgage...
-    private void OnMortgageFinished(MortgageFinishedEvent e)
-    {
-        if (e == null || e.Tile == null) return;
-
-        if (rendererBySpaceData.TryGetValue(e.Tile, out var renderer) && renderer != null)
-        {
-            renderer.RefreshTileStateVisuals();
-        }
     }
 
     public void GenerateBoard(SpaceData[] spaces)
@@ -106,7 +93,7 @@ public class BoardRenderer : MonoBehaviour
         spaceRenderers = new SpaceRenderer[spaces.Length];
         
         // vertical units of space in ortho-camera view from origin
-        float size = mainCamera.orthographicSize; 
+        float size = mainCamera.orthographicSize * .9f; 
         // distance in units between spaces, also space scale value.
         increment = (size * 2) / sideSpacesCount;
 
@@ -145,8 +132,9 @@ public class BoardRenderer : MonoBehaviour
     {
         GameObject newSpace = Instantiate(spaceRendererPrefab, transform);
         SpaceRenderer newRenderer = newSpace.GetComponent<SpaceRenderer>();
-        newSpace.transform.position = new Vector3(x, y, 0);
-        newRenderer.SetUpSpace(spaceData, scale);
+        float yOffset = -mainCamera.orthographicSize * 0.09f;
+        newSpace.transform.position = new Vector3(x, y + yOffset, 0);
+        newRenderer.SetUpSpace(spaceData, scale * 1.03f);
         return newRenderer;
     }
 
@@ -185,7 +173,7 @@ public class BoardRenderer : MonoBehaviour
         // create and initialize new piece object
         GameObject newPlayer = Instantiate(playerPiecePrefab);
         Piece piece = newPlayer.GetComponent<Piece>();
-        piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor());
+        piece.InitializePiece(player.GetId(), player.GetPName(), player.GetColor(), player.GetPiecePrefab());
         
         // scale new player game object to board scale
         newPlayer.transform.localScale *= increment;

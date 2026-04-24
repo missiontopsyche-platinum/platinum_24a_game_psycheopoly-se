@@ -44,7 +44,7 @@ public class TurnPanelController : UIPanelBase
             return;
         }
 
-        SetTextSafe(turnNumberText, $"Turn: {turnStartedEvent.turnNum}");
+        SetTextSafe(turnNumberText, $"Turn: {GameManager.instance.CurrentRoundNumber}");
     }
 
     public void OnEndTurnClicked()

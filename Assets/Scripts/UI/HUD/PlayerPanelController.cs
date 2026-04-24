@@ -1,19 +1,17 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Logging;
-using NUnit.Framework;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 public class PlayerPanelController : UIPanelBase
 {
     [Header("Event Channels")]
     [SerializeField] public TurnStartedEventChannel turnStartedChannel;
-    // TODO: Refactor if new PlayerEventChannel gets added
-    [SerializeField] public PlayerEventChannel addPlayerEventChannel;
-    [SerializeField] public BooleanEventChannel updatePlayerDataChannel;
 
-    public List<Player> playersList;
+    [Header("Settings")] 
+    [Tooltip("The rate (in seconds) at which the player information is updated")]
+    [SerializeField] public float pollRate = 0.25f;
 
     [Header("UI Elements")]
     [SerializeField] public Text playerNameText;
@@ -23,9 +21,7 @@ public class PlayerPanelController : UIPanelBase
 
     private void OnEnable()
     {
-        Subscribe(turnStartedChannel, DisplayCurrentPlayer);
-        Subscribe(addPlayerEventChannel, AddPlayer);
-        Subscribe(updatePlayerDataChannel, UpdatePlayerData);
+        Subscribe(turnStartedChannel, OnTurnStarted);
         
         Logging.Logger.Trace("PlayerPanelController.OnEnable",
             "Player panel is now enabled.",
@@ -42,27 +38,16 @@ public class PlayerPanelController : UIPanelBase
             this);
     }
 
-    public void DisplayCurrentPlayer(TurnStartedEvent turnStartedEvent)
+    private void Start()
     {
-        if (turnStartedEvent == null)
-        {
-            Logging.Logger.Warn("PlayerPanelController.DisplayCurrentPlayer",
-                $"Event: {nameof(turnStartedEvent)} is null",
-                LogCategory.UI,
-                this);
-            return;
-        }
-
-        currentPlayerId = turnStartedEvent.playerId;
-        
-        UpdatePlayerUI();
+        InvokeRepeating(nameof(UpdatePlayerUI), pollRate, pollRate);
     }
 
+    private void OnTurnStarted(TurnStartedEvent tse) => currentPlayerId = tse.playerId;
     
-
     private void UpdatePlayerUI()
     {
-        var player = playersList?.Find(player => player.GetId() == currentPlayerId);
+        var player = PlayerManager.GetInstance().GetPlayer(currentPlayerId);
 
         if (player == null)
         {
@@ -84,25 +69,5 @@ public class PlayerPanelController : UIPanelBase
             $"Current Player: {name} with ${money}",
             LogCategory.UI,
             this);
-    }
-    
-    public void UpdatePlayerData(bool _) => UpdatePlayerUI();
-
-    public void AddPlayer(Player player)
-    {
-        if (playersList == null) playersList = new List<Player>();
-        // TODO: This operates on the logic that the same channel gets called to add/remove
-        // Must refactor when we have a dedicated remove player event channel
-        if (playersList.Contains(player))
-        {
-            playersList.Remove(player);
-            return;
-        }
-        playersList.Add(player);
-    }
-
-    public void ClearPlayers()
-    {
-        playersList.Clear();
     }
 }

@@ -51,6 +51,7 @@ public class DiceRollPanelController : MonoBehaviour
     {
         Logger.Debug("DiceRollPanel.OnRollClicked", "Roll clicked!", LogCategory.Gameplay, this);
         diceManager.RollDice();
+        rollButton.interactable = false;
            
     }
 
@@ -91,7 +92,7 @@ public class DiceRollPanelController : MonoBehaviour
             "Dice Roll Panel Launching.",
             LogCategory.UI);
 
-        if (uiae.UIType == UIType.DiceRoll)
+        if (uiae.UIType == UIType.DiceRoll && uiae.Context is DiceRollPanelContext context)
         {
             CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
             if (canvasGroup == null)
@@ -100,6 +101,10 @@ public class DiceRollPanelController : MonoBehaviour
             canvasGroup.alpha = 1;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
+            rollButton.interactable = true;
+
+            if (context.isAI)
+                OnRollClicked();
         }
     }
 }

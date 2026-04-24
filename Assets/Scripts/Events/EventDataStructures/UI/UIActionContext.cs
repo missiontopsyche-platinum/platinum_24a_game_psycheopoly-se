@@ -55,6 +55,7 @@ namespace Events.EventDataStructures.UI
     /// </summary>
     public class MortgagePropertyContext : UIActionContext
     {
+        public Player Player { get; }
         public OwnableSpaceData tile { get; }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace Events.EventDataStructures.UI
         /// <param name="player"></param>
         /// <param name="data"></param>
         public MortgagePropertyContext(Player player, OwnableSpaceData tile) {
+            Player = player;
             this.tile = tile;
             
         }

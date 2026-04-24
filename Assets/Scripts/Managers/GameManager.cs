@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     public static int LastWinningPlayerId { get; private set; } = -1;
     public static string LastWinningPlayerName { get; private set; } = string.Empty;
 
+    public int CurrentRoundNumber { get; set; }
+
     // In Project Settings/Script Execution Order, this has been moved below all other
     // scripts to ensure they have the time to set themselves up on init before we
     // try to start a game. This solves race conditions we introduced when we
@@ -144,11 +146,11 @@ public class GameManager : MonoBehaviour
         {
             new (MakePlayer("Player 1", Color.red), true, null),
             new (MakePlayer("Player 2", Color.blue), false, 
-                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+                Resources.Load<AIBehaviorWeights>("AIPersonalities/DefaultPersonality")),
             new (MakePlayer("Player 3", Color.yellow), false, 
-                ScriptableObject.CreateInstance<AIBehaviorWeights>()),
+                Resources.Load<AIBehaviorWeights>("AIPersonalities/DefaultPersonality")),
             new (MakePlayer("Player 4", Color.green), false, 
-                ScriptableObject.CreateInstance<AIBehaviorWeights>())
+                Resources.Load<AIBehaviorWeights>("AIPersonalities/DefaultPersonality"))
         };
         
         playerManager.InitializePlayers(configs);

@@ -17,9 +17,10 @@ public class PlanetSpaceData : OwnableSpaceData
         base.OnLanded(player);
         if (owner == null) return;
         if (isMortgaged) return;
-        if (owner.Equals(player))
+        if (owner == player)
         {
-            // do nothing based on rules
+            noLandingActionEventChannel.RaiseEvent(new NoActionLandingEvent(spaceName,
+                "You already own this space!"));
         }
         else
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Assets.Scripts.Events.EventChannelTypes;
 using Events.EventDataStructures.UI;
 using TMPro;
@@ -6,10 +7,14 @@ using UnityEngine;
 
 public class GeneralNotificationUI : MonoBehaviour
 {
+    [Header("UI Elements")]
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text playerNameText;
     [SerializeField] private TMP_Text notificationTitle;
     [SerializeField] private TMP_Text notificationText;
+    
+    [Header("Configuration")]
+    [SerializeField] private float automaticWaitTime = 1;
 
     [Header("Event Channels")] 
     [SerializeField] private UIActivationEventChannel activationEventChannel;
@@ -39,9 +44,17 @@ public class GeneralNotificationUI : MonoBehaviour
             if (uiae.Context is GeneralNotificationContext gnc)
             {
                 currentOnAcknowledged = gnc.onAcknowledged;
+                if (gnc.isAI) 
+                    StartCoroutine(AutoCloseTimer());
                 Show(gnc);
             }
         }
+    }
+
+    private IEnumerator AutoCloseTimer()
+    {
+        yield return new WaitForSeconds(automaticWaitTime);
+        Hide();
     }
 
     private void Show(GeneralNotificationContext gnc)
@@ -56,6 +69,7 @@ public class GeneralNotificationUI : MonoBehaviour
 
     public void Hide()
     {
+        StopAllCoroutines();
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;

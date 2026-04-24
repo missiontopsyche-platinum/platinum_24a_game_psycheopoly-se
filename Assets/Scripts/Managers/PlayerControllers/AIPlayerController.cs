@@ -1,10 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AIBehavior;
 using Assets.Scripts.Events.EventChannelTypes;
 using Assets.Scripts.Managers.TurnFlow;
 using Data;
 using Events.EventDataStructures;
+using Events.EventDataStructures.UI;
 using Logging;
+using UnityEngine;
+using Logger = Logging.Logger;
 
 namespace Managers.PlayerControllers
 {
@@ -18,27 +23,20 @@ namespace Managers.PlayerControllers
         private readonly AIUpgradeBehavior upgradeBehavior;
         private readonly AIMortgageBehavior mortgageBehavior;
         private readonly AIUnmortgageBehavior unmortgageBehavior;
-
-        // private AIJailBehavior
-        // etc...
-        private bool myTurnActive;
+        
+        // state variables
         private bool endTurnRequested;
-        // event channels ... I don't think this will need special ones
-        private ActionResolvedEventChannel actionResolvedEventChannel;
-        private BooleanEventChannel diceRollRequestChannel;
-        private MoneyDistributionEventChannel moneyDistributionEventChannel;
-        private MortgageFinishedEventChannel mortgageFinishedEventChannel;
+        private bool hasRolled;
+        private bool isInDebt;
+
+        // optional action variables
+        private Queue<Action> optionalActionsQueue;
+        private int upgradesExecuted;
 
         /// <summary>
         /// Creates an AI player controller. This needs to be called in conjunction with <c>.Subscribe()</c>
         /// so that event channels are properly routed.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="aiBehaviorWeights"></param>
-        /// <param name="turnStarted"></param>
-        /// <param name="purchaseRequest"></param>
-        /// <param name="chargeOwnershipFee"></param>
-        /// <param name="passedGoPayment"></param>
         public AIPlayerController(
             Player player,
             AIBehaviorWeights aiBehaviorWeights,
@@ -47,18 +45,32 @@ namespace Managers.PlayerControllers
             PurchaseOwnableRequestEventChannel purchaseRequest,
             ChargeOwnershipFeeEventChannel chargeOwnershipFee,
             PayPlayerEventChannel passedGoPayment,
-            BooleanEventChannel diceRollRequest,
-            ActionResolvedEventChannel actionResolved,
-            UpgradeRequestEventChannel upgradeRequest,
-            IntEventChannel bankruptPlayer,
             TurnActionRequestEventChannel turnActionRequest,
             TurnActionResultEventChannel turnActionResult,
+            UpgradeRequestEventChannel upgradeRequest,
+            IntEventChannel bankruptPlayer,
             JailStateChangedEventChannel jailStateChanged,
-            MortgageFinishedEventChannel mortgageFinishedEventChannel,
             ChargePlayerEventChannel chargePlayer,
             NoActionLandingEventChannel noLandingAction,
-            MoneyDistributionEventChannel moneyDistribution)
-            : base(player, turnStarted, turnEnded, purchaseRequest, chargeOwnershipFee, passedGoPayment, upgradeRequest, turnActionRequest, turnActionResult, bankruptPlayer, jailStateChanged, chargePlayer, noLandingAction)
+            UIActivationEventChannel uiActivation,
+            UIActionEventChannel uiAction,
+            MoneyDistributionEventChannel moneyDistribution
+        ) : base(player, 
+            turnStarted, 
+            turnEnded, 
+            purchaseRequest,
+            chargeOwnershipFee,
+            passedGoPayment, 
+            turnActionRequest,
+            turnActionResult,
+            upgradeRequest, 
+            bankruptPlayer, 
+            jailStateChanged, 
+            chargePlayer, 
+            noLandingAction,
+            uiActivation,
+            uiAction,
+            moneyDistribution)
         {
             // load in behavior / personality
             weights = aiBehaviorWeights;
@@ -78,131 +90,173 @@ namespace Managers.PlayerControllers
             unmortgageBehavior = new AIUnmortgageBehavior(
                 controlledPlayer,
                 weights.mortgageThresholds);
-
-            actionResolvedEventChannel = actionResolved ?? throw new System.ArgumentNullException(nameof(actionResolved));
-            diceRollRequestChannel = diceRollRequest ?? throw new System.ArgumentNullException(nameof(diceRollRequest));
-            moneyDistributionEventChannel = moneyDistribution ?? throw new System.ArgumentNullException(nameof(moneyDistribution));
-            // mortgageBehavior
-            this.mortgageFinishedEventChannel =
-                mortgageFinishedEventChannel ?? throw new System.ArgumentNullException(nameof(mortgageFinishedEventChannel));
-            // jailBehavior etc...
         }
 
         public override void Subscribe()
         {
             base.Subscribe();
+            uiActionEventChannel?.Subscribe(HandleUIAction);
             purchaseOwnableRequestEventChannel?.Subscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Subscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Subscribe(HandlePassedGo);
-            actionResolvedEventChannel?.Subscribe(OnActionResolved);
             moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
+            chargePlayerEventChannel?.Subscribe(HandleChargePlayerEvent);
+            noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
         }
 
         public override void Unsubscribe()
         {
             base.Unsubscribe();
+            uiActionEventChannel?.Unsubscribe(HandleUIAction);
             purchaseOwnableRequestEventChannel?.Unsubscribe(PurchaseRequestDecision);
             chargeOwnershipFeeEventChannel?.Unsubscribe(HandleChargeOwnershipFee);
             passedGoPaymentChannel?.Unsubscribe(HandlePassedGo);
-            actionResolvedEventChannel?.Unsubscribe(OnActionResolved);
             moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
+            chargePlayerEventChannel?.Unsubscribe(HandleChargePlayerEvent);
+            noLandingActionEventChannel?.Unsubscribe(HandleNoLandingActionEvent);
         }
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
         {
-            // TODO: This needs to be implemented and property integrated. Currently the actions don't *do* anything.
             base.CatchTurnStartedEvent(tse);
 
             if (!isMyTurn) return;
 
-            myTurnActive = true;
             endTurnRequested = false;
+            hasRolled = false;
+            isInDebt = false;
             
-            HandleOptionalActions();
-
-            // TODO This might need to run as a coroutine so that we can await the completed movement
-            // alternatively, we'd need to fully decouple this from the loop and have separate methods... but
-            // to be honest, having an AI Turn coroutine makes a lot of sense- keep it all in the same logical
-            // place.
-
-            // AI must roll dice or the game stalls at AwaitingRoll.
-            RequestTurnAction(
-                TurnActionType.RollDice,
-                onAllowed: () =>
-                {
-                    if (diceRollRequestChannel == null)
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.TurnStartedBanner, new TurnStartedBannerContext(
+                    controlledPlayer,
+                    () =>
                     {
-                        Logger.Error("AIPlayerController.CatchTurnStartedEvent",
-                            "DiceRollRequestChannel not found. AI cannot roll dice.",
-                            LogCategory.AI);
-                        return;
-                    }
+                        if (controlledPlayer.IsInJail())
+                        {
+                            HandleJailTurnStart();
+                            return;
+                        }
 
-                    diceRollRequestChannel.RaiseEvent(true);
-
-                    Logger.Info("AIPlayerController.CatchTurnStartedEvent",
-                        $"AI {controlledPlayer.GetPName()} rolled dice.",
-                        LogCategory.AI);
-                },
-                onDenied: () =>
-                {
-                    Logger.Warn("AIPlayerController.CatchTurnStartedEvent",
-                        $"AI {controlledPlayer.GetPName()} attempted RollDice but was denied.",
-                        LogCategory.AI);
-                });
-            // wait for resolution of the movement phase (land on space, resolve space)
-
-            HandleOptionalActions();
-            // end turn
+                        ExecuteOptionalActions();
+                    }, isAI:true)));
         }
 
-        private void HandleOptionalActions()
+        private void ExecuteOptionalActions()
         {
-            HandleMortgageAction();
-            // handle unmortgage goes here
-            HandleUnmortgageAction();
-            HandleUpgradeAction();
+            optionalActionsQueue = new Queue<Action>();
+            optionalActionsQueue.Enqueue(ExecuteUpgradePhase);
+            optionalActionsQueue.Enqueue(ExecuteUnmortgagePhase);
+            optionalActionsQueue.Enqueue(ExecuteMortgagePhase);
+
+            NextOptionalAction();
+        }
+
+        private void NextOptionalAction()
+        {
+            if(optionalActionsQueue.Count > 0)
+                optionalActionsQueue.Dequeue().Invoke();
+            else
+                OnOptionalActionsComplete();
+        }
+
+        private void ExecuteUpgradePhase()
+        {
+            upgradesExecuted = 0;
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                HandleUpgradeAction, 
+                NextOptionalAction);
+        }
+
+        private void ExecuteUnmortgagePhase()
+        {
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                HandleUnmortgageAction, 
+                NextOptionalAction);
+        }
+
+        private void ExecuteMortgagePhase()
+        {
+            RequestTurnAction(
+                TurnActionType.ModifyProperty,
+                HandleMortgageAction, 
+                NextOptionalAction);
+        }
+
+        private void OnOptionalActionsComplete()
+        {
+            if (hasRolled)
+                RequestEndTurn();
+            else
+                ExecuteDiceRoll();
+        }
+
+        private void HandleUIAction(UIActionEvent uiae)
+        {
+            if (!isMyTurn) return;
+
+            switch (uiae.UIType)
+            {
+                case UIType.GeneralNotification:
+                    if (uiae.Context is GeneralAcknowledgement context)
+                        context.onAcknowledged.Invoke();
+                    break;
+            }
+        }
+
+        private void ExecuteDiceRoll()
+        {
+            RequestTurnAction(
+                TurnActionType.RollDice,
+                () =>
+                {
+                    uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                        UIType.DiceRoll,
+                        new DiceRollPanelContext(isAI:true)));
+                    Logger.Info("AIPlayerController.StartNormalRollFlow",
+                        $"AI {controlledPlayer.GetPName()} rolled dice.",
+                        LogCategory.AI);
+                    hasRolled = true;
+                }, () => Logger.Error(
+                    "AIPlayerController.ExecuteDiceRoll",
+                    $"{controlledPlayer.GetPName()}: Dice Roll denied!", 
+                    LogCategory.AI));
         }
 
         private void HandleUpgradeAction()
         {
-            AIUpgradeEvaluation evaluation;
+            AIUpgradeEvaluation evaluation = upgradeBehavior.EvaluateUpgrade();
 
-            do
+            if (!evaluation.willUpgrade)
             {
-                evaluation = upgradeBehavior.EvaluateUpgrade();
-
-                if (!evaluation.willUpgrade || evaluation.upgradeTarget == null)
-                    break;
-
-                PropertySpaceData target = evaluation.upgradeTarget;
-
-                RequestTurnAction(
-                    TurnActionType.ModifyProperty,
-                    onAllowed: () =>
-                    {
-                        upgradeRequestEventChannel?.RaiseEvent(
-                            new UpgradeRequestEvent(controlledPlayer, target));
-
-                        Logger.Info("AIPlayerController.HandleUpgradeAction",
-                            $"Raised upgrade request for {target.spaceName}.",
-                            LogCategory.AI);
-                    },
-                    onDenied: () =>
-                    {
-                        Logger.Debug("AIPlayerController.HandleUpgradeAction",
-                            $"Upgrade request denied for {target.spaceName}.",
-                            LogCategory.AI);
-                    });
-
-                break;
-
-            } while (evaluation.willUpgrade);
+                if (upgradesExecuted == 0)
+                {
+                    NextOptionalAction();
+                    return;
+                }
+                
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, new GeneralNotificationContext(
+                        controlledPlayer,
+                        "Upgrade Actions Taken",
+                        $"{controlledPlayer.GetPName()} upgraded {upgradesExecuted} properties.",
+                        NextOptionalAction,
+                        isAI: true)));
+                return;
+            }
+            evaluation.upgradeTarget.UpgradeProperty();
+            controlledPlayer.TrySpend(evaluation.upgradeTarget.UpgradeCost);
+            upgradesExecuted++;
+            HandleUpgradeAction(); // recurse until we chose to not upgrade
         }
 
         private void HandleMortgageAction()
         {
             AIMortgageEvaluation evaluation = mortgageBehavior.EvaluateMortgage();
+            int dataPointsSold = 0;
+            int discoveriesSold = 0;
+            int propsMortgaged = 0;
 
             foreach (var mortgageAction in evaluation.actions)
             {
@@ -214,30 +268,70 @@ namespace Managers.PlayerControllers
                             Logger.Info("AIPlayerController.HandleMortgageAction",
                                 $"AI {controlledPlayer.GetPName()} mortgaged {mortgageAction.ownableSpace.spaceName}.",
                                 LogCategory.AI);
+                            propsMortgaged++;
                         }
                         else
                         {
-                            Logger.Warn("AIPlayerController.HandleMortgageAction",
+                            Logger.Error("AIPlayerController.HandleMortgageAction",
                                 $"AI {controlledPlayer.GetPName()} failed to mortgage {mortgageAction.ownableSpace.spaceName}.",
                                 LogCategory.AI);
                         }
                         break;
                     case MortgageActionType.SellDataPoint:
-                        // sell data point
+                    {
+                        if (mortgageAction.ownableSpace is PropertySpaceData prop)
+                        {
+                            controlledPlayer.AddMoney(prop.SellDataPoint());
+                            dataPointsSold++;
+                        }
                         break;
+                    }
                     case MortgageActionType.SellDiscovery:
-                        // sell discovery (all upgrades for this property)
+                    {
+                        if (mortgageAction.ownableSpace is PropertySpaceData prop)
+                        {
+                            controlledPlayer.AddMoney(prop.SellDiscovery());
+                            discoveriesSold++;
+                        }
                         break;
+                    }
                 }
             }
             Logger.Info("AIPlayerController.HandleMortgageAction",
                 $"Mortgage Evaluation: {evaluation.message}.",
                 LogCategory.AI);
+
+            Action continuation = isInDebt
+                ? () =>
+                {
+                    isInDebt = false;
+                    RequestAIResolutionComplete();
+                }
+                : NextOptionalAction;
+            
+            // there were no actions completed, continue
+            if (dataPointsSold == 0 && propsMortgaged == 0 && discoveriesSold == 0)
+            { 
+                continuation.Invoke();
+                return;
+            }
+
+            // else we tell the player what happened.
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "Mortgage Actions Taken",
+                    $"{controlledPlayer.GetPName()} has mortgaged {propsMortgaged} properties, " +
+                    $"has sold {dataPointsSold} data points, and " +
+                    $"sold {discoveriesSold} discoveries.",
+                    continuation,
+                    true)));
         }
 
         private void HandleUnmortgageAction()
         {
             AIUnmortgageEvaluation evaluation = unmortgageBehavior.EvaluateUnmortgage();
+            int unmortgagedProps = 0;
 
             foreach (var action in evaluation.actions)
             {
@@ -251,9 +345,7 @@ namespace Managers.PlayerControllers
                     Logger.Info("AIPlayerController.HandleUnmortgageAction",
                         $"AI {controlledPlayer.GetPName()} unmortgaged {action.ownableSpace.spaceName}.",
                         LogCategory.AI);
-
-                    mortgageFinishedEventChannel?.RaiseEvent(
-                        new MortgageFinishedEvent(controlledPlayer, action.ownableSpace));
+                    unmortgagedProps++;
                 }
                 else
                 {
@@ -262,10 +354,24 @@ namespace Managers.PlayerControllers
                         LogCategory.AI);
                 }
             }
-
             Logger.Info("AIPlayerController.HandleUnmortgageAction",
                 $"Unmortgage Evaluation: {evaluation.message}.",
                 LogCategory.AI);
+
+            if (unmortgagedProps == 0)
+            {
+                NextOptionalAction();
+                return;
+            }
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "Unmortgaging Actions Taken",
+                    $"{controlledPlayer.GetPName()} has unmortgaged " +
+                    $"{unmortgagedProps} properties.",
+                    NextOptionalAction,
+                    isAI:true)));
         }
 
         private void PurchaseRequestDecision(PurchaseOwnableRequestEvent pore)
@@ -281,51 +387,92 @@ namespace Managers.PlayerControllers
                     pore.requestedSpace.buyPrice);
                 
                 Logger.Info("AIPlayerController.PurchaseRequestDecision",
-                    $"Computer Player {controlledPlayer.GetPName()} has executed purchase on {pore.requestedSpace.name}",
+                    $"Computer Player {controlledPlayer.GetPName()} has executed purchase on {pore.requestedSpace.spaceName}",
                     LogCategory.AI);
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, new GeneralNotificationContext(
+                        controlledPlayer,
+                        "Property Purchased!",
+                        $"{controlledPlayer.GetPName()} bought {pore.requestedSpace.spaceName} " +
+                        $"for ${pore.cost}.",
+                        RequestAIResolutionComplete,
+                        true)));
             }
             else
             {
-                // we don't need to do much for declining a purchase, besides maybe flagging that 
-                // the Movement phase is resolved for the AI turn flow.
-                
                 Logger.Info("AIPlayerController.PurchaseRequestDecision",
                     $"Computer Player {controlledPlayer.GetPName()} has declined purchase on {pore.requestedSpace.name}",
                     LogCategory.AI);
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, new GeneralNotificationContext(
+                        controlledPlayer,
+                        "Purchase Declined!",
+                        $"{controlledPlayer.GetPName()} has declined purchase on {pore.requestedSpace.spaceName}.",
+                        RequestAIResolutionComplete,
+                        true)));
             }
         }
 
-        private void HandleChargeOwnershipFee(ChargeOwnershipFeeEvent cofe)
+        private void HandleSpendMoney(int amount)
         {
-            if (!isMyTurn) return;
-
-            Player.FinancialStatus status = controlledPlayer.TrySpend(cofe.amount);
-
+            Player.FinancialStatus status = controlledPlayer.TrySpend(amount);
             switch (status)
             {
                 case Player.FinancialStatus.Success:
-                    Logger.Info("AIPlayerController.HandleChargeOwnershipFee",
-                        $"AI {controlledPlayer.GetPName()} paid ownership fee of ${cofe.amount}.",
+                    Logger.Info("AIPlayerController.HandleSpendMoney",
+                        $"AI {controlledPlayer.GetPName()} paid fee of ${amount}.",
                         LogCategory.AI);
                     break;
 
                 case Player.FinancialStatus.Bankrupt:
-                    Logger.Warn("AIPlayerController.HandleChargeOwnershipFee",
-                        $"AI {controlledPlayer.GetPName()} cannot pay ownership fee and is bankrupt.",
+                    Logger.Warn("AIPlayerController.HandleSpendMoney",
+                        $"AI {controlledPlayer.GetPName()} cannot pay fee and is bankrupt.",
                         LogCategory.AI);
 
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
                     break;
 
                 case Player.FinancialStatus.MortgageRequired:
-                    Logger.Info("AIPlayerController.HandleChargeOwnershipFee",
-                        $"AI {controlledPlayer.GetPName()} needs mortgage handling to cover ownership fee of ${cofe.amount}.",
+                    Logger.Info("AIPlayerController.HandleSpendMoney",
+                        $"AI {controlledPlayer.GetPName()} needs mortgage handling to cover fee of ${amount}.",
                         LogCategory.AI);
+                    isInDebt = true;
                     HandleMortgageAction();
                     break;
             }
+        } 
 
-            RequestResolutionComplete();
+        private void HandleChargePlayerEvent(ChargePlayerEvent cpe)
+        {
+            if (!isMyTurn || cpe.chargedPlayer != controlledPlayer) return;
+            
+            HandleSpendMoney(cpe.chargeAmount);
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "Charged Fee!",
+                    $"{controlledPlayer.GetPName()} has been charged ${cpe.chargeAmount}",
+                    RequestAIResolutionComplete,
+                    true)));
+        }
+
+        private void HandleChargeOwnershipFee(ChargeOwnershipFeeEvent cofe)
+        {
+            if (!isMyTurn) return;
+
+            HandleSpendMoney(cofe.amount);
+            
+            cofe.toPlayer.AddMoney(cofe.amount);
+            
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "Charged Fee!",
+                    $"{controlledPlayer.GetPName()} has been charged ${cofe.amount}, " +
+                    $"paid to {cofe.toPlayer.GetPName()}.",
+                    RequestAIResolutionComplete,
+                    true)));
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
@@ -346,7 +493,7 @@ namespace Managers.PlayerControllers
             // handle passing go
             controlledPlayer.AddMoney(ppe.amountPaid);
 
-            RequestResolutionComplete();
+            RequestAIResolutionComplete();
         }
 
         // Handles CollectFromAllPlayers card effects for the AI player's controller.
@@ -371,7 +518,7 @@ namespace Managers.PlayerControllers
             {
                 int activePlayers = PlayerManager.GetInstance()
                     .GetAllPlayers()
-                    .Count(p => p.IsMarkedBankrupt());
+                    .Count(p => !p.IsMarkedBankrupt());
                 actualAmount = mde.Type switch
                 {
                     // this player is paying- mult input amount by active players
@@ -416,23 +563,49 @@ namespace Managers.PlayerControllers
             // if actualAmount is 0, then we are being paid and don't need to do anything
             // regardless, if it is our turn we need to mark resolution complete
             if (isMyTurn)
-                RequestResolutionComplete();
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, new GeneralNotificationContext(
+                        controlledPlayer,
+                        "Money distribution!",
+                        $"{controlledPlayer.GetPName()} has executed on the card.",
+                        RequestAIResolutionComplete,
+                        true)));
+        }
+        
+        private void HandleNoLandingActionEvent(NoActionLandingEvent noActionLanding)
+        {
+            if (!isMyTurn) return;
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, 
+                new GeneralNotificationContext(controlledPlayer,
+                    noActionLanding.spaceName,
+                    noActionLanding.flavorText,
+                    RequestAIResolutionComplete,
+                    isAI: true)));
         }
 
-        private void OnActionResolved(ActionResolvedEvent evt)
+        private void RequestAIResolutionComplete()
         {
-            if (evt.playerId != controlledPlayer.GetId()) return;
-            if (!myTurnActive || endTurnRequested) return;
+            RequestTurnAction(
+                TurnActionType.CompleteResolution,
+                OnLandingActionResolved,
+                () =>
+                {
+                    Logger.Error("AIPlayerController.RequestAIResolutionComplete",
+                        $"{controlledPlayer.GetPName()} was denied resolution complete.",
+                        LogCategory.AI);
+                });
+        }
 
-            // TODO: Any post-action logic or decision-making would go here before ending the turn.
-
-
-            // After the AI player moves, it will skip AwaitingResolution phase and request to end turn.
-            // This is with the assumption that the AI will be doing all of its decision-making and action
-            // execution above, so there won't be any need to wait for resolution before ending the turn.
-            RequestResolutionComplete(
-                onAllowed: RequestEndTurn,
-                onDenied: RequestEndTurn);
+        private void OnLandingActionResolved()
+        {
+            if (controlledPlayer.IsInJail())
+            {
+                RequestEndTurn();
+                return;
+            }
+            
+            ExecuteOptionalActions();
         }
 
         private void RequestEndTurn()
@@ -445,12 +618,154 @@ namespace Managers.PlayerControllers
                 TurnActionType.EndTurn,
                 onAllowed: () =>
                 {
-                    myTurnActive = false;
+                    Logger.Info("AIPlayerController.RequestEndTurn",
+                        $"{controlledPlayer.GetPName()} has ended their turn.",
+                        LogCategory.AI);
                 },
                 onDenied: () =>
                 {
-                    endTurnRequested = false;
+                    Logger.Error("AIPlayerController.RequestEndTurn",
+                        $"{controlledPlayer.GetPName()} was denied ending of turn.",
+                        LogCategory.AI);
                 });
+        }
+
+        private enum AIJailDecision
+        {
+            RollForEscape,
+            PayFine,
+            UseCard
+        }
+
+        private void HandleJailTurnStart()
+        {
+            AIJailDecision decision = EvaluateJailDecision();
+
+            Logger.Info("AIPlayerController.HandleJailTurnStart",
+                $"AI {controlledPlayer.GetPName()} jail decision: {decision}",
+                LogCategory.AI);
+
+            switch (decision)
+            {
+                case AIJailDecision.UseCard:
+                    HandleUseJailCard();
+                    break;
+
+                case AIJailDecision.PayFine:
+                    HandlePayJailFine();
+                    break;
+
+                case AIJailDecision.RollForEscape:
+                default:
+                    HandleRollForJailEscape();
+                    break;
+            }
+        }
+
+        private AIJailDecision EvaluateJailDecision()
+        {
+            bool hasJailCard = controlledPlayer.GetJailCards().Count > 0;
+
+            bool canAffordFine = controlledPlayer.CanAfford(Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE);
+            int nextJailTurn = controlledPlayer.GetJailTurns() + 1;
+
+            //On 3rd attempt prefer  the guaranteed exit methods
+            if (nextJailTurn >= Assets.Scripts.Managers.Jail.JailUtility.MAX_TURNS_IN_JAIL)
+            {
+                if (hasJailCard)
+                    return AIJailDecision.UseCard;
+
+                if (canAffordFine)
+                    return AIJailDecision.PayFine;
+
+                return AIJailDecision.RollForEscape;
+            }
+
+            //use a card first, then pay only if cash allows and if not roll.
+            if (hasJailCard)
+                return AIJailDecision.UseCard;
+
+            if (canAffordFine && controlledPlayer.GetMoney() > (Assets.Scripts.Managers.Jail.JailUtility.JAIL_FEE + 200))
+                return AIJailDecision.PayFine;
+
+            return AIJailDecision.RollForEscape;
+        }
+
+        //The methods below help wire jail decisions to JailUtility
+        private void HandleRollForJailEscape()
+        {
+            RequestTurnAction(
+                TurnActionType.RollForJailEscape,
+                onAllowed: () =>
+                {
+                    Logger.Info("AIPlayerController.HandleRollForJailEscape",
+                        $"AI {controlledPlayer.GetPName()} is rolling for jail escape.",
+                        LogCategory.AI);
+                },
+                onDenied: () =>
+                {
+                    Logger.Warn("AIPlayerController.HandleRollForJailEscape",
+                        $"AI {controlledPlayer.GetPName()} was denied RollForJailEscape.",
+                        LogCategory.AI);
+                });
+        }
+
+        private void HandlePayJailFine()
+        {
+            var result = Assets.Scripts.Managers.Jail.JailUtility.PayFee(controlledPlayer);
+
+            Logger.Info("AIPlayerController.HandlePayJailFine",
+                $"AI {controlledPlayer.GetPName()} pay fine: {result}",
+                LogCategory.AI);
+
+            if (result == Assets.Scripts.Managers.Jail.JailUtility.FeePaymentResult.Paid)
+            {
+                RaiseJailStateChanged(false);
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, new GeneralNotificationContext(
+                        controlledPlayer,
+                        "Paid Launch Pad Fee!",
+                        $"{controlledPlayer.GetPName()} has paid the fee to leave the launch pad.",
+                        ExecuteOptionalActions,
+                        true)));
+                return;
+            }
+
+            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+            RequestEndTurn();
+        }
+
+        private void HandleUseJailCard()
+        {
+            var result = Assets.Scripts.Managers.Jail.JailUtility.UseGetOutOfJailFree(controlledPlayer);
+
+            Logger.Info("AIPlayerController.HandleUseJailCard",
+                $"AI {controlledPlayer.GetPName()} use card result: {result}",
+                LogCategory.AI);
+
+            if (result == Assets.Scripts.Managers.Jail.JailUtility.CardUseResult.Success)
+            {
+                RaiseJailStateChanged(false);
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, new GeneralNotificationContext(
+                        controlledPlayer,
+                        "Left the Launch Pad using Card!",
+                        $"{controlledPlayer.GetPName()} has left the launch pad with a card.",
+                        ExecuteOptionalActions,
+                        true)));
+                return;
+            }
+
+            HandleRollForJailEscape();
+        }
+
+        private void RaiseJailStateChanged(bool inJail)
+        {
+            jailStateChangedEventChannel?.RaiseEvent(
+                new Assets.Scripts.Events.EventDataStructures.JailStateChangedEvent(
+                    controlledPlayer,
+                    inJail,
+                    controlledPlayer.GetJailTurns()));
         }
     }
 }

@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::GoSpaceData
   spaceName: Go
   spaceColor: {r: 0.9433962, g: 0.88554645, b: 0.88554645, a: 1}
+  shortDisplayName: 
+  groupColor: {r: 1, g: 1, b: 1, a: 1}
+  numberOfPropertiesInGroup: 0
+  smallIcon: {fileID: 0}
   spaceHoverEventChannel: {fileID: 11400000, guid: 5262a742445453a4495cf054a06d45c5, type: 2}
   onSpaceExitEventChannel: {fileID: 11400000, guid: a85c0b96db3339442a55a6435a1d7263, type: 2}
   artwork: {fileID: 21300000, guid: e8fea0aa7394c7941b394418240c8cbf, type: 3}
   payout: 200
-  payPlayerEventChannel: {fileID: 11400000, guid: 7bebf778f4d36ae4dbd1917c3b22ffaa, type: 2}
+  payPlayerEventChannel: {fileID: 11400000, guid: d715c49d04e652c409179a3022544eb1, type: 2}
