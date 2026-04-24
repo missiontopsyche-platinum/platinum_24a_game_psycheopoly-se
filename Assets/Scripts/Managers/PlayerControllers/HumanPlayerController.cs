@@ -537,11 +537,8 @@ namespace Managers.PlayerControllers
         //display jail options for the current human player
         private void ShowJailOptionsUI()
         {
-            bool hasGetOutOfJailCard =
-                controlledPlayer.GetChanceCardCount() > 0 ||
-                controlledPlayer.GetCommunityCardCount() > 0;
-
-
+            bool hasGetOutOfJailCard = controlledPlayer.GetJailCards().Count > 0;
+            
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.JailOptions,
@@ -580,6 +577,8 @@ namespace Managers.PlayerControllers
                         TurnActionType.RollForJailEscape,
                         onAllowed: () =>
                         {
+                            uiActivationEventChannel?.RaiseEvent(new UIActivationEvent(
+                                UIType.DiceRoll, new DiceRollPanelContext(isAI: controlledPlayer.isAI)));
                             Logger.Info("HumanPlayerController.ResolveJailAction",
                                 $"{controlledPlayer.GetPName()} requested a jail escape roll.",
                                 LogCategory.Gameplay);
