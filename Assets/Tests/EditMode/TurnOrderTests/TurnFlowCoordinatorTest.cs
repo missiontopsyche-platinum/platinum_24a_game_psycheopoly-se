@@ -108,6 +108,113 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         Object.DestroyImmediate(p);
     }
 
+    //test early CompleteResolution is deferred
+    [Test]
+    public void CompleteResolution_WhenRequestedDuringAwaitingMovement_DefersUntilMovementResolutionCompletes()
+    {
+        var p = ScriptableObject.CreateInstance<Player>();
+        p.SetId(0);
+
+        SetProperty(tfc, "ActivePlayer", 0);
+        SetTfcPhase("AwaitingMovement");
+
+        tfc.TurnActionRequestTest(new TurnActionRequest
+        {
+            player = p,
+            action = TurnActionType.CompleteResolution
+        });
+
+        Assert.AreEqual(1, resultCount);
+        Assert.IsTrue(lastResult.allowed);
+        Assert.AreEqual("AwaitingMovement", tfc.Phase.ToString(),
+            "Phase should stay AwaitingMovement because CompleteResolution should be deferred.");
+
+        SimulateMovementResolutionCompleted();
+
+        Assert.AreEqual("Completed", tfc.Phase.ToString(),
+            "Deferred CompleteResolution should complete after movement resolution finishes.");
+
+        Object.DestroyImmediate(p);
+    }
+
+    //jailed player can defer CompleteResolutin
+    [Test]
+    public void JailedPlayer_CompleteResolutionDuringAwaitingMovement_IsAllowedAndDeferred()
+    {
+        var p = ScriptableObject.CreateInstance<Player>();
+        p.SetId(0);
+        p.SetInJail(true);
+
+        SetProperty(tfc, "ActivePlayer", 0);
+        SetTfcPhase("AwaitingMovement");
+
+        tfc.TurnActionRequestTest(new TurnActionRequest
+        {
+            player = p,
+            action = TurnActionType.CompleteResolution
+        });
+
+        Assert.AreEqual(1, resultCount);
+        Assert.IsTrue(lastResult.allowed,
+            "Jailed players must be allowed to request CompleteResolution during AwaitingMovement.");
+
+        Assert.AreEqual("AwaitingMovement", tfc.Phase.ToString(),
+            "CompleteResolution should not complete immediately while movement is still resolving.");
+
+        SimulateMovementResolutionCompleted();
+
+        Assert.AreEqual("Completed", tfc.Phase.ToString(),
+            "After movement resolution completes, the pending CompleteResolution should finish the turn resolution.");
+
+        Object.DestroyImmediate(p);
+    }
+
+    //completeResolution is still denied too early in the turn
+    [Test]
+    public void CompleteResolution_WhenRequestedDuringAwaitingRoll_IsDenied()
+    {
+        var p = ScriptableObject.CreateInstance<Player>();
+        p.SetId(0);
+
+        SetProperty(tfc, "ActivePlayer", 0);
+        SetTfcPhase("AwaitingRoll");
+
+        tfc.TurnActionRequestTest(new TurnActionRequest
+        {
+            player = p,
+            action = TurnActionType.CompleteResolution
+        });
+
+        Assert.AreEqual(1, resultCount);
+        Assert.IsFalse(lastResult.allowed);
+        Assert.AreEqual("AwaitingRoll", tfc.Phase.ToString());
+
+        Object.DestroyImmediate(p);
+    }
+
+    //CompleteResolution still works normal during AwaitingResolution
+    [Test]
+    public void CompleteResolution_WhenRequestedDuringAwaitingResolution_CompletesImmediately()
+    {
+        var p = ScriptableObject.CreateInstance<Player>();
+        p.SetId(0);
+
+        SetProperty(tfc, "ActivePlayer", 0);
+        SetTfcPhase("AwaitingResolution");
+
+        tfc.TurnActionRequestTest(new TurnActionRequest
+        {
+            player = p,
+            action = TurnActionType.CompleteResolution
+        });
+
+        Assert.AreEqual(1, resultCount);
+        Assert.IsTrue(lastResult.allowed);
+        Assert.AreEqual("Completed", tfc.Phase.ToString());
+
+        Object.DestroyImmediate(p);
+    }
+
     [Test]
     public void OnTurnActionRequested_UpgradeProperty_AllowUpgradeAtAnyPointDuringTurn()
     {
@@ -188,5 +295,23 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         Assert.NotNull(backing, $"Missing backing field for property '{propName}' on {obj.GetType().Name}");
         backing.SetValue(obj, value);
+    }
+
+    private void SetTfcPhase(string phaseName)
+    {
+        var phaseType = tfc.Phase.GetType();
+        object parsedPhase = System.Enum.Parse(phaseType, phaseName);
+        SetProperty(tfc, "Phase", parsedPhase);
+    }
+
+    private void SimulateMovementResolutionCompleted()
+    {
+        var method = typeof(TurnFlowCoordinator).GetMethod(
+            "OnPieceMoveCompleted",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        Assert.NotNull(method, "Missing private method OnPieceMoveCompleted on TurnFlowCoordinator.");
+
+        method.Invoke(tfc, new object[] { true });
     }
 }
