@@ -512,9 +512,17 @@ namespace Managers.PlayerControllers
                     new GeneralNotificationContext(controlledPlayer,
                         "LAUNCH PAD!",
                         "You're now stuck at the launch pad!",
-                        () => RequestResolutionComplete()
-                    )));    
-    }
+                        () =>
+                            RequestTurnAction(
+                                TurnActionType.CompleteResolution,
+                                onAllowed: () => RequestTurnAction(
+                                    TurnActionType.EndTurn,
+                                    onAllowed: () => { },
+                                    onDenied: () => { }
+                                ),
+                                onDenied: () => { }
+                            ))));
+            }
             else
             {
                 uiActivationEventChannel.RaiseEvent(new UIActivationEvent(

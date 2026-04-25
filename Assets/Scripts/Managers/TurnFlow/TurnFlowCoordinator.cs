@@ -49,6 +49,7 @@ namespace Assets.Scripts.Managers.TurnFlow
         public static int LastWinningPlayerId { get; private set; } = -1;
         public static string LastWinningPlayerName { get; private set; } = string.Empty;
         private bool pendingCompleteResolution = false;
+        private bool pendingEndTurnAfterResolution = false;
 
         public void Initialize(TurnCycleManager tcm, List<Player> gamePlayers)
         {
@@ -115,6 +116,7 @@ namespace Assets.Scripts.Managers.TurnFlow
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;
             pendingCompleteResolution = false;
+            pendingEndTurnAfterResolution = false;
             nextRollIsJailEscape = false;
             jailEscapePlayer = null;
             
@@ -214,6 +216,12 @@ namespace Assets.Scripts.Managers.TurnFlow
             {
                 pendingCompleteResolution = false;
                 CompleteResolution();
+
+                if (pendingEndTurnAfterResolution)
+                {
+                    pendingEndTurnAfterResolution = false;
+                    CompleteTurnFlow();
+                }
             }
         }
 
@@ -222,7 +230,21 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void CompleteTurnFlow()
         {
             if (IsGameOver) return;
+
+            if (Phase == TurnPhase.AwaitingMovement && pendingCompleteResolution)
+            {
+                pendingEndTurnAfterResolution = true;
+
+                Logging.Logger.Info("TurnFlowCoordinator.CompleteTurnFlow",
+                    "EndTurn requested before movement resolution finished. Deferring until resolution completes.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
             if (!awaitingEndTurn) return;
+
             if (turnCycleManager == null)
             {
                 Logging.Logger.Error("TurnFlowCoordinator.CompleteTurnFlow",
@@ -349,10 +371,14 @@ namespace Assets.Scripts.Managers.TurnFlow
                 return action switch
                 {
                     TurnActionType.RollForJailEscape => Phase == TurnPhase.AwaitingRoll,
-                    TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
+
                     TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingMovement
                                                          || Phase == TurnPhase.AwaitingResolution
                                                          || Phase == TurnPhase.Completed,
+
+                    TurnActionType.EndTurn => (Phase == TurnPhase.Completed && awaitingEndTurn)
+                                              || (Phase == TurnPhase.AwaitingMovement && pendingCompleteResolution),
+
                     _ => false
                 };
             }
