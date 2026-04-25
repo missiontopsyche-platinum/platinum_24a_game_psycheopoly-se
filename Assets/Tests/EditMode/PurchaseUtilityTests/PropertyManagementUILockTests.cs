@@ -31,7 +31,7 @@ namespace Tests.EditMode.PropertyManagementTests
 
             controller.Hide();
 
-            Assert.IsFalse(go.activeSelf);
+            Assert.IsTrue(go.activeSelf);
         }
 
         [Test]
@@ -46,14 +46,14 @@ namespace Tests.EditMode.PropertyManagementTests
         }
 
         [Test]
-        public void HideWhenInDebtModeButDebtCleared()
+        public void HideWhenInDebtModeKeepsUIVisibleEvenWhenDebtCleared()
         {
             SetPrivateField(controller, "isDebtResolutionMode", true);
             SetPrivateField(controller, "currentDebtAmount", 0);
 
             controller.Hide();
 
-            Assert.IsFalse(go.activeSelf);
+            Assert.IsTrue(go.activeSelf);
         }
 
         private static void SetPrivateField(object target, string fieldName, object value)

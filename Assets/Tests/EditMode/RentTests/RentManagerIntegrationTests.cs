@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Assets.Scripts.Managers.Rent;
+using Events.EventDataStructures;
 
 namespace Tests.EditMode.RentTests
 {

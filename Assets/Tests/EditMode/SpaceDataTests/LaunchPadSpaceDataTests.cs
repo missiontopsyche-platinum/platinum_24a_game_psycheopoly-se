@@ -37,24 +37,31 @@ namespace Tests.EditMode.SpaceDataTests
         }
 
         [Test]
-        public void NoExceptionsFireOnLanded()
+        public void GoToJailChannel_AddsPlayerToJailList()
         {
-            Assert.DoesNotThrow(() => 
-                lpsd.OnLanded(
-                    ScriptableObject.CreateInstance<Player>()));
+            Player p = ScriptableObject.CreateInstance<Player>();
+            p.SetId(0);
+
+            playerGoToJailChannel.RaiseEvent(p);
+
+            Assert.AreEqual(1, lpsd.playersInJail.Count);
+            Assert.Contains(p, lpsd.playersInJail);
+
+            Object.DestroyImmediate(p);
         }
 
         [Test]
         public void PlayerAddedAndRemovedFromJail()
         {
             Player p = ScriptableObject.CreateInstance<Player>();
+
             playerGoToJailChannel.RaiseEvent(p);
-            
-            Assert.AreEqual(lpsd.playersInJail.Count, 1);
-            
+            Assert.AreEqual(1, lpsd.playersInJail.Count);
+
             playerLeaveJailChannel.RaiseEvent(p);
-            
-            Assert.AreEqual(lpsd.playersInJail.Count, 0);
+            Assert.AreEqual(0, lpsd.playersInJail.Count);
+
+            Object.DestroyImmediate(p);
         }
     }
 }

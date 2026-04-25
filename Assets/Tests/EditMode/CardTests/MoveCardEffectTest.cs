@@ -9,6 +9,8 @@ namespace Tests.EditMode.CardTests
         [Test]
         public void MoveCardEffect_Forward_RaisesPositiveMove()
         {
+            testPlayer.SetId(0);
+
             MovePlayerEventChannel moveChannel = CreateChannel<MovePlayerEventChannel>();
             List<MovePlayerEvent> raised = new();
             moveChannel.Subscribe(e => raised.Add(e));
@@ -28,6 +30,8 @@ namespace Tests.EditMode.CardTests
         [Test]
         public void MoveCardEffect_Backward_RaisesNegativeMove()
         {
+            testPlayer.SetId(0);
+
             MovePlayerEventChannel moveChannel = CreateChannel<MovePlayerEventChannel>();
             List<MovePlayerEvent> raised = new();
             moveChannel.Subscribe(e => raised.Add(e));
@@ -45,4 +49,3 @@ namespace Tests.EditMode.CardTests
         }
     }
 }
-
