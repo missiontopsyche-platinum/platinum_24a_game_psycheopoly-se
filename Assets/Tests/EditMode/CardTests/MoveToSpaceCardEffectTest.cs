@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace Tests.EditMode.CardTests
@@ -33,12 +34,22 @@ namespace Tests.EditMode.CardTests
     public void ApplyEffect_DoesNotRaiseEvent_WhenPlayerIsNull()
     {
         MoveToSpaceEventChannel channel = CreateChannel<MoveToSpaceEventChannel>();
+
         bool eventRaised = false;
         channel.Subscribe(_ => { eventRaised = true; });
 
         var effect = TrackEffect(ScriptableObject.CreateInstance<MoveToSpaceCardEffect>());
         effect.moveToSpaceEventChannel = channel;
         effect.targetType = MoveToSpaceCardEffect.TargetSpaceType.GoSpace;
+
+        var pattern = CreateRegexLogPattern(
+            "Error",
+            "Gameplay",
+            "CardEffect.IsValidPlayer",
+            "Player context is null in CardEffect."
+        );
+
+        LogAssert.Expect(LogType.Error, pattern);
 
         effect.ApplyEffect(null);
 

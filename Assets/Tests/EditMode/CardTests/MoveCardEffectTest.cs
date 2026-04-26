@@ -12,6 +12,8 @@ namespace Tests.EditMode.CardTests
             testPlayer.SetId(0);
 
             MovePlayerEventChannel moveChannel = CreateChannel<MovePlayerEventChannel>();
+            NoActionLandingEventChannel noActionChannel = CreateChannel<NoActionLandingEventChannel>();
+
             List<MovePlayerEvent> raised = new();
             moveChannel.Subscribe(e => raised.Add(e));
 
@@ -19,6 +21,7 @@ namespace Tests.EditMode.CardTests
             effect.Type = MoveCardEffect.EffectType.MoveForward;
             effect.SpacesToMove = 5;
             effect.MovePlayerEventChannel = moveChannel;
+            effect.NoActionLandingEventChannel = noActionChannel;
 
             effect.ApplyEffect(testPlayer);
 
@@ -33,6 +36,8 @@ namespace Tests.EditMode.CardTests
             testPlayer.SetId(0);
 
             MovePlayerEventChannel moveChannel = CreateChannel<MovePlayerEventChannel>();
+            NoActionLandingEventChannel noActionChannel = CreateChannel<NoActionLandingEventChannel>();
+
             List<MovePlayerEvent> raised = new();
             moveChannel.Subscribe(e => raised.Add(e));
 
@@ -40,6 +45,7 @@ namespace Tests.EditMode.CardTests
             effect.Type = MoveCardEffect.EffectType.MoveBackward;
             effect.SpacesToMove = 3;
             effect.MovePlayerEventChannel = moveChannel;
+            effect.NoActionLandingEventChannel = noActionChannel;
 
             effect.ApplyEffect(testPlayer);
 

@@ -2,6 +2,7 @@ using Logging;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.SceneManagement;
 using BoardManager = PsycheOpoly.Board.BoardManager; 
 using Logger = Logging.Logger;
@@ -22,7 +23,6 @@ namespace Tests.PlayMode.BoardRenderer
         // event channels
         protected PlayerEventChannel testPlayerEventChannel;
         protected PlayerMovedEventChannel testMoveEventChannel;
-        protected BooleanEventChannel testPieceMoveCompletedChannel;
         
         [SetUp]
         public void SetUp()
@@ -40,8 +40,8 @@ namespace Tests.PlayMode.BoardRenderer
         [TearDown]
         public void TearDown()
         {
-            SceneManager.UnloadScene("PlayTestScene");
-            
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.UnloadSceneAsync("PlayTestScene");
         }
 
         private SpaceData[] CreateTestSpaces(int count)
@@ -86,10 +86,10 @@ namespace Tests.PlayMode.BoardRenderer
             testPlayerEventChannel.Subscribe((v) => playerAdded = true);
 
             testPlayerEventChannel.RaiseEvent(player);
-            yield return new WaitWhile(() => !playerAdded);
 
+            yield return new WaitUntil(() => playerAdded);
         }
-        
+                
         /// <summary>
         /// Moves a piece and waits a set amount of time to complete.
         /// </summary>
@@ -99,15 +99,13 @@ namespace Tests.PlayMode.BoardRenderer
         /// <returns></returns>
         protected IEnumerator MovePieceAndWait(int playerId, int targetSpace)
         {
-            bool finishedMove = false;
+            Assert.IsNotNull(boardRenderer, "boardRenderer is null before moving piece.");
 
-            testPieceMoveCompletedChannel.Subscribe((v) => finishedMove = true);
-            boardRenderer.MovePiece(new PlayerMovedEvent(playerId, 0, targetSpace, null));
-            
-            yield return new WaitWhile(()=> !finishedMove);
+            testMoveEventChannel.RaiseEvent(new PlayerMovedEvent(playerId, 0, targetSpace, null));
+
+            yield return new WaitForSeconds(0.75f);
         }
-
-      
+        
         /// <summary>
         /// Event handler for "SceneLoaded" event to build out testing objects after
         /// PlayTestScene has loaded. This is necessary to ensure the scene is loaded
@@ -141,10 +139,16 @@ namespace Tests.PlayMode.BoardRenderer
             boardRenderer = boardManager.boardRenderer;
             gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
+            foreach (var panel in GameObject.FindObjectsByType<PlayerPanelController>(
+                        FindObjectsInactive.Include,
+                        FindObjectsSortMode.None))
+            {
+                panel.enabled = false;
+            }
+
             testPlayerEventChannel = boardManager.playerAddedChannel;
             testPlayerEventChannel.Subscribe(boardRenderer.AddPlayerPiece);
             testMoveEventChannel = boardManager.playerMovedChannel;
-            testMoveEventChannel.Subscribe(boardRenderer.MovePiece);
             // generate a test board
             SpaceData[] testSpaces = CreateTestSpaces(40);
             boardRenderer.GenerateBoard(testSpaces);
