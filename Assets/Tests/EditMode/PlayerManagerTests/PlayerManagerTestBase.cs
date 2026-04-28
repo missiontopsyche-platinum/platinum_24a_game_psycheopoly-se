@@ -48,6 +48,13 @@ namespace Tests.EditMode.PlayerManagerTests
             playerManager.uiActivationEventChannel = CreateChannel<UIActivationEventChannel>();
             playerManager.uiActionEventChannel = CreateChannel<UIActionEventChannel>();
             playerManager.actionResolvedEventChannel = CreateChannel<ActionResolvedEventChannel>();
+            playerManager.turnEndedEventChannel = CreateChannel<BooleanEventChannel>();
+            playerManager.upgradeRequestEventChannel = CreateChannel<UpgradeRequestEventChannel>();
+            playerManager.bankruptcyEventChannel = CreateChannel<IntEventChannel>();
+            playerManager.jailEventChannel = CreateChannel<JailStateChangedEventChannel>();
+            playerManager.chargePlayerEventChannel = CreateChannel<ChargePlayerEventChannel>();
+            playerManager.noLandingActionEventChannel = CreateChannel<NoActionLandingEventChannel>();
+            playerManager.moneyDistributionEventChannel = CreateChannel<MoneyDistributionEventChannel>();
 
             InitializeTestLogger();
         }

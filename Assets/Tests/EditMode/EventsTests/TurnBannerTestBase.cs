@@ -1,14 +1,12 @@
 using NUnit.Framework;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System;
+using System.Reflection;
 
 namespace Tests.EditMode.EventsTests
 {
-    /// <summary>
-    /// Builds a TurnBanner hierarchy and wires for testing
-    ///Uses existing TurnBannerController
-    /// </summary>
     public class TurnBannerTestBase : ManagerTestBase
     {
         protected GameObject canvasGO;
@@ -21,14 +19,13 @@ namespace Tests.EditMode.EventsTests
         protected TurnBannerController controller;
 
         protected GameObject labelGO;
-        protected Text turnLabel;
+        protected TextMeshProUGUI turnLabel;
 
         protected GameObject buttonGO;
         protected Button continueButton;
 
         protected TurnStartedEventChannel turnStartedEventChannel;
 
-        /// <summary>Creates a canvas so UI components can work in EditMode.</summary>
         protected virtual void CreateCanvas()
         {
             canvasGO = new GameObject("TurnBannerCanvas", typeof(Canvas));
@@ -39,15 +36,15 @@ namespace Tests.EditMode.EventsTests
         [SetUp]
         public virtual void SetUpUI()
         {
-            //Canvas
             CreateCanvas();
 
-            //Banner root
-            bannerGO = new GameObject("TurnBanner",
+            bannerGO = new GameObject(
+                "TurnBanner",
                 typeof(RectTransform),
                 typeof(Image),
                 typeof(CanvasGroup),
-                typeof(TurnBannerController));
+                typeof(TurnBannerController)
+            );
 
             bannerGO.transform.SetParent(canvasGO.transform, false);
 
@@ -59,73 +56,102 @@ namespace Tests.EditMode.EventsTests
             cg = bannerGO.GetComponent<CanvasGroup>();
             controller = bannerGO.GetComponent<TurnBannerController>();
 
-            //Text label
-            labelGO = new GameObject("TurnLabel", typeof(RectTransform), typeof(Text));
+            labelGO = new GameObject("TurnLabel", typeof(RectTransform), typeof(TextMeshProUGUI));
             labelGO.transform.SetParent(bannerGO.transform, false);
+
             var labelRect = labelGO.GetComponent<RectTransform>();
             labelRect.anchorMin = new Vector2(.5f, .75f);
             labelRect.anchorMax = new Vector2(.5f, .75f);
             labelRect.anchoredPosition = Vector2.zero;
+            labelRect.sizeDelta = new Vector2(500, 80);
 
-            turnLabel = labelGO.GetComponent<Text>();
-            turnLabel.alignment = TextAnchor.MiddleCenter;
+            turnLabel = labelGO.GetComponent<TextMeshProUGUI>();
+            turnLabel.alignment = TextAlignmentOptions.Center;
             turnLabel.text = "Player 1's Turn";
-            turnLabel.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             turnLabel.fontSize = 36;
 
-            //Continue Button and text
             buttonGO = new GameObject("ContinueButton", typeof(RectTransform), typeof(Image), typeof(Button));
             buttonGO.transform.SetParent(bannerGO.transform, false);
+
             var btnRect = buttonGO.GetComponent<RectTransform>();
             btnRect.anchorMin = new Vector2(.5f, .35f);
             btnRect.anchorMax = new Vector2(.5f, .35f);
             btnRect.sizeDelta = new Vector2(220, 80);
             btnRect.anchoredPosition = Vector2.zero;
 
-            var btnTextGO = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            var btnTextGO = new GameObject("Text", typeof(RectTransform), typeof(TextMeshProUGUI));
             btnTextGO.transform.SetParent(buttonGO.transform, false);
-            var btnText = btnTextGO.GetComponent<Text>();
-            btnText.text = "Start Turn";
-            btnText.alignment = TextAnchor.MiddleCenter;
-            btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            btnText.fontSize = 28;
+
             var btnTextRect = btnTextGO.GetComponent<RectTransform>();
-            btnTextRect.anchorMin = btnTextRect.anchorMax = new Vector2(.5f, .5f);
-            btnTextRect.sizeDelta = Vector2.zero;
+            btnTextRect.anchorMin = Vector2.zero;
+            btnTextRect.anchorMax = Vector2.one;
+            btnTextRect.offsetMin = Vector2.zero;
+            btnTextRect.offsetMax = Vector2.zero;
+
+            var btnText = btnTextGO.GetComponent<TextMeshProUGUI>();
+            btnText.text = "Start Turn";
+            btnText.alignment = TextAlignmentOptions.Center;
+            btnText.fontSize = 28;
 
             continueButton = buttonGO.GetComponent<Button>();
 
             turnStartedEventChannel = ScriptableObject.CreateInstance<TurnStartedEventChannel>();
 
-            //Wire refs to controller
-            controller.GetType().GetField("turnLabel",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                ?.SetValue(controller, turnLabel);
+            SetPrivateField(controller, "turnLabel", turnLabel);
+            SetPrivateField(controller, "continueButton", continueButton);
+            SetPrivateField(controller, "canvasGroup", cg);
+            TrySetPrivateField(controller, "turnStartedChannel", turnStartedEventChannel);
+            TrySetPrivateField(controller, "currentCallback", new Action(() => { }));
 
-            controller.GetType().GetField("continueButton",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                ?.SetValue(controller, continueButton);
+            InvokePrivate(controller, "Awake");
+            InvokePrivate(controller, "OnEnable");
+        }
 
-            controller.GetType().GetField("canvasGroup",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                ?.SetValue(controller, cg);
-            
-            controller.GetType().GetField("turnStartedChannel",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-                ?.SetValue(controller, turnStartedEventChannel);
+        [TearDown]
+        public virtual void TearDownUI()
+        {
+            if (controller != null)
+                InvokePrivate(controller, "OnDisable");
 
-            //Manually simulate Awake() because they will not fire in EditMode testing 
-            var awake = controller.GetType().GetMethod("Awake",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            awake?.Invoke(controller, null);
+            if (turnStartedEventChannel != null)
+                UnityEngine.Object.DestroyImmediate(turnStartedEventChannel);
 
-            //OnEnable() to hook button listener
-            var onEnable = controller.GetType().GetMethod("OnEnable",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            onEnable?.Invoke(controller, null);
+            if (canvasGO != null)
+                UnityEngine.Object.DestroyImmediate(canvasGO);
+        }
 
+        protected static void SetPrivateField(object target, string fieldName, object value)
+        {
+            var field = target.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic
+            );
 
+            Assert.NotNull(field, $"Missing field '{fieldName}' on {target.GetType().Name}");
+            field.SetValue(target, value);
+        }
 
+        protected static void TrySetPrivateField(object target, string fieldName, object value)
+        {
+            var field = target.GetType().GetField(
+                fieldName,
+                BindingFlags.Instance | BindingFlags.NonPublic
+            );
+
+            if (field == null)
+                return;
+
+            field.SetValue(target, value);
+        }
+
+        protected static void InvokePrivate(object target, string methodName)
+        {
+            var method = target.GetType().GetMethod(
+                methodName,
+                BindingFlags.Instance | BindingFlags.NonPublic
+            );
+
+            method?.Invoke(target, null);
         }
     }
 }

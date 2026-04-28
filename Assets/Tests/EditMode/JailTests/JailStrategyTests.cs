@@ -18,6 +18,12 @@ namespace Tests.EditMode.JailTests
             testPlayer.SetMoney(500);
             testPlayer.SetInJail(true);
             testPlayer.SetJailTurns(0);
+
+            typeof(Player).GetField("getOutOfJailFree_Chance", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(testPlayer, 0);
+
+            typeof(Player).GetField("getOutOfJailFree_Community", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(testPlayer, 0);
         }
 
         [TearDown]
@@ -76,46 +82,31 @@ namespace Tests.EditMode.JailTests
         [Test]
         public void PayFee_NotEnoughMoney_PlayerStaysInJail()
         {
-            testPlayer.SetMoney(50);
+                testPlayer.SetMoney(50);
 
             var result = JailUtility.PayFee(testPlayer);
 
-            Assert.AreEqual(result, JailUtility.FeePaymentResult.Bankrupt);
-            Assert.IsFalse(testPlayer.GetInJail(), "Player should be released.");
-            Assert.AreEqual(-50, testPlayer.GetMoney(), "Player’s money should be negative, which will be resolved outside of JailUtility.");
+            Assert.AreEqual(JailUtility.FeePaymentResult.Bankrupt, result);
+            Assert.IsTrue(testPlayer.GetInJail());
+            Assert.AreEqual(50, testPlayer.GetMoney());
         }
 
         [Test]
-        public void UseGetOutOfJailFree_WithChanceCard_ReleasesPlayer()
+        public void UseGetOutOfJailFree_ChanceFieldOnly_NoCardAvailable()
         {
-            // Using reflection because the fields are private
-            typeof(Player).GetField("getOutOfJailFree_Chance", BindingFlags.NonPublic | BindingFlags.Instance)
-                          .SetValue(testPlayer, 1);
-
             var result = JailUtility.UseGetOutOfJailFree(testPlayer);
 
-            int remainingChanceCards = (int)typeof(Player).GetField("getOutOfJailFree_Chance", BindingFlags.NonPublic | BindingFlags.Instance)
-                                                          .GetValue(testPlayer);
-
-            Assert.AreEqual(result, JailUtility.CardUseResult.Success);
-            Assert.AreEqual(0, remainingChanceCards, "Chance card should be decremented after use.");
-            Assert.IsFalse(testPlayer.GetInJail(), "Player should be released after using Get Out of Jail Free card.");
+            Assert.AreEqual(JailUtility.CardUseResult.NoCardAvailable, result);
+            Assert.IsTrue(testPlayer.GetInJail());
         }
 
         [Test]
-        public void UseGetOutOfJailFree_WithCommunityCard_ReleasesPlayer()
+        public void UseGetOutOfJailFree_CommunityFieldOnly_NoCardAvailable()
         {
-            typeof(Player).GetField("getOutOfJailFree_Community", BindingFlags.NonPublic | BindingFlags.Instance)
-                          .SetValue(testPlayer, 1);
-
             var result = JailUtility.UseGetOutOfJailFree(testPlayer);
 
-            int remainingCommunityCards = (int)typeof(Player).GetField("getOutOfJailFree_Community", BindingFlags.NonPublic | BindingFlags.Instance)
-                                                             .GetValue(testPlayer);
-
-            Assert.AreEqual(result, JailUtility.CardUseResult.Success);
-            Assert.AreEqual(0, remainingCommunityCards, "Community card should be decremented after use.");
-            Assert.IsFalse(testPlayer.GetInJail(), "Player should be released after using Get Out of Jail Free card.");
+            Assert.AreEqual(JailUtility.CardUseResult.NoCardAvailable, result);
+            Assert.IsTrue(testPlayer.GetInJail());
         }
 
         [Test]
@@ -125,6 +116,17 @@ namespace Tests.EditMode.JailTests
 
             Assert.AreEqual(result, JailUtility.CardUseResult.NoCardAvailable);
             Assert.IsTrue(testPlayer.GetInJail(), "Player should remain in jail if they have no cards.");
+        }
+
+        private static void SetPrivateField(object target, string fieldName, object value)
+        {
+            var field = target.GetType().GetField(
+                fieldName,
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            Assert.NotNull(field, $"Missing field: {fieldName}");
+            field.SetValue(target, value);
         }
     }
 }

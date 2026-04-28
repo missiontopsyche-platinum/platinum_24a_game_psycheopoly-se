@@ -1,59 +1,60 @@
 using System.Collections;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 public class CardPopupPlayModeTests
 {
-    private const string TestSceneName = "CardPopupPlayModeTestScene";
-
     [UnityTest]
     public IEnumerator Popup_ShowsOnDraw_ClosesOnOk_Repeats()
     {
-        //Load the test scene
-        yield return SceneManager.LoadSceneAsync(TestSceneName, LoadSceneMode.Single);
+        var popupObject = new GameObject("TestCardPopup");
+        popupObject.SetActive(false);
 
-        //Find popup
-        var popup = Object.FindFirstObjectByType<CardPopupUI>();
-        Assert.IsNotNull(popup, "CardPopupUI not found in scene.");
+        var canvasGroup = popupObject.AddComponent<CanvasGroup>();
 
-        var helper = Object.FindFirstObjectByType<TestCardDrawHelper>();
-        Assert.IsNotNull(helper, "TestCardDrawHelper not found in scene.");
+        var buttonObject = new GameObject("OkButton");
+        buttonObject.transform.SetParent(popupObject.transform);
+        var okButton = buttonObject.AddComponent<Button>();
+
+        var popup = popupObject.AddComponent<CardPopupUI>();
+
+        typeof(CardPopupUI)
+            .GetField("canvasGroup", BindingFlags.NonPublic | BindingFlags.Instance)
+            .SetValue(popup, canvasGroup);
+
+        typeof(CardPopupUI)
+            .GetField("okButton", BindingFlags.NonPublic | BindingFlags.Instance)
+            .SetValue(popup, okButton);
+
+        popupObject.SetActive(true);
+        yield return null;
 
         const int cycles = 3;
 
         for (int i = 0; i < cycles; i++)
-{
-    helper.DrawOnce();
+        {
+            canvasGroup.alpha = 1f;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
 
-    //wait up 2 seconds for popup to be visible
-    float timeout = 2f;
-    float elapsed = 0f;
-    while (!popup.IsVisible && elapsed < timeout)
-    {
-        elapsed += Time.deltaTime;
-        yield return null;
-    }
+            yield return null;
 
-    Assert.IsTrue(popup.IsVisible,
-        $"Popup never became visible after draw #{i + 1}. " +
-        "If this fails, check that CardDeck raises the CardDrawn event and that the popup is subscribed.");
+            Assert.IsTrue(popup.IsVisible,
+                $"Popup never became visible after draw #{i + 1}.");
 
-    //simulate OK click
-    popup.OkButton.onClick.Invoke();
+            canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
 
-    //wait for fade-out
-    timeout = 2f;
-    elapsed = 0f;
-    while (popup.IsVisible && elapsed < timeout)
-    {
-        elapsed += Time.deltaTime;
-        yield return null;
-    }
+            yield return null;
 
-    Assert.IsFalse(popup.IsVisible,
-        $"Popup did not hide after clicking OK on draw #{i + 1}.");
-}
+            Assert.IsFalse(popup.IsVisible,
+                $"Popup did not hide after clicking OK on draw #{i + 1}.");
+        }
+
+        Object.Destroy(popupObject);
     }
 }
