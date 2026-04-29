@@ -394,7 +394,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1159859430}
   - component: {fileID: 1159859429}
-  - component: {fileID: 1159859428}
   - component: {fileID: 1159859427}
   m_Layer: 0
   m_Name: Main Camera
@@ -447,14 +446,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &1159859428
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1159859426}
-  m_Enabled: 1
 --- !u!20 &1159859429
 Camera:
   m_ObjectHideFlags: 0
@@ -948,7 +939,8 @@ MonoBehaviour:
   turnLabel: {fileID: 0}
   continueButton: {fileID: 8351608936898040431}
   canvasGroup: {fileID: 8351608936898040436}
-  turnStartedChannel: {fileID: 0}
+  uiActivationEventChannel: {fileID: 0}
+  aiWaitTime: 2
   fadeDuration: 0.25
   slideOffset: 60
   ease:
