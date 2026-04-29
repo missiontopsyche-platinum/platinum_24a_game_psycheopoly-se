@@ -43,8 +43,17 @@ public class PlayerPanelController : UIPanelBase
         InvokeRepeating(nameof(UpdatePlayerUI), pollRate, pollRate);
     }
 
-    private void OnTurnStarted(TurnStartedEvent tse) => currentPlayerId = tse.playerId;
-    
+    private void OnTurnStarted(TurnStartedEvent tse)
+    {
+        currentPlayerId = tse.playerId;
+
+        var player = PlayerManager.GetInstance().GetPlayer(currentPlayerId);
+        Logging.Logger.Info("PlayerPanelController.DisplayCurrentPlayer",
+            $"Current Player: {player.GetPName()} with ${player.GetMoney()}",
+            LogCategory.UI,
+            this);
+    }
+
     private void UpdatePlayerUI()
     {
         var player = PlayerManager.GetInstance().GetPlayer(currentPlayerId);
@@ -65,9 +74,5 @@ public class PlayerPanelController : UIPanelBase
 
         SetTextSafe(playerNameText, $"Player: {name}");
         SetTextSafe(playerMoneyText, $"Money: {money}");
-        Logging.Logger.Info("PlayerPanelController.DisplayCurrentPlayer",
-            $"Current Player: {name} with ${money}",
-            LogCategory.UI,
-            this);
     }
 }

@@ -8,7 +8,7 @@ using System.Collections;
 /// </summary>
 public class Piece : MonoBehaviour
 {
-      [SerializeField] private Color pieceColor = Color.white;
+    [SerializeField] private Color pieceColor = Color.white;
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private BooleanEventChannel pieceMoveCompletedEventChannel;
 
@@ -42,6 +42,11 @@ public class Piece : MonoBehaviour
         if (modelPrefab != null)
         {
             SetModel(modelPrefab);
+        }
+        else // backup to the default cylinder model
+        {
+            meshRenderer.enabled = true;
+            transform.Rotate(90,0,0);
         }
     }
 
