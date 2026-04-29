@@ -1,10 +1,11 @@
-using System.Collections;
-using Logging;
-using UnityEngine;
-using UnityEngine.UI;
 using Assets.Scripts.Events.EventChannelTypes;
 using Events.EventDataStructures;
 using Events.EventDataStructures.UI;
+using Logging;
+using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 using Logger = Logging.Logger;
 
 public class DiceRollPanelController : MonoBehaviour
@@ -32,9 +33,9 @@ public class DiceRollPanelController : MonoBehaviour
         if (totalText != null) totalText.text = "Total: -";
         if (rollButton != null) rollButton.onClick.AddListener(OnRollClicked);
         diceRolledChannel?.Subscribe(OnDiceRolled);
-        pieceMoveCompletedChannel?.Subscribe(HideUI);
+        pieceMoveCompletedChannel?.Subscribe(HandleHideUI);
         uiActivationChannel?.Subscribe(OnUIActivationEvent);
-        if (hideUntilFirstRoll) HideUI(true);
+        if (hideUntilFirstRoll) HideUI();
         
     }
 
@@ -42,7 +43,7 @@ public class DiceRollPanelController : MonoBehaviour
     {
         if (rollButton != null) rollButton.onClick.RemoveListener(OnRollClicked);
         diceRolledChannel?.Unsubscribe(OnDiceRolled);
-        pieceMoveCompletedChannel?.Unsubscribe(HideUI);
+        pieceMoveCompletedChannel?.Unsubscribe(HandleHideUI);
         uiActivationChannel?.Unsubscribe(OnUIActivationEvent);
     }
 
@@ -64,6 +65,11 @@ public class DiceRollPanelController : MonoBehaviour
         if (totalText != null)
         {
             StartCoroutine(AnimateTotalText(e.totalRoll));
+
+        }
+        if (e.dieTwo != e.dieOne)
+        {
+            StartCoroutine(WaitForSecondsToRun(2, HideUI));
         }
     }
 
@@ -76,11 +82,12 @@ public class DiceRollPanelController : MonoBehaviour
         totalText.text = baseText + total;
     }
 
-    private void HideUI(bool pieceMoveCompleted)
+    private void HideUI()
     {
         gameObject.GetComponent<CanvasGroup>().alpha = 0;
         gameObject.GetComponent<CanvasGroup>().interactable = false;
         gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
     }
 
     private void OnUIActivationEvent(UIActivationEvent uiae)
@@ -106,5 +113,17 @@ public class DiceRollPanelController : MonoBehaviour
             if (context.isAI)
                 OnRollClicked();
         }
+    }
+
+    private void HandleHideUI(bool hhi)
+    {
+        HideUI();
+    }
+
+    // using this to get rid of race conditions on failed dice rolls to escape jail
+    private IEnumerator WaitForSecondsToRun(int seconds, Action action)
+    {
+        yield return new WaitForSeconds(seconds);
+        action.Invoke();
     }
 }
