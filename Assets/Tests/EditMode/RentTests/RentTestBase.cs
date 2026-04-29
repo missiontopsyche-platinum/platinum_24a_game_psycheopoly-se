@@ -30,17 +30,12 @@ namespace Tests.EditMode.RentTests
 
             rentGO = new GameObject("RentManager");
 
-            //Add dependencies first so we know what is currently in project
             ownership = rentGO.AddComponent<OwnershipServiceAdapter>();
             rentModifiers = rentGO.AddComponent<CostModifierService>();
-
-            //Add manager last
             rentManager = rentGO.AddComponent<RentManager>();
 
-            //economy     = rentGO.AddComponent<EconomyAdapter>(); // this might not be needed. Commented out to resolve errors until confirmation.
-            ownership   = rentGO.AddComponent<OwnershipServiceAdapter>();
-
             rules = StandardRuleSet.GetInstance();
+
             Assert.NotNull(rentManager);
             Assert.NotNull(ownership);
             Assert.NotNull(rentModifiers);

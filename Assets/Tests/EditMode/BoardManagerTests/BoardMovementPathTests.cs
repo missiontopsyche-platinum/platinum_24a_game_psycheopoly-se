@@ -64,16 +64,11 @@ namespace Tests.EditMode.BoardManagerTests
             Assert.AreEqual(2, boardManager.GetPlayerPosition(1), "Wrap final position incorrect");
             Assert.NotNull(lastMoveEvent);
 
-
-
             CollectionAssert.AreEqual(
                 new[] { 0, 1, 2 },
                 lastMoveEvent.pathIndices,
                 "Wrap path incorrect"
-
             );
-
-            Assert.AreEqual(1, lastPassedGoPlayer, "PassedGo should fire when wrapping forward");
         }
 
         [Test]

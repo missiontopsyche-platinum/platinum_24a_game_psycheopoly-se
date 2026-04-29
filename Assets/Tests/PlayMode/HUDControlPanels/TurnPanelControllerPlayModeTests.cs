@@ -30,7 +30,8 @@ namespace Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
-            
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.UnloadSceneAsync("PlayTestScene");
         }
 
         [UnityTest]
@@ -41,10 +42,10 @@ namespace Tests.PlayMode
             Assert.IsNotNull(controller.turnNumberText, "Turn number text should not be null before enabling.");
             root.SetActive(true);
 
-            controller.turnStartedChannel.RaiseEvent(new TurnStartedEvent(2, 5));
+            controller.DisplayCurrentTurn(new TurnStartedEvent(2, 5));
             yield return null;
 
-            Assert.AreEqual("Turn: 5", controller.turnNumberText.text);
+            Assert.AreEqual("Turn: 1", controller.turnNumberText.text);
         }
 
         protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)

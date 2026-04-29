@@ -14,53 +14,55 @@ namespace Assets.Tests.PlayMode.CardEffects
     {
         // MoveCardEffect
 
-        [Test]
-        public void MoveCardEffect_MoveForward_RaisesMovePlayerEvent()
-        {
-            var player = CreatePlayer(2, 1000);
+    [Test]
+    public void MoveCardEffect_MoveForward_RaisesMovePlayerEvent()
+    {
+        var player = CreatePlayer(2, 1000);
 
-            var effect = CreateEffect<MoveCardEffect>();
-            effect.Type = MoveCardEffect.EffectType.MoveForward;
+        var effect = CreateEffect<MoveCardEffect>();
+        effect.Type = MoveCardEffect.EffectType.MoveForward;
+        effect.SpacesToMove = 4;
 
-            effect.SpacesToMove = 4;
+        var moveChannel = CreateChannel<MovePlayerEventChannel>();
+        var noActionChannel = CreateChannel<NoActionLandingEventChannel>();
 
-            var channel = CreateChannel<MovePlayerEventChannel>();
-            MovePlayerEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.MovePlayerEventChannel = channel;
+        MovePlayerEvent captured = null;
+        moveChannel.Subscribe(e => captured = e);
 
-            effect.ApplyEffect(player);
+        effect.MovePlayerEventChannel = moveChannel;
+        effect.NoActionLandingEventChannel = noActionChannel;
 
-            Assert.NotNull(captured, "MovePlayerEvent should be raised");
-            Assert.AreEqual(player.GetId(), captured.id);
-            Assert.AreEqual(4, captured.spacesToMove);
-        }
+        effect.ApplyEffect(player);
 
-        [Test]
-        public void MoveCardEffect_MoveBackward_RaisesNegativeMovePlayerEvent()
-        {
-            var player = CreatePlayer(1, 1000);
+        Assert.NotNull(captured, "MovePlayerEvent should be raised");
+        Assert.AreEqual(player.GetId(), captured.id);
+        Assert.AreEqual(4, captured.spacesToMove);
+    }
 
-            var effect = CreateEffect<MoveCardEffect>();
-            effect.Type = MoveCardEffect.EffectType.MoveBackward;
+    [Test]
+    public void MoveCardEffect_MoveBackward_RaisesNegativeMovePlayerEvent()
+    {
+        var player = CreatePlayer(1, 1000);
 
-            effect.SpacesToMove = 3;
+        var effect = CreateEffect<MoveCardEffect>();
+        effect.Type = MoveCardEffect.EffectType.MoveBackward;
+        effect.SpacesToMove = 3;
 
-            var channel = CreateChannel<MovePlayerEventChannel>();
-            MovePlayerEvent captured = null;
-            channel.Subscribe(e => captured = e);
-            effect.MovePlayerEventChannel = channel;
+        var moveChannel = CreateChannel<MovePlayerEventChannel>();
+        var noActionChannel = CreateChannel<NoActionLandingEventChannel>();
 
+        MovePlayerEvent captured = null;
+        moveChannel.Subscribe(e => captured = e);
 
+        effect.MovePlayerEventChannel = moveChannel;
+        effect.NoActionLandingEventChannel = noActionChannel;
 
-            effect.ApplyEffect(player);
+        effect.ApplyEffect(player);
 
-            Assert.NotNull(captured, "MovePlayerEvent should be raised");
-            Assert.AreEqual(player.GetId(), captured.id);
-            Assert.AreEqual(-3, captured.spacesToMove);
-
-
-        }
+        Assert.NotNull(captured, "MovePlayerEvent should be raised");
+        Assert.AreEqual(player.GetId(), captured.id);
+        Assert.AreEqual(-3, captured.spacesToMove);
+    }
 
         // MoveToSpaceCardEffect
         [Test]

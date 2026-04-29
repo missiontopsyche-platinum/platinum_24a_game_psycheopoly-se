@@ -8,7 +8,7 @@ public class DiceFaceViewTest
 {
     private GameObject diceGO;
     private DiceFaceView diceFaceView;
-
+    
     [UnitySetUp]
     public IEnumerator SetUp()
     {
@@ -16,18 +16,21 @@ public class DiceFaceViewTest
         var image = diceGO.AddComponent<Image>();
         diceFaceView = diceGO.AddComponent<DiceFaceView>();
 
-        //load sprites
         Sprite[] sprites = new Sprite[6];
+
         for (int i = 0; i < 6; i++)
         {
-            string path = $"Dice/die_{i + 1}";
-            sprites[i] = Resources.Load<Sprite>(path);
+            Texture2D texture = new Texture2D(8, 8);
+            texture.SetPixel(0, 0, Color.white);
+            texture.Apply();
 
-            //shouldn't happen
-            Assert.IsNotNull(sprites[i], $"Missing sprite at Resources/{path}.png");
+            sprites[i] = Sprite.Create(
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f)
+            );
         }
 
-        //link Sprites to DiceFaceView
         typeof(DiceFaceView)
             .GetField("faceSprites", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             .SetValue(diceFaceView, sprites);

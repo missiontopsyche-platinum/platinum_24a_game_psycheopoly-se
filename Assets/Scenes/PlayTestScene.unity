@@ -154,6 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 26384901}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &26384901
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -425,6 +427,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 33461322}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &33461322
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -696,6 +700,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 79421812}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &79421812
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -856,6 +862,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 92451822}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &92451822
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1249,6 +1257,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 139796783}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &139796783
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1579,6 +1589,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 165142903}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &165142903
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2145,6 +2157,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 315083081}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &315083081
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2294,6 +2308,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 330260055}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &330260055
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2418,7 +2434,6 @@ GameObject:
   m_Component:
   - component: {fileID: 330585546}
   - component: {fileID: 330585545}
-  - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   m_Layer: 0
   m_Name: Main Camera
@@ -2427,14 +2442,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &330585544
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
 --- !u!20 &330585545
 Camera:
   m_ObjectHideFlags: 0
@@ -3484,6 +3491,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8688020850096518107, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688020850096518107, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688020850096518107, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688020850096518107, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688020850096518107, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8729747441294186353, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3551,6 +3578,26 @@ PrefabInstance:
     - target: {fileID: 8859153510413946970, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
       propertyPath: rollDiceButton
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 9028224496283261720, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9028224496283261720, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9028224496283261720, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9028224496283261720, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9028224496283261720, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8855445723149103323, guid: d98b00bd95875a945a8c39dc9b6c7d68, type: 3}
@@ -3904,6 +3951,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 591739429}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &591739429
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4053,6 +4102,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 591968434}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &591968434
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4324,6 +4375,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 612578155}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &612578155
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4473,6 +4526,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 622347276}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &622347276
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4744,6 +4799,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 663158680}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &663158680
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4893,6 +4950,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 666390516}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &666390516
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5042,6 +5101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 673322216}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &673322216
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5557,6 +5618,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 715763325}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &715763325
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5950,6 +6013,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 780688057}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &780688057
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6148,6 +6213,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 891463110}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &891463110
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6663,6 +6730,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 947337298}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &947337298
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7300,6 +7369,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1022367690}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1022367690
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7449,6 +7520,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1048824768}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1048824768
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7720,6 +7793,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1100760774}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1100760774
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7991,6 +8066,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1148832889}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1148832889
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8140,6 +8217,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1155415252}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1155415252
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8300,6 +8379,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1172749030}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1172749030
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8582,6 +8663,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1343393718}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1343393718
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9097,6 +9180,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1404918595}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1404918595
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9246,6 +9331,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1488619692}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1488619692
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -9517,6 +9604,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1494405116}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1494405116
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10243,6 +10332,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1626814489}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1626814489
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10460,6 +10551,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1661303711}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1661303711
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10609,6 +10702,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1741114439}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1741114439
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10758,6 +10853,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1827246448}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1827246448
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10918,6 +11015,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1865946369}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1865946369
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11067,6 +11166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1872882657}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1872882657
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11216,6 +11317,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1899754528}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1899754528
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11365,6 +11468,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1905887678}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1905887678
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11514,6 +11619,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 1909463423}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &1909463423
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -11785,6 +11892,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 2036776159}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &2036776159
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -12189,6 +12298,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: PsycheOpoly.Runtime::SpaceRenderer
   meshRenderer: {fileID: 2132245907}
   alwaysVisibleUI: {fileID: 0}
+  ownedIconGO: {fileID: 0}
+  mortgagedIconGO: {fileID: 0}
 --- !u!23 &2132245907
 MeshRenderer:
   m_ObjectHideFlags: 0

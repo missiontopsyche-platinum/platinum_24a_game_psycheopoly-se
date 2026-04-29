@@ -31,10 +31,10 @@ namespace Assets.Scripts.Managers.TurnFlow
         [SerializeField] private ActionResolvedEventChannel actionResolvedEventChannel;
         [SerializeField] private TurnStartedEventChannel turnStartedOutChannel;
 
-        
+
         [Header("Dependencies")]
         [SerializeField] private TurnCycleManager turnCycleManager;
-        
+
         public int ActivePlayer { get; private set; } = -1;
         public TurnPhase Phase { get; private set; } = TurnPhase.None;
         //these are needed for TFC to know if we are rolling for a jail escape
@@ -44,10 +44,12 @@ namespace Assets.Scripts.Managers.TurnFlow
         private bool awaitingEndTurn = false;
 
         // fields to keep track of player states
-        private readonly List<Player> players = new();
+        private readonly List<Player> players = new ();
         public bool IsGameOver { get; private set; }
         public static int LastWinningPlayerId { get; private set; } = -1;
         public static string LastWinningPlayerName { get; private set; } = string.Empty;
+        private bool pendingCompleteResolution = false;
+        private bool pendingEndTurnAfterResolution = false;
 
         public void Initialize(TurnCycleManager tcm, List<Player> gamePlayers)
         {
@@ -113,9 +115,11 @@ namespace Assets.Scripts.Managers.TurnFlow
             ActivePlayer = data.playerId;
             Phase = TurnPhase.AwaitingRoll;
             awaitingEndTurn = false;
+            pendingCompleteResolution = false;
+            pendingEndTurnAfterResolution = false;
             nextRollIsJailEscape = false;
             jailEscapePlayer = null;
-            
+
             Logging.Logger.Info("TurnFlowCoordinator.OnTurnStarted",
                 $"New turn started: {data.turnNum} || Player: {players[ActivePlayer].GetPName()}",
                 LogCategory.Core);
@@ -202,11 +206,23 @@ namespace Assets.Scripts.Managers.TurnFlow
             Phase = TurnPhase.AwaitingResolution;
 
             Logging.Logger.Info("TurnFlowCoordinator.OnPieceMoveCompleted",
-                    "Move completed. Can end turn",
+                    "Movement resolution completed. Awaiting turn resolution.",
                     LogCategory.Core,
                     this);
 
             actionResolvedEventChannel?.RaiseEvent(new ActionResolvedEvent(ActivePlayer));
+
+            if (pendingCompleteResolution)
+            {
+                pendingCompleteResolution = false;
+                CompleteResolution();
+
+                if (pendingEndTurnAfterResolution)
+                {
+                    pendingEndTurnAfterResolution = false;
+                    CompleteTurnFlow();
+                }
+            }
         }
 
 
@@ -214,7 +230,21 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void CompleteTurnFlow()
         {
             if (IsGameOver) return;
+
+            if (Phase == TurnPhase.AwaitingMovement && pendingCompleteResolution)
+            {
+                pendingEndTurnAfterResolution = true;
+
+                Logging.Logger.Info("TurnFlowCoordinator.CompleteTurnFlow",
+                    "EndTurn requested before movement resolution finished. Deferring until resolution completes.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
             if (!awaitingEndTurn) return;
+
             if (turnCycleManager == null)
             {
                 Logging.Logger.Error("TurnFlowCoordinator.CompleteTurnFlow",
@@ -239,7 +269,7 @@ namespace Assets.Scripts.Managers.TurnFlow
 
             int playerId = request.player.GetId();
             bool allowed = IsAllowed(request.action, request.player);
-            
+
             Logging.Logger.Info("TurnFlowCoordinator.OnTurnActionRequested",
                 $"Turn action allowed: {allowed}" +
                 $"\n\t{request.action} || {request.player.GetPName()}" +
@@ -247,7 +277,8 @@ namespace Assets.Scripts.Managers.TurnFlow
                 LogCategory.Gameplay);
 
 
-            if (allowed) {
+            if (allowed)
+            {
                 switch (request.action)
                 {
                     case TurnActionType.RollForJailEscape:
@@ -263,7 +294,7 @@ namespace Assets.Scripts.Managers.TurnFlow
                         break;
                 }
             }
-            
+
             turnActionResultChannel?.RaiseEvent(new TurnActionResult
             {
                 playerId = playerId,
@@ -275,14 +306,33 @@ namespace Assets.Scripts.Managers.TurnFlow
         private void CompleteResolution()
         {
             if (IsGameOver) return;
+
+            if (Phase == TurnPhase.AwaitingMovement)
+            {
+                pendingCompleteResolution = true;
+
+                Logging.Logger.Info("TurnFlowCoordinator.CompleteResolution",
+                    "CompleteResolution requested before movement resolution finished. Deferring.",
+                    LogCategory.Gameplay,
+                    this);
+
+                return;
+            }
+
+
+            if (Phase == TurnPhase.Completed)
+                return;
+
             if (Phase != TurnPhase.AwaitingResolution)
                 return;
 
             Phase = TurnPhase.Completed;
             awaitingEndTurn = true;
-            Logging.Logger.Info("TurnFlowCoordinator.OnTurnActionRequested",
-                "Turn phase transitioned to completed. Can end turn",
-                LogCategory.Gameplay);
+
+            Logging.Logger.Info("TurnFlowCoordinator.CompleteResolution",
+                "Turn phase transitioned to Completed. Can end turn.",
+                LogCategory.Gameplay,
+                this);
 
         }
 
@@ -322,11 +372,17 @@ namespace Assets.Scripts.Managers.TurnFlow
                 return action switch
                 {
                     TurnActionType.RollForJailEscape => Phase == TurnPhase.AwaitingRoll,
-                    TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
-                    TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution || Phase == TurnPhase.Completed,
+
+                    TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingMovement
+                                                         || Phase == TurnPhase.AwaitingResolution
+                                                         || Phase == TurnPhase.Completed,
+
+                    TurnActionType.EndTurn => (Phase == TurnPhase.Completed && awaitingEndTurn)
+                                              || (Phase == TurnPhase.AwaitingMovement && pendingCompleteResolution),
+
                     _ => false
                 };
-            }
+        }
 
             return action switch
             {
@@ -338,79 +394,81 @@ namespace Assets.Scripts.Managers.TurnFlow
                                                  || Phase == TurnPhase.AwaitingMovement
                                                  || Phase == TurnPhase.AwaitingResolution
                                                  || (Phase == TurnPhase.Completed && awaitingEndTurn),
-                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingResolution || Phase == TurnPhase.Completed,
+                TurnActionType.CompleteResolution => Phase == TurnPhase.AwaitingMovement 
+                                                    || Phase == TurnPhase.AwaitingResolution
+                                                    || Phase == TurnPhase.Completed,
                 TurnActionType.EndTurn => Phase == TurnPhase.Completed && awaitingEndTurn,
                 _ => false
             };
-        }
+}
 
-        private void HandleBankruptcyPruningAtTurnStart()
-        {
-            if (turnCycleManager == null || players.Count == 0)
-                return;
+private void HandleBankruptcyPruningAtTurnStart()
+{
+    if (turnCycleManager == null || players.Count == 0)
+        return;
 
-            turnCycleManager.PruneBankruptPlayers(players);
+    turnCycleManager.PruneBankruptPlayers(players);
 
-            int activePlayers = turnCycleManager.GetActivePlayerCount();
+    int activePlayers = turnCycleManager.GetActivePlayerCount();
 
-            if (activePlayers <= 1)
-            {
-                int winnerIndex = turnCycleManager.GetLastRemainingPlayerIndex();
-                Player winner = GetPlayerById(winnerIndex);
-                TriggerGameEnd(winner);
-                return;
-            }
+    if (activePlayers <= 1)
+    {
+        int winnerIndex = turnCycleManager.GetLastRemainingPlayerIndex();
+        Player winner = GetPlayerById(winnerIndex);
+        TriggerGameEnd(winner);
+        return;
+    }
 
-            if (turnCycleManager.IsPlayerEliminated(ActivePlayer))
-            {
-                Logging.Logger.Info("TurnFlowCoordinator.HandleBankruptcyPruningAtTurnStart",
-                    $"Player {ActivePlayer} was pruned before taking their turn. Advancing to next player.",
-                    LogCategory.Gameplay,
-                    this);
+    if (turnCycleManager.IsPlayerEliminated(ActivePlayer))
+    {
+        Logging.Logger.Info("TurnFlowCoordinator.HandleBankruptcyPruningAtTurnStart",
+            $"Player {ActivePlayer} was pruned before taking their turn. Advancing to next player.",
+            LogCategory.Gameplay,
+            this);
 
-                int nextPlayer = turnCycleManager.Advance();
-                turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
-            }
-        }
+        int nextPlayer = turnCycleManager.Advance();
+        turnStartedOutChannel?.RaiseEvent(new TurnStartedEvent(nextPlayer, 0));
+    }
+}
 
-        private void TriggerGameEnd(Player winner)
-        {
-            if (IsGameOver)
-                return;
+private void TriggerGameEnd(Player winner)
+{
+    if (IsGameOver)
+        return;
 
-            IsGameOver = true;
-            Phase = TurnPhase.None;
-            awaitingEndTurn = false;
-            ActivePlayer = -1;
+    IsGameOver = true;
+    Phase = TurnPhase.None;
+    awaitingEndTurn = false;
+    ActivePlayer = -1;
 
-            LastWinningPlayerId = winner != null ? winner.GetId() : -1;
-            LastWinningPlayerName = winner != null ? winner.GetPName() : "No Winner";
+    LastWinningPlayerId = winner != null ? winner.GetId() : -1;
+    LastWinningPlayerName = winner != null ? winner.GetPName() : "No Winner";
 
-            Logging.Logger.Info("TurnFlowCoordinator.TriggerGameEnd",
-                $"Game over. Winner: {LastWinningPlayerName}",
-                LogCategory.Gameplay,
-                this);
+    Logging.Logger.Info("TurnFlowCoordinator.TriggerGameEnd",
+        $"Game over. Winner: {LastWinningPlayerName}",
+        LogCategory.Gameplay,
+        this);
 
-            if (GameManager.instance != null)
-            {
-                GameManager.instance.SetWinner(winner);
-                GameManager.instance.EndGame();
-            }
-            else
-            {
-                Logging.Logger.Warn("TurnFlowCoordinator.TriggerGameEnd",
-                    "GameManager instance was null. Could not end game through GameManager.",
-                    LogCategory.Core,
-                    this);
-            }
-        }
+    if (GameManager.instance != null)
+    {
+        GameManager.instance.SetWinner(winner);
+        GameManager.instance.EndGame();
+    }
+    else
+    {
+        Logging.Logger.Warn("TurnFlowCoordinator.TriggerGameEnd",
+            "GameManager instance was null. Could not end game through GameManager.",
+            LogCategory.Core,
+            this);
+    }
+}
 
-        private Player GetPlayerById(int playerId)
-        {
-            if (playerId < 0 || playerId >= players.Count)
-                return null;
+private Player GetPlayerById(int playerId)
+{
+    if (playerId < 0 || playerId >= players.Count)
+        return null;
 
-            return players[playerId];
-        }
+    return players[playerId];
+}
     }
 }

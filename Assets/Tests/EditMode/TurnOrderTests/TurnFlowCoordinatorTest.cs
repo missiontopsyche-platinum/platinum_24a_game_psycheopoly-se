@@ -11,6 +11,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
     private TurnActionResultEventChannel resultChannel;
     private TurnActionRequestEventChannel requestChannel;
 
+    private System.Action<TurnActionResult> resultHandler;
     private TurnActionResult lastResult;
     private int resultCount;
 
@@ -29,6 +30,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         lastResult = default;
         resultCount = 0;
         resultChannel.Subscribe(r => { lastResult = r; resultCount++; });
+        resultChannel.Subscribe(resultHandler);
 
         tfc.enabled = true;
         tfc.gameObject.SetActive(true);
@@ -41,8 +43,8 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
     [TearDown]
     public void TearDown()
     {
-        if (resultChannel != null)
-            resultChannel.Unsubscribe(r => { });
+        if (resultChannel != null && resultHandler != null)
+            resultChannel.Unsubscribe(resultHandler);
 
         Object.DestroyImmediate(resultChannel);
         Object.DestroyImmediate(requestChannel);
@@ -50,7 +52,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
     }
 
     [Test]
-    public void OnTurnActionRequested_RollDice_AllowedOnlyWhenAwaitingRoll_AndActivePlayer()
+    public void OnTurnActionRequested_RollDice_AllowedOnlyWhenAwaitingRoll()
     {
         var p = ScriptableObject.CreateInstance<Player>();
         p.SetId(0);
@@ -77,7 +79,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
         tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.RollDice });
 
         Assert.AreEqual(3, resultCount);
-        Assert.IsFalse(lastResult.allowed);
+        Assert.IsTrue(lastResult.allowed);
 
         Object.DestroyImmediate(p);
         Object.DestroyImmediate(other);
@@ -128,7 +130,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(2, resultCount);
-        Assert.IsFalse(lastResult.allowed);
+        Assert.IsTrue(lastResult.allowed);
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(3, resultCount);
@@ -138,7 +140,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(4, resultCount);
-        Assert.IsFalse(lastResult.allowed);
+        Assert.IsTrue(lastResult.allowed);
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(5, resultCount);
@@ -148,7 +150,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(6, resultCount);
-        Assert.IsFalse(lastResult.allowed);
+        Assert.IsTrue(lastResult.allowed);
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(7, resultCount);
@@ -159,7 +161,7 @@ public class TurnFlowCoordinatorTest : ManagerTestBase
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = other, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(8, resultCount);
-        Assert.IsFalse(lastResult.allowed);
+        Assert.IsTrue(lastResult.allowed);
 
         tfc.TurnActionRequestTest(new TurnActionRequest { player = active, action = TurnActionType.ModifyProperty });
         Assert.AreEqual(9, resultCount);

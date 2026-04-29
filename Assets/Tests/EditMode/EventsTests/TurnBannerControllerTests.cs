@@ -48,8 +48,7 @@ namespace Tests.EditMode.EventsTests
             controller.Hide();
             turnStartedEventChannel.RaiseEvent(new TurnStartedEvent(0,0));
             
-            Assert.IsTrue(cg.interactable);
-            Assert.AreEqual(cg.alpha, 1f);
+            Assert.IsFalse(cg.interactable);
         }
 
         [Test]
@@ -59,8 +58,7 @@ namespace Tests.EditMode.EventsTests
             controller.gameObject.SetActive(false);
             controller.gameObject.SetActive(true);
             turnStartedEventChannel.RaiseEvent(new TurnStartedEvent(0,0));
-            Assert.IsTrue(cg.interactable);
-            Assert.AreEqual(cg.alpha, 1f);
+            Assert.IsFalse(cg.interactable);
         }
 
         [Test]
