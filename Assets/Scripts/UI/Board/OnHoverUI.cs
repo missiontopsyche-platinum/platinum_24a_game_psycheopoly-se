@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text;
 using Events.EventDataStructures;
 using TMPro;
@@ -9,6 +10,11 @@ public class OnHoverUI : MonoBehaviour
     [Header("Event Channels")]
     [SerializeField] private SpaceHoverEventChannel spaceHoverEventChannel;
     [SerializeField] private BooleanEventChannel onSpaceExitEventChannel;
+
+    [Header("Animation Settings")] 
+    [SerializeField] private float delayTime = 0.5f;
+    [SerializeField] private AnimationCurve easeCurve;
+    [SerializeField] private float fadeTime = 1f;
 
     [Header("UI References")]
     [SerializeField] private CanvasGroup canvasGroup;
@@ -23,10 +29,13 @@ public class OnHoverUI : MonoBehaviour
     [SerializeField] private TMP_Text costValueText;
     [SerializeField] private TMP_Text rentValueText;
     [SerializeField] private TMP_Text ownerValueText;
-
+    
+    private float currentTime = 0f;
+    private bool isHidden = true;
+    
     private void Awake()
     {
-        Hide();
+        StartCoroutine(Hide());
     }
 
     private void OnEnable()
@@ -45,7 +54,7 @@ public class OnHoverUI : MonoBehaviour
     {
         if (e == null || e.spaceData == null)
         {
-            Hide();
+            StartCoroutine(Hide());
             return;
         }
 
@@ -120,7 +129,8 @@ public class OnHoverUI : MonoBehaviour
             }
         }
 
-        Show();
+        StopAllCoroutines();
+        StartCoroutine(Show());
     }
 
     private static void SetRow(TMP_Text valueText, bool visible)
@@ -141,22 +151,48 @@ public class OnHoverUI : MonoBehaviour
 
     private void OnSpaceExit(bool _)
     {
-        Hide();
+        StopAllCoroutines();
+        StartCoroutine(Hide());
     }
 
-    private void Show()
+    private IEnumerator Show()
     {
-        if (canvasGroup == null) return;
-        canvasGroup.alpha = 1f;
+        if (canvasGroup == null) yield break;
+        
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;
+
+        if (isHidden)
+        {
+            yield return new WaitForSeconds(delayTime);
+            isHidden = false;
+        }
+
+        while (currentTime < fadeTime)
+        {
+            canvasGroup.alpha = easeCurve.Evaluate(currentTime / fadeTime);
+            yield return new WaitForEndOfFrame();
+            currentTime += Time.deltaTime;
+        }
+
+        canvasGroup.alpha = 1f;
     }
 
-    private void Hide()
+    private IEnumerator Hide()
     {
-        if (canvasGroup == null) return;
-        canvasGroup.alpha = 0f;
+        if (canvasGroup == null) yield break;
+        
         canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable = false;
+        
+        while (currentTime > 0f)
+        {
+            canvasGroup.alpha = easeCurve.Evaluate(currentTime / fadeTime);
+            yield return new WaitForEndOfFrame();
+            currentTime -= Time.deltaTime;
+        }
+        
+        canvasGroup.alpha = 0f;
+        isHidden = true;
     }
 }
