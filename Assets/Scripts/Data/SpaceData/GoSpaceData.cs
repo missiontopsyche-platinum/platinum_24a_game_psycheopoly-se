@@ -16,9 +16,9 @@ public class GoSpaceData : SpaceData
     public override void OnPassed(Player player)
     {
         Logging.Logger.Info("GoSpaceData.OnPassed",
-            $"{player.GetPName()} passed Go!",
+            $"{player.GetPName()} passed Go! Money added.",
             LogCategory.Gameplay);
-        RaisePayEvent(player);
+        player.AddMoney(payout);
     }
 
     private void RaisePayEvent(Player player)
