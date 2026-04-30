@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AIBehavior;
 using Assets.Scripts.Events.EventChannelTypes;
+using Assets.Scripts.Events.EventDataStructures;
 using Assets.Scripts.Managers.TurnFlow;
 using Data;
 using Events.EventDataStructures;
@@ -102,6 +103,7 @@ namespace Managers.PlayerControllers
             moneyDistributionEventChannel?.Subscribe(HandleMoneyDistribution);
             chargePlayerEventChannel?.Subscribe(HandleChargePlayerEvent);
             noLandingActionEventChannel?.Subscribe(HandleNoLandingActionEvent);
+            jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
         }
 
         public override void Unsubscribe()
@@ -114,6 +116,7 @@ namespace Managers.PlayerControllers
             moneyDistributionEventChannel?.Unsubscribe(HandleMoneyDistribution);
             chargePlayerEventChannel?.Unsubscribe(HandleChargePlayerEvent);
             noLandingActionEventChannel?.Unsubscribe(HandleNoLandingActionEvent);
+            jailStateChangedEventChannel?.Unsubscribe(HandleJailStateChanged);
         }
         
         protected override void CatchTurnStartedEvent(TurnStartedEvent tse)
@@ -493,7 +496,13 @@ namespace Managers.PlayerControllers
             // handle passing go
             controlledPlayer.AddMoney(ppe.amountPaid);
 
-            RequestAIResolutionComplete();
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "GO!!!",
+                    $"{controlledPlayer.GetPName()} collected ${ppe.amountPaid}.",
+                    RequestAIResolutionComplete,
+                    true)));
         }
 
         // Handles CollectFromAllPlayers card effects for the AI player's controller.
@@ -610,9 +619,9 @@ namespace Managers.PlayerControllers
 
         private void RequestEndTurn()
         {
-            if (endTurnRequested) return;
-
-            endTurnRequested = true;
+            // if (endTurnRequested) return;
+            //
+            // endTurnRequested = true;
 
             RequestTurnAction(
                 TurnActionType.EndTurn,
@@ -766,6 +775,42 @@ namespace Managers.PlayerControllers
                     controlledPlayer,
                     inJail,
                     controlledPlayer.GetJailTurns()));
+        }
+        
+        protected override void HandleJailStateChanged(JailStateChangedEvent jailEvent)
+        {
+            if (!isMyTurn) return;
+            
+            base.HandleJailStateChanged(jailEvent);
+
+            if (jailEvent.inJail)
+            {
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "LAUNCH PAD!",
+                        "You're now stuck at the launch pad!",
+                        () => 
+                            RequestTurnAction(
+                                TurnActionType.CompleteResolution,
+                                onAllowed: () => RequestTurnAction(
+                                    TurnActionType.EndTurn,
+                                    onAllowed: () => { },
+                                    onDenied: () => { }
+                                ), 
+                                onDenied: () => { }
+                            ), isAI: false)));
+            }
+            else
+            {
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "GO FOR LAUNCH!",
+                        "You're no longer stuck on the Launch Pad!",
+                        () => RequestResolutionComplete(),
+                        isAI: true)));
+            }
         }
     }
 }

@@ -211,7 +211,12 @@ namespace Managers.PlayerControllers
             // call player method for getting paid for passing go
             controlledPlayer.AddMoney(ppe.amountPaid);
 
-            RequestResolutionComplete();
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "GO!!!",
+                    $"{controlledPlayer.GetPName()} collected ${ppe.amountPaid}.",
+                    () => RequestResolutionComplete())));
         }
 
         // handles CollectFromAllPlayers card effects for the human player's controller.
@@ -503,6 +508,8 @@ namespace Managers.PlayerControllers
         // show you're in jail notification
         protected override void HandleJailStateChanged(JailStateChangedEvent jailEvent)
         {
+            if (!isMyTurn) return;
+            
             base.HandleJailStateChanged(jailEvent);
 
             if (jailEvent.inJail)

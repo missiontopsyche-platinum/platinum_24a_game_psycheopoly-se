@@ -1,4 +1,5 @@
 ﻿using Events.EventDataStructures;
+using Logging;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "GoSpaceData", menuName = "Board Spaces/Go! Space")]
@@ -14,6 +15,9 @@ public class GoSpaceData : SpaceData
 
     public override void OnPassed(Player player)
     {
+        Logging.Logger.Info("GoSpaceData.OnPassed",
+            $"{player.GetPName()} passed Go!",
+            LogCategory.Gameplay);
         RaisePayEvent(player);
     }
 
