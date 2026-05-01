@@ -173,8 +173,8 @@ namespace Managers.PlayerControllers
                 case Player.FinancialStatus.Success:
                     // successful payment goes to the player who drew the card.
                     cofe.toPlayer.AddMoney(cofe.amount);
+                    HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name} in rent!"));
                     break;
-
                 case Player.FinancialStatus.Bankrupt:
                     // notify existing bankruptcy flow.
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
@@ -192,14 +192,6 @@ namespace Managers.PlayerControllers
                     HandleDebtResolution();
                     break;
             }
-
-            controlledPlayer.TrySpend(cofe.amount);
-            cofe.toPlayer.AddMoney(cofe.amount);
-
-            HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name} in rent!"));
-                
-                
-            RequestResolutionComplete();
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
@@ -436,8 +428,15 @@ namespace Managers.PlayerControllers
         // their turn. This is also a workaround to separate AwaitingResolution and Completed states.
         private void OnTurnEnded(bool ended)
         {
-
             if (!isMyTurn) return;
+
+            if (controlledPlayer.GetMoney() < 0)
+            {
+                Logger.Warn("HumanPlayerController.OnTurnEnded",
+                    $"{controlledPlayer.GetPName()} is in debt and can not end turn.");
+                return;
+            }
+            
             Logger.Debug("HumanPlayerController.RequestEndTurn",
                         "Checking that the player turn isn't cycling somehow.",
                         LogCategory.Gameplay);
@@ -657,7 +656,9 @@ namespace Managers.PlayerControllers
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.PropertyManagement,
-                    new PropertyManagementActivationContext(controlledPlayer)
+                    new PropertyManagementActivationContext(controlledPlayer,
+                        controlledPlayer.GetMoney() < 0,
+                        controlledPlayer.GetMoney())
                 )
             );
         }
