@@ -160,22 +160,37 @@ namespace Managers.PlayerControllers
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
         {
             if (!isMyTurn || turnForcedEnd) return;
-            
+
             // activate Rent notification UI
 
             // call Player method for charging rent
             // Flow: Check if player has money -> If yes, try spend, return proper response via event channel
             // If no -> Check for bankrupcy - If bankrupt, notify UI, call proper method on GameManger, call ClearOwnership
-            if (!controlledPlayer.CanAfford(cofe.amount))
-            {
-                if (controlledPlayer.IsBankrupt(cofe.amount))
-                {
-                    // TODO: Call event channel for UI to notify of bankruptcy
-                    
-                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                }
+            var status = controlledPlayer.TrySpend(cofe.amount);
 
-                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
+            switch (status)
+            {
+                case Player.FinancialStatus.Success:
+                    // successful payment goes to the player who drew the card.
+                    cofe.toPlayer.AddMoney(cofe.amount);
+                    break;
+
+                case Player.FinancialStatus.Bankrupt:
+                    // notify existing bankruptcy flow.
+                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                    uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "Bankrupt!",
+                        $"You have gone bankrupt.",
+                        () => RequestResolutionComplete())));
+                    break;
+
+                case Player.FinancialStatus.MortgageRequired:
+                    // reuse existing AI mortgage handling.
+                    controlledPlayer.SetMoney(controlledPlayer.GetMoney() - cofe.amount);
+                    HandleDebtResolution();
+                    break;
             }
 
             controlledPlayer.TrySpend(cofe.amount);
