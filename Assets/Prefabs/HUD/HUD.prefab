@@ -335,7 +335,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.5
+  m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -1673,9 +1673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: PsycheOpoly.Runtime::PlayerPanelController
   turnStartedChannel: {fileID: 11400000, guid: 83cdc6259df024842a7aff913879d540, type: 2}
-  addPlayerEventChannel: {fileID: 11400000, guid: 8c18ceb34e74bcb459f4af97ceb3802e, type: 2}
-  updatePlayerDataChannel: {fileID: 11400000, guid: 4aa6a3d44e5700a41b40f36abb24ff19, type: 2}
-  playersList: []
+  pollRate: 0.25
   playerNameText: {fileID: 6928103308267896782}
   playerMoneyText: {fileID: 8134415378645163428}
 --- !u!1 &9192229270420014358

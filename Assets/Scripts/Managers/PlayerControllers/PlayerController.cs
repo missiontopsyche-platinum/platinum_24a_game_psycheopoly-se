@@ -95,8 +95,6 @@ namespace Managers.PlayerControllers
         {
             turnStartedEventChannel?.Subscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Subscribe(OnTurnActionResult);
-            //jailStateChangedEventChannel?.Subscribe(HandleJailStateChanged);
-            
         }
 
         /// <summary>
@@ -108,7 +106,6 @@ namespace Managers.PlayerControllers
         {
             turnStartedEventChannel?.Unsubscribe(CatchTurnStartedEvent);
             turnActionResultEventChannel?.Unsubscribe(OnTurnActionResult);
-            jailStateChangedEventChannel?.Unsubscribe(HandleJailStateChanged);
             pendingActions.Clear();
             isMyTurn = false;
         }

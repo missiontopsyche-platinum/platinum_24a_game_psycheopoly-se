@@ -69,7 +69,7 @@ public class PropertyManagementRowUI : MonoBehaviour
         if (property == null)
             return;
 
-        propertyNameText.text = property.Name;
+        propertyNameText.text = property.spaceName;
         typeText.text = property.Type.ToString();
         mortgageStateText.text = property.isMortgaged ? "Mortgaged" : "Active";
 
