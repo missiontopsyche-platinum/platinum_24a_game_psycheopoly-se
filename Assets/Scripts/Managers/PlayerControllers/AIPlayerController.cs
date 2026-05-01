@@ -440,6 +440,7 @@ namespace Managers.PlayerControllers
                         $"AI {controlledPlayer.GetPName()} needs mortgage handling to cover fee of ${amount}.",
                         LogCategory.AI);
                     isInDebt = true;
+                    controlledPlayer.SetMoney(controlledPlayer.GetMoney() - amount);
                     HandleMortgageAction();
                     break;
             }
@@ -771,7 +772,7 @@ namespace Managers.PlayerControllers
         private void RaiseJailStateChanged(bool inJail)
         {
             jailStateChangedEventChannel?.RaiseEvent(
-                new Assets.Scripts.Events.EventDataStructures.JailStateChangedEvent(
+                new JailStateChangedEvent(
                     controlledPlayer,
                     inJail,
                     controlledPlayer.GetJailTurns()));
