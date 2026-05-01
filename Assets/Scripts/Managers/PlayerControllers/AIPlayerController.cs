@@ -548,26 +548,8 @@ namespace Managers.PlayerControllers
                 else // otherwise, we can handle the charging based on actual amount
                 {
                     // charge player this amount and resolve debt if necessary
-                    var status = controlledPlayer.TrySpend(actualAmount);
-                
-                    switch (status)
-                    {
-                        case Player.FinancialStatus.Success:
-                            // successful payment goes to the player who drew the card.
-                            mde.Player.AddMoney(mde.Amount);
-                            break;
-
-                        case Player.FinancialStatus.Bankrupt:
-                            // notify existing bankruptcy flow.
-                            bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                            RequestResolutionComplete();
-                            break;
-
-                        case Player.FinancialStatus.MortgageRequired:
-                            // reuse existing AI mortgage handling.
-                            HandleMortgageAction();
-                            break;
-                    }
+                    HandleSpendMoney(actualAmount);
+                    mde.Player.AddMoney(mde.Amount);
                 }
             }
             // if actualAmount is 0, then we are being paid and don't need to do anything
