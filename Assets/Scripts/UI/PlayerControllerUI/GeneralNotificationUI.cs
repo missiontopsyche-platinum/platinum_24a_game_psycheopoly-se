@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Assets.Scripts.Events.EventChannelTypes;
 using Events.EventDataStructures.UI;
+using Logging;
 using TMPro;
 using UnityEngine;
 
@@ -65,6 +66,10 @@ public class GeneralNotificationUI : MonoBehaviour
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
+        
+        Logging.Logger.Info("GeneralNotificationUI.Show",
+            $"[{playerNameText.text}] {notificationTitle.text}: {notificationText.text}",
+            LogCategory.UI);
     }
 
     public void Hide()

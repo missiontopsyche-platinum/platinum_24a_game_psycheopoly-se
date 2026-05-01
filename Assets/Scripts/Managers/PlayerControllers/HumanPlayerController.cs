@@ -160,31 +160,38 @@ namespace Managers.PlayerControllers
         private void HandleChargeOwnership(ChargeOwnershipFeeEvent cofe)
         {
             if (!isMyTurn || turnForcedEnd) return;
-            
+
             // activate Rent notification UI
 
             // call Player method for charging rent
             // Flow: Check if player has money -> If yes, try spend, return proper response via event channel
             // If no -> Check for bankrupcy - If bankrupt, notify UI, call proper method on GameManger, call ClearOwnership
-            if (!controlledPlayer.CanAfford(cofe.amount))
+            var status = controlledPlayer.TrySpend(cofe.amount);
+
+            switch (status)
             {
-                if (controlledPlayer.IsBankrupt(cofe.amount))
-                {
-                    // TODO: Call event channel for UI to notify of bankruptcy
-                    
+                case Player.FinancialStatus.Success:
+                    // successful payment goes to the player who drew the card.
+                    cofe.toPlayer.AddMoney(cofe.amount);
+                    HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name} in rent!"));
+                    break;
+                case Player.FinancialStatus.Bankrupt:
+                    // notify existing bankruptcy flow.
                     bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                }
+                    uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification,
+                    new GeneralNotificationContext(controlledPlayer,
+                        "Bankrupt!",
+                        $"You have gone bankrupt.",
+                        () => RequestResolutionComplete())));
+                    break;
 
-                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
+                case Player.FinancialStatus.MortgageRequired:
+                    // reuse existing AI mortgage handling.
+                    controlledPlayer.SetMoney(controlledPlayer.GetMoney() - cofe.amount);
+                    HandleDebtResolution();
+                    break;
             }
-
-            controlledPlayer.TrySpend(cofe.amount);
-            cofe.toPlayer.AddMoney(cofe.amount);
-
-            HandleNoLandingActionEvent(new NoActionLandingEvent(cofe.sourceSpace.GetShortName(), $"Paid {cofe.amount} to {cofe.toPlayer.name} in rent!"));
-                
-                
-            RequestResolutionComplete();
         }
 
         private void HandlePassedGo(PayPlayerEvent ppe)
@@ -211,7 +218,12 @@ namespace Managers.PlayerControllers
             // call player method for getting paid for passing go
             controlledPlayer.AddMoney(ppe.amountPaid);
 
-            RequestResolutionComplete();
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.GeneralNotification, new GeneralNotificationContext(
+                    controlledPlayer,
+                    "GO!!!",
+                    $"{controlledPlayer.GetPName()} collected ${ppe.amountPaid}.",
+                    () => RequestResolutionComplete())));
         }
 
         // handles CollectFromAllPlayers card effects for the human player's controller.
@@ -272,6 +284,7 @@ namespace Managers.PlayerControllers
 
                         case Player.FinancialStatus.MortgageRequired:
                             // reuse existing AI mortgage handling.
+                            controlledPlayer.SetMoney(controlledPlayer.GetMoney() - mde.Amount);
                             HandleDebtResolution();
                             break;
                     }
@@ -290,7 +303,12 @@ namespace Managers.PlayerControllers
 
         private void HandleDebtResolution()
         {
-            // TODO : Handle debt by opening the debt mode property management UI
+            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                UIType.PropertyManagement,
+                new PropertyManagementActivationContext(
+                    controlledPlayer,
+                    true,
+                    controlledPlayer.GetMoney())));
         }
 
         private void ResolveMortgageProperty(MortgagePropertyContext context)
@@ -410,8 +428,15 @@ namespace Managers.PlayerControllers
         // their turn. This is also a workaround to separate AwaitingResolution and Completed states.
         private void OnTurnEnded(bool ended)
         {
-
             if (!isMyTurn) return;
+
+            if (controlledPlayer.GetMoney() < 0)
+            {
+                Logger.Warn("HumanPlayerController.OnTurnEnded",
+                    $"{controlledPlayer.GetPName()} is in debt and can not end turn.");
+                return;
+            }
+            
             Logger.Debug("HumanPlayerController.RequestEndTurn",
                         "Checking that the player turn isn't cycling somehow.",
                         LogCategory.Gameplay);
@@ -462,26 +487,30 @@ namespace Managers.PlayerControllers
         {
             if (!isMyTurn || turnForcedEnd) return;
 
-            if (!controlledPlayer.CanAfford(cpe.chargeAmount))
+            Player.FinancialStatus status = controlledPlayer.TrySpend(cpe.chargeAmount);
+
+            if (status == Player.FinancialStatus.Success)
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, 
+                    new GeneralNotificationContext(controlledPlayer,
+                        "Charged Fee!",
+                        $"You have been charged ${cpe.chargeAmount}.",
+                        () => RequestResolutionComplete())));
+            else if (status == Player.FinancialStatus.Bankrupt)
             {
-                if (controlledPlayer.IsBankrupt(cpe.chargeAmount))
-                {
-                    // TODO: Call event channel for UI to notify of bankruptcy
-
-                    bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
-                }
-
-                //TODO: for the UI for property management. There needs to be a check to ensure the player CANNOT close the screen once opened until they finish
+                bankruptPlayerEventChannel?.RaiseEvent(controlledPlayer.GetId());
+                uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
+                    UIType.GeneralNotification, 
+                    new GeneralNotificationContext(controlledPlayer,
+                        "Bankrupt!",
+                        $"You have gone bankrupt.",
+                        () => RequestResolutionComplete())));
             }
-
-            controlledPlayer.TrySpend(cpe.chargeAmount);
-           
-            uiActivationEventChannel.RaiseEvent(new UIActivationEvent(
-                UIType.GeneralNotification, 
-                new GeneralNotificationContext(controlledPlayer,
-                    "Charged Fee!",
-                    $"You have been charged ${cpe.chargeAmount}.",
-                    () => RequestResolutionComplete())));
+            else
+            {
+                controlledPlayer.SetMoney(controlledPlayer.GetMoney() - cpe.chargeAmount);
+                HandleDebtResolution();
+            }
         }
 
         private void HandleNoLandingActionEvent(NoActionLandingEvent noActionLanding)
@@ -503,6 +532,8 @@ namespace Managers.PlayerControllers
         // show you're in jail notification
         protected override void HandleJailStateChanged(JailStateChangedEvent jailEvent)
         {
+            if (!isMyTurn) return;
+            
             base.HandleJailStateChanged(jailEvent);
 
             if (jailEvent.inJail)
@@ -625,7 +656,9 @@ namespace Managers.PlayerControllers
             uiActivationEventChannel?.RaiseEvent(
                 new UIActivationEvent(
                     UIType.PropertyManagement,
-                    new PropertyManagementActivationContext(controlledPlayer)
+                    new PropertyManagementActivationContext(controlledPlayer,
+                        controlledPlayer.GetMoney() < 0,
+                        controlledPlayer.GetMoney())
                 )
             );
         }
